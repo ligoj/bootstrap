@@ -1,0 +1,6 @@
+dialChar;dialBool;dialShort;dialLong;dialDouble;dialDate;dialEnum
+A;true;1;6;1,2;12/08/2012;ALL
+B;true;2;7;0,2;13/08/2012;PERSIST
+C;false;3;8;0,7;14/08/2012;REFRESH
+D;false;4;9;58897,2;15/08/2012;DETACH
+E;false;5;0;484;16/08/2012;

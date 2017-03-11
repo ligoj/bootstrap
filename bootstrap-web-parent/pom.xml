@@ -1,0 +1,213 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.ligoj.bootstrap</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.6.0-SNAPSHOT</version>
+		<relativePath>../parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>bootstrap-web-parent</artifactId>
+	<packaging>pom</packaging>
+
+	<properties>
+		<jetty.properties>${project.build.outputDirectory}/META-INF/jetty/jetty-dev.properties</jetty.properties>
+		<sonar.sources>src/main/java,src/main/webapp/main</sonar.sources>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tomakehurst</groupId>
+			<artifactId>wiremock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ligoj.bootstrap</groupId>
+			<artifactId>bootstrap-web</artifactId>
+			<version>${bootstrap.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ligoj.bootstrap</groupId>
+			<artifactId>bootstrap-web-test</artifactId>
+			<scope>test</scope>
+			<version>${bootstrap.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+
+		<!-- JSR-154 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<webResources>
+						<resource>
+							<filtering>true</filtering>
+							<directory>src/main/webapp</directory>
+							<includes>
+								<include>*.html</include>
+							</includes>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>minify</id>
+			<properties>
+				<reference-html>${basedir}/src/main/webapp/index-ltr.html</reference-html>
+				<theme>bootstrap-material-design</theme>
+				<target-css>${basedir}/src/main/webapp/themes/${theme}/css/_.css</target-css>
+
+				<reference-login-html>${basedir}/src/main/webapp/login.html</reference-login-html>
+				<target-login-css>${basedir}/src/main/webapp/themes/${theme}/css/_login.css</target-login-css>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>minify</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="Minify core JS, user CSS and user JS">
+										<exec executable="node">
+											<arg value="${basedir}/src/main/build/r.js" />
+											<arg value="-o" />
+											<arg value="${basedir}/src/main/build/build.js" />
+											<arg value="baseUrl=${basedir}/src/main/webapp/lib" />
+											<arg value="dir=${basedir}/src/main/webapp/dist" />
+										</exec>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>minify-css</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="Minify CSS">
+										<delete file="${target-css}.lst" quiet="true" />
+										<copy file="${reference-html}" tofile="${target-css}.lst" />
+										<replaceregexp file="${target-css}.lst" match=".*&lt;link\s+.*rel\s*=\s*&quot;stylesheet&quot;.*href\s*=\s*&quot;(.*?)&quot;\s+.*$" replace="${line.separator}###\1"
+											byline="false" flags="mg" encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst" match="^(?!###).*$" replace="" byline="true" flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst" match="[&quot;?].*" replace="" byline="true" flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst" match="\r?\n\s*\r?\n" replace="" byline="false" flags="gm" encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst" match="###" replace=",src/main/webapp/" byline="true" flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst" match="," replace="" byline="false" encoding="utf-8" />
+										<loadfile property="css-files" srcFile="${target-css}.lst" />
+										<delete file="${target-css}.lst" quiet="true" />
+										<delete file="${target-css}.tmp" quiet="true" />
+										<concat destfile="${target-css}.tmp">
+											<filelist dir="${basedir}" files="${css-files}" />
+										</concat>
+										<echo message="Concat succeed in ${target-css}.tmp" />
+
+										<condition property="windows">
+											<os family="windows" />
+										</condition>
+										<condition property="nodejs.ext" value=".cmd">
+											<isset property="windows" />
+										</condition>
+										<condition property="nodejs.ext" value="">
+											<not>
+												<isset property="nodejs.ext" />
+											</not>
+										</condition>
+										<exec executable="cleancss${nodejs.ext}">
+											<arg value="--s0" />
+											<arg value="-o" />
+											<arg value="${target-css}" />
+											<arg value="${target-css}.tmp" />
+										</exec>
+										<delete file="${target-css}.tmp" quiet="true" />
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>minify-login-css</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="Minify Login CSS">
+										<delete file="${target-login-css}.lst" quiet="true" />
+										<copy file="${reference-login-html}" tofile="${target-login-css}.lst" />
+										<replaceregexp file="${target-login-css}.lst" match=".*&lt;link\s+.*rel\s*=\s*&quot;stylesheet&quot;.*href\s*=\s*&quot;(.*?)&quot;\s+.*$" replace="${line.separator}###\1"
+											byline="false" flags="mg" encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst" match="^(?!###).*$" replace="" byline="true" flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst" match="[&quot;?].*" replace="" byline="true" flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst" match="\r?\n\s*\r?\n" replace="" byline="false" flags="gm" encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst" match="###" replace=",src/main/webapp/" byline="true" flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst" match="," replace="" byline="false" encoding="utf-8" />
+										<loadfile property="css-files" srcFile="${target-login-css}.lst" />
+										<delete file="${target-login-css}.lst" quiet="true" />
+										<delete file="${target-login-css}.tmp" quiet="true" />
+										<concat destfile="${target-login-css}.tmp">
+											<filelist dir="${basedir}" files="${css-files}" />
+										</concat>
+										<echo message="Concat succeed in ${target-login-css}.tmp" />
+
+										<condition property="windows">
+											<os family="windows" />
+										</condition>
+										<condition property="nodejs.ext" value=".cmd">
+											<isset property="windows" />
+										</condition>
+										<condition property="nodejs.ext" value="">
+											<not>
+												<isset property="nodejs.ext" />
+											</not>
+										</condition>
+										<exec executable="cleancss${nodejs.ext}">
+											<arg value="--s0" />
+											<arg value="-o" />
+											<arg value="${target-login-css}" />
+											<arg value="${target-login-css}.tmp" />
+										</exec>
+										<delete file="${target-login-css}.tmp" quiet="true" />
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

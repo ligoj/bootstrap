@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+ 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<!-- Jackson Provider -->
+	<bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" lazy-init="true">
+		<property name="mapper" ref="objectMapper" />
+	</bean>
+
+	<bean id="objectMapper" class="org.ligoj.bootstrap.core.json.ObjectMapper">
+		<property name="serializationInclusion" value="NON_NULL" />
+	</bean>
+
+	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="objectMapper" />
+		<property name="targetMethod" value="registerModule" />
+		<property name="arguments">
+			<list>
+				<bean class="com.fasterxml.jackson.datatype.joda.JodaModule" />
+			</list>
+		</property>
+	</bean>
+	<bean id="jaxRsParameterNameProvider" class="org.ligoj.bootstrap.core.validation.JaxRsParameterNameProvider"/>
+	<bean id="validationProvider" class="org.apache.cxf.validation.BeanValidationProvider" >
+		<constructor-arg type="javax.validation.ParameterNameProvider" ref="jaxRsParameterNameProvider"/>
+	</bean>
+	<bean id="validationInInterceptor" class="org.ligoj.bootstrap.core.validation.JAXRSBeanValidationImplicitInInterceptor">
+	    <property name="provider" ref="validationProvider" />
+	</bean>
+
+	<bean id="jsr303ExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.Jsr303ExceptionMapper" />
+	<bean id="invalidFormatExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.InvalidFormatExceptionMapper" />
+	<bean id="cannotCreateTransactionExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.CannotCreateTransactionExceptionMapper" />
+	<bean id="dataAccessResourceFailureExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.DataAccessResourceFailureExceptionMapper" />
+	<bean id="technicalExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.TechnicalExceptionMapper" />
+	<bean id="businessExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.BusinessExceptionMapper" />
+	<bean id="webApplicationExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.WebApplicationExceptionMapper" />
+	<bean id="failSafeExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.FailSafeExceptionMapper" />
+	<bean id="accessDeniedExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper" />
+	<bean id="authenticationExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.AuthenticationExceptionMapper" />
+	<bean id="dataIntegrityViolationExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.DataIntegrityViolationExceptionMapper" />
+	<bean id="validationJsonExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.ValidationJsonExceptionMapper" />
+	<bean id="entityNotFoundExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.EntityNotFoundExceptionMapper" />
+	<bean id="noResultExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.NoResultExceptionMapper" />
+	<bean id="jpaObjectRetrievalFailureException" class="org.ligoj.bootstrap.core.resource.mapper.JpaObjectRetrievalFailureExceptionMapper" />
+	<bean id="unrecognizedPropertyExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.UnrecognizedPropertyExceptionMapper" />
+	<bean id="mailSendExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.MailSendExceptionMapper" />
+	<bean id="transactionSystemExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.TransactionSystemExceptionMapper" />
+	<bean id="forbiddenExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.ForbiddenExceptionMapper" />
+	<bean id="cannotAcquireLockExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.CannotAcquireLockExceptionMapper" />
+	<bean id="notImplementedExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.NotImplementedExceptionMapper" />
+
+	<bean id="notFoundResponseFilter" class="org.ligoj.bootstrap.core.resource.filter.NotFoundResponseFilter" />
+
+	<bean id="unixTimestampParameterHandler" class="org.ligoj.bootstrap.core.resource.handler.UnixTimestampParameterHandler" />
+	<bean id="caseInsensitiveEnumInterceptor"  class="org.ligoj.bootstrap.core.resource.handler.CaseInsensitiveEnumInterceptor"/>
+	<bean id="insensitiveEnumParameterHandler"  class="org.ligoj.bootstrap.core.resource.handler.InsensitiveEnumParameterHandler"/>
+
+	<!-- Jettison Provider -->
+	<!-- 
+	<bean id="jettisonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+		<property name="dropRootElement" value="true" />
+		<property name="dropCollectionWrapperElement" value="true" />
+		<property name="serializeAsArray" value="true" />
+		<property name="supportUnwrapped" value="true" />
+		<property name="wrapperMap">
+			<util:map>
+			</util:map>
+		</property>
+		<property name="readXsiType" value="false" />
+		<property name="writeXsiType" value="false" />
+	</bean>
+	-->
+</beans>

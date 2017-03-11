@@ -1,0 +1,240 @@
+package org.ligoj.bootstrap.http.it;
+
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+/**
+ * Common Selenium test class, provides convenient methods to interact with browsers.
+ */
+public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
+
+	/**
+	 * Login to the application with bpraffect login
+	 */
+	protected void login() {
+		getElement(By.id("username-ajax")).clear();
+		getElement(By.id("username-ajax")).sendKeys("bpraffect");
+		getElement(By.id("password-ajax")).clear();
+		getElement(By.id("password-ajax")).sendKeys("bpraffect!#1");
+		getElement(By.id("submit")).click();
+		getElement(By.linkText("Accueil"));
+		getElement(By.linkText("Gestion de la production"));
+	}
+
+	/**
+	 * Login to the application with bpraffect login
+	 */
+	protected void logout() {
+		getElement(By.id("_username")).click();
+		getElement(By.linkText("Déconnexion")).click();
+	}
+
+	/**
+	 * Assert the given URL equals to the given one.
+	 */
+	protected void asserUrl(final String url) {
+		Assert.assertEquals(driver.getCurrentUrl(), url);
+	}
+
+	/**
+	 * Assert that the multiselect select2 have the given selected values.
+	 * 
+	 * @param expectedValues
+	 *            Form [value1, value2, ...] ([] for no selected values)
+	 * @param select2Id
+	 *            Id of the select2
+	 */
+	protected void assertSelect2Values(final String expectedValues, final String select2Id) {
+		Assert.assertEquals(expectedValues, arrayToString(select2GetValues(select2Id)));
+	}
+
+	/**
+	 * Transform a list in a format : [element1,element2]. No element : []
+	 * 
+	 * @param elements
+	 *            Elements
+	 * @return result string
+	 */
+	protected String arrayToString(final List<String> elements) {
+		return ArrayUtils.toString(elements).replace(", ", ",");
+	}
+
+	/**
+	 * Use this method instead of {link assertInputValue} for input which value is set in DOM (mainly forms)
+	 * 
+	 * @param expectedText
+	 *            Expected text
+	 * @param inputId
+	 *            Input Id
+	 */
+	protected void assertDomInputValue(final String expectedText, final String inputId) {
+		new WebDriverWait(driver, 10)
+				.until(d -> expectedText.equals(((JavascriptExecutor) driver).executeScript("return $('#" + inputId + "').val();", "")));
+	}
+
+	/**
+	 * Assert that the given input has the expected text. Warning, don't work for input in a form. For this case use
+	 * {link assertDomInputValue}
+	 * 
+	 * @param expectedText
+	 *            Expected text
+	 * @param by
+	 *            Input location
+	 */
+	protected void assertInputValue(final String expectedText, final By by) {
+		assertElementAttribute(expectedText, by, "value");
+	}
+
+	/**
+	 * Wait for the given cell being in expected error
+	 * 
+	 * @param tableId
+	 *            Id of the field.
+	 * @param expectedError
+	 *            Expected error text (Helper.ERROR_*)
+	 * @param row
+	 *            Table row.
+	 * @param column
+	 *            Table column.
+	 */
+	protected void assertCellError(final String expectedError, final String tableId, final int row, final int column) {
+		new WebDriverWait(driver, 10).until(d -> {
+			try {
+				return driver.findElement(findCell(tableId, row, column)).getAttribute("title").equals(expectedError);
+			} catch (final StaleElementReferenceException ex) {
+				return false;
+			}
+		});
+	}
+
+	/**
+	 * Wait for the given cell having the given text
+	 * 
+	 * @param tableId
+	 *            Id of the field.
+	 * @param expectedText
+	 *            Expected text.
+	 * @param row
+	 *            Table row.
+	 * @param column
+	 *            Table column.
+	 */
+	protected void assertCellText(final String expectedText, final String tableId, final int row, final int column) {
+		new WebDriverWait(driver, 10).until(d -> {
+			try {
+				return getElement(findCell(tableId, row, column)).getText().equals(expectedText);
+			} catch (final StaleElementReferenceException ex) {
+				return false;
+			}
+		});
+	}
+
+	/**
+	 * Wait for the given field being in error
+	 * 
+	 * @param elementId
+	 *            Id of the field
+	 * @param expectedError
+	 *            Expected error text (Helper.ERROR_*)
+	 */
+	protected void assertFieldError(final String expectedError, final String elementId) {
+		new WebDriverWait(driver, 10).until(d -> {
+			try {
+				return driver.findElement(findControlGroup(elementId)).getAttribute("title").equals(expectedError);
+			} catch (final StaleElementReferenceException ex) {
+				return false;
+			}
+		});
+	}
+
+	/**
+	 * Wait for the given element to have the given attribute value
+	 * 
+	 * @param expectedAttributeValue
+	 *            Expected attribute value
+	 * @param by
+	 *            Element location
+	 * @param attribute
+	 *            Attribute to evaluate
+	 */
+	protected void assertElementAttribute(final String expectedAttributeValue, final By by, final String attribute) {
+		new WebDriverWait(driver, 10).until(d -> {
+			final WebElement element = driver.findElement(by);
+			if (element == null) {
+				return false;
+			}
+
+			if (element.getAttribute(attribute) == null) {
+				return expectedAttributeValue == null;
+			}
+
+			return element.getAttribute(attribute).equals(expectedAttributeValue);
+		});
+	}
+
+	/**
+	 * Wait for the given element to have the given text
+	 * 
+	 * @param by
+	 *            Element to wait for
+	 * @param expectedText
+	 *            Waiting value
+	 */
+	protected void assertElementText(final String expectedText, final By by) {
+		new WebDriverWait(driver, 10).until(d -> {
+			try {
+				return driver.findElement(by).getText().equals(expectedText);
+			} catch (final StaleElementReferenceException ex) {
+				return false;
+			}
+		});
+	}
+
+	/**
+	 * Wait for the given element to be hidden on screen
+	 * 
+	 * @param by
+	 *            Element to wait for
+	 */
+	protected void assertElementHidden(final By by) {
+		new WebDriverWait(driver, 10).until(d -> {
+			try {
+				final List<WebElement> elements = driver.findElements(by);
+				for (final WebElement element : elements) {
+					if (element.isDisplayed()) {
+						// At least one element visible
+						return false;
+					}
+				}
+				return true;
+			} catch (final StaleElementReferenceException ex) {
+				return false;
+			}
+		});
+	}
+
+	/**
+	 * Wait for the given table to be empty
+	 * 
+	 * @param tableId
+	 *            Id of the table
+	 */
+	protected void assertTableEmpty(final String tableId) {
+		new WebDriverWait(driver, 10).until(d -> {
+			try {
+				return driver.findElement(By.xpath(DATATABLES_ID + tableId + "']/tbody/tr/td")).getText()
+						.equals("Aucune donnée disponible dans le tableau");
+			} catch (final StaleElementReferenceException ex) {
+				return false;
+			}
+		});
+	}
+
+}

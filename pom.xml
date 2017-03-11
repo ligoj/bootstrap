@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.ligoj.bootstrap</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.6.0-SNAPSHOT</version>
+		<relativePath>parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>root</artifactId>
+	<name>Ligoj - Bootstrap - Root</name>
+	<description>Ligoj Bootstrap JAX-RS architecture.</description>
+	<packaging>pom</packaging>
+	<modules>
+		<module>parent</module>
+		<module>bootstrap-core</module>
+		<module>bootstrap-business</module>
+		<module>bootstrap-business-test</module>
+		<module>bootstrap-business-parent</module>
+		<module>bootstrap-web</module>
+		<module>bootstrap-web-test</module>
+		<module>bootstrap-web-parent</module>
+		<module>bootstrap-launcher</module>
+	</modules>
+</project>

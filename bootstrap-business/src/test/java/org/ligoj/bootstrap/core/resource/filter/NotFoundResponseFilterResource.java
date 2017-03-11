@@ -1,0 +1,55 @@
+package org.ligoj.bootstrap.core.resource.filter;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
+import org.ligoj.bootstrap.core.resource.OnNullReturn404;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * ContainerResponse resource test.
+ */
+@Path("/filter")
+@Slf4j
+public class NotFoundResponseFilterResource {
+
+	/**
+	 * Null result without any response manipulation.
+	 */
+	@GET
+	@Path("null")
+	public String returnNull() {
+		return null;
+	}
+
+	/**
+	 * Null result, should gives a 404.
+	 */
+	@GET
+	@Path("null404")
+	@OnNullReturn404
+	public String returnNull404() {
+		return returnNull();
+	}
+
+	/**
+	 * Null result, should gives a 404 with a specific identifier.
+	 */
+	@GET
+	@Path("null404/{id}")
+	@OnNullReturn404
+	public String returnNull404(@PathParam("id") final int id) {
+		log.info("null404-id : " + id);
+		return returnNull();
+	}
+
+	/**
+	 * Not null result, should gives a 200.
+	 */
+	@GET
+	@Path("not-null")
+	public String returnNotNull() {
+		return "string";
+	}
+}

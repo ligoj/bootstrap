@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd"
+	default-autowire="byName">
+
+	<context:spring-configured />
+	<context:annotation-config />
+	<aop:aspectj-autoproxy />
+
+	<!-- Configuration for encryptor, based on environment variables, system properties or file -->
+	<bean id="environmentVariablesConfiguration" class="org.ligoj.bootstrap.core.crypto.SystemEnvironmentAndFilePBEConfig">
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+		<property name="passwordEnvName" value="APP_CRYPTO_PASSWORD" />
+		<property name="passwordSysPropertyName" value="app.crypto.password" />
+		<property name="passwordFileEnvName" value="APP_CRYPTO_FILE" />
+		<property name="passwordFilePropertyName" value="app.crypto.file" />
+	</bean>
+
+	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="config" ref="environmentVariablesConfiguration" />
+	</bean>
+
+	<bean class="org.ligoj.bootstrap.core.GlobalPropertyUtils">
+		<property name="locations">
+			<list>
+				<!-- This file is maintained by the system administrators -->
+				<value>classpath:admin.confidential.properties</value>
+
+				<!-- This file is updated by the build system -->
+				<value>classpath:maven-buildinfo.properties</value>
+
+				<!-- Various common configurations -->
+				<value>classpath*:application${app-env:}.properties</value>
+			</list>
+		</property>
+		<property name="stringEncryptor" ref="configurationEncryptor" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="systemPropertiesMode" value="2" />
+		<property name="fileEncoding" value="UTF-8" />
+	</bean>
+
+	<bean class="org.ligoj.bootstrap.core.SpringUtils" />
+	<bean class="org.ligoj.bootstrap.core.security.SecurityHelper" />
+	<bean class="org.ligoj.bootstrap.core.crypto.CryptoHelper" />
+	<context:component-scan base-package="org.ligoj.bootstrap.core.csv" />
+</beans>

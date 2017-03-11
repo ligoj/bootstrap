@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="false" name="ECacheDatabase">
+
+	<diskStore path="java.io.tmpdir/ehcachedatabase" />
+
+	<defaultCache eternal="false" maxElementsInMemory="1000" overflowToDisk="false" diskPersistent="false" timeToIdleSeconds="0" timeToLiveSeconds="600"
+		memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="authorizations" maxBytesLocalHeap="25000000"></cache>
+	<cache name="test-cache" maxBytesLocalHeap="2500"></cache>
+
+</ehcache>
