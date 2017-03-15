@@ -8,5 +8,12 @@
 	default-autowire="byName">
 
 	<import resource="classpath:/META-INF/spring/core-context-common.xml" />
+	<bean class="org.ligoj.bootstrap.core.GlobalPropertyUtils">
+		<property name="locations">
+			<list>
+				<value>classpath:test.properties</value>
+			</list>
+		</property>
+	</bean>
 
 </beans>

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -24,8 +25,13 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
  * Check all CSV to/from simple beans of {@link CsvForBean} utility.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/core-context-test.xml")
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 public class CsvForBeanTest {
+
+	@BeforeClass
+	public static void init() {
+		System.setProperty("app.crypto.file", "src/test/resources/security.key");
+	}
 
 	/**
 	 * Rule manager for exception.
@@ -193,8 +199,8 @@ public class CsvForBeanTest {
 	public void toBeanMapNotMapDuplicateKey() throws Exception {
 		thrown.expect(TechnicalException.class);
 		thrown.expectMessage("Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
-		thrown.expectCause(hasMessage(
-				containsString("Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection to java.util.LinkedHashMap")));
+		thrown.expectCause(hasMessage(containsString(
+				"Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection to java.util.LinkedHashMap")));
 		csvForBean.toBean(DummyEntity3.class, new StringReader("login;lastConnection$key1;lastConnection$key1\nfdaugan;value1;value2"));
 	}
 

@@ -42,7 +42,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	 * @param passwordFilename
 	 *            the name of the file name to load.
 	 */
-	private String getPasswordFromFile(final String passwordFilename) {
+	protected String getPasswordFromFile(final String passwordFilename) {
 
 		// Read password from file
 		try {

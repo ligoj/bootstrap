@@ -33,7 +33,7 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
  * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa} utility.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/jpa-context-test-core.xml")
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
 public class CsvForJpaTest {

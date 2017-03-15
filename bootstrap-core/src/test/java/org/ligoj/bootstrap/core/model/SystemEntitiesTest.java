@@ -11,6 +11,7 @@ import org.springframework.data.domain.Auditable;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemBench;
+import org.ligoj.bootstrap.model.system.SystemConfiguration;
 import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
@@ -32,6 +33,7 @@ public class SystemEntitiesTest {
 		testEntity(SystemAuthorization.class);
 		testEntity(SystemDialect.class);
 		testEntity(SystemUserSetting.class);
+		testEntity(SystemConfiguration.class);
 		testEntity(SystemApiToken.class);
 	}
 
