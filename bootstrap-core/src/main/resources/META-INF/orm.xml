@@ -9,5 +9,5 @@
 			</entity-listeners>
 		</persistence-unit-defaults>
 	</persistence-unit-metadata>
-	<package>org.ligoj.bootstrap.model.system</package>
+	<package>org.ligoj.bootstrap.core.model</package>
 </entity-mappings>

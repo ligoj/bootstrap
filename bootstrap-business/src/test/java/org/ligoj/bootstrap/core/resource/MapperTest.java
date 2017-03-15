@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Test;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -19,7 +18,7 @@ public class MapperTest {
 	 * Simulate a serialization issue of thrown exception.
 	 */
 	@Test(expected = TechnicalException.class)
-	public void testSerializationException() throws IllegalAccessException {
+	public void testSerializationException() {
 		final AbstractMapper mapper = new AbstractMapper() {
 
 			@Override
@@ -28,7 +27,7 @@ public class MapperTest {
 			}
 
 		};
-		FieldUtils.getDeclaredField(AbstractMapper.class, "jacksonJsonProvider", true).set(mapper, new JacksonJsonProvider());
+		mapper.jacksonJsonProvider = new JacksonJsonProvider();
 		mapper.toResponse(null, null);
 	}
 

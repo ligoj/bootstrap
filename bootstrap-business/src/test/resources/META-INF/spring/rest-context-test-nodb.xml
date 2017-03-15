@@ -8,7 +8,6 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
 	<import resource="classpath:META-INF/spring/rest-context-common.xml" />
-	<context:component-scan base-package="org.ligoj.bootstrap.core.validation" />
 
 	<jaxrs:server id="restServer" address="/" staticSubresourceResolution="true">
 		<jaxrs:inInterceptors>
@@ -16,7 +15,6 @@
 			<ref bean="validationInInterceptor" />
 		</jaxrs:inInterceptors>
 		<jaxrs:serviceBeans>
-			<bean class="org.ligoj.bootstrap.resource.system.bench.JsonBenchResource" />
 			<bean class="org.ligoj.bootstrap.core.resource.filter.NotFoundResponseFilterResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>

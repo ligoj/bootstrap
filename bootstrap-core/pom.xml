@@ -231,13 +231,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- JSR-919 -->
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>${mail.version}</version>
-		</dependency>
-
 		<!-- JSR-250 -->
 		<dependency>
 			<groupId>javax.annotation</groupId>

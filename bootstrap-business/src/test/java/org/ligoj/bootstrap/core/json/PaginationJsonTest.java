@@ -7,19 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
@@ -28,12 +21,22 @@ import org.ligoj.bootstrap.core.json.jqgrid.UiFilter;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter.FilterOperator;
 import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * JSon pagination test of {@link PaginationJson}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/core-context.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
+@Rollback
+@Transactional
 public class PaginationJsonTest extends AbstractDataGeneratorTest {
 
 	@Autowired
@@ -479,13 +482,17 @@ public class PaginationJsonTest extends AbstractDataGeneratorTest {
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.ECHO, "echo");
 		list.add(new SystemUser());
 		Mockito.when(page.getContent()).thenReturn(list);
+		Mockito.when(page.getTotalElements()).thenReturn(1L);
 		final TableItem<SystemUser> pageRequest = paginationJson.applyPagination(uriInfo, page, Function.identity());
 
 		Assert.assertNotNull(pageRequest);
 		Assert.assertEquals(1, pageRequest.getData().size());
+		Assert.assertEquals(1, pageRequest.getRecordsTotal());
+		Assert.assertEquals(1, pageRequest.getRecordsFiltered());
 		Assert.assertEquals("echo", pageRequest.getDraw());
 		Assert.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
 	}
+
 	/**
 	 * Pagination test without lazy mode.
 	 */

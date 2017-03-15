@@ -8,6 +8,4 @@
 	default-autowire="byName">
 
 	<import resource="classpath:/META-INF/spring/core-context-common.xml" />
-
-	<context:component-scan base-package="org.ligoj.bootstrap.core.json" />
 </beans>

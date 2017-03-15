@@ -1,8 +1,8 @@
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
@@ -14,12 +14,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.ligoj.bootstrap.dao.system.SystemUserSettingRepository;
+import org.ligoj.bootstrap.model.system.AbstractNamedValue;
+import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import org.ligoj.bootstrap.dao.system.SystemUserSettingRepository;
-import org.ligoj.bootstrap.model.system.SystemUserSetting;
 
 /**
  * Manage {@link SystemUserSetting}. User settings are scoped by current user.
@@ -59,11 +59,10 @@ public class UserSettingResource {
 	 * 
 	 * @param login
 	 *            the user login owning the setting.
-	 * @return a specific user's setting. May be <code>null</code>
+	 * @return a specific user's setting. May be <code>null</code>.
 	 */
 	public String findByName(final String login, final String name) {
-		final SystemUserSetting setting = repository.findByLoginAndName(login, name);
-		return setting == null ? null : setting.getValue();
+		return Optional.ofNullable(repository.findByLoginAndName(login, name)).map(SystemUserSetting::getValue).orElse(null);
 	}
 
 	/**
@@ -74,12 +73,7 @@ public class UserSettingResource {
 	 * @return all user's settings.
 	 */
 	public Map<String, Object> findAll(final String login) {
-		final List<SystemUserSetting> settings = repository.findByLogin(login);
-		final Map<String, Object> result = new HashMap<>();
-		for (final SystemUserSetting setting : settings) {
-			result.put(setting.getName(), setting.getValue());
-		}
-		return result;
+		return repository.findByLogin(login).stream().collect(Collectors.toMap(AbstractNamedValue::getName, AbstractNamedValue::getValue));
 	}
 
 	/**
@@ -88,7 +82,7 @@ public class UserSettingResource {
 	 * @param name
 	 *            the setting name.
 	 * @param value
-	 *            the initial value.
+	 *            the new value.
 	 */
 	@POST
 	@PUT
@@ -98,7 +92,7 @@ public class UserSettingResource {
 		final SystemUserSetting setting = repository.findByLoginAndName(user, name);
 		if (setting == null) {
 			final SystemUserSetting entity = new SystemUserSetting();
-			entity.setLogin(SecurityContextHolder.getContext().getAuthentication().getName());
+			entity.setLogin(user);
 			entity.setName(name);
 			entity.setValue(value);
 			repository.saveAndFlush(entity);
@@ -108,15 +102,15 @@ public class UserSettingResource {
 	}
 
 	/**
-	 * Delete an {@link SystemUserSetting}
+	 * Delete a {@link SystemUserSetting}
 	 * 
 	 * @param name
-	 *            the user setting name to update.
+	 *            the user setting name to delete.
 	 */
 	@DELETE
 	@Path("{name}")
 	public void delete(@PathParam("name") final String name) {
-		repository.delete(name, SecurityContextHolder.getContext().getAuthentication().getName());
+		repository.delete(SecurityContextHolder.getContext().getAuthentication().getName(), name);
 	}
 
 }

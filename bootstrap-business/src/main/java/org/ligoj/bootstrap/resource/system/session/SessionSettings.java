@@ -24,12 +24,6 @@ public class SessionSettings {
 	/**
 	 * Session identifier of current user.
 	 */
-	@Value("#{T(org.springframework.web.context.request.RequestContextHolder).getRequestAttributes().getSessionId()}")
-	private String sessionId;
-
-	/**
-	 * Session identifier of current user.
-	 */
 	@Autowired
 	private ApplicationSettings applicationSettings;
 

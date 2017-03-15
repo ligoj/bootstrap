@@ -1,110 +1,102 @@
 package org.ligoj.bootstrap.core.resource.filter;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.lang.annotation.Annotation;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.eclipse.jetty.server.Server;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
+
 import org.junit.Test;
+import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.resource.OnNullReturn404;
+import org.ligoj.bootstrap.core.resource.TechnicalException;
+import org.mockito.Mockito;
+import org.mockito.internal.verification.VerificationModeFactory;
 
-import org.ligoj.bootstrap.AbstractRestTest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * ContainerResponseFilter resource test, includes {@link NotFoundResponseFilter}
  */
-public class NotFoundResponseFilterTest extends AbstractRestTest {
+public class NotFoundResponseFilterTest {
 
-	/**
-	 * URI
-	 */
-	private static final String RESOURCE = "/filter";
+	private NotFoundResponseFilter filter = new NotFoundResponseFilter() {
+		@Override
+		protected Object toEntity(final Object object) {
+			try {
+				return new ObjectMapper().writeValueAsString(object);
+			} catch (final JsonProcessingException e) {
+				// Ignore this error at UI level but trace it
+				throw new TechnicalException("Unable to build a JSON string from a server error", e);
+			}
+		}
+	};
 
-	/**
-	 * Remote REST server.
-	 */
-	private static Server server;
+	@Test
+	public void filterOk() {
+		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+		Mockito.when(responseContext.getStatus()).thenReturn(200);
+		filter.filter(null, responseContext);
+	}
 
-	/**
-	 * server creation.
-	 */
-	@BeforeClass
-	public static void startServer() {
-		server = new NotFoundResponseFilterTest().startRestServer("./src/test/resources/WEB-INF/web-test-nodb.xml");
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void filter404SingleParameter() {
+		final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+		Mockito.when(responseContext.getStatus()).thenReturn(204);
+		final Annotation anno1 = Mockito.mock(Annotation.class);
+		final Annotation anno2 = Mockito.mock(Annotation.class);
+		final Annotation[] annotations = new Annotation[] { anno1, anno2 };
+		Mockito.when((Class) anno2.annotationType()).thenReturn(OnNullReturn404.class);
+		Mockito.when(responseContext.getEntityAnnotations()).thenReturn(annotations);
+
+		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
+		final MultivaluedMap<String, String> parameters = new MultivaluedHashMap<>();
+		parameters.putSingle("id", "2000");
+
+		Mockito.when(uriInfo.getPathParameters()).thenReturn(parameters);
+		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce()).setStatus(404);
+		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce()).setEntity(
+				"{\"code\":\"entity\",\"message\":\"2000\",\"parameters\":null,\"cause\":null}", annotations, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 	@Test
-	public void testReturnNull() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/null");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
-			Assert.assertNull(response.getEntity());
-		} finally {
-			if (response != null && response.getEntity() != null) {
-				response.getEntity().getContent().close();
-			}
-		}
+	public void filterNoAnnotation() {
+		final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+		Mockito.when(responseContext.getStatus()).thenReturn(204);
+		final Annotation[] annotations = new Annotation[] {};
+		Mockito.when(responseContext.getEntityAnnotations()).thenReturn(annotations);
+		filter.filter(requestContext, responseContext);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
-	public void testReturnNull404() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
-			Assert.assertEquals("{\"code\":\"data\"}", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
-		} finally {
-			if (response != null && response.getEntity() != null) {
-				response.getEntity().getContent().close();
-			}
-		}
+	public void filter404NoParameter() {
+		final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+		Mockito.when(responseContext.getStatus()).thenReturn(204);
+		final Annotation anno1 = Mockito.mock(Annotation.class);
+		final Annotation anno2 = Mockito.mock(Annotation.class);
+		final Annotation[] annotations = new Annotation[] { anno1, anno2 };
+		Mockito.when((Class) anno2.annotationType()).thenReturn(OnNullReturn404.class);
+		Mockito.when(responseContext.getEntityAnnotations()).thenReturn(annotations);
+
+		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
+		final MultivaluedMap<String, String> parameters = new MultivaluedHashMap<>();
+
+		Mockito.when(uriInfo.getPathParameters()).thenReturn(parameters);
+		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
+		filter.filter(requestContext, responseContext);
+		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce()).setStatus(404);
+		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce())
+				.setEntity("{\"code\":\"data\",\"message\":null,\"parameters\":null,\"cause\":null}", annotations, MediaType.APPLICATION_JSON_TYPE);
 	}
 
-	@Test
-	public void testReturnNull404Id() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404/789");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
-			Assert.assertEquals("{\"code\":\"entity\",\"message\":\"789\"}",
-					IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
-		} finally {
-			if (response != null && response.getEntity() != null) {
-				response.getEntity().getContent().close();
-			}
-		}
-	}
-
-	@Test
-	public void testReturnNotNull() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/not-null");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertEquals("string", content);
-		} finally {
-			if (response != null) {
-				response.getEntity().getContent().close();
-			}
-		}
-	}
-
-	/**
-	 * shutdown server
-	 */
-	@AfterClass
-	public static void tearDown() throws Exception {
-		server.stop();
-	}
 }

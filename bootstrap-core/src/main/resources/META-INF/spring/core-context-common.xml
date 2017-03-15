@@ -9,6 +9,7 @@
 
 	<context:spring-configured />
 	<context:annotation-config />
+	<context:component-scan base-package="org.ligoj.bootstrap" />
 	<aop:aspectj-autoproxy />
 
 	<!-- Configuration for encryptor, based on environment variables, system properties or file -->
@@ -47,5 +48,4 @@
 	<bean class="org.ligoj.bootstrap.core.SpringUtils" />
 	<bean class="org.ligoj.bootstrap.core.security.SecurityHelper" />
 	<bean class="org.ligoj.bootstrap.core.crypto.CryptoHelper" />
-	<context:component-scan base-package="org.ligoj.bootstrap.core.csv" />
 </beans>

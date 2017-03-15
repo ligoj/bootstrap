@@ -34,7 +34,7 @@ import org.ligoj.bootstrap.core.json.ObjectMapper;
 /**
  * CRUD Integration REST tests.
  */
-public class CrudRestTest extends AbstractRestTest {
+public class CrudRestIT extends AbstractRestTest {
 
 	/**
 	 * URI
@@ -59,7 +59,7 @@ public class CrudRestTest extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new CrudRestTest().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
+		server = new CrudRestIT().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
 	}
 
 	/**

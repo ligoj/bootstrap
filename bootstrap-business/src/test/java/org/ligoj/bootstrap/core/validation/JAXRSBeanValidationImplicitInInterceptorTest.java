@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotNull;
@@ -25,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.ClassUtils;
@@ -35,7 +37,9 @@ import org.ligoj.bootstrap.model.system.SystemUser;
  * {@link JAXRSBeanValidationImplicitInInterceptor} checks.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/core-context.xml", "classpath:/META-INF/spring/rest-context-test-nodb.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
+@Rollback
+@Transactional
 public class JAXRSBeanValidationImplicitInInterceptorTest {
 
 	@Autowired
@@ -58,7 +62,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest {
 		public void object(final Object param) {
 			//
 		}
-		
+
 		public void multipart(@Multipart final Object param) {
 			//
 		}

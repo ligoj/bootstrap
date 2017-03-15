@@ -12,9 +12,6 @@
 
 	<context:spring-configured />
 	<context:annotation-config />
-	<aop:aspectj-autoproxy />
-
-	<context:component-scan base-package="org.ligoj.bootstrap.core.dao.csv" />
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory"
 		primary="true" />

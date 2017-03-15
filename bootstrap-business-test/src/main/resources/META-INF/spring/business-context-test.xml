@@ -3,7 +3,4 @@
 	xsi:schemaLocation="
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 	<import resource="classpath*:/META-INF/spring/business-context-common.xml" />
-	<bean id="mailSender" class="org.mockito.Mockito" factory-method="mock"> 
-	    <constructor-arg value="org.springframework.mail.javamail.JavaMailSenderImpl" /> 
-	</bean> 
 </beans>

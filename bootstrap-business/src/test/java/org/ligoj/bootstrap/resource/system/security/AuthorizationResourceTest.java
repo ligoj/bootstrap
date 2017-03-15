@@ -29,7 +29,7 @@ import org.ligoj.bootstrap.resource.system.cache.CacheResource;
  * Test class of {@link AuthorizationResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
 public class AuthorizationResourceTest extends AbstractJpaTest {

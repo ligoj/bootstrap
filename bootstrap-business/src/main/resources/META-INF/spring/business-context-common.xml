@@ -9,11 +9,7 @@
 			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd"
 	default-autowire="byName">
 
-	<context:component-scan base-package="org.ligoj.bootstrap.resource" />
-	<context:component-scan base-package="org.ligoj.bootstrap.core.csv" />
-	<context:component-scan base-package="org.ligoj.bootstrap.core.validation" />
-
 	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache" />
-	<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="classpath:ehcache.xml" />
+	<bean id="ehcache" class="org.ligoj.bootstrap.resource.system.cache.MergedEhCacheManagerFactoryBean" p:config-location="classpath*:ehcache.xml"/>
 	<cache:annotation-driven proxy-target-class="true" />
 </beans>

@@ -2,16 +2,23 @@ package org.ligoj.bootstrap.resource.system.session;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
-import org.junit.After;
+import javax.transaction.Transactional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
+import org.ligoj.bootstrap.AbstractJpaTest;
+import org.ligoj.bootstrap.model.system.SystemAuthorization;
+import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
+import org.ligoj.bootstrap.model.system.SystemRole;
+import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
+import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.model.system.SystemUserSetting;
+import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
@@ -21,24 +28,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import org.ligoj.bootstrap.AbstractJpaTest;
-import org.ligoj.bootstrap.core.SpringUtils;
-import org.ligoj.bootstrap.model.system.SystemAuthorization;
-import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
-import org.ligoj.bootstrap.model.system.SystemUser;
-import org.ligoj.bootstrap.model.system.SystemUserSetting;
-import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 
 /**
  * {@link SessionResource} test class.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/security-context-test.xml",
-		"classpath:/META-INF/spring/business-context-test.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
 public class SessionResourceTest extends AbstractJpaTest {
@@ -46,33 +41,30 @@ public class SessionResourceTest extends AbstractJpaTest {
 	@Autowired
 	private CacheResource cacheResource;
 
-	/**
-	 * Remote REST server.
-	 */
-	@Autowired
 	private SessionResource resource;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void mockApplicationContext() {
-		final ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
-		SpringUtils.setSharedApplicationContext(applicationContext);
-		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(new SessionSettings());
-		Mockito.when(applicationContext.getBean(ArgumentMatchers.any(Class.class))).thenAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(final InvocationOnMock invocation) {
-				final Class<?> requiredType = (Class<Object>) invocation.getArguments()[0];
-				if (requiredType == SessionSettings.class) {
-					return new SessionSettings();
-				}
-				return SessionResourceTest.super.applicationContext.getBean(requiredType);
-			}
-		});
+		resource = new SessionResource();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
+		final SessionSettings settings = new SessionSettings();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
+		ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+		resource.applicationContext = applicationContext;
+		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
+		final ISessionSettingsProvider provider = Mockito.mock(ISessionSettingsProvider.class);
+		Mockito.when(resource.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
+				.thenReturn(Collections.singletonMap("provider", provider));
 	}
 
-	@After
-	public void unmockApplicationContext() {
-		SpringUtils.setSharedApplicationContext(super.applicationContext);
+	@Test
+	public void getUserSettings() {
+		final SessionSettings settings = resource.applicationContext.getBean(SessionSettings.class);
+		Assert.assertEquals(DEFAULT_USER, settings.getUserName());
+		final ApplicationSettings applicationSettings = settings.getApplicationSettings();
+		Assert.assertNotNull(applicationSettings.getBuildNumber());
+		Assert.assertNotNull(applicationSettings.getBuildTimestamp());
+		Assert.assertNotNull(applicationSettings.getBuildVersion());
 	}
 
 	/**
@@ -80,7 +72,7 @@ public class SessionResourceTest extends AbstractJpaTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void testReadUserSettings() {
+	public void detailsUserSettings() {
 		final SystemUser user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);

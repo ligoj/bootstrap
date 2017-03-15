@@ -14,7 +14,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 public abstract class AbstractMapper {
 
 	@Autowired
-	private JacksonJsonProvider jacksonJsonProvider;
+	protected JacksonJsonProvider jacksonJsonProvider;
 
 	/**
 	 * Writes a JSON string corresponding to the given error to a {@link Response}.

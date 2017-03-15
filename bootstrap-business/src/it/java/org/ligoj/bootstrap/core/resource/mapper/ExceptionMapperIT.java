@@ -27,7 +27,7 @@ import org.ligoj.bootstrap.core.resource.BusinessException;
 /**
  * Exception mapper test using {@link ExceptionMapperResource}
  */
-public class ExceptionMapperTest extends AbstractRestTest {
+public class ExceptionMapperIT extends AbstractRestTest {
 
 	/**
 	 * URI
@@ -44,7 +44,7 @@ public class ExceptionMapperTest extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new ExceptionMapperTest().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
+		server = new ExceptionMapperIT().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
 	}
 
 	/**

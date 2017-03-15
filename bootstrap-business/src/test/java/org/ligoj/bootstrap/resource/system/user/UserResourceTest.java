@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Collections;
+
 import javax.transaction.Transactional;
 
 import org.ligoj.bootstrap.AbstractJpaTest;
@@ -62,7 +65,7 @@ public class UserResourceTest extends AbstractJpaTest {
 	 * Find all users, without using explicit paging feature.
 	 */
 	@Test
-	public void testFindAll() {
+	public void findAll() {
 		final UriInfo uriInfo = newUriInfo();
 		final TableItem<String> users = resource.findAll(uriInfo);
 		Assert.assertEquals(1, users.getData().size());
@@ -70,7 +73,7 @@ public class UserResourceTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void testFindAllWithRoles() {
+	public void findAllWithRoles() {
 		final UriInfo uriInfo = newUriInfo();
 		final TableItem<SystemUserVo> users = resource.findAllWithRoles(uriInfo);
 		Assert.assertEquals(1, users.getData().size());
@@ -79,12 +82,12 @@ public class UserResourceTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void testCreate() {
+	public void create() {
 		resource.create(newUser());
 	}
 
 	@Test
-	public void testUpdate() {
+	public void update() {
 		// remove role
 		final SystemUserEditionVo userVo = defaultUser();
 		resource.update(userVo);
@@ -114,7 +117,7 @@ public class UserResourceTest extends AbstractJpaTest {
 	 * Check the user conversion.
 	 */
 	@Test
-	public void testFind() {
+	public void findById() {
 		final SystemUser userDto = resource.findById(DEFAULT_USER);
 		Assert.assertNotNull(userDto);
 		Assert.assertEquals(DEFAULT_USER, userDto.getLogin());
@@ -124,7 +127,7 @@ public class UserResourceTest extends AbstractJpaTest {
 	 * Check the user deletion.
 	 */
 	@Test
-	public void testDelete() {
+	public void delete() {
 		resource.delete(DEFAULT_USER);
 	}
 
@@ -134,7 +137,7 @@ public class UserResourceTest extends AbstractJpaTest {
 	private SystemUserEditionVo newUser() {
 		final SystemUserEditionVo userVo = new SystemUserEditionVo();
 		userVo.setLogin("fdaugan");
-		userVo.getRoles().add(defaultRoleId);
+		userVo.setRoles(Collections.singletonList(defaultRoleId));
 		return userVo;
 	}
 

@@ -19,7 +19,7 @@
 	<bean class="org.ligoj.bootstrap.core.security.AuditorStringAwareImpl" id="auditorAware" />
 	<context:component-scan base-package="org.ligoj.bootstrap.core.dao" />
 	<context:component-scan base-package="org.ligoj.bootstrap.dao.system.impl" />
-	<jpa:repositories base-package="org.ligoj.bootstrap.dao" factory-class="org.ligoj.bootstrap.core.dao.RestRepositoryFactoryBean" />
+	<jpa:repositories base-package="org.ligoj" factory-class="org.ligoj.bootstrap.core.dao.RestRepositoryFactoryBean" />
 	<bean id="abstract-entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" p:persistenceUnitName="pu" abstract="true">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter">

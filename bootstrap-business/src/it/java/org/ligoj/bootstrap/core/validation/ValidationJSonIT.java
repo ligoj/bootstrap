@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -18,18 +20,29 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ligoj.bootstrap.AbstractRestTest;
+import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.ligoj.bootstrap.AbstractRestTest;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Test validation filter management.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/core-context.xml" })
-public class ValidationJSonTest extends AbstractRestTest {
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
+@Rollback
+@Transactional
+@Slf4j
+public class ValidationJSonIT extends AbstractRestTest {
+
+	private static final String RULE = "rule";
+
+	private static final String PARAMETERS2 = "parameters";
+
+	private static final String ACCEPT_LANGUAGE = "Accept-Language";
 
 	/**
 	 * URI
@@ -46,7 +59,7 @@ public class ValidationJSonTest extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new ValidationJSonTest().startRestServer("./src/test/resources/WEB-INF/web-test-validation.xml");
+		server = new ValidationJSonIT().startRestServer("./src/test/resources/WEB-INF/web-test-validation.xml");
 	}
 
 	@Test
@@ -71,7 +84,7 @@ public class ValidationJSonTest extends AbstractRestTest {
 	public void testValidationFilterFailedNull() throws IOException {
 		final HttpPost httppost = new HttpPost(BASE_URI + RESOURCE);
 		httppost.setHeader("Content-Type", "application/json");
-		httppost.setHeader("Accept-Language", "EN");
+		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
 		Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 		final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
@@ -84,12 +97,11 @@ public class ValidationJSonTest extends AbstractRestTest {
 		final Map<String, List<Map<String, Object>>> errors = result.get("errors");
 		Assert.assertNotNull(errors);
 		Assert.assertEquals(1, errors.size());
-		System.out.println("### ENTRY ####"+errors.keySet().iterator().next());
-		System.err.println("### ENTRY ####"+errors.keySet().iterator().next());
+		log.info("### ENTRY ####" + errors.keySet().iterator().next());
 		Assert.assertNotNull(errors.get("wine"));
 		Assert.assertEquals(1, ((List<?>) errors.get("wine")).size());
 		Assert.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).size());
-		Assert.assertEquals(((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).get("rule"), "NotNull");
+		Assert.assertEquals(((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).get(RULE), "NotNull");
 	}
 
 	@Test
@@ -97,17 +109,17 @@ public class ValidationJSonTest extends AbstractRestTest {
 		final HttpPost httppost = new HttpPost(BASE_URI + RESOURCE);
 		httppost.setEntity(new StringEntity("{\"name\":\"" + "JunitJunitJunitJunitJunitJunitJunitJunitJunitJunit2\",\"year\":1000}",
 				ContentType.APPLICATION_JSON));
-		httppost.setHeader("Accept-Language", "EN");
+		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
 		final List<Map<String, Object>> checkResponse = checkResponse(response);
 		for (final Map<String, Object> error : checkResponse) {
-			if (error.get("rule").equals("Length")) {
-				final Map<?, ?> parameters = (Map<?, ?>) error.get("parameters");
+			if (error.get(RULE).equals("Length")) {
+				final Map<?, ?> parameters = (Map<?, ?>) error.get(PARAMETERS2);
 				Assert.assertEquals(2, parameters.size());
 				Assert.assertEquals(0, parameters.get("min"));
 				Assert.assertEquals(50, parameters.get("max"));
-			} else if (error.get("rule").equals("UpperCase")) {
-				Assert.assertNull(error.get("parameters"));
+			} else if (error.get(RULE).equals("UpperCase")) {
+				Assert.assertNull(error.get(PARAMETERS2));
 			} else {
 				Assert.fail("Unexpected error");
 			}
@@ -118,7 +130,7 @@ public class ValidationJSonTest extends AbstractRestTest {
 	public void testInvalidFormatInteger() throws IOException {
 		final HttpPost httppost = new HttpPost(BASE_URI + RESOURCE);
 		httppost.setEntity(new StringEntity("{\"name\":\"" + "Junit2\",\"year\":\"A\"}", ContentType.APPLICATION_JSON));
-		httppost.setHeader("Accept-Language", "EN");
+		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
 		try {
 			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
@@ -136,8 +148,8 @@ public class ValidationJSonTest extends AbstractRestTest {
 			Assert.assertEquals(1, errorsOnYear.size());
 
 			final Map<String, Object> errorOnYear = errorsOnYear.get(0);
-			Assert.assertEquals("Integer", errorOnYear.get("rule"));
-			Assert.assertNull(errorOnYear.get("parameters"));
+			Assert.assertEquals("Integer", errorOnYear.get(RULE));
+			Assert.assertNull(errorOnYear.get(PARAMETERS2));
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -147,7 +159,7 @@ public class ValidationJSonTest extends AbstractRestTest {
 	public void testInvalidFormatDate() throws IOException {
 		final HttpPost httppost = new HttpPost(BASE_URI + RESOURCE);
 		httppost.setEntity(new StringEntity("{\"name\":\"" + "Junit2\",\"date\":\"A\"}", ContentType.APPLICATION_JSON));
-		httppost.setHeader("Accept-Language", "EN");
+		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
 		try {
 			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
@@ -165,8 +177,8 @@ public class ValidationJSonTest extends AbstractRestTest {
 			Assert.assertEquals(1, errorsOnYear.size());
 
 			final Map<String, Object> errorOnYear = errorsOnYear.get(0);
-			Assert.assertEquals("Date", errorOnYear.get("rule"));
-			Assert.assertNull(errorOnYear.get("parameters"));
+			Assert.assertEquals("Date", errorOnYear.get(RULE));
+			Assert.assertNull(errorOnYear.get(PARAMETERS2));
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -178,18 +190,18 @@ public class ValidationJSonTest extends AbstractRestTest {
 		httppost.setEntity(new StringEntity("{\"name\":\"" + "JunitJunitJunitJunitJunitJunitJunitJunitJunitJunit2\",\"year\":1000}",
 				ContentType.APPLICATION_JSON));
 		// Fix ATD-134
-		httppost.setHeader("Accept-Language", "FR");
+		httppost.setHeader(ACCEPT_LANGUAGE, "FR");
 		httppost.setHeader("Accept-Charset", "utf-8");
 		final HttpResponse response = httpclient.execute(httppost);
 		final List<Map<String, Object>> checkResponse = checkResponse(response);
 		for (final Map<String, Object> error : checkResponse) {
-			if (error.get("rule").equals("Length")) {
-				final Map<?, ?> parameters = (Map<?, ?>) error.get("parameters");
+			if (error.get(RULE).equals("Length")) {
+				final Map<?, ?> parameters = (Map<?, ?>) error.get(PARAMETERS2);
 				Assert.assertEquals(2, parameters.size());
 				Assert.assertEquals(0, parameters.get("min"));
 				Assert.assertEquals(50, parameters.get("max"));
-			} else if (error.get("rule").equals("UpperCase")) {
-				Assert.assertNull(error.get("parameters"));
+			} else if (error.get(RULE).equals("UpperCase")) {
+				Assert.assertNull(error.get(PARAMETERS2));
 			} else {
 				Assert.fail("Unexpected error");
 			}

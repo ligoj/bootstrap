@@ -34,7 +34,7 @@ import org.ligoj.bootstrap.resource.system.user.UserResource;
  * Spring Security configuration and {@link SessionResource} access from REST interface.
  */
 @FixMethodOrder(MethodSorters.JVM)
-public class SessionResourceRestTest extends AbstractRestTest {
+public class SessionResourceRestIT extends AbstractRestTest {
 
 	/**
 	 * URI
@@ -58,7 +58,7 @@ public class SessionResourceRestTest extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new SessionResourceRestTest().startRestServer("./src/test/resources/WEB-INF/web-test-security.xml");
+		server = new SessionResourceRestIT().startRestServer("./src/test/resources/WEB-INF/web-test-security.xml");
 	}
 
 	/**

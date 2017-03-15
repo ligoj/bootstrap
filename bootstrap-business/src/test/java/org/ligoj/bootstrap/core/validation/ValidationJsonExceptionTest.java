@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import org.ligoj.bootstrap.core.json.ObjectMapper;
 import lombok.Getter;
@@ -52,6 +54,17 @@ public class ValidationJsonExceptionTest {
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
 		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
 		Assert.assertEquals("{property2.property=[{rule=String}]}", validationJsonException.getErrors().toString());
+	}
+
+	@Test
+	public void testUnrecognizedPropertyException() {
+		final UnrecognizedPropertyException format = new UnrecognizedPropertyException(null, "", null, String.class, "property",
+				Collections.emptyList());
+		format.prependPath(null, "property");
+		format.prependPath("property", "property2");
+		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
+		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assert.assertEquals("{property2.property=[{rule=Mapping}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Test
@@ -203,6 +216,29 @@ public class ValidationJsonExceptionTest {
 		final ValidationJsonException validationJsonException = new ValidationJsonException(violationException);
 		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
 		Assert.assertEquals("{name=[{rule=name-Empty}, {rule=name-length, parameters={min=0, max=50}}], grapes=[{rule=grapes-Empty}]}",
+				validationJsonException.getErrors().toString());
+	}
+
+	@Test
+	public void testConstraintViolationExceptionParameter() {
+		final Wine bean = new Wine();
+		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
+
+		final ConstraintHelper helper = new ConstraintHelper();
+
+		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
+				getAnnotation("name", NotEmpty.class), ElementType.FIELD);
+		PathImpl path = PathImpl.createPathFromString("name");
+		violations.add(ConstraintViolationImpl.<Wine> forParameterValidation("name-Empty", null, "interpolated", Wine.class, bean, new Object(),
+				"value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null, null));
+		path.addParameterNode("parameter1",0);
+
+		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
+		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
+
+		final ValidationJsonException validationJsonException = new ValidationJsonException(violationException);
+		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assert.assertEquals("{parameter1=[{rule=name-Empty}]}",
 				validationJsonException.getErrors().toString());
 	}
 }

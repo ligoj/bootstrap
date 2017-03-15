@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
@@ -27,8 +28,9 @@ import org.ligoj.bootstrap.dao.system.BenchResult;
  * Test class of {@link JpaBenchResource}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
+@Transactional
 public class JpaBenchResourceTest extends AbstractSecurityTest {
 
 	/**

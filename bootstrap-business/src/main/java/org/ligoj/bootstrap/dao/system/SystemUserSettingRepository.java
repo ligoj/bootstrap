@@ -2,12 +2,10 @@ package org.ligoj.bootstrap.dao.system;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import org.ligoj.bootstrap.core.dao.RestRepository;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * User Settings repository.
@@ -18,7 +16,7 @@ public interface SystemUserSettingRepository extends RestRepository<SystemUserSe
 	 * Return user settings.
 	 * 
 	 * @param user
-	 *            user login.
+	 *            User login.
 	 * @return {@link SystemUserSetting} list.
 	 */
 	List<SystemUserSetting> findByLogin(String login);
@@ -27,23 +25,23 @@ public interface SystemUserSettingRepository extends RestRepository<SystemUserSe
 	 * Return user settings.
 	 * 
 	 * @param user
-	 *            user login.
+	 *            User login.
 	 * @param name
-	 *            the setting name.
+	 *            The setting name.
 	 * @return {@link SystemUserSetting}, may be <code>null</code>.
 	 */
 	SystemUserSetting findByLoginAndName(String login, String name);
 
 	/**
-	 * Delete a setting.
+	 * Delete a user setting.
 	 * 
-	 * @param name
-	 *            setting name.
 	 * @param login
-	 *            user login.
+	 *            User login.
+	 * @param name
+	 *            Setting name.
 	 */
 	@Query("DELETE SystemUserSetting WHERE login=:login AND name=:name")
 	@Modifying
-	void delete(@Param("name") String name, @Param("login") String login);
+	void delete(String login, String name);
 
 }

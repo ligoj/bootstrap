@@ -1,21 +1,24 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
+import javax.transaction.Transactional;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ligoj.bootstrap.AbstractSecurityTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
 
-import org.ligoj.bootstrap.AbstractSecurityTest;
+import net.sf.ehcache.CacheManager;
 
 /**
  * Test class of {@link CacheResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
 public class CacheResourceTest extends AbstractSecurityTest {
@@ -25,6 +28,11 @@ public class CacheResourceTest extends AbstractSecurityTest {
 
 	@Autowired
 	private DummyCacheBean dummyCacheBean;
+
+	@Before
+	public void cleanCache() {
+		CacheManager.getInstance().getCache("test-cache").removeAll();
+	}
 
 	@Test
 	public void invalidate() {
@@ -45,14 +53,8 @@ public class CacheResourceTest extends AbstractSecurityTest {
 		dummyCacheBean.getHit();
 		cacheResource.invalidate("test-cache");
 		dummyCacheBean.getHit();
-		Assert.assertEquals(2, cacheResource.getCaches().size());
-		for (final CacheStatistics cache : cacheResource.getCaches()) {
-			if (cache.getName().equals("test-cache")) {
-				assertCache(cache);
-				return;
-			}
-		}
-		Assert.fail("'test-cache' cache not found");
+		Assert.assertTrue(cacheResource.getCaches().size() >= 1);
+		Assert.assertTrue(cacheResource.getCaches().stream().filter(c -> "test-cache".equals(c.getName())).anyMatch(this::assertCache));
 	}
 
 	@Test
@@ -63,7 +65,7 @@ public class CacheResourceTest extends AbstractSecurityTest {
 		assertCache(cacheResource.getCache("test-cache"));
 	}
 
-	private void assertCache(final CacheStatistics cache) {
+	private boolean assertCache(final CacheStatistics cache) {
 		Assert.assertEquals("test-cache", cache.getName());
 		Assert.assertNotNull(cache.getId());
 		Assert.assertTrue(cache.getBytes() > 0);
@@ -71,5 +73,6 @@ public class CacheResourceTest extends AbstractSecurityTest {
 		Assert.assertTrue(cache.getMissCount() >= 1);
 		Assert.assertTrue(cache.getOffHeapBytes() == 0);
 		Assert.assertTrue(cache.getSize() == 1);
+		return true;
 	}
 }

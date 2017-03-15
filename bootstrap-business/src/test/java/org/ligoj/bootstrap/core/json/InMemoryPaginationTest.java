@@ -3,12 +3,14 @@ package org.ligoj.bootstrap.core.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,7 +21,9 @@ import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
  * JSon pagination test of {@link InMemoryPagination}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/core-context.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
+@Rollback
+@Transactional
 public class InMemoryPaginationTest extends AbstractDataGeneratorTest {
 
 	private InMemoryPagination inMemoryPagination;

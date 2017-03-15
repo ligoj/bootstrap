@@ -7,27 +7,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.factory.InitializingBean;
+import org.ligoj.bootstrap.dao.system.SystemUserRepository;
+import org.ligoj.bootstrap.model.system.SystemRole;
+import org.ligoj.bootstrap.model.system.SystemUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import org.ligoj.bootstrap.core.SpringUtils;
-import org.ligoj.bootstrap.dao.system.SystemUserRepository;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.model.system.SystemUser;
-
 /**
  * Basic user details service.
  */
 @Component
-public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService, InitializingBean {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
 	/**
 	 * User repository.
 	 */
+	@Autowired
 	private SystemUserRepository userRepository;
 
 	@Override
@@ -76,11 +75,6 @@ public class UserDetailsService implements org.springframework.security.core.use
 			}
 		}
 		return result;
-	}
-
-	@Override
-	public void afterPropertiesSet() {
-		userRepository = SpringUtils.getBean(SystemUserRepository.class);
 	}
 
 }
