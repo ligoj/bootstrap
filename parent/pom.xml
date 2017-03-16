@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.ligoj.parent</groupId>
 		<artifactId>project</artifactId>
-		<version>4.5.0</version>
+		<version>4.5.1</version>
 		<relativePath />
 	</parent>
 
@@ -21,18 +21,23 @@
 		<developerConnection>scm:git:https://github.com/ligoj/bootstrap.git</developerConnection>
 		<url>https://github.com/ligoj/bootstrap</url>
 	</scm>
-	<issueManagement>
-		<url>https://github.com/ligoj/bootstrap/issues</url>
-		<system>GitHub Issues</system>
-	</issueManagement>
 	<packaging>pom</packaging>
 	<organization>
 		<name>Gfi Informatique</name>
 		<url>http://www.gfi.fr</url>
 	</organization>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/ligoj/bootstrap/issues</url>
+	</issueManagement>
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/ligoj/bootstrap</url>
+  </ciManagement>
 
 	<properties>
 		<bootstrap.version>1.6.0-SNAPSHOT</bootstrap.version>
+    <gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.8.10</aspectj.version>
