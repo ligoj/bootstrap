@@ -1,6 +1,6 @@
 ﻿language: java
 sudo: false
-install: /bin/true
+install: true
 env:
   - TARGET=BUILD
 #script: "./travis.sh"
