@@ -1,9 +1,10 @@
 ﻿language: java
 sudo: false
-install: true
+install: /bin/true
 env:
   - TARGET=BUILD
-script: "./travis.sh"
+#script: "./travis.sh"
+script: mvn clean
 before_cache:
   # remove all the artifacts (JAR, ZIP) that are installed in local repo because of mvn deploy
   - rm -rf $HOME/.m2/repository/org/ligoj/bootstrap
