@@ -21,10 +21,7 @@ addons:
     organization: ligoj-github
     token:
       secure: AXmSwSDt3YldyTliNJmTuPEedMxig6Soigv/zyRV3rqDGNES/a+5JRET5biMrI4p9KvNX3TNMxSCl28mwFk6CZGDTmzpcU26699hj9EDuIMHcHsPDNIDDWYz+XwW++uDm+dzh1fFevhV9e4XPXMzH0Lk0+YMENEO/swGSEb0WaYk9302BpEP/N9aWbd4hqf2ofuvYYe5iTfzi5gaktjqMzRN6TPlXSatditplSzTHkIhzUJXML0EUk1IgXge7XYabUmK72U3jcihf19blyxMIZ9GREIQ59N2Gw1Bnf04hbLFmypMnfPBKGJimFP7MVfJ+qF5DjYewafvXuPY5rYRNTAPizifX6P2/5tMyw2YgPJxLxnsUqUR3BgE7FmN+lJ1zU7v6cW5MlSmtfGSXvGCU7q6UZevAgaYpsF2SvOtnQf7OV1A54TdYu8h+KNG/FStbzAIe1alYGOZJLOGKI2gOof1VRrunhjz+KtG13LJpdv2e+dcC6pasbdC2nJEJjRj+c3uCKXV91pfLm7TyXlnaBfDD/cOvcPsVoAvaJ2RIlglxtv/nTjv7dkfRjwxvrqQ+fFuCrbgxfzBFAaEkG6Kh5qPGbDh/6i9wYNEogZlHOWltkiTy/dV1Oo3MihrbYCcaXEorEbKOD3oASPNQaKQidfHa02mBVgKrGlEVh9SiNA=
-jdk:
-  - oraclejdk8
-script:
-  - mvn clean package jacoco:report coveralls:report sonar:sonar -Djava.net.preferIPv4Stack=true -Dmaven.javadoc.skip=true -Dmaven.ut.reuseForks=true -Dmaven.it.reuseForks=false -Pjacoco  -Djacoco.includes=org.ligoj.bootstrap.* -e
+jdk: oraclejdk8
 notifications:
   email: false
   on_start: always

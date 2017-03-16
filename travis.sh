@@ -117,7 +117,7 @@ BUILD)
 
   # Minimal Maven settings
   export MAVEN_OPTS="-Xmx1G -Xms128m"
-  MAVEN_ARGS="-Dmaven.test.redirectTestOutputToFile=false -Dsurefire.useFile=false -B -e -V -DbuildVersion=$BUILD_VERSION"
+  MAVEN_ARGS="-Dmaven.test.redirectTestOutputToFile=false -Djava.net.preferIPv4Stack=true -Dsurefire.useFile=false -B -e -V -DbuildVersion=$BUILD_VERSION"
 
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     echo 'Build and analyze master'
@@ -129,12 +129,15 @@ BUILD)
     # For this reason errors are ignored with "|| true"
     git fetch --unshallow || true
 
-    mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar \
+    mvn clean package \
           $MAVEN_ARGS \
-          -Pdeploy-sonarsource,release \
+          jacoco:report coveralls:report -Pjacoco -Djacoco.includes=org.ligoj.bootstrap.* \
+          sonar:sonar \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
           -Dsonar.projectVersion=$INITIAL_VERSION
+          -Dmaven.javadoc.skip=true \
+          -Dmaven.ut.reuseForks=true -Dmaven.it.reuseForks=false
 
   elif [[ "$TRAVIS_BRANCH" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     echo 'Build release branch'
