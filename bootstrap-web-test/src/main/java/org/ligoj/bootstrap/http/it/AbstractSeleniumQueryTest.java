@@ -2,6 +2,7 @@ package org.ligoj.bootstrap.http.it;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -84,7 +85,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 *            Expected selected text
 	 */
 	protected void assertSelectedText(final String expectedText, final By by) {
-		new WebDriverWait(driver, 10).until(d -> new Select(driver.findElement(by)).getFirstSelectedOption().getText().equals(expectedText));
+		new WebDriverWait(driver, timeout).until(d -> new Select(driver.findElement(by)).getFirstSelectedOption().getText().equals(expectedText));
 	}
 
 	/**
@@ -95,13 +96,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @return Element
 	 */
 	protected WebElement getElement(final By by) {
-		return new WebDriverWait(driver, 10).until(d -> {
-			final WebElement element = driver.findElement(by);
-			if (element.isDisplayed()) {
-				return element;
-			}
-			return null;
-		});
+		return new WebDriverWait(driver, timeout).until(d -> Optional.ofNullable(driver.findElement(by)).filter(WebElement::isDisplayed).orElse(null));
 	}
 
 	/**

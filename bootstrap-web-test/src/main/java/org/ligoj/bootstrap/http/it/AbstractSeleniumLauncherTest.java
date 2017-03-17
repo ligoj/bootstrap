@@ -29,6 +29,11 @@ import org.openqa.selenium.remote.ScreenshotException;
 public abstract class AbstractSeleniumLauncherTest {
 
 	/**
+	 * UI timeout for availability.
+	 */
+	protected int timeout = 10;
+
+	/**
 	 * Default capability.
 	 */
 	protected static final DesiredCapabilities DEFAULT_CAPABILITY = DesiredCapabilities.firefox();
@@ -109,8 +114,8 @@ public abstract class AbstractSeleniumLauncherTest {
 	 */
 	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOPMD -- throws
 		log.info("Asking for " + capability + " to " + gridUrl);
-		return new Augmenter().augment((WebDriver) Class.forName(remoteDriverClass).getConstructor(URL.class, Capabilities.class)
-				.newInstance(gridUrl, capability));
+		return new Augmenter()
+				.augment((WebDriver) Class.forName(remoteDriverClass).getConstructor(URL.class, Capabilities.class).newInstance(gridUrl, capability));
 	}
 
 	/**

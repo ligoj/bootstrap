@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -45,6 +46,11 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	public void testCleanupClean() {
 		cleanup();
 		cleanup();
+	}
+
+	@Before
+	public void clearTimeout() {
+		timeout = 1;
 	}
 
 	@Test
@@ -145,11 +151,11 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	@Test
 	public void testAssertSelectedText() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(webElement);
 		Mockito.when(webElement.getTagName()).thenReturn("select");
 		final List<WebElement> items = new ArrayList<>();
 		items.add(webElement);
-		Mockito.when(webElement.findElements(ArgumentMatchers.any(By.class))).thenReturn(items);
+		Mockito.when(webElement.findElements(ArgumentMatchers.any())).thenReturn(items);
 		Mockito.when(webElement.isSelected()).thenReturn(true);
 		Mockito.when(webElement.getText()).thenReturn("text");
 		assertSelectedText("text", null);
@@ -171,11 +177,11 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	@Test
 	public void testSelectOptionByText() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement).thenThrow(new NoSuchElementException(""));
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(webElement).thenThrow(new NoSuchElementException(""));
 		Mockito.when(webElement.getTagName()).thenReturn("select");
 		final List<WebElement> items = new ArrayList<>();
 		items.add(webElement);
-		Mockito.when(webElement.findElements(ArgumentMatchers.any(By.class))).thenReturn(items);
+		Mockito.when(webElement.findElements(ArgumentMatchers.any())).thenReturn(items);
 		Mockito.when(webElement.isDisplayed()).thenReturn(true);
 		Mockito.when(webElement.isSelected()).thenReturn(true);
 		Mockito.when(webElement.getText()).thenReturn("text");
@@ -193,23 +199,23 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	@Test
 	public void testAssertInputValue() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(null).thenReturn(webElement);
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(null).thenReturn(webElement);
 		assertInputValue(null, null);
 	}
 
 	@Test
 	public void testAssertElementAttribute() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(webElement.getAttribute(ArgumentMatchers.anyString())).thenReturn(null).thenReturn("value");
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
+		Mockito.when(webElement.getAttribute(ArgumentMatchers.any())).thenReturn(null).thenReturn("value");
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(webElement);
 		assertElementAttribute("value", null, null);
 	}
 
 	@Test
 	public void testAssertElementAttribute2() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(webElement.getAttribute(ArgumentMatchers.anyString())).thenReturn("value");
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
+		Mockito.when(webElement.getAttribute(ArgumentMatchers.any())).thenReturn("value");
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(webElement);
 		assertElementAttribute("value", null, null);
 	}
 
@@ -217,7 +223,7 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	public void testAssertElementText() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
 		Mockito.when(webElement.getText()).thenThrow(new StaleElementReferenceException("")).thenReturn("value");
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(webElement);
 		assertElementText("value", null);
 	}
 
@@ -228,7 +234,7 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 		final List<WebElement> items = new ArrayList<>();
 		items.add(webElement);
 		items.add(webElement);
-		Mockito.when(mockDriver.findElements(ArgumentMatchers.any(By.class))).thenReturn(items);
+		Mockito.when(mockDriver.findElements(ArgumentMatchers.any())).thenReturn(items);
 		assertElementHidden(null);
 	}
 
@@ -276,7 +282,7 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	@Test
 	public void testGetElement() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
+		Mockito.when(mockDriver.findElement(ArgumentMatchers.any())).thenReturn(webElement);
 		Mockito.when(webElement.isDisplayed()).thenReturn(false).thenReturn(true);
 		getElement(null);
 	}

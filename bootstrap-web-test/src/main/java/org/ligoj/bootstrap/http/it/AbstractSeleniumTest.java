@@ -1,6 +1,7 @@
 package org.ligoj.bootstrap.http.it;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
@@ -75,7 +76,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Input Id
 	 */
 	protected void assertDomInputValue(final String expectedText, final String inputId) {
-		new WebDriverWait(driver, 10)
+		new WebDriverWait(driver, timeout)
 				.until(d -> expectedText.equals(((JavascriptExecutor) driver).executeScript("return $('#" + inputId + "').val();", "")));
 	}
 
@@ -105,7 +106,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Table column.
 	 */
 	protected void assertCellError(final String expectedError, final String tableId, final int row, final int column) {
-		new WebDriverWait(driver, 10).until(d -> {
+		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return driver.findElement(findCell(tableId, row, column)).getAttribute("title").equals(expectedError);
 			} catch (final StaleElementReferenceException ex) {
@@ -127,7 +128,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Table column.
 	 */
 	protected void assertCellText(final String expectedText, final String tableId, final int row, final int column) {
-		new WebDriverWait(driver, 10).until(d -> {
+		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return getElement(findCell(tableId, row, column)).getText().equals(expectedText);
 			} catch (final StaleElementReferenceException ex) {
@@ -145,7 +146,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Expected error text (Helper.ERROR_*)
 	 */
 	protected void assertFieldError(final String expectedError, final String elementId) {
-		new WebDriverWait(driver, 10).until(d -> {
+		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return driver.findElement(findControlGroup(elementId)).getAttribute("title").equals(expectedError);
 			} catch (final StaleElementReferenceException ex) {
@@ -165,18 +166,9 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Attribute to evaluate
 	 */
 	protected void assertElementAttribute(final String expectedAttributeValue, final By by, final String attribute) {
-		new WebDriverWait(driver, 10).until(d -> {
-			final WebElement element = driver.findElement(by);
-			if (element == null) {
-				return false;
-			}
-
-			if (element.getAttribute(attribute) == null) {
-				return expectedAttributeValue == null;
-			}
-
-			return element.getAttribute(attribute).equals(expectedAttributeValue);
-		});
+		new WebDriverWait(driver, timeout).until(d -> Optional.ofNullable(driver.findElement(by)).map(
+				e -> Optional.ofNullable(e.getAttribute(attribute)).map(a -> a.equals(expectedAttributeValue)).orElse(expectedAttributeValue == null))
+				.orElse(false));
 	}
 
 	/**
@@ -188,9 +180,9 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Waiting value
 	 */
 	protected void assertElementText(final String expectedText, final By by) {
-		new WebDriverWait(driver, 10).until(d -> {
+		new WebDriverWait(driver, timeout).until(d -> {
 			try {
-				return driver.findElement(by).getText().equals(expectedText);
+				return Optional.ofNullable(driver.findElement(by)).map(WebElement::getText).filter(expectedText::equals).isPresent();
 			} catch (final StaleElementReferenceException ex) {
 				return false;
 			}
@@ -204,16 +196,9 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Element to wait for
 	 */
 	protected void assertElementHidden(final By by) {
-		new WebDriverWait(driver, 10).until(d -> {
+		new WebDriverWait(driver, timeout).until(d -> {
 			try {
-				final List<WebElement> elements = driver.findElements(by);
-				for (final WebElement element : elements) {
-					if (element.isDisplayed()) {
-						// At least one element visible
-						return false;
-					}
-				}
-				return true;
+				return driver.findElements(by).stream().noneMatch(WebElement::isDisplayed);
 			} catch (final StaleElementReferenceException ex) {
 				return false;
 			}
@@ -227,7 +212,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Id of the table
 	 */
 	protected void assertTableEmpty(final String tableId) {
-		new WebDriverWait(driver, 10).until(d -> {
+		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return driver.findElement(By.xpath(DATATABLES_ID + tableId + "']/tbody/tr/td")).getText()
 						.equals("Aucune donnée disponible dans le tableau");
