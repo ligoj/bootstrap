@@ -10,12 +10,12 @@ import lombok.Setter;
 /**
  * A described bean
  * 
- * @param <ID>
- *            the type of the identifier
+ * @param <K>
+ *            The type of the identifier
  */
 @Getter
 @Setter
-public class DescribedBean<ID extends Serializable> extends NamedBean<ID> implements IDescribableBean<ID> {
+public class DescribedBean<K extends Serializable> extends NamedBean<K> implements IDescribableBean<K> {
 
 	@Length(max = 250)
 	private String description;

@@ -82,7 +82,7 @@ public class AuthorizingFilterTest extends AbstractJpaTest {
 	 * No authority
 	 */
 	@Test
-	public void testNoAuthority() throws Exception {
+	public void doFilterNoAuthority() throws Exception {
 		final FilterChain chain = Mockito.mock(FilterChain.class);
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		final ServletContext servletContext = Mockito.mock(ServletContext.class);
@@ -103,7 +103,7 @@ public class AuthorizingFilterTest extends AbstractJpaTest {
 	 * Plenty defined authority
 	 */
 	@Test
-	public void testPlentyAuthority() throws Exception {
+	public void doFilterPlentyAuthority() throws Exception {
 
 		for (final HttpMethod method : HttpMethod.values()) {
 			addSystemAuthorization(method, "role1", "^myurl");
@@ -130,10 +130,25 @@ public class AuthorizingFilterTest extends AbstractJpaTest {
 	}
 
 	/**
+	 * Anonymous user / role
+	 */
+	@Test
+	public void doFilterAnonymous() throws Exception {
+		cacheResource.invalidate("authorizations");
+		attachRole("ROLE_ANONYMOUS");
+		final FilterChain chain = Mockito.mock(FilterChain.class);
+		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		authorizingFilter.doFilter(request, response, chain);
+		Mockito.verify(chain, Mockito.atLeastOnce()).doFilter(request, response);
+		Mockito.validateMockitoUsage();
+	}
+
+	/**
 	 * Plenty attached authority
 	 */
 	@Test
-	public void testAttachedAuthority() throws Exception {
+	public void doFilterAttachedAuthority() throws Exception {
 		cacheResource.invalidate("authorizations");
 		attachRole(DEFAULT_ROLE, "other");
 		final FilterChain chain = Mockito.mock(FilterChain.class);
@@ -157,7 +172,7 @@ public class AuthorizingFilterTest extends AbstractJpaTest {
 	 * Plenty attached authority
 	 */
 	@Test
-	public void testAttachedAuthority2() throws Exception {
+	public void doFilterAttachedAuthority2() throws Exception {
 		attachRole(DEFAULT_ROLE, "role1", "role2", "role3");
 		for (final HttpMethod method : HttpMethod.values()) {
 			addSystemAuthorization(method, "role1", "^myurl");
@@ -190,7 +205,7 @@ public class AuthorizingFilterTest extends AbstractJpaTest {
 	 * Plenty attached authority
 	 */
 	@Test
-	public void testAttachedAuthority3() throws Exception {
+	public void doFilterAttachedAuthority3() throws Exception {
 		attachRole(DEFAULT_ROLE, "role2");
 		addSystemAuthorization(HttpMethod.GET, "role2", "^match$");
 		em.flush();

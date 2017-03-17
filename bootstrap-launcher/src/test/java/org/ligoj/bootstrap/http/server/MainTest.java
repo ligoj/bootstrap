@@ -87,7 +87,7 @@ public class MainTest {
 				try {
 					Main.main();
 				} catch (final Exception e) {
-					Assert.fail("Server failed to start");
+					Assert.fail("Server failed to start"); // NOSONAR - This a special thread
 				}
 			}
 		});
@@ -117,7 +117,7 @@ public class MainTest {
 				try {
 					Main.main();
 				} catch (final Exception e) {
-					Assert.fail("Server failed to start");
+					Assert.fail("Server failed to start"); // NOSONAR - This a special thread
 				}
 			}
 		});

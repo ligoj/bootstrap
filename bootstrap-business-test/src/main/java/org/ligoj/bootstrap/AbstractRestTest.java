@@ -17,9 +17,12 @@ import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Before;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * An integration test.
  */
+@Slf4j
 public abstract class AbstractRestTest extends AbstractTest {
 	/**
 	 * URI
@@ -104,6 +107,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 				}
 				checkRetries(counter);
 			} catch (final HttpHostConnectException ex) {
+				log.info("Check failed, retrying...");
 				checkRetries(counter);
 			} finally {
 				EntityUtils.consume(response.getEntity());

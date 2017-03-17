@@ -217,7 +217,7 @@ public class PaginationDao {
 	 */
 	private <S, T> Root<T> applySpecificationToCriteria(final Root<T> root, final Specification<T> spec, final CriteriaQuery<S> query) {
 
-		Assert.notNull(query);
+		Assert.notNull(query, "Query is requested");
 
 		if (spec != null) {
 			// There is at least one described filter

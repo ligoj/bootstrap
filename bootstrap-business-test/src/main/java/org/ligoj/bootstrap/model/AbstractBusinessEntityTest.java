@@ -53,7 +53,8 @@ public abstract class AbstractBusinessEntityTest {
 	 * @param <T>
 	 *            The type of the entity to test.
 	 */
-	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties) throws Exception {
+	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		final T systemUser = modelClass.newInstance();
 		final T systemUser2 = modelClass.newInstance();
 		Assert.assertFalse(systemUser.equals(null)); // NOPMD NOSONAR -- for coverage

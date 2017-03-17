@@ -14,15 +14,15 @@ import org.mockito.Mockito;
 import org.springframework.security.web.RedirectStrategy;
 
 /**
- * Test {@link LoginUrlAuthenticationEntryPoint} implementation.
+ * Test {@link RedirectAuthenticationEntryPoint} implementation.
  */
-public class LoginUrlAuthenticationEntryPointTest {
+public class RedirectAuthenticationEntryPointTest {
 
-	private LoginUrlAuthenticationEntryPoint entryPoint;
+	private RedirectAuthenticationEntryPoint entryPoint;
 
 	@Before
 	public void setup() {
-		entryPoint = new LoginUrlAuthenticationEntryPoint("http://h");
+		entryPoint = new RedirectAuthenticationEntryPoint("http://h");
 		final Set<String> redirectUrls = new HashSet<>();
 		redirectUrls.add("/index.html");
 		entryPoint.setRedirectUrls(redirectUrls);

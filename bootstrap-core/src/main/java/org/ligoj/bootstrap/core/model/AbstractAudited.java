@@ -36,13 +36,13 @@ import lombok.Setter;
 /**
  * Abstract base class for auditable entities. Stores the audition values in persistent fields.
  * 
- * @param <ID>
- *            the type of the auditing type's identifier
+ * @param <K>
+ *            The type of the auditing type's identifier
  */
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class AbstractAudited<ID extends Serializable> extends AbstractPersistable<ID> implements Auditable<String, ID> {
+public abstract class AbstractAudited<K extends Serializable> extends AbstractPersistable<K> implements Auditable<String, K> {
 
 	private static final long serialVersionUID = 141481953116476081L;
 

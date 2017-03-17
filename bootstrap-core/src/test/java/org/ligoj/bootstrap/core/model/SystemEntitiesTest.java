@@ -71,6 +71,10 @@ public class SystemEntitiesTest {
 
 	@EqualsAndHashCode(of = "other", callSuper = true)
 	private class DummySystemUser extends SystemUser {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private String other;
 	}
 

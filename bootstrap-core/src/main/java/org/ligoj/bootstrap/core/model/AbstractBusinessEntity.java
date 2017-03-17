@@ -18,8 +18,8 @@ import lombok.ToString;
 /**
  * Abstract entity with business key. No auto generated key.
  * 
- * @param <ID>
- *            the type of the identifier
+ * @param <K>
+ *            The type of the identifier
  */
 @Getter
 @Setter
@@ -27,7 +27,7 @@ import lombok.ToString;
 @JsonIgnoreProperties(value = "new")
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
-public abstract class AbstractBusinessEntity<ID extends Serializable> implements Persistable<ID> {
+public abstract class AbstractBusinessEntity<K extends Serializable> implements Persistable<K> {
 
 	/**
 	 * SID
@@ -39,7 +39,7 @@ public abstract class AbstractBusinessEntity<ID extends Serializable> implements
 	 */
 	@Id
 	@NotNull
-	private ID id;
+	private K id;
 
 	@Override
 	public boolean isNew() {

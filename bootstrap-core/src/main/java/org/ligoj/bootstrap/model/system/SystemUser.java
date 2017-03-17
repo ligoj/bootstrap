@@ -1,5 +1,6 @@
 package org.ligoj.bootstrap.model.system;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -29,7 +30,12 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode(of = "login")
 @ToString(of = "login")
-public class SystemUser {
+public class SystemUser implements Serializable {
+
+	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Corporate user login.

@@ -10,14 +10,14 @@ import lombok.Setter;
 /**
  * An audited and described bean
  * 
- * @param <ID>
+ * @param <K>
  *            the type of the identifier
  * @param <U>
  *            the type of the author
  */
 @Getter
 @Setter
-public class DescribedAuditedBean<U extends Serializable, ID extends Serializable> extends NamedAuditedBean<U, ID> implements IDescribableBean<ID> {
+public class DescribedAuditedBean<U extends Serializable, K extends Serializable> extends NamedAuditedBean<U, K> implements IDescribableBean<K> {
 
 	@Length(max = 250)
 	private String description;

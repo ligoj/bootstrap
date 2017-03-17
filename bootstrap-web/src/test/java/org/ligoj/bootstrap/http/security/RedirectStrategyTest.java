@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Custom redirection test of class {@link RedirectStrategy}
+ * Custom redirection test of class {@link RestRedirectStrategy}
  */
 public class RedirectStrategyTest {
 
@@ -27,7 +27,7 @@ public class RedirectStrategyTest {
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
-		final RedirectStrategy redirectStrategy = new RedirectStrategy();
+		final RestRedirectStrategy redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(true);
 		redirectStrategy.setStatus(1);
 		redirectStrategy.sendRedirect(request, response, "");
@@ -40,7 +40,7 @@ public class RedirectStrategyTest {
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
-		final RedirectStrategy redirectStrategy = new RedirectStrategy();
+		final RestRedirectStrategy redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(false);
 		redirectStrategy.setStatus(1);
 		redirectStrategy.sendRedirect(request, response, "");
@@ -54,7 +54,7 @@ public class RedirectStrategyTest {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
 		initSpringSecurityContext("user", Mockito.mock(Authentication.class));
-		final RedirectStrategy redirectStrategy = new RedirectStrategy();
+		final RestRedirectStrategy redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(true);
 		redirectStrategy.setStatus(1);
 		redirectStrategy.sendRedirect(request, response, "");
@@ -69,7 +69,7 @@ public class RedirectStrategyTest {
 		Mockito.when(request.getContextPath()).thenReturn("");
 		initSpringSecurityContext("user",
 				new CookieUsernamePasswordAuthenticationToken("user", "N/A", null, Arrays.asList(new String[] { "key=value; path=/" })));
-		final RedirectStrategy redirectStrategy = new RedirectStrategy();
+		final RestRedirectStrategy redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(true);
 		redirectStrategy.setStatus(1);
 		redirectStrategy.sendRedirect(request, response, "");

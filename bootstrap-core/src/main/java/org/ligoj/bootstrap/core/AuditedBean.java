@@ -17,7 +17,7 @@ import lombok.ToString;
 /**
  * Class for audited objects.
  * 
- * @param <ID>
+ * @param <K>
  *            the type of the identifier
  * @param <U>
  *            the type of the author
@@ -25,9 +25,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(of = "id")
-public class AuditedBean<U extends Serializable, ID extends Serializable> {
+public class AuditedBean<U extends Serializable, K extends Serializable> {
 
-	private ID id;
+	private K id;
 
 	/**
 	 * Creation date.
@@ -61,7 +61,7 @@ public class AuditedBean<U extends Serializable, ID extends Serializable> {
 	 * @param from
 	 *            The source object to copy to current one.
 	 */
-	public <T extends Auditable<U, ID>> void copyAuditData(final T from) {
+	public <T extends Auditable<U, K>> void copyAuditData(final T from) {
 		copyAuditData(from, Function.identity());
 	}
 
@@ -72,12 +72,12 @@ public class AuditedBean<U extends Serializable, ID extends Serializable> {
 	 *            The source object to copy to current one.
 	 * @param userConverter
 	 *            the user converter.
+	 * @param <S>
+	 *            Bean type of source parameter..
 	 * @param <T>
-	 *            Bean type of from parameter..
-	 * @param <US>
-	 *            User type of from parameter.
+	 *            User type of source parameter.
 	 */
-	public <US, T extends Auditable<US, ID>> void copyAuditData(final T from, final Function<US, ? extends U> userConverter) {
+	public <T, S extends Auditable<T, K>> void copyAuditData(final S from, final Function<T, ? extends U> userConverter) {
 		if (from != null) {
 			// Copy audit dates
 			this.createdDate = toDate(from.getCreatedDate());
@@ -116,17 +116,17 @@ public class AuditedBean<U extends Serializable, ID extends Serializable> {
 	 *            Bean source type.
 	 * @param <U>
 	 *            Bean target type.
-	 * @param <FROM>
-	 *            "From" type.
-	 * @param <TO>
-	 *            "To" type.
+	 * @param <S>
+	 *            "Source" type.
+	 * @param <D>
+	 *            "Destination" type.
 	 * @param from
 	 *            The source object.
 	 * @param to
 	 *            The target object.
 	 */
-	public static <U extends Serializable, T extends Serializable, FROM extends Auditable<U, T>, TO extends Auditable<U, T>> void copyAuditData(
-			final FROM from, final TO to) {
+	public static <U extends Serializable, T extends Serializable, S extends Auditable<U, T>, D extends Auditable<U, T>> void copyAuditData(
+			final S from, final D to) {
 		if (from != null) {
 			// Copy audit properties
 			to.setCreatedDate(from.getCreatedDate());

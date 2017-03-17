@@ -112,7 +112,8 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOPMD -- throws
+	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOPMD -- too many
+																									// exception
 		log.info("Asking for " + capability + " to " + gridUrl);
 		return new Augmenter()
 				.augment((WebDriver) Class.forName(remoteDriverClass).getConstructor(URL.class, Capabilities.class).newInstance(gridUrl, capability));
@@ -124,7 +125,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected WebDriver getLocalDriver() throws Exception { // NOPMD -- too much exception
+	protected WebDriver getLocalDriver() throws Exception { // NOSONAR -- too many exception
 		return (WebDriver) Class.forName(localDriverClass).newInstance();
 	}
 
@@ -135,7 +136,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 *             from driver loader and many lock management.
 	 */
 	@Before
-	public void setUpDriver() throws Exception { // NOPMD -- too much exception
+	public void setUpDriver() throws Exception { // NOSONAR -- too many exception
 		gridUrl = new URL(GRID_URL);
 		baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()).getParent();
 		scenario = "undefined";
@@ -154,7 +155,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected void prepareDriver() throws Exception { // NOPMD -- too much exception
+	protected void prepareDriver() throws Exception { // NOSONAR -- too many exception
 		if (isLocalTest()) {
 			driver = getLocalDriver();
 		} else {
@@ -181,7 +182,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 */
 	@AfterClass
 	public static void ensureCleanup() throws InterruptedException {
-		Thread.sleep(2000);
+		Thread.sleep(2000); // NOSONAR -- Have to pause the thread
 	}
 
 	/**
@@ -235,12 +236,8 @@ public abstract class AbstractSeleniumLauncherTest {
 	/**
 	 * Wait 1s. Useful for waiting for component graphical transition
 	 */
-	protected void smallSleep() { // Means string ?
-		try {
-			sleep(1000);
-		} catch (final InterruptedException ex) {
-			log.error("Interrupted test", ex);
-		}
+	protected void smallSleep() throws InterruptedException {
+		sleep(1000);
 	}
 
 	/**
@@ -252,6 +249,6 @@ public abstract class AbstractSeleniumLauncherTest {
 	 *             from {@link Thread#sleep(long)}
 	 */
 	protected void sleep(final long milli) throws InterruptedException {
-		Thread.sleep(milli);
+		Thread.sleep(milli); // NOSONAR -- Have to pause the thread
 	}
 }

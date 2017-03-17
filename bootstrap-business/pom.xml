@@ -23,7 +23,6 @@
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
-			<version>2.10.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.paranamer</groupId>
@@ -47,7 +46,6 @@
 		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
-			<version>${cache.version}</version>
 		</dependency>
 
 		<!-- JSR-154 -->

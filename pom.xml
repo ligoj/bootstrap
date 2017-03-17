@@ -10,8 +10,8 @@
 	</parent>
 
 	<artifactId>root</artifactId>
-	<name>Ligoj - Bootstrap - Root</name>
-	<description>Ligoj Bootstrap JAX-RS architecture.</description>
+	<name>Ligoj - Bootstrap</name>
+	<description>Ligoj Bootstrap JAX-RS architecture template</description>
 	<packaging>pom</packaging>
 	<modules>
 		<module>parent</module>

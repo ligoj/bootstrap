@@ -39,17 +39,10 @@ public class ResourceScanner extends StandardScanner {
 	public ScanResult scan(final ScanEnvironment environment, final ScanOptions scanOptions, final ScanParameters parameters) {
 
 		try {
-			final Set<URL> urls = new LinkedHashSet<>();
-			urls.addAll(environment.getNonRootUrls());
-			urls.addAll(Collections.list(getOrmUrls()).stream().map(ormUrl-> {
-				try {
-					return getJarUrl(ormUrl);
-				} catch (final MalformedURLException e) {
-					throw new IllegalStateException("Unable to read ORM file from jar", e);
-				}
-			}).collect(Collectors.toList()));
+			final Set<URL> urls = new LinkedHashSet<>(environment.getNonRootUrls()); // NOSONAR - Requested by Hibernate
+			urls.addAll(Collections.list(getOrmUrls()).stream().map(this::getJarUrlSafe).collect(Collectors.toList()));
 
-			// Remove the root URL from the non root.
+			// Remove the root URL from the non root list
 			urls.remove(environment.getRootUrl());
 
 			// Replace the URL with the new set
@@ -58,6 +51,17 @@ public class ResourceScanner extends StandardScanner {
 			return super.scan(environment, scanOptions, parameters);
 		} catch (final IOException e) {
 			throw new IllegalStateException("Unable to read ORM Jars", e);
+		}
+	}
+
+	/**
+	 * Get the ORM {@link URL} from the JAR and managing the IO errors
+	 */
+	private URL getJarUrlSafe(final URL ormUrl) {
+		try {
+			return getJarUrl(ormUrl);
+		} catch (final MalformedURLException e) {
+			throw new IllegalStateException("Unable to read ORM file from jar", e);
 		}
 	}
 
@@ -72,7 +76,7 @@ public class ResourceScanner extends StandardScanner {
 	 */
 	protected URL getJarUrl(final URL ormUrl) throws MalformedURLException {
 		final URL ormJarUrl;
-		if (ormUrl.getProtocol().equals("jar")) {
+		if ("jar".equals(ormUrl.getProtocol())) {
 			// Extract the jar containing this file
 			ormJarUrl = new URL("file", ormUrl.getHost(), ormUrl.getPath().substring("file:".length(), ormUrl.getPath().indexOf('!')));
 		} else {

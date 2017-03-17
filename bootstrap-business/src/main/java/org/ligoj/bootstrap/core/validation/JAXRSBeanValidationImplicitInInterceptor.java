@@ -50,22 +50,18 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 	 */
 	private static final ConstraintDescriptorImpl<NotNull> NOT_NULL_DESCRIPTOR = new ConstraintDescriptorImpl<>(new ConstraintHelper(), (Member) null,
 			new NotNull() {
-
 				@Override
 				public Class<? extends Annotation> annotationType() {
 					return NotNull.class;
 				}
-
 				@Override
 				public String message() {
 					return "NotNull";
 				}
-
 				@Override
 				public Class<?>[] groups() {
 					return new Class<?>[0];
 				}
-
 				@SuppressWarnings("unchecked")
 				@Override
 				public Class<? extends Payload>[] payload() {

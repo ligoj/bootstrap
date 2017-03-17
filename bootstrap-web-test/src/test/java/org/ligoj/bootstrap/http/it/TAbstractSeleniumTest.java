@@ -37,11 +37,6 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	 */
 	private WebDriverMock mockDriver;
 
-	/**
-	 * Mock sleep failure.
-	 */
-	private boolean failSleep = false;
-
 	@Test
 	public void testCleanupClean() {
 		cleanup();
@@ -288,28 +283,22 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	}
 
 	@Test
-	public void testSmallSleepError() {
-		failSleep = true;
+	public void testSmallSleep() throws InterruptedException {
 		smallSleep();
 	}
 
 	@Test
-	public void testSmallSleep() {
-		smallSleep();
-	}
-
-	@Test
-	public void testSelect2RemoveValue() {
+	public void testSelect2RemoveValue() throws InterruptedException {
 		select2RemoveValue("a", "b");
 	}
 
 	@Test
-	public void testSelect2SelectValue() {
+	public void testSelect2SelectValue() throws InterruptedException {
 		select2SelectValue("a", 1);
 	}
 
 	@Test
-	public void testSelect2SelectValue2() {
+	public void testSelect2SelectValue2() throws InterruptedException {
 		select2SelectValue("a", "b");
 	}
 
@@ -323,14 +312,6 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 		elements.add("a");
 		elements.add("a");
 		Assert.assertEquals("[a,a]", arrayToString(elements));
-	}
-
-	@Override
-	protected void sleep(final long milli) throws InterruptedException {
-		if (failSleep) {
-			throw new InterruptedException();
-		}
-		super.sleep(milli);
 	}
 
 	@After
@@ -348,7 +329,6 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		remoteDriverClass = WebDriverMock.class.getName();
-		failSleep = false;
 		scenario = "sc";
 		super.prepareDriver();
 		mockDriver = Mockito.mock(WebDriverMock.class);

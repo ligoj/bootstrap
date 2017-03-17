@@ -17,7 +17,7 @@ import lombok.ToString;
 /**
  * Named entity
  * 
- * @param <PK>
+ * @param <K>
  *            Identifier type.
  */
 @Getter
@@ -25,7 +25,7 @@ import lombok.ToString;
 @MappedSuperclass
 @ToString(of = "name")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractNamedEntity<PK extends Serializable> extends AbstractPersistable<PK> implements INamableBean<PK> {
+public abstract class AbstractNamedEntity<K extends Serializable> extends AbstractPersistable<K> implements INamableBean<K> {
 
 	/**
 	 * SID

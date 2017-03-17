@@ -31,12 +31,17 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
+import org.eclipse.jetty.proxy.ProxyServlet;
 import org.eclipse.jetty.util.Callback;
 
 /**
  * Reverse proxy for business server.
  */
-public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
+public class BackendProxyServlet extends ProxyServlet {
+
+	private static final String COOKIE_JEE = "JSESSIONID";
+
+	private static final String HEADER_COOKIE = "cookie";
 
 	/**
 	 * Headers will not be forwarded from the back-end.
@@ -49,7 +54,7 @@ public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
 	 */
 	private static final Map<String, String> INGORE_HEADER_VALUE = new HashMap<>();
 	static {
-		INGORE_HEADER_VALUE.put("set-cookie", "JSESSIONID");
+		INGORE_HEADER_VALUE.put("set-cookie", COOKIE_JEE);
 	}
 
 	/**
@@ -72,13 +77,16 @@ public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
 	 */
 	private static final long serialVersionUID = -3387356144222298075L;
 
-	private String proxyTo;
-	private String prefix;
-	private String apiKeyParameter;
-	private String apiUserParameter;
-	private String apiKeyHeader;
-	private Pattern apiKeyCleanPattern;
-	private Pattern apiUserCleanPattern;
+	/**
+	 * Static configuration created on {@link #init()})
+	 */
+	private String proxyTo; // NOSONAR - Initialized once, from #init()
+	private String prefix; // NOSONAR - Initialized once, from #init()
+	private String apiKeyParameter; // NOSONAR - Initialized once, from #init()
+	private String apiUserParameter; // NOSONAR - Initialized once, from #init()
+	private String apiKeyHeader; // NOSONAR - Initialized once, from #init()
+	private Pattern apiKeyCleanPattern; // NOSONAR - Initialized once, from #init()
+	private Pattern apiUserCleanPattern; // NOSONAR - Initialized once, from #init()
 
 	@Override
 	protected void addProxyHeaders(final HttpServletRequest clientRequest, final Request proxyRequest) {
@@ -95,10 +103,10 @@ public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
 		proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getParameter(apiKeyParameter)));
 
 		// Forward all cookies but JSESSIONID.
-		final String cookies = clientRequest.getHeader("cookie");
+		final String cookies = clientRequest.getHeader(HEADER_COOKIE);
 		if (cookies != null) {
-			proxyRequest.header("cookie", StringUtils.trimToNull(Arrays.stream(cookies.split("; "))
-					.filter(cookie -> !cookie.split("=")[0].equals("JSESSIONID")).collect(Collectors.joining("; "))));
+			proxyRequest.header(HEADER_COOKIE, StringUtils.trimToNull(
+					Arrays.stream(cookies.split("; ")).filter(cookie -> !cookie.split("=")[0].equals(COOKIE_JEE)).collect(Collectors.joining("; "))));
 		}
 	}
 
@@ -122,7 +130,7 @@ public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
 				try {
 					proxyResponse.getOutputStream().write("{\"code\":\"business-down\"}".getBytes(StandardCharsets.UTF_8));
 				} catch (final IOException ioe) {
-					_log.warn("Broken proxy stream", ioe.toString());
+					_log.warn("Broken proxy stream", ioe);
 				}
 			}
 			proxyResponse.setHeader(HttpHeader.CONNECTION.asString(), HttpHeaderValue.CLOSE.asString());
@@ -268,7 +276,7 @@ public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
 	 * @return <code>true</code> for Ajax request.
 	 */
 	public static boolean isAjaxRequest(final HttpServletRequest request) {
-		return StringUtils.trimToEmpty(request.getHeader("X-Requested-With")).equalsIgnoreCase("XMLHttpRequest");
+		return "XMLHttpRequest".equalsIgnoreCase(StringUtils.trimToEmpty(request.getHeader("X-Requested-With")));
 	}
 
 	@Override
@@ -343,7 +351,7 @@ public class ProxyServlet extends org.eclipse.jetty.proxy.ProxyServlet {
 		ignoreRequestHeader.addAll(CollectionUtils.emptyIfNull(super.findConnectionHeaders(clientRequest)));
 
 		// Drop cookie headers forward from FRONT to BACK by default, only filtered ones will be added
-		ignoreRequestHeader.add("cookie");
+		ignoreRequestHeader.add(HEADER_COOKIE);
 		return ignoreRequestHeader;
 	}
 }

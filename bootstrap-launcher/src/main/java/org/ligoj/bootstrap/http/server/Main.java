@@ -27,24 +27,6 @@ public final class Main {
 	private static volatile Server lastStartedServer;
 
 	/**
-	 * Return attached server.
-	 * 
-	 * @return attached server.
-	 */
-	public Server getServer() {
-		return server;
-	}
-
-	/**
-	 * Return the last started server instance. Take care of thread safe issues. This enables server shutdown.
-	 * 
-	 * @return the last started server instance. Take care of thread safe issues. This enables server shutdown.
-	 */
-	public static Server getLastStartedServer() {
-		return lastStartedServer;
-	}
-
-	/**
 	 * Constructor : load property and XmlConfiguration
 	 * 
 	 * @throws Exception
@@ -60,6 +42,24 @@ public final class Main {
 		} finally {
 			IOUtils.closeQuietly(propertiesInput);
 		}
+	}
+
+	/**
+	 * Return attached server.
+	 * 
+	 * @return attached server.
+	 */
+	public Server getServer() {
+		return server;
+	}
+
+	/**
+	 * Return the last started server instance. Take care of thread safe issues. This enables server shutdown.
+	 * 
+	 * @return the last started server instance. Take care of thread safe issues. This enables server shutdown.
+	 */
+	public static Server getLastStartedServer() {
+		return lastStartedServer;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public final class Main {
 		System.setProperties(properties);
 	}
 
-	//CHECKSTYLE:OFF This is a real application entry
+	// CHECKSTYLE:OFF This is a real application entry
 	/**
 	 * Main launcher. Equals to <tt>mvn jetty:start</tt> command.
 	 * 
@@ -102,7 +102,7 @@ public final class Main {
 	 *             server start error.
 	 */
 	public static void main(final String... args) throws Exception {
-	//CHECKSTYLE:ON 
+		// CHECKSTYLE:ON
 		final Main main = new Main();
 		main.server.start();
 

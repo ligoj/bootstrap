@@ -107,7 +107,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @param option2Remove
 	 *            Text of the option to remove
 	 */
-	protected void select2RemoveValue(final String select2Id, final String option2Remove) {
+	protected void select2RemoveValue(final String select2Id, final String option2Remove) throws InterruptedException {
 		getElement(By.xpath(S2_ID + select2Id + "']//div[text()='" + option2Remove + "']/../a")).click();
 		smallSleep();
 	}
@@ -120,7 +120,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @param option2Add
 	 *            Text of the option to select
 	 */
-	protected void select2SelectValue(final String select2Id, final String option2Add) {
+	protected void select2SelectValue(final String select2Id, final String option2Add) throws InterruptedException {
 		// Click on the select 2 to display the options
 		// * = ul for a multiselect, a for a single select
 		getElement(By.xpath(S2_ID + select2Id + "']/*")).click();
@@ -139,7 +139,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @param optionNumber
 	 *            Number of the option to select (1 = first one, ...)
 	 */
-	protected void select2SelectValue(final String select2Id, final int optionNumber) {
+	protected void select2SelectValue(final String select2Id, final int optionNumber) throws InterruptedException {
 		// Click on the select 2 to display the options
 		// * = ul for a multiselect, a for a single select
 		getElement(By.xpath(S2_ID + select2Id + "']/*")).click();
@@ -151,7 +151,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	}
 
 	/**
-	 * Get the current values selected in a select2 multivalue component
+	 * Get the current values selected in a select2 multi-value component
 	 * 
 	 * @param select2Id
 	 *            Id of the select2
@@ -160,11 +160,10 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	protected List<String> select2GetValues(final String select2Id) {
 		final List<String> options = new ArrayList<>();
 		int numOption = 0;
-		while (true) {
+		while (true) { // NOSONAR - Increment the select index until there is no more entries
 			numOption++;
 			try {
-				final WebElement element = driver.findElement(By.xpath(S2_ID + select2Id + "']/ul/li[" + numOption + "]/div"));
-				options.add(element.getText());
+				options.add(driver.findElement(By.xpath(S2_ID + select2Id + "']/ul/li[" + numOption + "]/div")).getText());
 			} catch (final NoSuchElementException ex) {
 				break;
 			}

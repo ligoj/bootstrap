@@ -38,7 +38,7 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 
 		final List<String> faillures = checkResults(success);
 		Assert.assertTrue("All browsers test failed", faillures.size() != success.length);
-		Assert.assertEquals("Some browsers test failed", success.length, success.length - faillures.size());
+		Assert.assertEquals("Some browsers test failed", 0, faillures.size());
 	}
 
 	/**

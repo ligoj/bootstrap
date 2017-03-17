@@ -38,7 +38,7 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 *            the associated capabilities of this forked test.
 	 */
 	protected void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver, final DesiredCapabilities capability)
-			throws Exception { // NOPMD -- too many
+			throws Exception { // NOSONAR -- Have to pause the thread
 		target.gridUrl = gridUrl;
 		target.baseDir = baseDir;
 		target.baseUrl = baseUrl;

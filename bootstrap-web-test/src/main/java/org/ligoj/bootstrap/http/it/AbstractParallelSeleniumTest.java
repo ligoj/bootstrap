@@ -64,7 +64,7 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 			faillures.add("Weird Exception during the run ...");
 		}
 		Assert.assertTrue("All browsers test failed", faillures.size() != success.length);
-		Assert.assertEquals("Some browsers test failed", success.length, success.length - faillures.size());
+		Assert.assertEquals("Some browsers test failed", 0, faillures.size());
 	}
 
 	/**

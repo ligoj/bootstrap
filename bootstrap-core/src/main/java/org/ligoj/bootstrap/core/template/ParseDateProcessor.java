@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.ligoj.bootstrap.core.DateUtils;
 
 /**
  * A {@link Processor} parsing a {@link String} to a {@link Date}.
@@ -22,7 +23,7 @@ public class ParseDateProcessor extends Processor<String> {
 	 */
 	public ParseDateProcessor(final String pattern, final Object data) {
 		super(data);
-		this.format = FastDateFormat.getInstance(pattern, null, null);
+		this.format = FastDateFormat.getInstance(pattern, DateUtils.getApplicationTimeZone());
 	}
 
 	/**

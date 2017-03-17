@@ -15,14 +15,14 @@ import lombok.ToString;
 /**
  * Abstract entity with business key and name.
  * 
- * @param <ID>
+ * @param <K>
  *            the type of the identifier
  */
 @Getter
 @Setter
 @MappedSuperclass
 @ToString(of = "name")
-public abstract class AbstractNamedBusinessEntity<ID extends Serializable> extends AbstractBusinessEntity<ID> implements INamableBean<ID> {
+public abstract class AbstractNamedBusinessEntity<K extends Serializable> extends AbstractBusinessEntity<K> implements INamableBean<K> {
 
 	/**
 	 * SID

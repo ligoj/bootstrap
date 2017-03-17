@@ -13,14 +13,14 @@ import lombok.Setter;
 /**
  * Abstract entity with business key, name and description.
  * 
- * @param <ID>
+ * @param <K>
  *            the type of the identifier
  */
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class AbstractDescribedBusinessEntity<ID extends Serializable> extends AbstractNamedBusinessEntity<ID> implements
-		IDescribableBean<ID> {
+public abstract class AbstractDescribedBusinessEntity<K extends Serializable> extends AbstractNamedBusinessEntity<K> implements
+		IDescribableBean<K> {
 
 	/**
 	 * SID

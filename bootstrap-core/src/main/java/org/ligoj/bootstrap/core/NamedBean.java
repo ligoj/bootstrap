@@ -15,7 +15,7 @@ import lombok.ToString;
 /**
  * A named bean
  * 
- * @param <ID>
+ * @param <K>
  *            the type of the identifier
  */
 @Getter
@@ -23,12 +23,12 @@ import lombok.ToString;
 @ToString(of = "name")
 @AllArgsConstructor
 @NoArgsConstructor
-public class NamedBean<ID extends Serializable> implements INamableBean<ID> {
+public class NamedBean<K extends Serializable> implements INamableBean<K> {
 
 	/**
 	 * Identifier of this bean. 
 	 */
-	private ID id;
+	private K id;
 
 	@NotBlank
 	@NotNull

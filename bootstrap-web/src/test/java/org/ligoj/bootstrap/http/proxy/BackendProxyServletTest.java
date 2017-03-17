@@ -35,11 +35,11 @@ import org.mockito.Mockito;
 import org.springframework.mock.web.DelegatingServletOutputStream;
 
 /**
- * Test class of {@link ProxyServlet}
+ * Test class of {@link BackendProxyServlet}
  */
-public class ProxyServletTest {
+public class BackendProxyServletTest {
 
-	private ProxyServlet servlet;
+	private BackendProxyServlet servlet;
 
 	private ServletContext servletContext;
 
@@ -48,7 +48,7 @@ public class ProxyServletTest {
 	@Before
 	public void setup() throws IllegalAccessException {
 		servletContext = Mockito.mock(ServletContext.class);
-		servlet = new ProxyServlet() {
+		servlet = new BackendProxyServlet() {
 			/**
 			 * 
 			 */
@@ -352,13 +352,13 @@ public class ProxyServletTest {
 	public void isAjaxRequestXRequest() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		Assert.assertTrue(ProxyServlet.isAjaxRequest(request));
+		Assert.assertTrue(BackendProxyServlet.isAjaxRequest(request));
 	}
 
 	@Test
 	public void isAjaxRequest() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Assert.assertFalse(ProxyServlet.isAjaxRequest(request));
+		Assert.assertFalse(BackendProxyServlet.isAjaxRequest(request));
 	}
 
 	@Test

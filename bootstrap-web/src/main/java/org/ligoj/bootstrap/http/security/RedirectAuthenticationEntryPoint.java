@@ -7,15 +7,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.Setter;
-
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
+import lombok.Setter;
 
 /**
  * Allow to choose a redirection strategy depending on the current request.
  */
-public class LoginUrlAuthenticationEntryPoint extends org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint {
+public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
 	/**
 	 * JSon redirection strategy, used when the pattern "redirectJson" matches to the current request.
@@ -34,7 +35,7 @@ public class LoginUrlAuthenticationEntryPoint extends org.springframework.securi
 	 *            URL where the login page can be found. Should either be relative to the web-app context path (include
 	 *            a leading {@code /}) or an absolute URL.
 	 */
-	public LoginUrlAuthenticationEntryPoint(final String loginFormUrl) {
+	public RedirectAuthenticationEntryPoint(final String loginFormUrl) {
 		super(loginFormUrl);
 	}
 

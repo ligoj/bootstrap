@@ -5,10 +5,10 @@ import java.io.Serializable;
 /**
  * A named and identified bean
  * 
- * @param <ID>
- *            the type of the identifier
+ * @param <K>
+ *            The type of the identifier
  */
-public interface INamableBean<ID extends Serializable> extends Comparable<INamableBean<ID>> {
+public interface INamableBean<K extends Serializable> extends Comparable<INamableBean<K>> {
 
 	/**
 	 * Bean name.
@@ -22,7 +22,7 @@ public interface INamableBean<ID extends Serializable> extends Comparable<INamab
 	 * 
 	 * @return identifier.
 	 */
-	ID getId();
+	K getId();
 
 	/**
 	 * Set the bean name.
@@ -38,10 +38,10 @@ public interface INamableBean<ID extends Serializable> extends Comparable<INamab
 	 * @param id
 	 *            The new identifier.
 	 */
-	void setId(ID id);
+	void setId(K id);
 
 	@Override
-	default int compareTo(final INamableBean<ID> o) {
+	default int compareTo(final INamableBean<K> o) {
 		return getName().compareToIgnoreCase(o.getName());
 	}
 }

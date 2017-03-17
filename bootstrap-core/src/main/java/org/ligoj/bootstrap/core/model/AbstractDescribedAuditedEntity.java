@@ -16,14 +16,14 @@ import org.ligoj.bootstrap.core.IDescribableBean;
 /**
  * Named, described and audited entity.
  * 
- * @param <PK>
+ * @param <K>
  *            Identifier type.
  */
 @Getter
 @Setter
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractDescribedAuditedEntity<PK extends Serializable> extends AbstractNamedAuditedEntity<PK> implements IDescribableBean<PK> {
+public abstract class AbstractDescribedAuditedEntity<K extends Serializable> extends AbstractNamedAuditedEntity<K> implements IDescribableBean<K> {
 
 	/**
 	 * SID

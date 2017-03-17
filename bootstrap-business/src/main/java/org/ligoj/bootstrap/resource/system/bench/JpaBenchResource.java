@@ -2,7 +2,6 @@ package org.ligoj.bootstrap.resource.system.bench;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -16,12 +15,12 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.dao.system.BenchResult;
 import org.ligoj.bootstrap.dao.system.ISystemPerformanceJpaDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -129,14 +128,11 @@ public class JpaBenchResource {
 		if (firstAvailableLob.length == 0) {
 			return null;
 		}
-		return new StreamingOutput() {
-			@Override
-			public void write(final OutputStream output) {
-				try {
-					IOUtils.write(firstAvailableLob, output);
-				} catch (final IOException e) {
-					throw new IllegalStateException("Unable to write the LOB data", e);
-				}
+		return output -> {
+			try {
+				IOUtils.write(firstAvailableLob, output);
+			} catch (final IOException e) {
+				throw new IllegalStateException("Unable to write the LOB data", e);
 			}
 		};
 	}

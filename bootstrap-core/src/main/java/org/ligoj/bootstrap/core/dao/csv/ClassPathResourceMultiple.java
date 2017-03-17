@@ -69,8 +69,7 @@ public class ClassPathResourceMultiple {
 		for (final String path : multiplePath) {
 			try {
 				return new ClassPathResource(path).getInputStream();
-			} catch (final FileNotFoundException fnfe) {
-				// Ignore this error, continue
+			} catch (final FileNotFoundException fnfe) { // NOSONAR - Ignore this error, continue
 				log.info(path + " resource has not been found, try next one : {}", fnfe.getMessage());
 			}
 		}

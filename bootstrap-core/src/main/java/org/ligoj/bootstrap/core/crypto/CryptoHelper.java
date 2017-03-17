@@ -37,7 +37,7 @@ public final class CryptoHelper {
 		try {
 			// Try a decryption
 			return decrypt(value);
-		} catch (final EncryptionOperationNotPossibleException e) {
+		} catch (final EncryptionOperationNotPossibleException e) { // NOSONAR - Ignore raw value
 			// Value could be encrypted, but was not
 			return value;
 		}
@@ -69,7 +69,7 @@ public final class CryptoHelper {
 
 			// Value is already encrypted
 			return value;
-		} catch (final EncryptionOperationNotPossibleException e) {
+		} catch (final EncryptionOperationNotPossibleException e) { // NOSONAR - Ignore raw value
 			// Value could be encrypted, but was not
 			return encrypt(value);
 		}

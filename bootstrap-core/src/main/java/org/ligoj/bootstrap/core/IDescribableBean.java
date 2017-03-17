@@ -5,10 +5,10 @@ import java.io.Serializable;
 /**
  * A common contract for entity and business object.
  * 
- * @param <ID>
- *            the type of the identifier
+ * @param <K>
+ *            The type of the identifier
  */
-public interface IDescribableBean<ID extends Serializable> extends INamableBean<ID> {
+public interface IDescribableBean<K extends Serializable> extends INamableBean<K> {
 
 	/**
 	 * Bean description.

@@ -61,7 +61,7 @@ public class HtmlProxyFilter implements Filter {
 	 * Return the optimized suffix corresponding to the given base name.
 	 */
 	private String getOptimizedSuffix(final ServletRequest request, final String baseName) {
-		return baseName.equals("index") ? getOrientationSuffix(request) + System.getProperty(APP_ENV, "") : baseName.equals("login") ? System
+		return "index".equals(baseName) ? getOrientationSuffix(request) + System.getProperty(APP_ENV, "") : "login".equals(baseName) ? System
 				.getProperty(APP_ENV, "") : "";
 	}
 

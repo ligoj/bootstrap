@@ -44,7 +44,7 @@ public class PaginationJson {
 	/**
 	 * Default page size when not provided.
 	 */
-	public static final Map<String, String> IDENTITY_MAPPING = Collections.singletonMap("*", "*");
+	protected static final Map<String, String> IDENTITY_MAPPING = Collections.singletonMap("*", "*");
 
 	/**
 	 * Get JQGrid pagination information from query parameters.

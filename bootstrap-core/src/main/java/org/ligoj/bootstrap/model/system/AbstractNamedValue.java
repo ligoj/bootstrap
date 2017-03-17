@@ -17,14 +17,14 @@ import lombok.Setter;
 /**
  * An audited, named and valued entity
  * 
- * @param <PK>
+ * @param <K>
  *            Identifier type.
  */
 @Getter
 @Setter
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractNamedValue<PK extends Serializable> extends AbstractNamedAuditedEntity<PK> {
+public abstract class AbstractNamedValue<K extends Serializable> extends AbstractNamedAuditedEntity<K> {
 
 	/**
 	 * SID

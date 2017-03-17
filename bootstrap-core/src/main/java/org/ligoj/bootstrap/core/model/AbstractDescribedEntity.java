@@ -14,14 +14,14 @@ import lombok.Setter;
 
 /**
  * Named and described entity.
- * @param <PK>
+ * @param <K>
  *            Identifier type.
  */
 @Getter
 @Setter
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractDescribedEntity<PK extends Serializable> extends AbstractNamedEntity<PK> implements IDescribableBean<PK> {
+public abstract class AbstractDescribedEntity<K extends Serializable> extends AbstractNamedEntity<K> implements IDescribableBean<K> {
 
 	/**
 	 * SID

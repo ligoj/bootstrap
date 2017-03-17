@@ -13,15 +13,15 @@ import lombok.ToString;
 /**
  * An audited and named bean
  * 
- * @param <ID>
- *            the type of the identifier
+ * @param <K>
+ *            The type of the identifier
  * @param <U>
- *            the type of the author
+ *            he type of the author
  */
 @Getter
 @Setter
 @ToString(of = "name")
-public class NamedAuditedBean<U extends Serializable, ID extends Serializable> extends AuditedBean<U, ID> implements INamableBean<ID> {
+public class NamedAuditedBean<U extends Serializable, K extends Serializable> extends AuditedBean<U, K> implements INamableBean<K> {
 
 	@NotBlank
 	@NotNull

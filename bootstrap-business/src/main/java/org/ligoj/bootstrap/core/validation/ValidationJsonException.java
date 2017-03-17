@@ -37,14 +37,25 @@ import lombok.Getter;
 public class ValidationJsonException extends RuntimeException {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Default field name.
 	 */
 	public static final String DEFAULT_FIELD = "value";
 
 	/**
-	 * SID
+	 * Ignored parameters for Hibernate validation serialization.
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final Set<String> IGNORED_PARAMETERS = new HashSet<>();
+
+	static {
+		IGNORED_PARAMETERS.add("message");
+		IGNORED_PARAMETERS.add("groups");
+		IGNORED_PARAMETERS.add("payload");
+	}
 
 	/**
 	 * JSR-303/349 errors, Key is the property name. Values is the associated translated message errors.
@@ -78,6 +89,18 @@ public class ValidationJsonException extends RuntimeException {
 	 */
 	public ValidationJsonException(final InvalidFormatException mappingException) {
 		this(mappingException, String.valueOf(mappingException.getValue()), parseRule(mappingException));
+	}
+
+	/**
+	 * Constructor from errors.
+	 * 
+	 * @param validation
+	 *            validation exception containing errors.
+	 */
+	public ValidationJsonException(final ConstraintViolationException validation) {
+		this(validation.getMessage());
+		validation.getConstraintViolations()
+				.forEach(e -> errors.computeIfAbsent(getPropertyPath(e), k -> new ArrayList<>()).add(serializeHibernateValidationError(e)));
 	}
 
 	/**
@@ -195,26 +218,7 @@ public class ValidationJsonException extends RuntimeException {
 		final String rule = StringUtils.capitalize(mappingException.getTargetType().getSimpleName());
 
 		// Manage the primitive type "int" due to Jackson 2.x new features
-		return rule.equals("Int") ? "Integer" : rule;
-	}
-
-	/**
-	 * Constructor from errors.
-	 * 
-	 * @param validation
-	 *            validation exception containing errors.
-	 */
-	public ValidationJsonException(final ConstraintViolationException validation) {
-		this(validation.getMessage());
-		for (final ConstraintViolation<?> error : validation.getConstraintViolations()) {
-			final String key = getPropertyPath(error);
-			if (!errors.containsKey(key)) {
-				errors.put(key, new ArrayList<Map<String, Serializable>>());
-			}
-
-			// Serialize and add the error.
-			errors.get(key).add(serializeHibernateValidationError(error));
-		}
+		return "Int".equals(rule) ? "Integer" : rule;
 	}
 
 	/**
@@ -227,17 +231,6 @@ public class ValidationJsonException extends RuntimeException {
 		}
 		// JSR-303 - Bean violation
 		return error.getPropertyPath().toString();
-	}
-
-	/**
-	 * Ignored parameters for Hibernate validation serialization.
-	 */
-	private static final Set<String> IGNORED_PARAMETERS = new HashSet<>();
-
-	static {
-		IGNORED_PARAMETERS.add("message");
-		IGNORED_PARAMETERS.add("groups");
-		IGNORED_PARAMETERS.add("payload");
 	}
 
 	/**

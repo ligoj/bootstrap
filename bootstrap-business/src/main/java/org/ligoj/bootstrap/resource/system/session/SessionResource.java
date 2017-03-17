@@ -104,8 +104,8 @@ public class SessionResource {
 	 * Return all flattered patterns.
 	 */
 	private Set<String> toPatterns(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
-		return authorizations.stream().map(Map::values).flatMap(authMethod -> authMethod.stream()).flatMap(patterns -> patterns.stream())
-				.map(Pattern::pattern).collect(Collectors.toSet());
+		return authorizations.stream().map(Map::values).flatMap(Collection::stream).flatMap(Collection::stream).map(Pattern::pattern)
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -120,12 +120,11 @@ public class SessionResource {
 	 * Build and return the list of business authorizations.
 	 */
 	private List<SystemAuthorization> getBusinessAuthorizations(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
-		return authorizations.stream().map(Map::entrySet).flatMap(entries -> entries.stream())
-				.flatMap(entry -> entry.getValue().stream().map(pattern -> {
-					final SystemAuthorization businessAuthorization = new SystemAuthorization();
-					businessAuthorization.setMethod(entry.getKey());
-					businessAuthorization.setPattern(pattern.pattern());
-					return businessAuthorization;
-				})).collect(Collectors.toList());
+		return authorizations.stream().map(Map::entrySet).flatMap(Collection::stream).flatMap(entry -> entry.getValue().stream().map(pattern -> {
+			final SystemAuthorization businessAuthorization = new SystemAuthorization();
+			businessAuthorization.setMethod(entry.getKey());
+			businessAuthorization.setPattern(pattern.pattern());
+			return businessAuthorization;
+		})).collect(Collectors.toList());
 	}
 }

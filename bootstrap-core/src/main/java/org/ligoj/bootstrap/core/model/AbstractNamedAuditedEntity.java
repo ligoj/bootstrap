@@ -17,7 +17,7 @@ import lombok.ToString;
 /**
  * Named and audited entity.
  * 
- * @param <PK>
+ * @param <K>
  *            Identifier type.
  */
 @Getter
@@ -25,7 +25,7 @@ import lombok.ToString;
 @MappedSuperclass
 @ToString(of = "name")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractNamedAuditedEntity<PK extends Serializable> extends AbstractAudited<PK> implements INamableBean<PK> {
+public abstract class AbstractNamedAuditedEntity<K extends Serializable> extends AbstractAudited<K> implements INamableBean<K> {
 
 	/**
 	 * SID

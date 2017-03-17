@@ -65,8 +65,8 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 				if (inputStream != null) {
 					newLocations.add(location);
 				}
-			} catch (final IOException ioe) {
-				logger.warn("Ignoring location " + location + " since is not found");
+			} catch (final IOException ioe) { // NOSONAR - Check error, no pollution required
+				logger.warn(String.format("Ignoring location %s since is not found : %s", location, ioe.getMessage()));
 			} finally {
 				IOUtils.closeQuietly(inputStream);
 			}

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -12,13 +13,13 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 /**
  * {@link AbstractMapper} test.
  */
-public class MapperTest {
+public class MapperTest extends AbstractMapper {
 
 	/**
 	 * Simulate a serialization issue of thrown exception.
 	 */
 	@Test(expected = TechnicalException.class)
-	public void testSerializationException() {
+	public void toResponseSerializationException() {
 		final AbstractMapper mapper = new AbstractMapper() {
 
 			@Override
@@ -29,6 +30,33 @@ public class MapperTest {
 		};
 		mapper.jacksonJsonProvider = new JacksonJsonProvider();
 		mapper.toResponse(null, null);
+	}
+
+	@Test
+	public void toResponse() {
+		jacksonJsonProvider = new JacksonJsonProvider();
+		super.toResponse(Status.FORBIDDEN, null, new NullPointerException());
+	}
+
+	@Test
+	public void toResponseNoException() {
+		jacksonJsonProvider = new JacksonJsonProvider();
+		Assert.assertEquals("{\"code\":null,\"message\":null,\"parameters\":null,\"cause\":null}",
+				toResponse(Status.FORBIDDEN, null, null).getEntity());
+	}
+
+	@Test
+	public void toResponseParameteredException() {
+		jacksonJsonProvider = new JacksonJsonProvider();
+		Assert.assertEquals("{\"code\":null,\"message\":\"message\",\"parameters\":[\"p1\",\"p2\"],\"cause\":null}",
+				toResponse(Status.FORBIDDEN, null, new BusinessException("message", "p1", "p2")).getEntity());
+	}
+
+	@Test
+	public void toResponseParameteredExceptionNoParameter() {
+		jacksonJsonProvider = new JacksonJsonProvider();
+		Assert.assertEquals("{\"code\":null,\"message\":\"message\",\"parameters\":null,\"cause\":null}",
+				toResponse(Status.FORBIDDEN, null, new BusinessException("message")).getEntity());
 	}
 
 	private static class NonSerializableObject {
