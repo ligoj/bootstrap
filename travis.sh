@@ -131,7 +131,6 @@ BUILD)
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
           -Dsonar.projectVersion=$PROJECT_VERSION \
-          -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
           -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
           -Dsonar.github.oauth=$GITHUB_TOKEN \
           -Dmaven.javadoc.skip=true \
