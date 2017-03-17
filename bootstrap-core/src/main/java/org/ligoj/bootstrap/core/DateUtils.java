@@ -30,6 +30,7 @@ public final class DateUtils {
 	 */
 	public static void setApplicationTimeZone(final TimeZone timeZone) {
 		applicationTimeZone = timeZone; // NOSONAR
+		TimeZone.setDefault(timeZone);
 	}
 
 	/**

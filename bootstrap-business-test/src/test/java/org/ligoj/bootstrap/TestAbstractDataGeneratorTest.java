@@ -61,8 +61,7 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void testGetDateInt() {
-		// CET is equals to GMT - 1h
-		Assert.assertEquals(-3600000, getDate(0).getTime());
+		Assert.assertEquals(0, getDate(0).getTime());
 	}
 
 	@Test

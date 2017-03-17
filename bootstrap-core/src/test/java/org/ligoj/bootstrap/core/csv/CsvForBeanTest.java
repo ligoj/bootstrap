@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -133,21 +134,21 @@ public class CsvForBeanTest {
 
 	@Test
 	public void toBeanDate() throws Exception {
-		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class, new StringReader(
-				"dialDate\n" + "2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
+		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class,
+				new StringReader("dialDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assert.assertEquals(6, items.size());
-		Assert.assertEquals("Wed May 04 00:00:00 CEST 2016", items.get(0).getDialDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:32 CEST 2016", items.get(1).getDialDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:00 CEST 2016", items.get(2).getDialDate().toString());
-		Assert.assertEquals("Wed May 04 00:00:00 CEST 2016", items.get(3).getDialDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:00 CEST 2016", items.get(4).getDialDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:32 CEST 2016", items.get(5).getDialDate().toString());
+		Assert.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(0).getDialDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(1).getDialDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(2).getDialDate().toString());
+		Assert.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(3).getDialDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(4).getDialDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(5).getDialDate().toString());
 	}
 
 	@Test
 	public void toBeanLocalDate() throws Exception {
-		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class, new StringReader(
-				"localDate\n" + "2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
+		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class,
+				new StringReader("localDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assert.assertEquals(6, items.size());
 		Assert.assertEquals("2016-05-04", items.get(0).getLocalDate().toString());
 		Assert.assertEquals("2016-05-04", items.get(1).getLocalDate().toString());
@@ -160,14 +161,17 @@ public class CsvForBeanTest {
 	@Test
 	public void toBeanDateTime() throws Exception {
 		final List<DummyAuditedBean> items = csvForBean.toBean(DummyAuditedBean.class, new StringReader(
-				"createdDate\n" + "2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
+				"createdDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assert.assertEquals(6, items.size());
-		Assert.assertEquals("Wed May 04 00:00:00 CEST 2016", items.get(0).getCreatedDate().toDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:32 CEST 2016", items.get(1).getCreatedDate().toDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:00 CEST 2016", items.get(2).getCreatedDate().toDate().toString());
-		Assert.assertEquals("Wed May 04 00:00:00 CEST 2016", items.get(3).getCreatedDate().toDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:00 CEST 2016", items.get(4).getCreatedDate().toDate().toString());
-		Assert.assertEquals("Wed May 04 12:54:32 CEST 2016", items.get(5).getCreatedDate().toDate().toString());
+		System.setProperty("user.timezone", "UTC");
+		Assert.assertEquals("2016-05-04T00:00:00.000Z",
+				items.get(0).getCreatedDate().toDateTime(DateTimeZone.forTimeZone(DateUtils.getApplicationTimeZone())).toString());
+		Assert.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(0).getCreatedDate().toDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(1).getCreatedDate().toDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(2).getCreatedDate().toDate().toString());
+		Assert.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(3).getCreatedDate().toDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(4).getCreatedDate().toDate().toString());
+		Assert.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(5).getCreatedDate().toDate().toString());
 	}
 
 	@Test(expected = TechnicalException.class)

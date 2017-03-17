@@ -125,7 +125,7 @@ BUILD)
     # For this reason errors are ignored with "|| true"
     git fetch --unshallow || true
 
-    mvn clean package jacoco:report coveralls:report sonar:sonar \
+    mvn clean package jacoco:report sonar:sonar \
           $MAVEN_ARGS \
           -Pjacoco -Djacoco.includes=org.ligoj.bootstrap.* \
           -Dsonar.host.url=$SONAR_HOST_URL \
@@ -136,6 +136,9 @@ BUILD)
           -Dsonar.github.oauth=$GITHUB_TOKEN \
           -Dmaven.javadoc.skip=true \
           -Dmaven.ut.reuseForks=true -Dmaven.it.reuseForks=false
+
+    mvn coveralls:report \
+          $MAVEN_ARGS
 
   elif [[ "$TRAVIS_BRANCH" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     echo 'Build release branch'

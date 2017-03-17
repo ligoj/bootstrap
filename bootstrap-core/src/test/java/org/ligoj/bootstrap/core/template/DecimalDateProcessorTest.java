@@ -33,7 +33,7 @@ public class DecimalDateProcessorTest {
 	 */
 	@Test
 	public void testGetValue() {
-		Assert.assertEquals(1278220350000L, new DecimalDateProcessor().getValue("40363.300347222").getTime());
+		Assert.assertEquals(1278227550000L, new DecimalDateProcessor().getValue("40363.300347222").getTime());
 	}
 
 	/**

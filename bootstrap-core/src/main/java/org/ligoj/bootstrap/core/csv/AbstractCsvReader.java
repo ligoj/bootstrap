@@ -74,7 +74,7 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Date patterns together.
 	 */
-	public static final String[] DATE_PATTERNS = { DATE_PATTERN_HMS, DATE_PATTERN_HM, DATE_PATTERN, DATE_PATTERN_EN_HMS, DATE_PATTERN_EN_HM,
+	protected static final String[] DATE_PATTERNS = { DATE_PATTERN_HMS, DATE_PATTERN_HM, DATE_PATTERN, DATE_PATTERN_EN_HMS, DATE_PATTERN_EN_HM,
 			DATE_PATTERN_EN, DATE_PATTERN_HMS.replace('/', '-'), DATE_PATTERN_HM.replace('/', '-'), DATE_PATTERN.replace('/', '-'),
 			DATE_PATTERN_EN_HMS.replace('/', '-'), DATE_PATTERN_EN_HM.replace('/', '-'), DATE_PATTERN_EN.replace('/', '-') };
 
