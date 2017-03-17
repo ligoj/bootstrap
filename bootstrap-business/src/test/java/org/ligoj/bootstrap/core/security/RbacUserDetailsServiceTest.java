@@ -22,17 +22,17 @@ import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**
- * {@link UserDetailsService} test class.
+ * {@link RbacUserDetailsService} test class.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/security-context-test.xml",
 		"classpath:/META-INF/spring/business-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml" })
 @Rollback
 @Transactional
-public class UserDetailsServiceTest extends AbstractJpaTest {
+public class RbacUserDetailsServiceTest extends AbstractJpaTest {
 
 	@Autowired
-	private UserDetailsService userDetailsService;
+	private RbacUserDetailsService userDetailsService;
 
 	@Before
 	public void setup() {

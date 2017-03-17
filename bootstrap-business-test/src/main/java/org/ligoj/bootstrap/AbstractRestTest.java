@@ -106,7 +106,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 					break;
 				}
 				checkRetries(counter);
-			} catch (final HttpHostConnectException ex) {
+			} catch (final HttpHostConnectException ex) { // NOSONAR - Wait, and check later
 				log.info("Check failed, retrying...");
 				checkRetries(counter);
 			} finally {

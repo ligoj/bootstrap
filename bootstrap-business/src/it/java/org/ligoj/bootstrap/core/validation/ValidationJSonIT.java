@@ -21,7 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ligoj.bootstrap.AbstractRestTest;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -90,7 +90,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 		final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 		Assert.assertNotNull(content);
 		@SuppressWarnings("all")
-		final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapper()
+		final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 				.readValue(content, HashMap.class);
 
 		Assert.assertFalse(result.isEmpty());
@@ -137,7 +137,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			Assert.assertNotNull(content);
 			@SuppressWarnings("all")
-			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapper()
+			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 					.readValue(content, HashMap.class);
 			Assert.assertFalse(result.isEmpty());
 			final Map<String, List<Map<String, Object>>> errors = result.get("errors");
@@ -166,7 +166,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			Assert.assertNotNull(content);
 			@SuppressWarnings("all")
-			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapper()
+			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 					.readValue(content, HashMap.class);
 			Assert.assertFalse(result.isEmpty());
 			final Map<String, List<Map<String, Object>>> errors = result.get("errors");
@@ -214,7 +214,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			Assert.assertNotNull(content);
 			@SuppressWarnings("all")
-			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapper()
+			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 					.readValue(content, HashMap.class);
 
 			Assert.assertFalse(result.isEmpty());

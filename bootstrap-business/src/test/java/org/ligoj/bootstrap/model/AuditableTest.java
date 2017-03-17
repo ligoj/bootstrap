@@ -71,7 +71,7 @@ public class AuditableTest extends AbstractSecurityTest {
 		final SystemBench entity = new SystemBench();
 		em.persist(entity);
 		em.flush();
-		Thread.sleep(200);
+		Thread.sleep(200); // NOSONAR -- Have to pause the thread for the test
 		SecurityContextHolder.clearContext();
 		entity.setPrfBool(true);
 		em.flush();
@@ -93,7 +93,7 @@ public class AuditableTest extends AbstractSecurityTest {
 		em.persist(entity);
 		em.flush();
 		em.clear();
-		Thread.sleep(200);
+		Thread.sleep(200); // NOSONAR -- Have to pause the thread for the test
 
 		// Update from a new instance
 		SecurityContextHolder.clearContext();

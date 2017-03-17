@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -16,7 +17,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * 
  * @author Fabrice Daugan
  */
-public class ObjectMapper extends com.fasterxml.jackson.databind.ObjectMapper {
+public class ObjectMapperTrim extends ObjectMapper {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +28,11 @@ public class ObjectMapper extends com.fasterxml.jackson.databind.ObjectMapper {
 
 		private static final long serialVersionUID = 1L;
 
+		/**
+		 * @deprecated And yet no other global configuration is possible
+		 */
 		@Override
+		@Deprecated
 		public String findEnumValue(final Enum<?> value) {
 			// Simple override, just before the save in the cache. Is used for both serialization processes.
 			return value.name().toLowerCase(Locale.ENGLISH);
@@ -46,7 +51,7 @@ public class ObjectMapper extends com.fasterxml.jackson.databind.ObjectMapper {
 	/**
 	 * Default constructor overriding the default annotation introspector.
 	 */
-	public ObjectMapper() {
+	public ObjectMapperTrim() {
 		setAnnotationIntrospector(CUSTOM_ANNOTATION_INTROSPECTOR);
 		final SimpleModule testModule = new SimpleModule("MyModule", new Version(1, 0, 0, null, null, null));
 		testModule.addDeserializer(Date.class, DateDeserializer.INSTANCE);

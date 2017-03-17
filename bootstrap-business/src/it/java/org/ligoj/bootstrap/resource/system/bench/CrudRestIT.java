@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Timed;
 
 import org.ligoj.bootstrap.AbstractRestTest;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 
 /**
  * CRUD Integration REST tests.
@@ -171,7 +171,7 @@ public class CrudRestIT extends AbstractRestTest {
 			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapper().readValue(content, HashMap.class);
+			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assert.assertEquals("1", result.get("draw"));
 			Assert.assertTrue((Integer) result.get("recordsFiltered") > 0);
 			Assert.assertTrue((Integer) result.get("recordsTotal") > 0);
@@ -203,7 +203,7 @@ public class CrudRestIT extends AbstractRestTest {
 			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapper().readValue(content, HashMap.class);
+			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assert.assertEquals("1", result.get("draw"));
 			Assert.assertTrue((Integer) result.get("recordsFiltered") > 0);
 			Assert.assertTrue((Integer) result.get("recordsTotal") > 0);

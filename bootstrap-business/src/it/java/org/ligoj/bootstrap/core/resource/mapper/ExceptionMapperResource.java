@@ -28,7 +28,7 @@ import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.TransactionSystemException;
 
 import org.ligoj.bootstrap.core.SpringUtils;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
@@ -144,7 +144,7 @@ public class ExceptionMapperResource {
 	@Path("json-mapping")
 	public void throwJSonMapping() throws IOException {
 		SpringUtils.getApplicationContext().getBean("jacksonProvider", com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider.class);
-		new ObjectMapper().readValue("{\"dialDouble\":\"A\"}", SystemDialect.class);
+		new ObjectMapperTrim().readValue("{\"dialDouble\":\"A\"}", SystemDialect.class);
 	}
 
 	@DELETE

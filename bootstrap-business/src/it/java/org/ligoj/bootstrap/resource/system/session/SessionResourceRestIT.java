@@ -22,7 +22,7 @@ import org.junit.runners.MethodSorters;
 
 import org.ligoj.bootstrap.AbstractRestTest;
 import org.ligoj.bootstrap.core.SpringUtils;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.resource.system.security.AuthorizationEditionVo;
 import org.ligoj.bootstrap.resource.system.security.RoleResource;
@@ -141,7 +141,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		try {
 			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
-			final SessionSettings settings = new ObjectMapper().readValue(response.getEntity().getContent(), SessionSettings.class);
+			final SessionSettings settings = new ObjectMapperTrim().readValue(response.getEntity().getContent(), SessionSettings.class);
 
 			// Check the application settings (session scope)
 			Assert.assertNotNull(settings);

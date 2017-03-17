@@ -15,13 +15,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 /**
- * Basic user details service.
+ * User details service backed in database. All authenticated users get the role {@link SystemRole#DEFAULT_ROLE}
  */
 @Component
-public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+public class RbacUserDetailsService implements UserDetailsService {
 
 	/**
 	 * User repository.

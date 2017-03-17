@@ -38,7 +38,7 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 
 	@Before
 	@Override
-	public void setUpDriver() throws Exception { // NOPMD -- too much exception
+	public void setUpDriver() throws Exception { // NOSONAR -- too much exception
 		super.setUpDriver();
 		runParallel();
 	}

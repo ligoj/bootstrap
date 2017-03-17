@@ -43,7 +43,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @return Element location
 	 */
 	protected By findCellChild(final String tableId, final int row, final int column) {
-		return By.xpath(DATATABLES_ID + tableId + "']/tbody/tr[" + row + "]/td[" + column + "]/*[1]");
+		return By.xpath(DATATABLES_ID + tableId + tableXPath(row, column) + "/*[1]");
 	}
 
 	/**
@@ -58,7 +58,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @return Element location
 	 */
 	protected By findCell(final String tableId, final int row, final int column) {
-		return By.xpath(DATATABLES_ID + tableId + "']/tbody/tr[" + row + "]/td[" + column + "]");
+		return By.xpath(DATATABLES_ID + tableId + tableXPath(row, column));
 	}
 
 	/**
@@ -73,7 +73,11 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @return Error text
 	 */
 	protected String findErrorInTable(final String tableId, final int row, final int column) {
-		return driver.findElement(By.xpath(DATATABLES_ID + tableId + "']/tbody/tr[" + row + "]/td[" + column + "]")).getAttribute("title");
+		return driver.findElement(By.xpath(DATATABLES_ID + tableId + tableXPath(row, column))).getAttribute("title");
+	}
+
+	protected String tableXPath(final int row, final int column) {
+		return "']/tbody/tr[" + row + "]/td[" + column + "]";
 	}
 
 	/**
@@ -96,7 +100,8 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @return Element
 	 */
 	protected WebElement getElement(final By by) {
-		return new WebDriverWait(driver, timeout).until(d -> Optional.ofNullable(driver.findElement(by)).filter(WebElement::isDisplayed).orElse(null));
+		return new WebDriverWait(driver, timeout)
+				.until(d -> Optional.ofNullable(driver.findElement(by)).filter(WebElement::isDisplayed).orElse(null));
 	}
 
 	/**
@@ -164,7 +169,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 			numOption++;
 			try {
 				options.add(driver.findElement(By.xpath(S2_ID + select2Id + "']/ul/li[" + numOption + "]/div")).getText());
-			} catch (final NoSuchElementException ex) {
+			} catch (final NoSuchElementException ex) { // NOSONAR - No more element
 				break;
 			}
 		}

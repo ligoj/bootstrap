@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
-
+import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.csv.CsvBeanWriter;
 
@@ -262,7 +262,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	/**
 	 * Field collector.
 	 */
-	private static class FieldCallback implements org.springframework.util.ReflectionUtils.FieldCallback {
+	private static class OrderedFieldCallback implements FieldCallback {
 
 		/**
 		 * Collected fields.
@@ -286,7 +286,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 */
 	public <T> String[] getJpaHeaders(final Class<T> beanType) {
 		// Build descriptor list respecting the declaration order
-		final FieldCallback fieldCallBack = new FieldCallback();
+		final OrderedFieldCallback fieldCallBack = new OrderedFieldCallback();
 		ReflectionUtils.doWithFields(beanType, fieldCallBack);
 		final List<String> orderedDescriptors = fieldCallBack.descriptorsOrdered;
 
@@ -476,13 +476,15 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *            the ordered set to clean, and also to refill from CSV files.
 	 * @param encoding
 	 *            the encoding used to read the CSV resources.
+	 * @param consumer
+	 *            Optional Consumer for each entity.
 	 * @return the total inserted table entries.
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
-	public int reset(final String csvRoot, final Class<?>[] beanTypes, final String encoding, final Consumer<?> consummer) throws IOException {
+	public int reset(final String csvRoot, final Class<?>[] beanTypes, final String encoding, final Consumer<?> consumer) throws IOException {
 		cleanup(beanTypes);
-		return insert(csvRoot, beanTypes, encoding, consummer);
+		return insert(csvRoot, beanTypes, encoding, consumer);
 	}
 
 }

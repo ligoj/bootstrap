@@ -52,8 +52,8 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	@Override
-	protected void setProperty(final T bean, final String property, final String rawValue) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+	protected void setProperty(final T bean, final String property, final String rawValue)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		final int fkeyIndex = property.indexOf('.');
 		if (fkeyIndex == -1) {
 			setSimpleProperty(bean, property, rawValue);
@@ -92,17 +92,22 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 		final List<?> resultList;
 		if (isRowNumber(jpaField, propertyName)) {
 			// search referenced entity with a filter on row number
-			resultList = em.createQuery("FROM " + jpaField.getType().getName()).setFirstResult(Integer.parseInt(rawValue) - 1).setMaxResults(1)
-					.getResultList();
+			resultList = em.createQuery(from(jpaField)).setFirstResult(Integer.parseInt(rawValue) - 1).setMaxResults(1).getResultList();
 		} else {
 			// search referenced entity with a filter on propertyName
-			resultList = em
-					.createQuery("FROM " + jpaField.getType().getName() + " WHERE " + propertyName + " like '" + rawValue + "'", jpaField.getType())
-					.setMaxResults(1).getResultList();
+			resultList = em.createQuery(from(jpaField) + " WHERE " + propertyName + " LIKE '" + rawValue + "'", jpaField.getType()).setMaxResults(1)
+					.getResultList();
 
 		}
 
 		return resultList.stream().findFirst().orElse(null);
+	}
+
+	/**
+	 * Return a "FROM" query based on the given filed type.
+	 */
+	private String from(final Field jpaField) {
+		return "FROM " + jpaField.getType().getName();
 	}
 
 	/**
@@ -123,8 +128,8 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Read from already read row index
 	 */
-	private Object readFromJoinCache(final String rawValue, final Field jpaField, final String propertyName) throws IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
+	private Object readFromJoinCache(final String rawValue, final Field jpaField, final String propertyName)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		ensureCache(jpaField, propertyName);
 		return foreignCache.get(jpaField.getType()).get(rawValue);
 	}
@@ -147,8 +152,8 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Initialize or update cache.
 	 */
-	private void ensureCache(final Field jpaField, final String propertyName) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+	private void ensureCache(final Field jpaField, final String propertyName)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		if (!foreignCache.containsKey(jpaField.getType()) || jpaField.getType() == clazz) {
 			foreignCache.put(jpaField.getType(), buildMap(readAll(jpaField), propertyName));
 		}
@@ -162,14 +167,14 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	private List<?> readAll(final Field jpaField) {
-		return em.createQuery("FROM " + jpaField.getType().getName()).getResultList();
+		return em.createQuery(from(jpaField)).getResultList();
 	}
 
 	/**
 	 * Return a map where key is the foreign key and value is the entity.
 	 */
-	private Map<String, Object> buildMap(final List<?> list, final String property) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+	private Map<String, Object> buildMap(final List<?> list, final String property)
+			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		final Map<String, Object> result = new HashMap<>();
 		for (final Object item : list) {
 			result.put(String.valueOf(beanUtilsBean.getProperty(item, property)), item);

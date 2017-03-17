@@ -17,24 +17,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 
 	/**
-	 * Login to the application with bpraffect login
+	 * Login to the application with a sample form login
 	 */
 	protected void login() {
 		getElement(By.id("username-ajax")).clear();
-		getElement(By.id("username-ajax")).sendKeys("bpraffect");
+		getElement(By.id("username-ajax")).sendKeys("user");
 		getElement(By.id("password-ajax")).clear();
-		getElement(By.id("password-ajax")).sendKeys("bpraffect!#1");
+		getElement(By.id("password-ajax")).sendKeys("secret!#1");
 		getElement(By.id("submit")).click();
-		getElement(By.linkText("Accueil"));
-		getElement(By.linkText("Gestion de la production"));
+		getElement(By.linkText("Home"));
+		getElement(By.linkText("Management"));
 	}
 
 	/**
-	 * Login to the application with bpraffect login
+	 * Login to the application with a sample form logout
 	 */
 	protected void logout() {
 		getElement(By.id("_username")).click();
-		getElement(By.linkText("Déconnexion")).click();
+		getElement(By.linkText("Log out")).click();
 	}
 
 	/**
@@ -109,7 +109,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return driver.findElement(findCell(tableId, row, column)).getAttribute("title").equals(expectedError);
-			} catch (final StaleElementReferenceException ex) {
+			} catch (final StaleElementReferenceException ex) { // NOSONAR - Not yet ready element, try later
 				return false;
 			}
 		});
@@ -131,7 +131,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return getElement(findCell(tableId, row, column)).getText().equals(expectedText);
-			} catch (final StaleElementReferenceException ex) {
+			} catch (final StaleElementReferenceException ex) { // NOSONAR - Not yet ready element, try later
 				return false;
 			}
 		});
@@ -149,7 +149,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return driver.findElement(findControlGroup(elementId)).getAttribute("title").equals(expectedError);
-			} catch (final StaleElementReferenceException ex) {
+			} catch (final StaleElementReferenceException ex) { // NOSONAR - Not yet ready element, try later
 				return false;
 			}
 		});
@@ -183,7 +183,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return Optional.ofNullable(driver.findElement(by)).map(WebElement::getText).filter(expectedText::equals).isPresent();
-			} catch (final StaleElementReferenceException ex) {
+			} catch (final StaleElementReferenceException ex) { // NOSONAR - Not yet ready element, try later
 				return false;
 			}
 		});
@@ -199,24 +199,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 		new WebDriverWait(driver, timeout).until(d -> {
 			try {
 				return driver.findElements(by).stream().noneMatch(WebElement::isDisplayed);
-			} catch (final StaleElementReferenceException ex) {
-				return false;
-			}
-		});
-	}
-
-	/**
-	 * Wait for the given table to be empty
-	 * 
-	 * @param tableId
-	 *            Id of the table
-	 */
-	protected void assertTableEmpty(final String tableId) {
-		new WebDriverWait(driver, timeout).until(d -> {
-			try {
-				return driver.findElement(By.xpath(DATATABLES_ID + tableId + "']/tbody/tr/td")).getText()
-						.equals("Aucune donnée disponible dans le tableau");
-			} catch (final StaleElementReferenceException ex) {
+			} catch (final StaleElementReferenceException ex) { // NOSONAR - Not yet ready element, try later
 				return false;
 			}
 		});

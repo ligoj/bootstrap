@@ -37,11 +37,6 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 	 */
 	private WebDriver mockDriver;
 
-	/**
-	 * Mock sleep failure.
-	 */
-	private boolean failSleep = false;
-
 	@Test
 	public void testSetup() throws Exception {
 		System.setProperty("test.selenium.remote", "any");
@@ -149,14 +144,6 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 		// Nothing to do
 	}
 
-	@Override
-	protected void sleep(final long milli) throws InterruptedException {
-		if (failSleep) {
-			throw new InterruptedException();
-		}
-		super.sleep(milli);
-	}
-
 	/**
 	 * Used to distribute different sleep values.
 	 */
@@ -189,7 +176,6 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 	public void setUpDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
-		failSleep = false;
 		prepareDriver();
 	}
 
@@ -217,7 +203,6 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		remoteDriverClass = WebDriverMock.class.getName();
-		failSleep = false;
 		scenario = "sc";
 		super.prepareDriver();
 		mockDriver = Mockito.mock(WebDriverMock.class);

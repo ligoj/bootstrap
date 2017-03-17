@@ -37,7 +37,7 @@ public abstract class AbstractBusinessEntityTest {
 	 * @param <T>
 	 *            The type of the entity to test.
 	 */
-	protected <T> void testEqualsAndHash(final Class<T> modelClass) throws Exception {
+	protected <T> void testEqualsAndHash(final Class<T> modelClass) throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		testEqualsAndHash(modelClass, "id");
 	}
 

@@ -65,7 +65,7 @@ public abstract class AbstractSpecification {
 		return currentPath;
 	}
 
-	private PathImplementor<?> getNextPath(final String pathFragment, final From<?, ?> from) {
+	private <X> PathImplementor<?> getNextPath(final String pathFragment, final From<?, X> from) {
 		PathImplementor<?> currentPath = (PathImplementor<?>) from.get(pathFragment);
 		fixAlias(from, aliasCounter);
 
@@ -87,7 +87,7 @@ public abstract class AbstractSpecification {
 	 *            the from source element.
 	 * @param attribute
 	 *            the attribute to join
-	 * @return the join/fetch path if it exists.
+	 * @return The join/fetch path if it exists.
 	 * @param <U>
 	 *            The source type of the {@link Join}
 	 */
@@ -102,11 +102,11 @@ public abstract class AbstractSpecification {
 		return null;
 	}
 
-	private PathImplementor<?> fixAlias(final Selection<?> join, final AtomicInteger integer) {
+	private <X> PathImplementor<?> fixAlias(final Selection<X> join, final AtomicInteger integer) {
 		if (join.getAlias() == null) {
 			join.alias("_" + integer.incrementAndGet());
 		}
-		return (PathImplementor<?>) join;
+		return (PathImplementor<X>) join;
 	}
 
 	/**

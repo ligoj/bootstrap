@@ -17,11 +17,11 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 
 /**
- * Test class of {@link ObjectMapper}
+ * Test class of {@link ObjectMapperTrim}
  */
 public class ObjectMapperTest extends AbstractDataGeneratorTest {
 
-	private com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();
+	private com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapperTrim();
 	private com.fasterxml.jackson.databind.ObjectMapper vanillaMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
 	@Test

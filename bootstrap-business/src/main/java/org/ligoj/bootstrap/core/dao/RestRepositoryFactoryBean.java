@@ -17,10 +17,10 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
  *            Repository
  * @param <T>
  *            Entity type.
- * @param <ID>
+ * @param <K>
  *            Entity's key type.
  */
-public class RestRepositoryFactoryBean<R extends JpaRepository<T, ID>, T, ID extends Serializable> extends JpaRepositoryFactoryBean<R, T, ID> {
+public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K extends Serializable> extends JpaRepositoryFactoryBean<R, T, K> {
 
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory(final EntityManager entityManager) {

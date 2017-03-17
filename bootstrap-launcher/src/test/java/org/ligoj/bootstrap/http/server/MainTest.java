@@ -92,11 +92,11 @@ public class MainTest {
 			}
 		});
 		thread.start();
-		Thread.sleep(1500);
+		Thread.sleep(1500); // NOSONAR -- Have to pause the thread for the test
 		Assert.assertTrue(Main.getLastStartedServer().isStarted());
 		thread.stop();
 		Assert.assertTrue(Main.getLastStartedServer().isRunning());
-		Thread.sleep(500);
+		Thread.sleep(500); // NOSONAR -- Have to pause the thread for the test
 		Main.getLastStartedServer().stop();
 		Assert.assertTrue(Main.getLastStartedServer().isStopped());
 	}
@@ -122,7 +122,7 @@ public class MainTest {
 			}
 		});
 		thread.start();
-		Thread.sleep(1500);
+		Thread.sleep(1500); // NOSONAR -- Have to pause the thread for the test
 		Assert.assertTrue(Main.getLastStartedServer().isStarted());
 		Main.getLastStartedServer().stop();
 		Assert.assertTrue(Main.getLastStartedServer().isStopped());

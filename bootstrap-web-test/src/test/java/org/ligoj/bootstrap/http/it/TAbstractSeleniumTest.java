@@ -241,14 +241,6 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 	}
 
 	@Test
-	public void testAssertTableEmpty() {
-		final WebElement webElement = Mockito.mock(WebElement.class);
-		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
-		Mockito.when(webElement.getText()).thenThrow(new StaleElementReferenceException("")).thenReturn("Aucune donnée disponible dans le tableau");
-		assertTableEmpty("a");
-	}
-
-	@Test
 	public void testAssertFieldError() {
 		final WebElement webElement = Mockito.mock(WebElement.class);
 		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);

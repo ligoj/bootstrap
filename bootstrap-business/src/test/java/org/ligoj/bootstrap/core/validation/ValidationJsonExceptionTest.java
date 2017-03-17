@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -91,7 +91,7 @@ public class ValidationJsonExceptionTest {
 
 	@Test
 	public void testValidationJsonExceptionCollection() throws JsonParseException, JsonMappingException, IOException {
-		final ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapperTrim mapper = new ObjectMapperTrim();
 		try {
 			mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class);
 		} catch (final InvalidFormatException e) {

@@ -57,7 +57,7 @@ public class JpaBenchResource {
 		log.info("Content size :" + lobData.length);
 		final BenchResult result = jpaDao.initialize(nb, lobData);
 		result.setDuration(System.currentTimeMillis() - start);
-		return new org.ligoj.bootstrap.core.json.ObjectMapper().writeValueAsString(result);
+		return new org.ligoj.bootstrap.core.json.ObjectMapperTrim().writeValueAsString(result);
 	}
 
 	/**

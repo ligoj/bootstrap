@@ -23,19 +23,19 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import org.ligoj.bootstrap.core.dao.IdentifierGeneratorStrategyProvider.OptimizedSequenceStyleGenerator;
+import org.ligoj.bootstrap.core.dao.SequenceIdentifierGeneratorStrategyProvider.OptimizedSequenceStyleGenerator;
 
 /**
- * Test of {@link IdentifierGeneratorStrategyProvider} implementation.
+ * Test of {@link SequenceIdentifierGeneratorStrategyProvider} implementation.
  */
-public class IdentifierGeneratorStrategyProviderTest {
+public class SequenceIdentifierGeneratorStrategyProviderTest {
 	/**
 	 * Check strategy configuration.
 	 */
 	@Test
 	public void testFactoryConfiguration() throws InstantiationException, IllegalAccessException {
 		Assert.assertEquals(OptimizedSequenceStyleGenerator.class,
-				IdentifierGeneratorStrategyProvider.class.newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
+				SequenceIdentifierGeneratorStrategyProvider.class.newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
 	}
 
 	/**

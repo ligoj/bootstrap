@@ -43,6 +43,8 @@ public class ConfigurationResource {
 	 * are
 	 * always encrypted.
 	 * 
+	 * @param name
+	 *            The requested parameter name.
 	 * @return a specific configuration. May be <code>null</code>.
 	 */
 	@GET

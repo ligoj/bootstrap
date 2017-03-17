@@ -50,6 +50,10 @@ public final class DataTableAttributes {
 	 */
 	public static final String SEARCH = "search[value]";
 
+	private DataTableAttributes() {
+		// empty constructor
+	}
+
 	/**
 	 * Return the search filter from the query parameters.
 	 * 
@@ -60,10 +64,6 @@ public final class DataTableAttributes {
 	public static String getSearch(final UriInfo uriInfo) {
 		return StringUtils
 				.trimToNull(ObjectUtils.defaultIfNull(uriInfo.getQueryParameters().getFirst("q"), uriInfo.getQueryParameters().getFirst(SEARCH)));
-	}
-
-	private DataTableAttributes() {
-		// empty constructor
 	}
 
 }

@@ -15,11 +15,11 @@ import org.springframework.data.repository.NoRepositoryBean;
  * 
  * @param <T>
  *            Entity type.
- * @param <ID>
+ * @param <K>
  *            Entity's key type.
  */
 @NoRepositoryBean
-public interface RestRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
+public interface RestRepository<T, K extends Serializable> extends JpaRepository<T, K> {
 
 	/**
 	 * Search an expected entity with the given identifier. If not found a runtime exception is raised.
@@ -28,7 +28,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 *            entity's identifier.
 	 * @return the non <code>null</code> entity.
 	 */
-	T findOneExpected(ID id);
+	T findOneExpected(K id);
 
 	/**
 	 * Check the given entity exist.
@@ -36,7 +36,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 * @param id
 	 *            entity's identifier.
 	 */
-	void existExpected(ID id);
+	void existExpected(K id);
 
 	/**
 	 * Delete an entity that must exists.
@@ -45,7 +45,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 *            entity's identifier.
 	 */
 	@Override
-	void delete(ID id);
+	void delete(K id);
 
 	/**
 	 * Delete all entities having the given property with the expected value.
@@ -65,7 +65,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 * @param id
 	 *            entity's identifier.
 	 */
-	void deleteNoFetch(ID id);
+	void deleteNoFetch(K id);
 
 	/**
 	 * Delete all entities without fetching them from the data base. Warning, the entity manager state will not reflect
@@ -81,7 +81,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 * 
 	 * @return the number of deleted entities
 	 */
-	int deleteAll(Collection<ID> identifiers);
+	int deleteAll(Collection<K> identifiers);
 
 	/**
 	 * Delete all entities matching to the given identifiers and return the amount of deleted entities. If one or more
@@ -90,7 +90,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 * 
 	 * @return the number of deleted entities.
 	 */
-	int deleteAllExpected(Collection<ID> identifiers);
+	int deleteAllExpected(Collection<K> identifiers);
 
 	/**
 	 * Search an expected entity with the given identifier with fetched associations. If not found a runtime exception
@@ -105,7 +105,7 @@ public interface RestRepository<T, ID extends Serializable> extends JpaRepositor
 	 *            JoinType.INNER&gt; is accepted.
 	 * @return the non <code>null</code> entity.
 	 */
-	T findOneExpected(ID id, Map<String, JoinType> fetchedAssociations);
+	T findOneExpected(K id, Map<String, JoinType> fetchedAssociations);
 
 	/**
 	 * Search an entity with the given entity with the given name. If not found a <code>null</code> object is returned.

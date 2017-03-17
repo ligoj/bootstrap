@@ -294,7 +294,7 @@ public class PaginationJson {
 	public UiFilter buildFilter(final String jsonString) {
 
 		if (jsonString != null) {
-			final ObjectMapper mapper = new org.ligoj.bootstrap.core.json.ObjectMapper();
+			final ObjectMapper mapper = new org.ligoj.bootstrap.core.json.ObjectMapperTrim();
 			try {
 				return mapper.readValue(jsonString, UiFilter.class);
 			} catch (final IOException e) {

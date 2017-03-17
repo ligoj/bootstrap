@@ -112,8 +112,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOPMD -- too many
-																									// exception
+	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOSONAR -- too many exception
 		log.info("Asking for " + capability + " to " + gridUrl);
 		return new Augmenter()
 				.augment((WebDriver) Class.forName(remoteDriverClass).getConstructor(URL.class, Capabilities.class).newInstance(gridUrl, capability));

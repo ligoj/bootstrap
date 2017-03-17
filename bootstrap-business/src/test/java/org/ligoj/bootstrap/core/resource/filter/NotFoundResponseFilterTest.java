@@ -10,7 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Test;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.mockito.Mockito;
@@ -27,7 +27,7 @@ public class NotFoundResponseFilterTest {
 		@Override
 		protected Object toEntity(final Object object) {
 			try {
-				return new ObjectMapper().writeValueAsString(object);
+				return new ObjectMapperTrim().writeValueAsString(object);
 			} catch (final JsonProcessingException e) {
 				// Ignore this error at UI level but trace it
 				throw new TechnicalException("Unable to build a JSON string from a server error", e);

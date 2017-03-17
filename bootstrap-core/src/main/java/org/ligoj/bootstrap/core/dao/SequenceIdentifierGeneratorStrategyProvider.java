@@ -18,14 +18,14 @@ import org.hibernate.type.Type;
  * configuration of {@link SequenceStyleGenerator} behavior such as
  * {@link SequenceStyleGenerator#CONFIG_PREFER_SEQUENCE_PER_ENTITY} and {@link SequenceStyleGenerator#INCREMENT_PARAM}
  */
-public class IdentifierGeneratorStrategyProvider implements org.hibernate.jpa.spi.IdentifierGeneratorStrategyProvider {
+public class SequenceIdentifierGeneratorStrategyProvider implements org.hibernate.jpa.spi.IdentifierGeneratorStrategyProvider {
 
 	private final Map<String, Class<?>> strategies = new HashMap<>();
 
 	/**
 	 * Simple constructor registering strategies.
 	 */
-	public IdentifierGeneratorStrategyProvider() {
+	public SequenceIdentifierGeneratorStrategyProvider() {
 		strategies.put("enhanced-sequence", OptimizedSequenceStyleGenerator.class);
 		strategies.put(SequenceStyleGenerator.class.getName(), OptimizedSequenceStyleGenerator.class);
 	}

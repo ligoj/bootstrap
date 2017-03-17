@@ -21,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.ligoj.bootstrap.AbstractSecurityTest;
-import org.ligoj.bootstrap.core.json.ObjectMapper;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.dao.system.BenchResult;
 
 /**
@@ -45,7 +45,7 @@ public class JpaBenchResourceTest extends AbstractSecurityTest {
 	@Test
 	public void testPrepareData() throws IOException {
 		final int nbEntries = 10;
-		assertResult(new ObjectMapper().readValue(resource.prepareData(null, nbEntries), BenchResult.class), nbEntries);
+		assertResult(new ObjectMapperTrim().readValue(resource.prepareData(null, nbEntries), BenchResult.class), nbEntries);
 		testCrud(nbEntries);
 	}
 
