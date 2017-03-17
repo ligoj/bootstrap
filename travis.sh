@@ -83,7 +83,7 @@ function fixBuildVersion {
   if [[ "${INITIAL_VERSION}" == *"-SNAPSHOT" ]]; then
     # SNAPSHOT
     export PROJECT_VERSION=$BUILD_VERSION
-    mvn org.codehaus.mojo:versions-maven-plugin:2.2:set -DnewVersion=$PROJECT_VERSION -DgenerateBackupPoms=false -B -e
+    grep --include={*.properties,pom.xml} -rnl './' -e "$INITIAL_VERSION" | xargs -i@ sed -i "s/$INITIAL_VERSION/$PROJECT_VERSION/g" @
   else
     # not a SNAPSHOT: milestone, RC or GA
     export PROJECT_VERSION=$INITIAL_VERSION
