@@ -1,5 +1,4 @@
-﻿--- 
-addons: 
+﻿addons: 
   sonarqube: 
     organization: ligoj-github
     token: 
