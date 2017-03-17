@@ -131,7 +131,7 @@ BUILD)
           sonar:sonar \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
-          -Dsonar.projectVersion=$INITIAL_VERSION
+          -Dsonar.projectVersion=$PROJECT_VERSION
           -Dmaven.javadoc.skip=true \
           -Dmaven.ut.reuseForks=true -Dmaven.it.reuseForks=false
 

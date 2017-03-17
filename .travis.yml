@@ -2,7 +2,7 @@ addons:
   sonarqube: 
     organization: ligoj-github
     token: 
-      secure: AXmSwSDt3YldyTliNJmTuPEedMxig6Soigv/zyRV3rqDGNES/a+5JRET5biMrI4p9KvNX3TNMxSCl28mwFk6CZGDTmzpcU26699hj9EDuIMHcHsPDNIDDWYz+XwW++uDm+dzh1fFevhV9e4XPXMzH0Lk0+YMENEO/swGSEb0WaYk9302BpEP/N9aWbd4hqf2ofuvYYe5iTfzi5gaktjqMzRN6TPlXSatditplSzTHkIhzUJXML0EUk1IgXge7XYabUmK72U3jcihf19blyxMIZ9GREIQ59N2Gw1Bnf04hbLFmypMnfPBKGJimFP7MVfJ+qF5DjYewafvXuPY5rYRNTAPizifX6P2/5tMyw2YgPJxLxnsUqUR3BgE7FmN+lJ1zU7v6cW5MlSmtfGSXvGCU7q6UZevAgaYpsF2SvOtnQf7OV1A54TdYu8h+KNG/FStbzAIe1alYGOZJLOGKI2gOof1VRrunhjz+KtG13LJpdv2e+dcC6pasbdC2nJEJjRj+c3uCKXV91pfLm7TyXlnaBfDD/cOvcPsVoAvaJ2RIlglxtv/nTjv7dkfRjwxvrqQ+fFuCrbgxfzBFAaEkG6Kh5qPGbDh/6i9wYNEogZlHOWltkiTy/dV1Oo3MihrbYCcaXEorEbKOD3oASPNQaKQidfHa02mBVgKrGlEVh9SiNA=
+      secure: ZsINL3WaEhy5Cc78xghJPZdDLNYgVcM4kMhW+l551nKL1dhKnKpPNk8OyLyDB1r4DnIENF6a0MsBD0dzxg8kj+NhpGOa+oKI+7h6IaluVkWt+QMyOBkefjSvzLl1QKYy40IEdXIGJFvGUcaeBvZJ68T4ld0jZPHAQsvANlIatE+dZ7GPCKIsM4nUnUSWZm0JGEfyedhqKudg/6UquSVUsBd7xd2Ve0kna4HSyBzrZmDWffI7Wd/03VJuGp0tcI1BCVlgH6BxkhipxPj4eRWxBx5pKP6LXt5EYgLQVs3pwtyU792jGhcH6v6dTa7jc1MAwmzemsLI+M6PRGWNFa5NEpXRSQOh3WOAN7m/oYXxyNX91faeox6pt1rPUitbcUGa9779kIbQI+k2XeF7QRMhHdCVH3Wgpu1wGHcAY3dMVDeXggQ9n6ykR4IN0UVE6NBZOuy0MIE9Yplch3Nebvz9vTu5w1TJXhwOMzQ5HuF/kZ1Fs2nVDWxLRxSxMe7QgvhrHmtTYtds3TP0sKClBlDIKy6gKI5Op0LdGG3jYxXEAaj4ScnktTHectCLjGkK+HtXjXxySZcmtLDo98A5KkMVW/trJv4L0Y7hAXS3ucIF2Ze2o5L56GdIOkEnyFBBKIZPOhxtTNuXWM0IOPBdDPYbY7Txfqo1OG4Hy/MSc8Zn32s=
 after_success: 
   - coveralls
 before_cache: 
@@ -18,6 +18,8 @@ cache:
     - $HOME/maven
 env: 
   - TARGET=BUILD
+  - SONAR_HOST_URL=https://sonarqube.com
+  
 install: /bin/true 
 jdk: oraclejdk8
 language: java
