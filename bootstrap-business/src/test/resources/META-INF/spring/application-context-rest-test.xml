@@ -5,7 +5,6 @@
 		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
-	<import resource="classpath:/META-INF/spring/jpa-context-test.xml" />
-	<import resource="classpath:/META-INF/spring/business-context-test.xml" />
-	<import resource="classpath:/META-INF/spring/security-context-test.xml" />
+	<import resource="classpath:/META-INF/spring/application-context-test.xml" />
+	<import resource="classpath:/META-INF/spring/rest-context-test-nodb.xml" />
 </beans>
