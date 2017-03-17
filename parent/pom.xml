@@ -77,6 +77,10 @@
 		<jar.selenium>3.2.0</jar.selenium>
 		<cargo.skip>false</cargo.skip>
 		<jetty.skip>false</jetty.skip>
+		
+		<!-- REMOVE with 4.5.2 -->
+		<plugin.ear>2.10.1</plugin.ear>
+		<plugin.gitflow>1.4.1</plugin.gitflow>
 	</properties>
 
 	<dependencyManagement>
