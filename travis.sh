@@ -107,10 +107,6 @@ case "$TARGET" in
 
 BUILD)
 
-  # Hack to keep job alive even if no logs during more than 10 minutes.
-  # That can occur when uploading sonarqube.zip to Artifactory.
-  ./clock.sh &
-
   installJdk8
   installMaven
   fixBuildVersion
@@ -172,6 +168,3 @@ BUILD)
   ;;
 
 esac
-
-#stop the clock
-touch stop
