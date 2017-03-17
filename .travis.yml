@@ -1,34 +1,32 @@
-﻿language: java
-sudo: false
-install: true
-env:
-  - TARGET=BUILD
-#script: "./travis.sh"
-script: mvn clean
-before_cache:
-  # remove all the artifacts (JAR, ZIP) that are installed in local repo because of mvn deploy
-  - rm -rf $HOME/.m2/repository/org/ligoj/bootstrap
-  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
-git:
-  submodules: false
-cache:
-  directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.sonar/cache'
-    - '$HOME/jvm'
-    - '$HOME/maven'
-addons:
-  sonarqube:
+﻿--- 
+addons: 
+  sonarqube: 
     organization: ligoj-github
-    token:
+    token: 
       secure: AXmSwSDt3YldyTliNJmTuPEedMxig6Soigv/zyRV3rqDGNES/a+5JRET5biMrI4p9KvNX3TNMxSCl28mwFk6CZGDTmzpcU26699hj9EDuIMHcHsPDNIDDWYz+XwW++uDm+dzh1fFevhV9e4XPXMzH0Lk0+YMENEO/swGSEb0WaYk9302BpEP/N9aWbd4hqf2ofuvYYe5iTfzi5gaktjqMzRN6TPlXSatditplSzTHkIhzUJXML0EUk1IgXge7XYabUmK72U3jcihf19blyxMIZ9GREIQ59N2Gw1Bnf04hbLFmypMnfPBKGJimFP7MVfJ+qF5DjYewafvXuPY5rYRNTAPizifX6P2/5tMyw2YgPJxLxnsUqUR3BgE7FmN+lJ1zU7v6cW5MlSmtfGSXvGCU7q6UZevAgaYpsF2SvOtnQf7OV1A54TdYu8h+KNG/FStbzAIe1alYGOZJLOGKI2gOof1VRrunhjz+KtG13LJpdv2e+dcC6pasbdC2nJEJjRj+c3uCKXV91pfLm7TyXlnaBfDD/cOvcPsVoAvaJ2RIlglxtv/nTjv7dkfRjwxvrqQ+fFuCrbgxfzBFAaEkG6Kh5qPGbDh/6i9wYNEogZlHOWltkiTy/dV1Oo3MihrbYCcaXEorEbKOD3oASPNQaKQidfHa02mBVgKrGlEVh9SiNA=
+after_success: 
+  - coveralls
+before_cache: 
+  - "rm -rf $HOME/.m2/repository/org/ligoj/bootstrap"
+  - "find $HOME/.m2 -name resolver-status.properties -exec rm {} \\;"
+cache: 
+  directories: 
+    - $HOME/.m2/repository
+    - $HOME/.sonar/cache
+    - $HOME/jvm
+    - $HOME/maven
+env: 
+  - TARGET=BUILD
+install:
+  - ./mvnw --version
 jdk: oraclejdk8
-notifications:
+language: java
+notifications: 
   email: false
   on_start: always
-  slack:
+  slack: 
     on_failure: always
     on_success: always
     secure: SVcc/Fbcb0YrSW4j3o3p0urqgZ6cvvXubVWNKQMonfdmnkUOlBB6WAYpnnvFLQglZTslJ53l74BSlloG8tgl0ZZC7gagTpSJsQNUI2uGfCOw+URbfxtTVn3tASajyBQKmN7MVl4Z5a7MJI9qkwtdhfZacchtrirWEF8uaSq9+uSEU9Uoy/A4JOxoKUiRl3n38j2UziIDBPtQgcPKq1VGCvV9KLUw1mvhF/Rm89iGn4CZGZoQeXzjNoJ3gxpbURJEBKO+TjYhnKNouxyHxK21vQJg+XiHdtoqeNB6TGMu/EPIW+/MrHPgcDa9V/hjdwzbJvrvPZ1nBWkw8VehuJ8tOu+HVT9+yKD1gsVFf07zx13DUkFFqagwvlYIBRPwYW96unBS+IMbdHTdKzy7IfOggixEGbgNHUcR6NaLc1fMa+RiirPkbsKTwKcUkgJLqMZbhrJwuob5soVa/mFqLwqoKkGzG6+JaxLIXCCn3W9Lt9sNtE8W4Xqa8dV9hGMnEplkL0A/ayQ/u+TM1pD+0xWB9dHxxDvhsJhIggEabIJNfqzefjMEBDyCrwwVN4Jg5frtaMF8PN1dWxppkrCNtYdP2GGUUTVBYPs6H2yPqMElATI70zv9jUlLTrmOmsrG2kRERmQHD1sI9Q7LGyLovJC4/8NwPX6Ty3XZ1qtI0xb6LRM=
-after_success:
-  - coveralls
+script: "./travis.sh"
+sudo: false
