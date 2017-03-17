@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +21,13 @@ import org.ligoj.bootstrap.core.DateUtils;
  */
 public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
+	@BeforeClass
+	public static void setApplicationTimeZone() {
+		// Fix CET time zone for this test
+		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("CET"));
+	}
+	
+	
 	@Test
 	public void testSetApplicationContext() {
 		setApplicationContext(Mockito.mock(ApplicationContext.class));

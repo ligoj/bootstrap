@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -18,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
+import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
@@ -31,6 +32,9 @@ public class CsvForBeanTest {
 	@BeforeClass
 	public static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
+
+		// Fix CET time zone for this test, since date are compared
+		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("CET"));
 	}
 
 	/**
