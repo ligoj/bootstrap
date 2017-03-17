@@ -1,4 +1,7 @@
 addons: 
+  apt:
+    packages:
+      - graphviz
   sonarqube: 
     organization: ligoj-github
     token: 
