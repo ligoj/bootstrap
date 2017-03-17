@@ -23,8 +23,8 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@BeforeClass
 	public static void setApplicationTimeZone() {
-		// Fix CET time zone for this test
-		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("CET"));
+		// Fix UTC time zone for this test
+		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
 	

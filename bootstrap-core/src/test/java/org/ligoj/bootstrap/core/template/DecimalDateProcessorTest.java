@@ -16,8 +16,8 @@ public class DecimalDateProcessorTest {
 
 	@BeforeClass
 	public static void init() {
-		// Fix CET time zone for this test, since date are compared
-		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("CET"));
+		// Fix UTC time zone for this test, since date are compared
+		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	/**

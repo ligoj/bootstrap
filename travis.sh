@@ -125,13 +125,15 @@ BUILD)
     # For this reason errors are ignored with "|| true"
     git fetch --unshallow || true
 
-    mvn clean package \
+    mvn clean package jacoco:report coveralls:report sonar:sonar \
           $MAVEN_ARGS \
-          jacoco:report coveralls:report -Pjacoco -Djacoco.includes=org.ligoj.bootstrap.* \
-          sonar:sonar \
+          -Pjacoco -Djacoco.includes=org.ligoj.bootstrap.* \
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
-          -Dsonar.projectVersion=$PROJECT_VERSION
+          -Dsonar.projectVersion=$PROJECT_VERSION \
+          -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
+          -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
+          -Dsonar.github.oauth=$GITHUB_TOKEN \
           -Dmaven.javadoc.skip=true \
           -Dmaven.ut.reuseForks=true -Dmaven.it.reuseForks=false
 
