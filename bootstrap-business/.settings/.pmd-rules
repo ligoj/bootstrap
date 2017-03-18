@@ -568,6 +568,7 @@
     <priority>3</priority>
   </rule>
   <exclude-pattern>.*/src/test/.*</exclude-pattern>
+  <exclude-pattern>.*/src/it/.*</exclude-pattern>
   <exclude-pattern>.*xml</exclude-pattern>
   <exclude-pattern>.*sql</exclude-pattern>
 </ruleset>
