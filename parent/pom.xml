@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.ligoj.parent</groupId>
 		<artifactId>project</artifactId>
-		<version>4.5.1</version>
+		<version>4.5.2</version>
 		<relativePath />
 	</parent>
 
@@ -78,10 +78,6 @@
 		<jar.selenium>3.2.0</jar.selenium>
 		<cargo.skip>false</cargo.skip>
 		<jetty.skip>false</jetty.skip>
-
-		<!-- TODO REMOVE with 4.5.2 -->
-		<plugin.ear>2.10.1</plugin.ear>
-		<plugin.gitflow>1.4.1</plugin.gitflow>
 	</properties>
 
 	<dependencyManagement>
@@ -502,20 +498,6 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${plugin.javadoc}</version>
-				</plugin>
-				<!-- TODO REMOVE with 4.5.2 -->
-				<plugin>
-					<groupId>org.eluder.coveralls</groupId>
-					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>${plugin.coveralls}</version>
-					<configuration>
-						<timestampFormat>EpochMillis</timestampFormat>
-					</configuration>
-				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
