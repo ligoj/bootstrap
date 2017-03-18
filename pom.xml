@@ -8,6 +8,7 @@
 		<version>1.6.0-SNAPSHOT</version>
 		<relativePath>parent/pom.xml</relativePath>
 	</parent>
+	<version>1.6.0-SNAPSHOT</version>
 
 	<artifactId>root</artifactId>
 	<name>Ligoj - Bootstrap</name>
