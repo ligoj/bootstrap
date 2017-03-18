@@ -13,7 +13,7 @@
 		<property name="mapper" ref="objectMapper" />
 	</bean>
 
-	<bean id="objectMapper" class="org.ligoj.bootstrap.core.json.ObjectMapperTrim>
+	<bean id="objectMapper" class="org.ligoj.bootstrap.core.json.ObjectMapperTrim">
 		<property name="serializationInclusion" value="NON_NULL" />
 	</bean>
 

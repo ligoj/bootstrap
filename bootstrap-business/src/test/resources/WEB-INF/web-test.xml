@@ -4,13 +4,21 @@
 	<display-name>bootstrap-business</display-name>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:/META-INF/spring/jpa-context-test.xml,classpath:/META-INF/spring/business-context-test.xml,classpath:META-INF/spring/rest-context-test.xml</param-value>
+		<param-value>classpath:/META-INF/spring/jpa-context-test.xml,classpath:/META-INF/spring/business-context-test.xml,classpath:META-INF/spring/rest-context-test.xml,classpath:/META-INF/spring/security-context-test.xml</param-value>
 	</context-param>
 	<servlet>
 		<servlet-name>RestServlet</servlet-name>
 		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
 
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

@@ -58,7 +58,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new SessionResourceRestIT().startRestServer("./src/test/resources/WEB-INF/web-test-security.xml");
+		server = new SessionResourceRestIT().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
 	}
 
 	/**

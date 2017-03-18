@@ -44,7 +44,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new ExceptionMapperIT().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
+		server = new ExceptionMapperIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
 
 	/**

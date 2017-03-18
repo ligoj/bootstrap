@@ -55,7 +55,7 @@ public class MergedEhCacheManagerFactoryBean implements FactoryBean<CacheManager
 
 	@Override
 	public Class<? extends CacheManager> getObjectType() {
-		return this.cacheManager.getClass();
+		return this.cacheManager == null ? null : this.cacheManager.getClass();
 	}
 
 	@Override

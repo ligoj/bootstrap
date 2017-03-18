@@ -59,7 +59,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new ValidationJSonIT().startRestServer("./src/test/resources/WEB-INF/web-test-validation.xml");
+		server = new ValidationJSonIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
 
 	@Test

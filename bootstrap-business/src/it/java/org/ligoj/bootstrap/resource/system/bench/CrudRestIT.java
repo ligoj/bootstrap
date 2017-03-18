@@ -59,7 +59,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@BeforeClass
 	public static void startServer() {
-		server = new CrudRestIT().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
+		server = new CrudRestIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
 
 	/**
