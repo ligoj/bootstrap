@@ -363,12 +363,12 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> int insert(final String csvRoot, final Class<?>[] beanTypes, final String encoding, final Consumer<?> consumer) throws IOException {
+	public int insert(final String csvRoot, final Class<?>[] beanTypes, final String encoding, final Consumer<?> consumer) throws IOException {
 
 		// Replace referential
 		int insertedCount = 0;
 		for (final Class<?> beanType : beanTypes) {
-			insertedCount += insert(csvRoot, (Class<T>) beanType, encoding, (Consumer<T>) consumer).size();
+			insertedCount += insert(csvRoot, (Class<Object>) beanType, encoding, (Consumer<Object>) consumer).size();
 		}
 
 		// Free memory
@@ -383,10 +383,12 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param csvRoot
 	 *            the root path of CSV resources.
 	 * @param beanType
-	 *            The bean type
+	 *            The bean class.
 	 * @param encoding
 	 *            the encoding used to read the CSV resources.
 	 * @return the total inserted table entries.
+	 * @param <T>
+	 *            The bean type.
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
@@ -400,10 +402,12 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param csvRoot
 	 *            the root path of CSV resources.
 	 * @param beanType
-	 *            The bean type
+	 *            The bean class.
 	 * @param encoding
 	 *            the encoding used to read the CSV resources.
 	 * @return the total inserted table entries.
+	 * @param <T>
+	 *            The bean type.
 	 * @param consumer
 	 *            Optional Consumer for each entity.
 	 * @throws IOException

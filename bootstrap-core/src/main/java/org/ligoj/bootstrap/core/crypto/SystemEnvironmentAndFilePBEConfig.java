@@ -41,13 +41,14 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	 * 
 	 * @param passwordFilename
 	 *            the name of the file name to load.
+	 * @return The resolved password from given file or <code>null</code> if failed.
 	 */
 	protected String getPasswordFromFile(final String passwordFilename) {
 
 		// Read password from file
 		try {
 			return StringUtils.trimToNull(FileUtils.readFileToString(new File(passwordFilename), StandardCharsets.UTF_8.name()));
-		} catch (final IOException ioe) { // NOSONAR - Safely ignore this fails, and try the next method 
+		} catch (final IOException ioe) { // NOSONAR - Safely ignore this fails, and try the next method
 			log.warn("Unable to read file " + passwordFilename);
 		}
 

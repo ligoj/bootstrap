@@ -15,7 +15,7 @@ public interface SystemUserSettingRepository extends RestRepository<SystemUserSe
 	/**
 	 * Return user settings.
 	 * 
-	 * @param user
+	 * @param login
 	 *            User login.
 	 * @return {@link SystemUserSetting} list.
 	 */
@@ -24,7 +24,7 @@ public interface SystemUserSettingRepository extends RestRepository<SystemUserSe
 	/**
 	 * Return user settings.
 	 * 
-	 * @param user
+	 * @param login
 	 *            User login.
 	 * @param name
 	 *            The setting name.

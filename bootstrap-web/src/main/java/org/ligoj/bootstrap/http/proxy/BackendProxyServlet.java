@@ -144,8 +144,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * 
 	 * @param parameter
 	 *            the expected "init" parameter.
-	 * @param the
-	 *            optional default value. May be <code>null</code>.
+	 * @param defaultValue
+	 *            the optional default value. May be <code>null</code>.
 	 * @return the lower value of given parameter.
 	 * @throws UnavailableException
 	 *             when required parameter is not defined.

@@ -288,6 +288,7 @@ public abstract class AbstractCsvReader<T> {
 	 *            the bean property to set.
 	 * @param rawValue
 	 *            the raw value to set.
+	 * @param <E> Enumeration type.
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue)

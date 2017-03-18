@@ -12,10 +12,10 @@ import org.apache.commons.lang3.StringUtils;
 import lombok.AllArgsConstructor;
 
 /**
- * A simple template able to manage loop, raw data, and computed data. <T> Root context data type
+ * A simple template able to manage loop, raw data, and computed data.
  * 
  * @param <T>
- *            the context type.
+ *            Root context data type
  */
 public class Template<T> {
 
@@ -56,7 +56,6 @@ public class Template<T> {
 	}
 
 	/**
-	 * 
 	 * Write to the given writer the proceeded template with given tag processors.
 	 * 
 	 * @param writer
@@ -147,7 +146,6 @@ public class Template<T> {
 	}
 
 	/**
-	 * 
 	 * Write to the given writer the proceeded template with given tag processors.
 	 * 
 	 * @param writer
@@ -188,8 +186,8 @@ public class Template<T> {
 		}
 		if (nextEndTag - nextTag > MAX_TAG_LENGTH) {
 			// Too long tag
-			throw new IllegalStateException("Too long (max is " + MAX_TAG_LENGTH + " tag " + input.substring(nextTag + 2, nextTag + 30)
-					+ "...}} found at position " + start);
+			throw new IllegalStateException(
+					"Too long (max is " + MAX_TAG_LENGTH + " tag " + input.substring(nextTag + 2, nextTag + 30) + "...}} found at position " + start);
 		}
 		final String tag = input.substring(nextTag + 2, nextEndTag);
 		final String tagClean = StringUtils.removeEnd(tag, "/");

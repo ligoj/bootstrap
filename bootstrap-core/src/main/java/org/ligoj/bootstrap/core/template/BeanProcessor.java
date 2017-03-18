@@ -51,6 +51,10 @@ public class BeanProcessor<T> extends Processor<T> {
 
 	/**
 	 * Return the field value.
+	 * 
+	 * @param context
+	 *            the current context (root or loop item).
+	 * @return the raw value. <code>null</code> when the context is <code>null</code>.
 	 */
 	protected Object getFieldValue(final T context) {
 		try {

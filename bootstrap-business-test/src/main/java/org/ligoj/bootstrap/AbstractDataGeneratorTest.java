@@ -345,8 +345,6 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	/**
 	 * Return a subset of items.
 	 * 
-	 * @param <T>
-	 *            any type.
 	 * @param salt
 	 *            any string used as salt.
 	 * @param items
@@ -355,9 +353,9 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            lower value.
 	 * @param upper
 	 *            upper value. Excluded value.
-	 * @return a subset of items.
 	 * @param <T>
 	 *            the type of the items.
+	 * @return a subset of items.
 	 */
 	protected <T> List<T> getItems(final String salt, final List<T> items, final int lower, final int upper) {
 		final List<T> result = new ArrayList<>(upper);

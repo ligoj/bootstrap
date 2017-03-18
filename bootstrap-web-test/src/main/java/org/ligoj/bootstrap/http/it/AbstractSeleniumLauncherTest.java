@@ -253,7 +253,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	/**
 	 * Sleep implementation.
 	 * 
-	 * @param millis
+	 * @param milli
 	 *            the length of time to sleep in milliseconds
 	 * @throws InterruptedException
 	 *             from {@link Thread#sleep(long)}

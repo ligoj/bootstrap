@@ -90,9 +90,9 @@ public class ResourceScanner extends StandardScanner {
 	/**
 	 * Return existing ORM resources.
 	 * 
-	 * @return existing ORM resources found in classpath.
-	 * @param IOException
-	 *            from {@link ClassLoader#getResources(String)}
+	 * @return existing ORM resources found in class-path.
+	 * @throws IOException
+	 *             from {@link ClassLoader#getResources(String)}
 	 */
 	protected Enumeration<URL> getOrmUrls() throws IOException {
 		return Thread.currentThread().getContextClassLoader().getResources(META_INF_ORM_XML);

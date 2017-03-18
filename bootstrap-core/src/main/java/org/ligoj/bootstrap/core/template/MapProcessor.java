@@ -34,6 +34,11 @@ public class MapProcessor<T> extends BeanProcessor<T> {
 
 	/**
 	 * Return the {@link Map} value corresponding to given key.
+	 * 
+	 * @param key
+	 *            The {@link Map} key.
+	 * @return
+	 * 		The {@link Map} value.
 	 */
 	protected Object getMapValue(final Object key) {
 		return map.get(key);
