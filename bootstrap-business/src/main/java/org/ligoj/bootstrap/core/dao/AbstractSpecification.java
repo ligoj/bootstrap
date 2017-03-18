@@ -52,7 +52,8 @@ public abstract class AbstractSpecification {
 	 * @param <U>
 	 *            The entity type referenced by the {@link Root}
 	 */
-	protected <U> Path<?> getOrmPath(final Root<U> root, final String path) {
+	@SuppressWarnings("unchecked")
+	protected <U, T> Path<T> getOrmPath(final Root<U> root, final String path) {
 		PathImplementor<?> currentPath = (PathImplementor<?>) root;
 		for (final String pathFragment : path.split(DELIMITERS)) {
 			currentPath = getNextPath(pathFragment, (From<?, ?>) currentPath);
@@ -62,10 +63,11 @@ public abstract class AbstractSpecification {
 		if (currentPath instanceof SingularAttributeJoin) {
 			currentPath = getNextPath(((IdentifiableType<?>) currentPath.getModel()).getId(Object.class).getName(), (From<?, ?>) currentPath);
 		}
-		return currentPath;
+		return (Path<T>) currentPath;
 	}
 
-	private <X> PathImplementor<?> getNextPath(final String pathFragment, final From<?, X> from) {
+	@SuppressWarnings("unchecked")
+	private <X> PathImplementor<X> getNextPath(final String pathFragment, final From<?, ?> from) {
 		PathImplementor<?> currentPath = (PathImplementor<?>) from.get(pathFragment);
 		fixAlias(from, aliasCounter);
 
@@ -77,7 +79,7 @@ public abstract class AbstractSpecification {
 				currentPath = fixAlias(from.join(pathFragment, JoinType.LEFT), aliasCounter);
 			}
 		}
-		return currentPath;
+		return (PathImplementor<X>) currentPath;
 	}
 
 	/**
@@ -91,22 +93,23 @@ public abstract class AbstractSpecification {
 	 * @param <U>
 	 *            The source type of the {@link Join}
 	 */
-	protected <U> PathImplementor<?> getJoinPath(final From<?, U> from, final Attribute<?, ?> attribute) {
+	@SuppressWarnings("unchecked")
+	protected <U, T> PathImplementor<T> getJoinPath(final From<?, U> from, final Attribute<?, ?> attribute) {
 
 		// Search within current joins
 		for (final Join<U, ?> join : from.getJoins()) {
 			if (join.getAttribute().equals(attribute)) {
-				return fixAlias(join, aliasCounter);
+				return fixAlias((Join<U, T>) join, aliasCounter);
 			}
 		}
 		return null;
 	}
 
-	private <X> PathImplementor<?> fixAlias(final Selection<X> join, final AtomicInteger integer) {
+	private <T> PathImplementor<T> fixAlias(final Selection<T> join, final AtomicInteger integer) {
 		if (join.getAlias() == null) {
 			join.alias("_" + integer.incrementAndGet());
 		}
-		return (PathImplementor<X>) join;
+		return (PathImplementor<T>) join;
 	}
 
 	/**

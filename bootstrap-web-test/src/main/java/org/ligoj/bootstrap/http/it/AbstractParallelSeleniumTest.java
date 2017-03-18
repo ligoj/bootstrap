@@ -61,6 +61,7 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 
 			checkResults(success, faillures);
 		} catch (final Exception e) {
+			log.error("Weird Exception during the run ...", e);
 			faillures.add("Weird Exception during the run ...");
 		}
 		Assert.assertTrue("All browsers test failed", faillures.size() != success.length);

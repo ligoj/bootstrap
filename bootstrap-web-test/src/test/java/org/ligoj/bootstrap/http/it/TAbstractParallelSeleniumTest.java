@@ -124,7 +124,7 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 	 * Run test.
 	 */
 	public void mockTestParallelLong() throws InterruptedException {
-		Thread.sleep(getNextSleep());
+		Thread.sleep(getNextSleep());  // NOSONAR -- Have to pause the thread
 	}
 
 	/**

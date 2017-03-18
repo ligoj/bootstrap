@@ -112,7 +112,8 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOSONAR -- too many exception
+	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOSONAR -- too many
+																									// exception
 		log.info("Asking for " + capability + " to " + gridUrl);
 		return new Augmenter()
 				.augment((WebDriver) Class.forName(remoteDriverClass).getConstructor(URL.class, Capabilities.class).newInstance(gridUrl, capability));
@@ -201,27 +202,37 @@ public abstract class AbstractSeleniumLauncherTest {
 	}
 
 	/**
-	 * Take a screenshot and save the content to the given sub directory.
+	 * Take a screenshot after a short time and save the content to the given sub directory.
 	 * 
 	 * @param to
 	 *            Simple file name where the screenshot will be saved.
 	 */
 	protected void screenshot(final String to) {
 		try {
-			final File directory = new File(new File(baseDir, scenario), capability.getBrowserName());
 			sleep(750);
-			FileUtils.forceMkdir(directory);
-			try {
-				// Copy the received screenshot to the target directory
-				final File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-				final File targetFile = new File(directory, StringUtils.leftPad(String.valueOf(++screenshotCounter), 3, '0') + "-" + to);
-				log.info("Screenshot received : '" + scrFile + ", copying to " + targetFile);
-				FileUtils.copyFile(scrFile, targetFile);
-			} catch (final IOException ioe) {
-				log.error("Unable to copy screenshot of URL '" + driver.getCurrentUrl() + "' to given file '" + to + "'", ioe);
-			}
+			screenshotNow(to);
 		} catch (final Exception ioe) {
 			log.error("Unable to take screenshot of URL '" + driver.getCurrentUrl() + "'", ioe);
+		}
+	}
+
+	/**
+	 * Take a screenshot immediately and save the content to the given sub directory.
+	 * 
+	 * @param to
+	 *            Simple file name where the screenshot will be saved.
+	 */
+	protected void screenshotNow(final String to) throws IOException {
+		final File directory = new File(new File(baseDir, scenario), capability.getBrowserName());
+		FileUtils.forceMkdir(directory);
+		try {
+			// Copy the received screenshot to the target directory
+			final File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			final File targetFile = new File(directory, StringUtils.leftPad(String.valueOf(++screenshotCounter), 3, '0') + "-" + to);
+			log.info("Screenshot received : '" + scrFile + ", copying to " + targetFile);
+			FileUtils.copyFile(scrFile, targetFile);
+		} catch (final IOException ioe) {
+			log.error("Unable to copy screenshot of URL '" + driver.getCurrentUrl() + "' to given file '" + to + "'", ioe);
 		}
 	}
 

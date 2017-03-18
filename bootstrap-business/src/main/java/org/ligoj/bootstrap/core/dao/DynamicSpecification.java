@@ -195,7 +195,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * Return the ORM path from the given rule.
 	 */
-	private Path<?> getOrmPath(final Root<U> root, final BasicRule rule) {
+	private <T> Path<T> getOrmPath(final Root<U> root, final BasicRule rule) {
 		final String path = mapping.getOrDefault(rule.getField(), mapping.containsKey("*") ? rule.getField() : null);
 		if (path == null) {
 			// Invalid path, coding issue or SQL injection attempt
