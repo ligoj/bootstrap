@@ -1,4 +1,4 @@
-## :link: Ligoj Bootstrap ##
+## :link: Ligoj Bootstrap [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root)
 REST+Front-End template with a ton of integrated component with many enterprise features : RBAC, Cache, modular modules
 
 [![Build Status](https://travis-ci.org/ligoj/bootstrap.svg?branch=master)](https://travis-ci.org/ligoj/bootstrap)
@@ -24,4 +24,6 @@ A Spring based front/back architecture
 - JPA / Hibernate
 - Hibernate Validator for JPA and JAX-RS
 
-TODO Documentation, archetype and web assets
+TODO :
+- Documentation, 
+- Open and publish Archetype and web assets #2
