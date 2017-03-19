@@ -16,16 +16,18 @@ install:
   - cmd: SET    
   - cmd: SET PATH=C:\maven\apache-maven-3.3.9\bin;%PATH%
   - cmd: SET M2_HOME=C:\maven\apache-maven-3.3.9
+  - cmd: SET MAVEN_OPTS=-Xmx2g
   - cmd: SET MAVEN_HOME=C:\maven\apache-maven-3.3.9
   - cmd: SET
 
 build_script:
-  - dir
   - mkdir C:\WINDOWS\system32\config\systemprofile\AppData\Local\Temp
-  - cd C:\WINDOWS\system32\config\systemprofile\AppData\Local\
   - dir
-  - mvn clean install
+  - mvn -B -V -e clean package -DskipTest
+test_script:
+  - mvn -B -V -e clean install
 cache:
+  - C:\maven\
   - C:\Users\appveyor\.m2
 artifacts:
   - path: 'bootstrap-business\target\*.jar'

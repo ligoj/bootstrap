@@ -2,6 +2,8 @@
 REST+Front-End template with a ton of integrated component with many enterprise features : RBAC, Cache, modular modules
 
 [![Build Status](https://travis-ci.org/ligoj/bootstrap.svg?branch=master)](https://travis-ci.org/ligoj/bootstrap)
+[![Build status](https://codeship.com/projects/525fc7e0-ee2d-0134-7ad9-461f05fb3ee5/status?branch=master)](https://codeship.com/projects/208680)
+[![Build status](https://ci.appveyor.com/api/projects/status/j0949l609j75mif3/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/bootstrap/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/ligoj/bootstrap/badge.svg?branch=master)](https://coveralls.io/github/ligoj/bootstrap?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/58caeda8dcaf9e0041b5b978/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58caeda8dcaf9e0041b5b978)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=org.ligoj.bootstrap:root)](https://sonarqube.com/dashboard/index/org.ligoj.bootstrap:root)
