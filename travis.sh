@@ -66,13 +66,13 @@ function installMaven {
 # PROJECT_VERSION=6.3
 #
 function fixBuildVersion {
-  export INITIAL_VERSION=`maven_expression "project.version"`
+  export INITIAL_VERSION=$(maven_expression "project.version")
 
   # remove suffix -SNAPSHOT or -RC
-  without_suffix=`echo $INITIAL_VERSION | sed "s/-.*//g"`
+  without_suffix=$(echo $INITIAL_VERSION | sed "s/-.*//g")
 
   IFS=$'.'
-  fields_count=`echo $without_suffix | wc -w`
+  fields_count=$(echo $without_suffix | wc -w)
   unset IFS
   if [ $fields_count -lt 3 ]; then
     export BUILD_VERSION="$without_suffix.0.$TRAVIS_BUILD_NUMBER"

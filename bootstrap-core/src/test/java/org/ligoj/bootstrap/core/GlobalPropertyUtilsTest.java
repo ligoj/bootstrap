@@ -17,6 +17,7 @@ public class GlobalPropertyUtilsTest {
 
 	/**
 	 * No provided locations.
+	 * 
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
@@ -29,20 +30,21 @@ public class GlobalPropertyUtilsTest {
 
 	/**
 	 * Location does not exist.
+	 * 
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
 	@Test
 	public void testLocationNoInput() throws IOException {
-		final Resource[] resources = new Resource[1];
-		final Resource resource = Mockito.mock(Resource.class);
-		resources[0] = resource;
-		Mockito.when(resource.getInputStream()).thenReturn(null);
+		final Resource[] resources = new Resource[] { Mockito.mock(Resource.class) };
+		Mockito.when(resources[0].getInputStream()).thenReturn(null);
 		new GlobalPropertyUtils().setLocations(resources);
+		Assert.assertNull(GlobalPropertyUtils.getProperty("key"));
 	}
 
 	/**
 	 * Resource read causes error.
+	 * 
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
@@ -57,6 +59,7 @@ public class GlobalPropertyUtilsTest {
 
 	/**
 	 * Resource read causes error.
+	 * 
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
@@ -71,6 +74,7 @@ public class GlobalPropertyUtilsTest {
 
 	/**
 	 * Full resource usage.
+	 * 
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */

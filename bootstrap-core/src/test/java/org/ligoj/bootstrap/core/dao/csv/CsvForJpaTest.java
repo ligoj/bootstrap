@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContextType;
 import javax.transaction.Transactional;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 @Rollback
 @Transactional
 public class CsvForJpaTest {
+
+	@BeforeClass
+	public static void init() {
+		System.setProperty("app.crypto.file", "src/test/resources/security.key");
+	}
 
 	/**
 	 * Entity manager.
@@ -339,6 +345,9 @@ public class CsvForJpaTest {
 		final List<DummyEntity> items = newWines();
 		final StringWriter result = new StringWriter();
 		csvForJpa.toCsv(items, DummyEntity.class, result);
+
+		// 160 per lines + 56 for header
+		Assert.assertEquals(160000 + 56, result.getBuffer().length());
 	}
 
 	@Test(expected = TechnicalException.class)
