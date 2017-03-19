@@ -11,6 +11,7 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=org.ligoj.bootstrap:root)](https://sonarqube.com/dashboard/index/org.ligoj.bootstrap:root)
 [![Sourcegraph Badge](https://sourcegraph.com/github.com/ligoj/bootstrap/-/badge.svg)](https://sourcegraph.com/github.com/ligoj/bootstrap?badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6c472b13c5a49b4882d27632f79b6de)](https://www.codacy.com/app/ligoj/bootstrap?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/bootstrap&amp;utm_campaign=Badge_Grade)
+[![CodeFactor](https://www.codefactor.io/repository/github/ligoj/bootstrap/badge)](https://www.codefactor.io/repository/github/ligoj/bootstrap)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://gus.mit-license.org/)
 
 Key features :
