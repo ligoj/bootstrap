@@ -1,0 +1,12 @@
+machine:
+  java:
+    version: openjdk8
+dependencies:
+ override: 
+  - mvn dependency:resolve
+test:
+  override:
+    - mvn clean package -Xmx1G -Xms128m -Dmaven.javadoc.skip=true
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
