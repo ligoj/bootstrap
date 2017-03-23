@@ -54,14 +54,17 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 				public Class<? extends Annotation> annotationType() {
 					return NotNull.class;
 				}
+
 				@Override
 				public String message() {
 					return "NotNull";
 				}
+
 				@Override
 				public Class<?>[] groups() {
 					return new Class<?>[0];
 				}
+
 				@SuppressWarnings("unchecked")
 				@Override
 				public Class<? extends Payload>[] payload() {
@@ -107,8 +110,8 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 			// All non-body parameters are required by default
 			final PathImpl propertyPath = PathImpl.createPathFromString(method.getName());
 			propertyPath.addParameterNode(parameter.getName(), index);
-			validationErrors.add(ConstraintViolationImpl.forParameterValidation(NotNull.class.getName(), null, "interpolated", null, null, null, null,
-					propertyPath, NOT_NULL_DESCRIPTOR, null, null, null));
+			validationErrors.add(ConstraintViolationImpl.forParameterValidation(NotNull.class.getName(), null, null, "interpolated", null, null, null,
+					null, propertyPath, NOT_NULL_DESCRIPTOR, null, null, null));
 			return;
 		}
 
