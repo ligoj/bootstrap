@@ -68,7 +68,7 @@
 		<mysql.version>6.0.6</mysql.version>
 		<quartz.version>2.2.3</quartz.version>
 		<shared-ldap.version>0.9.15</shared-ldap.version>
-		<slf4j.version>1.7.24</slf4j.version>
+		<slf4j.version>1.7.25</slf4j.version>
 		<spring-data.version>1.10.4.RELEASE</spring-data.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
 		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
