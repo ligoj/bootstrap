@@ -203,12 +203,12 @@ public class ValidationJsonExceptionTest {
 				getAnnotation("grapes", NotEmpty.class), ElementType.FIELD);
 		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
 				getAnnotation("name", Length.class), ElementType.FIELD);
-		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("name-Empty", null, "interpolated", Wine.class, bean, new Object(), "value",
-				PathImpl.createPathFromString("name"), notEmptyNameDescriptor, ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("name-length", null, "interpolated", Wine.class, bean, new Object(), "value",
-				PathImpl.createPathFromString("name"), lengthNameDescriptor, ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("grapes-Empty", null, "interpolated", Wine.class, bean, new Object(), "value",
-				PathImpl.createPathFromString("grapes"), notEmptyGrapesDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("name-Empty", null, null, "interpolated", Wine.class, bean, new Object(),
+				"value", PathImpl.createPathFromString("name"), notEmptyNameDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("name-length", null, null, "interpolated", Wine.class, bean, new Object(),
+				"value", PathImpl.createPathFromString("name"), lengthNameDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("grapes-Empty", null, null, "interpolated", Wine.class, bean, new Object(),
+				"value", PathImpl.createPathFromString("grapes"), notEmptyGrapesDescriptor, ElementType.FIELD, null));
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
@@ -229,16 +229,15 @@ public class ValidationJsonExceptionTest {
 		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
 				getAnnotation("name", NotEmpty.class), ElementType.FIELD);
 		PathImpl path = PathImpl.createPathFromString("name");
-		violations.add(ConstraintViolationImpl.<Wine> forParameterValidation("name-Empty", null, "interpolated", Wine.class, bean, new Object(),
+		violations.add(ConstraintViolationImpl.<Wine> forParameterValidation("name-Empty", null, null, "interpolated", Wine.class, bean, new Object(),
 				"value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null, null));
-		path.addParameterNode("parameter1",0);
+		path.addParameterNode("parameter1", 0);
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
 
 		final ValidationJsonException validationJsonException = new ValidationJsonException(violationException);
 		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{parameter1=[{rule=name-Empty}]}",
-				validationJsonException.getErrors().toString());
+		Assert.assertEquals("{parameter1=[{rule=name-Empty}]}", validationJsonException.getErrors().toString());
 	}
 }
