@@ -1,7 +1,7 @@
-/.DS_Store
+**/.DS_Store
 .project
-/.project
+.settings
+**/.project
 /target
-/bootstrap-business-parent/target
-/bootstrap-web-parent/target
-/parent/target
+/*/target
+**/.classpath
