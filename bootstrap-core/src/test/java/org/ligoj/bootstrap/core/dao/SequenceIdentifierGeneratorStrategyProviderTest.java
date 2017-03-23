@@ -6,7 +6,7 @@ import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.ObjectNameNormalizer;
 import org.hibernate.boot.model.relational.QualifiedName;
 import org.hibernate.boot.spi.MetadataBuildingContext;
-import org.hibernate.dialect.MySQL5InnoDBDialect;
+import org.hibernate.dialect.MySQL55Dialect;
 import org.hibernate.engine.jdbc.env.spi.IdentifierHelper;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.id.PersistentIdentifierGenerator;
@@ -18,12 +18,11 @@ import org.hibernate.type.Type;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.ligoj.bootstrap.core.dao.SequenceIdentifierGeneratorStrategyProvider.OptimizedSequenceStyleGenerator;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import org.ligoj.bootstrap.core.dao.SequenceIdentifierGeneratorStrategyProvider.OptimizedSequenceStyleGenerator;
 
 /**
  * Test of {@link SequenceIdentifierGeneratorStrategyProvider} implementation.
@@ -89,7 +88,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		JdbcEnvironment jdbcEnvironment = newJdbcEnvironment();
 		ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
 		Mockito.when(serviceRegistry.getService(JdbcEnvironment.class)).thenReturn(jdbcEnvironment);
-		Mockito.when(jdbcEnvironment.getDialect()).thenReturn(new MySQL5InnoDBDialect());
+		Mockito.when(jdbcEnvironment.getDialect()).thenReturn(new MySQL55Dialect());
 		return serviceRegistry;
 	}
 
@@ -102,7 +101,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
 		Assert.assertEquals("my_table_SEQ",
-				newStyleGenerator().determineSequenceName(params, new MySQL5InnoDBDialect(), newJdbcEnvironment()).getObjectName().getText());
+				newStyleGenerator().determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment()).getObjectName().getText());
 	}
 
 	/**
@@ -114,7 +113,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
 		Assert.assertEquals("my_table_SEQ",
-				newStyleGenerator().determineSequenceName(params, new MySQL5InnoDBDialect(), newJdbcEnvironment()).getObjectName().getText());
+				newStyleGenerator().determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment()).getObjectName().getText());
 	}
 
 	@After

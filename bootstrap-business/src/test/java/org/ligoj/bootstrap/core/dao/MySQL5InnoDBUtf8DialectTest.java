@@ -10,7 +10,7 @@ public class MySQL5InnoDBUtf8DialectTest {
 
 	@Test
 	public void getTableTypeString() {
-		Assert.assertEquals(" ENGINE=InnoDB DEFAULT CHARSET=utf8", new MySQL5InnoDBUtf8Dialect().getTableTypeString());
+		Assert.assertEquals(" engine=InnoDB DEFAULT CHARSET=utf8", new MySQL5InnoDBUtf8Dialect().getTableTypeString());
 	}
 
 }
