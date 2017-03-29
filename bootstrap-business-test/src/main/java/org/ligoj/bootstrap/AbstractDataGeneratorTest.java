@@ -17,13 +17,13 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.junit.After;
+import org.junit.Before;
+import org.ligoj.bootstrap.core.DateUtils;
+import org.ligoj.bootstrap.core.SpringUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.ClassPathResource;
-
-import org.ligoj.bootstrap.core.DateUtils;
-import org.ligoj.bootstrap.core.SpringUtils;
 
 /**
  * Provides convenient methods to generate pseudo-generated data. Assuming a given salt, generated data will be always
@@ -55,8 +55,12 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * Restore original Spring application context
 	 */
 	@After
+	@Before
 	public void restoreAppalicationContext() {
-		SpringUtils.setSharedApplicationContext(applicationContext);
+		if (applicationContext != null) {
+			// This test was running in a Spring context, restore the shared context
+			SpringUtils.setSharedApplicationContext(applicationContext);
+		}
 	}
 
 	/**
