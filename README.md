@@ -1,4 +1,4 @@
-## :link: Ligoj Bootstrap [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root)
+## :link: Ligoj Bootstrap [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root) [ ![Download](https://api.bintray.com/packages/ligoj/maven-repo/bootstrap/images/download.svg) ](https://bintray.com/ligoj/maven-repo/bootstrap/_latestVersion)
 REST+Front-End template with a ton of integrated component with many enterprise features : RBAC, Cache, modular modules
 
 [![Build Status](https://travis-ci.org/ligoj/bootstrap.svg?branch=master)](https://travis-ci.org/ligoj/bootstrap)
