@@ -250,7 +250,7 @@ public class PaginationJson {
 	}
 
 	private String getOrmColumn(final Map<String, String> ormMapping, final String key) {
-		return ormMapping == null ? null : ormMapping.getOrDefault(key, ormMapping.containsKey("*") ? key : null);
+		return Optional.ofNullable(ormMapping).map(m -> m.getOrDefault(key, m.containsKey("*") ? key : null)).orElse(null);
 	}
 
 	/**

@@ -95,8 +95,8 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 			resultList = em.createQuery(from(jpaField)).setFirstResult(Integer.parseInt(rawValue) - 1).setMaxResults(1).getResultList();
 		} else {
 			// search referenced entity with a filter on propertyName
-			resultList = em.createQuery(from(jpaField) + " WHERE " + propertyName + " LIKE '" + rawValue + "'", jpaField.getType()).setMaxResults(1)
-					.getResultList();
+			resultList = em.createQuery(String.format("%s WHERE %s LIKE '%s'", from(jpaField), propertyName, rawValue), jpaField.getType())
+					.setMaxResults(1).getResultList();
 
 		}
 
