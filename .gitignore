@@ -1,7 +1,7 @@
-/.DS_Store
-.project
-/.project
-/target
-/bootstrap-business-parent/target
-/bootstrap-web-parent/target
-/parent/target
+**/.DS_Store
+**/.settings
+**/.project
+**/target
+**/.classpath
+**/dependency-reduced-pom.xml
+/*.exec

@@ -11,10 +11,11 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.6.1-SNAPSHOT</version>
+	<version>1.6.0</version>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Gfi Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
+
 	<scm>
 		<connection>scm:git:https://github.com/ligoj/bootstrap.git</connection>
 		<developerConnection>scm:git:https://github.com/ligoj/bootstrap.git</developerConnection>
@@ -35,7 +36,7 @@
 	</ciManagement>
 
 	<properties>
-		<bootstrap.version>1.6.1-SNAPSHOT</bootstrap.version>
+		<bootstrap.version>1.6.0</bootstrap.version>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
@@ -550,6 +551,15 @@
 				</plugins>
 			</build>
 		</profile>
+                <profile>
+                        <id>bintray</id>
+                        <distributionManagement>
+                                <repository>
+                                        <id>bintray-ligoj-maven-repo</id>
+                                        <url>https://api.bintray.com/maven/ligoj/maven-repo/boostrap/;publish=1</url>
+                                </repository>
+                        </distributionManagement>
+                </profile>
 	</profiles>
 
 </project>
