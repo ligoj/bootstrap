@@ -17,6 +17,10 @@
 			<version>1.2-b06</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.paranamer</groupId>
+			<artifactId>paranamer</artifactId>
+		</dependency>
 
 		<!-- Logging -->
 		<dependency>

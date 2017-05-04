@@ -66,6 +66,7 @@
 		<lombok.version>1.16.14</lombok.version>
 		<mockito.version>2.7.18</mockito.version>
 		<mysql.version>6.0.6</mysql.version>
+		<paranamer.version>2.8</paranamer.version>
 		<quartz.version>2.2.3</quartz.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<spring-data.version>1.10.4.RELEASE</spring-data.version>
@@ -80,6 +81,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>com.thoughtworks.paranamer</groupId>
+				<artifactId>paranamer</artifactId>
+				<version>${paranamer.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.samaxes.filter</groupId>
 				<artifactId>cachefilter</artifactId>
