@@ -2,6 +2,9 @@ package org.ligoj.bootstrap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.SpringUtils;
@@ -56,7 +60,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 */
 	@After
 	@Before
-	public void restoreAppalicationContext() {
+	public void restoreApplicationContext() {
 		if (applicationContext != null) {
 			// This test was running in a Spring context, restore the shared context
 			SpringUtils.setSharedApplicationContext(applicationContext);
@@ -408,5 +412,19 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
 		return uriInfo;
+	}
+
+	/**
+	 * Check and execute coverage test on an utility class.
+	 * 
+	 * @param singletonClass
+	 *            The utility class
+	 */
+	protected <S> void coverageSingleton(final Class<S> singletonClass)
+			throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		final Constructor<S> constructor = singletonClass.getDeclaredConstructor();
+		Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+		constructor.setAccessible(true);
+		constructor.newInstance();
 	}
 }

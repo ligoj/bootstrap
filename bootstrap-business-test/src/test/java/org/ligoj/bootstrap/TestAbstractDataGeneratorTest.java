@@ -2,6 +2,7 @@ package org.ligoj.bootstrap;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -10,11 +11,10 @@ import java.util.TimeZone;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.ligoj.bootstrap.core.DateUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
-
-import org.ligoj.bootstrap.core.DateUtils;
 
 /**
  * Test of {@link AbstractDataGeneratorTest}
@@ -26,8 +26,7 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 		// Fix UTC time zone for this test
 		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("UTC"));
 	}
-	
-	
+
 	@Test
 	public void testSetApplicationContext() {
 		setApplicationContext(Mockito.mock(ApplicationContext.class));
@@ -187,4 +186,20 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 		Assert.assertFalse(getBoolean(""));
 	}
 
+	@Test
+	public void testNewUriInfo() {
+		Assert.assertNotNull(newUriInfo().getQueryParameters());
+	}
+
+	@Test
+	public void testCoverageSingleton()
+			throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		coverageSingleton(Singleton.class);
+	}
+
+	public static class Singleton {
+		private Singleton() {
+			// Utility class
+		}
+	}
 }
