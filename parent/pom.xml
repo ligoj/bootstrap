@@ -60,7 +60,7 @@
 		<jackson.version>2.8.7</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
 		<jetty.version>9.4.4.v20170414</jetty.version>
-		<joda.version>2.9.7</joda.version>
+		<joda.version>2.9.9</joda.version>
 		<junit.version>4.12</junit.version>
 		<log4j.version>2.8.1</log4j.version>
 		<lombok.version>1.16.16</lombok.version>
