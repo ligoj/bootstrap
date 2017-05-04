@@ -67,11 +67,9 @@
 		<mockito.version>2.7.18</mockito.version>
 		<mysql.version>6.0.6</mysql.version>
 		<quartz.version>2.2.3</quartz.version>
-		<shared-ldap.version>0.9.15</shared-ldap.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<spring-data.version>1.10.4.RELEASE</spring-data.version>
 		<spring.version>4.3.7.RELEASE</spring.version>
-		<spring-ldap.version>2.3.1.RELEASE</spring-ldap.version>
 		<spring-security.version>4.2.2.RELEASE</spring-security.version>
 		<wiremock.version>2.5.1</wiremock.version>
 
@@ -374,39 +372,6 @@
 				<groupId>org.quartz-scheduler</groupId>
 				<artifactId>quartz</artifactId>
 				<version>${quartz.version}</version>
-			</dependency>
-
-			<!-- LDAP -->
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-ldap</artifactId>
-				<version>${spring-security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.directory.shared</groupId>
-				<artifactId>shared-ldap</artifactId>
-				<version>${shared-ldap.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.directory.server</groupId>
-				<artifactId>apacheds-protocol-ldap</artifactId>
-				<version>${apacheds.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xml-apis</groupId>
-						<artifactId>xml-apis</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.ldap</groupId>
-				<artifactId>spring-ldap-core</artifactId>
-				<version>${spring-ldap.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.ldap</groupId>
-				<artifactId>spring-ldap-core-tiger</artifactId>
-				<version>${spring-ldap.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.wink</groupId>
