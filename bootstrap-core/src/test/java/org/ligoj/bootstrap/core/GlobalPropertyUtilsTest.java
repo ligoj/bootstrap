@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.core.io.Resource;
 
 /**
- * Check Spring resource loader.
+ * Check Spring resource loader. Test class of {@link GlobalPropertyUtils}
  */
 public class GlobalPropertyUtilsTest {
 
@@ -39,6 +39,7 @@ public class GlobalPropertyUtilsTest {
 		final Resource[] resources = new Resource[] { Mockito.mock(Resource.class) };
 		Mockito.when(resources[0].getInputStream()).thenReturn(null);
 		new GlobalPropertyUtils().setLocations(resources);
+		new GlobalPropertyUtils().loadProperties(new Properties());
 		Assert.assertNull(GlobalPropertyUtils.getProperty("key"));
 	}
 
