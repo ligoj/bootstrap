@@ -17,6 +17,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.ligoj.bootstrap.core.SpringUtils;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.dao.system.SystemConfigurationRepository;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
@@ -39,6 +42,32 @@ public class ConfigurationResource {
 	private SystemConfigurationRepository repository;
 
 	/**
+	 * Return the configuration integer value.
+	 * 
+	 * @param key
+	 *            The configuration key name.
+	 * @param defaultValue
+	 *            The default integer value when <code>null</code>
+	 * @return the configuration integer value or the default value.
+	 */
+	public int get(final String key, final int defaultValue) {
+		return NumberUtils.toInt(SpringUtils.getBean(ConfigurationResource.class).get(key), defaultValue);
+	}
+
+	/**
+	 * Return the configuration integer value.
+	 * 
+	 * @param key
+	 *            The configuration key name.
+	 * @param defaultValue
+	 *            The default integer value when <code>null</code>
+	 * @return the configuration integer value or the default value.
+	 */
+	public String get(final String key, final String defaultValue) {
+		return ObjectUtils.defaultIfNull(SpringUtils.getBean(ConfigurationResource.class).get(key), defaultValue);
+	}
+
+	/**
 	 * Return a specific configuration. System properties overrides the value from the database. Configuration values
 	 * are
 	 * always encrypted.
@@ -50,9 +79,11 @@ public class ConfigurationResource {
 	@GET
 	@CacheResult(cacheName = "configuration")
 	public String get(@CacheKey final String name) {
-		return Optional.ofNullable(repository.findByName(name))
-				.map(c -> Optional.ofNullable(System.getProperty(c.getName())).orElseGet(() -> c.getValue())).map(cryptoHelper::decryptAsNeeded)
-				.orElse(null);
+		String value = System.getProperty(name);
+		if (value == null) {
+			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue).orElse(null);
+		}
+		return Optional.ofNullable(value).map(cryptoHelper::decryptAsNeeded).orElse(null);
 	}
 
 	/**
