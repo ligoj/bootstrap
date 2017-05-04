@@ -29,7 +29,7 @@ import net.sf.ehcache.CacheManager;
 public class ConfigurationResourceTest extends AbstractJpaTest {
 
 	@Autowired
-	private ConfigurationResource configurationResource;
+	private ConfigurationResource resource;
 
 	@Autowired
 	private CryptoHelper cryptoHelper;
@@ -45,6 +45,7 @@ public class ConfigurationResourceTest extends AbstractJpaTest {
 		System.setProperty("test-key1", cryptoHelper.encrypt("value1"));
 		System.setProperty("test-key2", "value2");
 		System.setProperty("test-key3", "value3");
+		System.setProperty("test-key-int", "54");
 
 		final SystemConfiguration entity0 = new SystemConfiguration();
 		entity0.setName("test-key0");
@@ -77,15 +78,30 @@ public class ConfigurationResourceTest extends AbstractJpaTest {
 
 	@Test
 	public void get() {
-		Assert.assertEquals("value0", configurationResource.get("test-key0"));
-		Assert.assertNull(configurationResource.get("test-key1"));
-		Assert.assertEquals("value2", configurationResource.get("test-key2"));
-		Assert.assertNull(configurationResource.get("test-key3"));
-		Assert.assertEquals("value-db4", configurationResource.get("test-key4"));
-		Assert.assertEquals("value-db5", configurationResource.get("test-key5"));
+		Assert.assertEquals("value0", resource.get("test-key0"));
+		Assert.assertEquals("value1", resource.get("test-key1"));
+		Assert.assertEquals("value2", resource.get("test-key2"));
+		Assert.assertEquals("value3", resource.get("test-key3"));
+		Assert.assertEquals("value-db4", resource.get("test-key4"));
+		Assert.assertEquals("value-db5", resource.get("test-key5"));
+		Assert.assertNull(resource.get("test-any"));
 
 		Assert.assertNotEquals("value-db5", em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult().getValue());
+	}
+
+	@Test
+	public void getInt() {
+		Assert.assertEquals(99, resource.get("test-key-any", 99));
+		Assert.assertEquals(54, resource.get("test-key-int", 77));
+	}
+
+	@Test
+	public void getDefault() {
+		Assert.assertNull(resource.get("test-key-any"));
+		Assert.assertEquals("99", resource.get("test-key-any", "99"));
+		Assert.assertEquals("54", resource.get("test-key-int"));
+		Assert.assertEquals("54", resource.get("test-key-int", "77"));
 	}
 
 	@Test
@@ -94,11 +110,11 @@ public class ConfigurationResourceTest extends AbstractJpaTest {
 				.setParameter("name", "test-key5").getSingleResult();
 		em.clear();
 		Assert.assertNotEquals("new-value-db5", value.getValue());
-		Assert.assertEquals("value-db5", configurationResource.get("test-key5"));
-		configurationResource.saveOrUpdate("test-key5", "new-value-db5");
+		Assert.assertEquals("value-db5", resource.get("test-key5"));
+		resource.saveOrUpdate("test-key5", "new-value-db5");
 
 		// Check the data from the cache
-		Assert.assertEquals("new-value-db5", configurationResource.get("test-key5"));
+		Assert.assertEquals("new-value-db5", resource.get("test-key5"));
 		SystemConfiguration newValue = em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 
@@ -111,15 +127,15 @@ public class ConfigurationResourceTest extends AbstractJpaTest {
 
 		// Check persistence of data and cache
 		CacheManager.getInstance().getCache("configuration").removeAll();
-		Assert.assertEquals("new-value-db5", configurationResource.get("test-key5"));
+		Assert.assertEquals("new-value-db5", resource.get("test-key5"));
 	}
 
 	@Test
 	public void create() {
-		configurationResource.saveOrUpdate("test-key6", "new-value-db6");
+		resource.saveOrUpdate("test-key6", "new-value-db6");
 
 		// Check the data from the cache
-		Assert.assertEquals("new-value-db6", configurationResource.get("test-key6"));
+		Assert.assertEquals("new-value-db6", resource.get("test-key6"));
 		SystemConfiguration newValue = em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key6").getSingleResult();
 
@@ -129,20 +145,20 @@ public class ConfigurationResourceTest extends AbstractJpaTest {
 
 		// Check persistence of data and cache
 		CacheManager.getInstance().getCache("configuration").removeAll();
-		Assert.assertEquals("new-value-db6", configurationResource.get("test-key6"));
+		Assert.assertEquals("new-value-db6", resource.get("test-key6"));
 	}
 
 	@Test
 	public void delete() {
-		Assert.assertEquals("value-db5", configurationResource.get("test-key5"));
-		configurationResource.delete("test-key5");
+		Assert.assertEquals("value-db5", resource.get("test-key5"));
+		resource.delete("test-key5");
 
 		// Check the data from the cache
-		Assert.assertNull(configurationResource.get("test-key5"));
+		Assert.assertNull(resource.get("test-key5"));
 
 		// Check persistence of data and cache
 		CacheManager.getInstance().getCache("configuration").removeAll();
-		Assert.assertNull(configurationResource.get("test-key5"));
+		Assert.assertNull(resource.get("test-key5"));
 		Assert.assertTrue(em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class).setParameter("name", "test-key6")
 				.getResultList().isEmpty());
 	}
