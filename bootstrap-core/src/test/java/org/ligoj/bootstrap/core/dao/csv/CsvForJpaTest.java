@@ -19,16 +19,15 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.ligoj.bootstrap.core.csv.DummyEntity;
 import org.ligoj.bootstrap.core.csv.DummyEntity2;
 import org.ligoj.bootstrap.core.csv.DummyEntity3;
 import org.ligoj.bootstrap.core.csv.Wrapper;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa} utility.
@@ -417,9 +416,20 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaEnumeration() throws IOException {
+	public void toJpaEnum() throws IOException {
 		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialEnum\nALL"), true);
 		Assert.assertEquals(1, jpa.size());
+	}
+
+	@Test
+	public void toJpaEnumIgnoreCase() throws IOException {
+		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialEnum\naLl"), true);
+		Assert.assertEquals(1, jpa.size());
+	}
+
+	@Test(expected = TechnicalException.class)
+	public void toJpaEnumInvalid() throws IOException {
+		csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialEnum\n_ERROR_"), true);
 	}
 
 	@Test

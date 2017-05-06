@@ -18,10 +18,10 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.converters.DateConverter;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.joda.time.DateTime;
-
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
@@ -298,7 +298,10 @@ public abstract class AbstractCsvReader<T> {
 		// Update the property
 		if (field.getAnnotation(GeneratedValue.class) == null) {
 			if (field.getType().isEnum()) {
-				beanUtilsBean.setProperty(bean, property, Enum.valueOf((Class<E>) field.getType(), rawValue));
+				// Ignore case of Enum name
+				final Class<E> enumClass = (Class<E>) field.getType();
+				beanUtilsBean.setProperty(bean, property,Enum.valueOf(enumClass,  EnumUtils.getEnumMap(enumClass).keySet().stream()
+						.filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
 			} else {
 				beanUtilsBean.setProperty(bean, property, rawValue);
 			}
