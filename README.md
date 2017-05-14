@@ -15,14 +15,16 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://gus.mit-license.org/)
 
 Key features:
-- Convention over Code for everything: light webpack, http error code, CDI
+- Convention over Code for everything: light webpack, http error code, CDI, Java8 named parameters
 - RBAC with URL based authorization and dynamic roles
 - Exception to REST/HTTP code mapping
 - Advanced JAX-RS validation
-- Test powered with CSV data load
-- TDD ready
-- Optional encrypted properties support
+- Tuned Jackson configuration for minified playload and validation
+- Test powered with CSV data load to and from JPA entities
+- TDD ready with pre-built asserts with Mockito and Wiremock
+- Optional encrypted properties support and database configuration with Jasypt
 - Tuned configuration for dev, build and production
+- Spring-Data extensions for performance, minimal code and exception handling
 
 A Spring based front/back architecture
 - Spring Security/Web/Data
