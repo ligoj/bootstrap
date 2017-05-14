@@ -151,7 +151,7 @@ public abstract class AbstractCsvReader<T> {
 	 *            the property values.
 	 * @return the bean built with values.
 	 */
-	private T build(final List<String> values) {
+	protected T build(final List<String> values) {
 		if (values.isEmpty()) {
 			return null;
 		}
@@ -165,7 +165,7 @@ public abstract class AbstractCsvReader<T> {
 			final T bean = clazz.newInstance();
 
 			// Fill the instance
-			fillInstance(values, bean);
+			fillInstance(bean, values);
 
 			// Bean is completed
 			return bean;
@@ -175,9 +175,14 @@ public abstract class AbstractCsvReader<T> {
 	}
 
 	/**
-	 * Fill the given bean
+	 * Fill the given bean.
+	 * 
+	 * @param bean
+	 *            The target bean.
+	 * @param values
+	 *            The raw {@link String} values to set to the bean.
 	 */
-	private void fillInstance(final List<String> values, final T bean)
+	protected void fillInstance(final T bean, final List<String> values)
 			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		int index = 0;
 		for (final String property : headers) {
@@ -288,7 +293,8 @@ public abstract class AbstractCsvReader<T> {
 	 *            the bean property to set.
 	 * @param rawValue
 	 *            the raw value to set.
-	 * @param <E> Enumeration type.
+	 * @param <E>
+	 *            Enumeration type.
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue)
@@ -300,8 +306,8 @@ public abstract class AbstractCsvReader<T> {
 			if (field.getType().isEnum()) {
 				// Ignore case of Enum name
 				final Class<E> enumClass = (Class<E>) field.getType();
-				beanUtilsBean.setProperty(bean, property,Enum.valueOf(enumClass,  EnumUtils.getEnumMap(enumClass).keySet().stream()
-						.filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
+				beanUtilsBean.setProperty(bean, property, Enum.valueOf(enumClass,
+						EnumUtils.getEnumMap(enumClass).keySet().stream().filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
 			} else {
 				beanUtilsBean.setProperty(bean, property, rawValue);
 			}
