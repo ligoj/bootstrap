@@ -66,7 +66,9 @@ function installMaven {
 # PROJECT_VERSION=6.3
 #
 function fixBuildVersion {
+  echo "Create a clean build version ..."
   export INITIAL_VERSION=$(maven_expression "project.version")
+  echo "INITIAL_VERSION : $INITIAL_VERSION"
 
   # remove suffix -SNAPSHOT or -RC
   without_suffix=$(echo $INITIAL_VERSION | sed "s/-.*//g")
@@ -83,6 +85,7 @@ function fixBuildVersion {
   if [[ "${INITIAL_VERSION}" == *"-SNAPSHOT" ]]; then
     # SNAPSHOT
     export PROJECT_VERSION=$BUILD_VERSION
+    echo "Replacing Initial version '$INITIAL_VERSION' by '$PROJECT_VERSION'"
     grep --include={*.properties,pom.xml} -rnl './' -e "$INITIAL_VERSION" | xargs -i@ sed -i "s/$INITIAL_VERSION/$PROJECT_VERSION/g" @
   else
     # not a SNAPSHOT: milestone, RC or GA
