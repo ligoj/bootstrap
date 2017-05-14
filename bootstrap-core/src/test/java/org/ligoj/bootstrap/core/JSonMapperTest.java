@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 public class JSonMapperTest {
 
 	private ObjectMapper jackSonMapper;
-	private Gson gsonMapper;
 
 	public static final int ITERATION = 100000;
 
 	@Before
 	public void initializeMapper() throws IOException {
-		gsonMapper = null;
-		// gsonMapper = new Gson();
-		// jackSonMapper = null;
 		jackSonMapper = new ObjectMapper();
 		warmup();
 
@@ -271,16 +266,10 @@ public class JSonMapperTest {
 	}
 
 	private <T> T readObject(final String value, final Class<T> clazz) throws IOException {
-		if (gsonMapper != null) {
-			return gsonMapper.fromJson(value, clazz);
-		}
 		return jackSonMapper.readValue(value, clazz);
 	}
 
 	private String writeValue(final Object object) throws IOException {
-		if (gsonMapper != null) {
-			return gsonMapper.toJson(object);
-		}
 		return jackSonMapper.writeValueAsString(object);
 	}
 }
