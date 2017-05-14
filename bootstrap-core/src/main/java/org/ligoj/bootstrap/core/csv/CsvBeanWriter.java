@@ -14,11 +14,6 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
  */
 public class CsvBeanWriter {
 
-	/**
-	 * Default separator.
-	 */
-	public static final char SEPARATOR = ';';
-
 	private final Writer writer;
 
 	/**
@@ -81,7 +76,7 @@ public class CsvBeanWriter {
 	 */
 	private void writeSeparator(final boolean first) throws IOException {
 		if (!first) {
-			writer.write(SEPARATOR);
+			writer.write(CsvReader.DEFAULT_SEPARATOR);
 		}
 	}
 

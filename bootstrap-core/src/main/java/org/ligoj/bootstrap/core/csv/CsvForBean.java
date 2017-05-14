@@ -29,21 +29,33 @@ public class CsvForBean extends AbstractCsvManager {
 			return result;
 		}
 
-		final CsvBeanReader<T> reader = new CsvBeanReader<>(inputProxy, beanType, StringUtils.splitPreserveAllTokens(line, CsvBeanWriter.SEPARATOR));
+		final CsvBeanReader<T> reader = new CsvBeanReader<>(inputProxy, beanType,
+				StringUtils.splitPreserveAllTokens(line, CsvReader.DEFAULT_SEPARATOR));
 
 		// Build all instances
 		fillList(result, reader);
 		return result;
 	}
 
+	/**
+	 * Read the next bean from the given reader.
+	 * 
+	 * @param reader
+	 *            The CSV reader.
+	 * @return The instance. May be <code>null</code> with EOF.
+	 */
+	public <T> T toBean(final CsvBeanReader<T> reader) throws IOException {
+		return reader.read();
+	}
+
 	private <T> void fillList(final List<T> result, final CsvBeanReader<T> reader) throws IOException {
 		// Build the first instance
-		T order = reader.read();
+		T order = toBean(reader);
 		while (order != null) {
 			result.add(order);
 
 			// Read the next one
-			order = reader.read();
+			order = toBean(reader);
 		}
 	}
 

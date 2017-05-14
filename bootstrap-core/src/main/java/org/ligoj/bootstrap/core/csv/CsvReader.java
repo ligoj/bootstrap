@@ -12,6 +12,11 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
  */
 public class CsvReader {
 
+	/**
+	 * Default separator.
+	 */
+	public static final char DEFAULT_SEPARATOR = ';';
+
 	// Context
 	private char current;
 	private char previous;
@@ -19,6 +24,7 @@ public class CsvReader {
 	private final StringBuilder value = new StringBuilder(); // NOPMD -- Clear is ensured on read
 	private final Reader reader;
 	private final List<String> values = new ArrayList<>();
+	private char separator;
 
 	/**
 	 * Attached reader.
@@ -27,11 +33,25 @@ public class CsvReader {
 	 *            the source.
 	 */
 	public CsvReader(final Reader reader) {
+		this(reader, DEFAULT_SEPARATOR);
+	}
+
+	/**
+	 * Attached reader.
+	 * 
+	 * @param reader
+	 *            the source.
+	 * @param separator
+	 *            the column separator.
+	 */
+	public CsvReader(final Reader reader, final char separator) {
 		this.reader = reader;
+		this.separator = separator;
 	}
 
 	/**
 	 * Return a bean read from the reader.
+	 * 
 	 * @return the read bean.
 	 * @throws IOException
 	 *             Read issue occurred.
@@ -109,7 +129,7 @@ public class CsvReader {
 		while (!isEndOfInput()) {
 			current = (char) reader.read();
 		}
-		return current != CsvBeanWriter.SEPARATOR;
+		return current != separator;
 	}
 
 	/**
@@ -120,7 +140,7 @@ public class CsvReader {
 			// Open simple or double quote wrapper and ignore this character
 			wrapper = current;
 			current = '\0';
-		} else if (current == CsvBeanWriter.SEPARATOR) {
+		} else if (current == separator) {
 			// Real separator, flush the proceeded value
 			addValue(value.toString().trim());
 		} else if (isNewLine()) {
@@ -170,7 +190,7 @@ public class CsvReader {
 	 * Is a end of word char.
 	 */
 	private boolean isEndOfWord() {
-		return current == CsvBeanWriter.SEPARATOR || isNewLine() || current == 65535;
+		return current == separator || isNewLine() || current == 65535;
 	}
 
 	/**

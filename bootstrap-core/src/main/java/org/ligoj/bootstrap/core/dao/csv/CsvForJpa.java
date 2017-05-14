@@ -26,6 +26,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.csv.CsvBeanWriter;
+import org.ligoj.bootstrap.core.csv.CsvReader;
 
 /**
  * Component able to generate CSV data from JPA entity - the managed properties - and also the standard Java Beans. This
@@ -211,7 +212,7 @@ public class CsvForJpa extends AbstractCsvManager {
 			}
 
 			// Build the headers
-			headers = StringUtils.split(line, CsvBeanWriter.SEPARATOR);
+			headers = StringUtils.split(line, CsvReader.DEFAULT_SEPARATOR);
 		} else {
 			inputProxy = input;
 			headers = getJpaHeaders(beanType);
