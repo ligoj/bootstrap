@@ -20,13 +20,15 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.csv.CsvBeanWriter;
 import org.ligoj.bootstrap.core.csv.CsvReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * Component able to generate CSV data from JPA entity - the managed properties - and also the standard Java Beans. This
@@ -37,6 +39,9 @@ public class CsvForJpa extends AbstractCsvManager {
 
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = "pu")
 	private EntityManager em;
+
+	@Autowired
+	protected JpaTransactionManager transactionManager;
 
 	@Override
 	public <T> List<T> toBean(final Class<T> beanType, final Reader input) throws IOException {
@@ -293,8 +298,7 @@ public class CsvForJpa extends AbstractCsvManager {
 
 		// Now filter the properties
 		final List<String> descriptorsFiltered = new ArrayList<>();
-		final ManagedType<T> managedType = applicationContext.getBean(org.springframework.orm.jpa.JpaTransactionManager.class)
-				.getEntityManagerFactory().getMetamodel().managedType(beanType);
+		final ManagedType<T> managedType = transactionManager.getEntityManagerFactory().getMetamodel().managedType(beanType);
 		for (final String propertyDescriptor : orderedDescriptors) {
 			for (final Attribute<?, ?> attribute : managedType.getAttributes()) {
 				// Match only basic attributes

@@ -11,22 +11,18 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.ClassPathResource;
 
 /**
  * Component able to generate CSV data from JPA entity - the managed properties - and also the standard Java Beans. This
  * operation is a two-ways transformation able to create Java Beans from CSV file having or not headers.
  */
-public abstract class AbstractCsvManager implements ApplicationContextAware {
+public abstract class AbstractCsvManager {
 
 	/**
 	 * Default CSV encoding.
 	 */
 	public static final String DEFAULT_ENCODING = "cp1250";
-
-	protected ApplicationContext applicationContext;
 
 	/**
 	 * Return a list of JPA bean read from the given CSV file. Headers are expected.
@@ -95,11 +91,6 @@ public abstract class AbstractCsvManager implements ApplicationContextAware {
 			writer.write(headers, item);
 		}
 		result.flush();
-	}
-
-	@Override
-	public void setApplicationContext(final ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
 	}
 
 }
