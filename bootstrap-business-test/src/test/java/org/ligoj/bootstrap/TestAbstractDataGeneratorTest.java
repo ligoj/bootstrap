@@ -188,7 +188,7 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void testNewUriInfo() {
-		Assert.assertNotNull(newUriInfo().getQueryParameters());
+		Assert.assertEquals("search-1", newUriInfo("search-1").getQueryParameters().getFirst("search[value]"));
 	}
 
 	@Test

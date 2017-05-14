@@ -415,6 +415,19 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
+	 * Return a new mocked {@link UriInfo} instance.
+	 * 
+	 * @param search
+	 *            The search value as query parameter.
+	 * @return a new mocked {@link UriInfo} instance.
+	 */
+	protected UriInfo newUriInfo(final String search) {
+		final UriInfo uriInfo = newUriInfo();
+		uriInfo.getQueryParameters().putSingle("search[value]", search);
+		return uriInfo;
+	}
+
+	/**
 	 * Check and execute coverage test on an utility class.
 	 * 
 	 * @param singletonClass
