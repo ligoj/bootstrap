@@ -78,13 +78,20 @@ public abstract class AbstractCsvReader<T> {
 			DATE_PATTERN_EN, DATE_PATTERN_HMS.replace('/', '-'), DATE_PATTERN_HM.replace('/', '-'), DATE_PATTERN.replace('/', '-'),
 			DATE_PATTERN_EN_HMS.replace('/', '-'), DATE_PATTERN_EN_HM.replace('/', '-'), DATE_PATTERN_EN.replace('/', '-') };
 
+	/**
+	 * The ordered headers used to build the target bean.
+	 */
 	protected final String[] headers;
+
+	/**
+	 * The instance type to build.
+	 */
 	protected final Class<T> clazz;
 
 	/**
 	 * CSV raw data reader.
 	 */
-	private final CsvReader csvReader;
+	protected final CsvReader csvReader;
 
 	/**
 	 * All fields constructor.
