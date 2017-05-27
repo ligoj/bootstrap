@@ -12,6 +12,7 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![Sourcegraph Badge](https://sourcegraph.com/github.com/ligoj/bootstrap/-/badge.svg)](https://sourcegraph.com/github.com/ligoj/bootstrap?badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6c472b13c5a49b4882d27632f79b6de)](https://www.codacy.com/app/ligoj/bootstrap?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/bootstrap&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/bootstrap/badge)](https://www.codefactor.io/repository/github/ligoj/bootstrap)
+[![codebeat badge](https://codebeat.co/badges/8a91a084-a4fc-4c35-b0cd-4700b95dfa92)](https://codebeat.co/projects/github-com-ligoj-bootstrap-master)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://gus.mit-license.org/)
 
 Key features:
