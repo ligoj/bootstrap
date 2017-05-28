@@ -124,7 +124,7 @@ public abstract class AbstractSpecification {
 	 *            The type of the {@link Expression}
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected <Y> Y getRawData(final String data, final Expression<Y> expression) {
+	protected static <Y> Y toRawData(final String data, final Expression<Y> expression) {
 
 		// Guess the right compile time type, including generic type
 		final Field field = (Field) ((SingularAttributePath<?>) expression).getAttribute().getJavaMember();
@@ -151,7 +151,7 @@ public abstract class AbstractSpecification {
 	 * Get {@link Enum} value from the string raw data. Accept lower and upper case for the match.
 	 */
 	@SuppressWarnings("unchecked")
-	private <Y extends Enum<Y>> Enum<Y> toEnum(final String data, final Expression<Y> expression) {
+	private static <Y extends Enum<Y>> Enum<Y> toEnum(final String data, final Expression<Y> expression) {
 		if (StringUtils.isNumeric(data)) {
 			// Get Enum value by its ordinal
 			return expression.getJavaType().getEnumConstants()[Integer.parseInt(data)];
