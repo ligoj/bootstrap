@@ -580,11 +580,11 @@ public class CsvForJpaTest {
 	 */
 	private DummyEntity newWine() {
 		final DummyEntity wine = new DummyEntity();
+		wine.setId(4);
+		wine.setName("5");
 		wine.setWneCnty("1");
 		wine.setWneDesc("2");
 		wine.setWneGrpe("3");
-		wine.setId(4);
-		wine.setName("5");
 		wine.setWnePict("6");
 		wine.setWneRegn("7");
 		wine.setWneYear(8);

@@ -188,21 +188,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@Test
 	public void testTransactionError() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/transaction-begin");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("database-down", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertNull(result.get("message"));
-		} finally {
-			if (response != null) {
-				response.getEntity().getContent().close();
-			}
-		}
+		assertUnavailable("/transaction-begin");
 	}
 
 	/**
@@ -210,21 +196,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@Test
 	public void testConnectionError() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/connection");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("database-down", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertNull(result.get("message"));
-		} finally {
-			if (response != null) {
-				response.getEntity().getContent().close();
-			}
-		}
+		assertUnavailable("/connection");
 	}
 
 	/**
@@ -232,7 +204,11 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@Test
 	public void testTransactionError2() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/transaction-begin2");
+		assertUnavailable("/transaction-begin2");
+	}
+
+	private void assertUnavailable(final String path) throws IOException, ClientProtocolException, JsonParseException, JsonMappingException {
+		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + path);
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
@@ -679,27 +655,13 @@ public class ExceptionMapperIT extends AbstractRestTest {
 			}
 		}
 	}
-	
+
 	/**
 	 * @see ExceptionMapperResource#throwJpaObjectRetrievalFailureException()
 	 */
 	@Test
 	public void testJpaObjectRetrievalFailureException() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/jpaObjectRetrievalFailureException");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("entity", result.get("code"));
-			Assert.assertEquals("key", result.get("message"));
-			Assert.assertNull(result.get("cause"));
-		} finally {
-			if (response != null) {
-				response.getEntity().getContent().close();
-			}
-		}
+		assertNotFound("/jpaObjectRetrievalFailureException","key");
 	}
 
 	/**
@@ -707,7 +669,11 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@Test
 	public void testNoResultException() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/noResultException");
+		assertNotFound("/noResultException", "message");
+	}
+
+	private void assertNotFound(final String path, final String message) throws IOException, ClientProtocolException, JsonParseException, JsonMappingException {
+		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + path);
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
@@ -715,7 +681,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assert.assertEquals("entity", result.get("code"));
-			Assert.assertEquals("message", result.get("message"));
+			Assert.assertEquals(message, result.get("message"));
 			Assert.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {

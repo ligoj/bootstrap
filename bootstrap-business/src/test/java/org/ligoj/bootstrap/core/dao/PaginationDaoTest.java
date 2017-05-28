@@ -156,10 +156,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleNE.setOp(RuleOperator.EQ);
 		rulesGroupOr.add(ruleNE);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -201,10 +198,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleNE2.setOp(RuleOperator.NE);
 		rulesGroupOr.add(ruleNE2);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -323,10 +317,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEW.setField("some");
 		ruleEW.setOp(RuleOperator.EW);
 		rules.add(ruleEW);
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
@@ -358,14 +349,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleCN.setOp(RuleOperator.CN);
 		rules.add(ruleCN);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
-		final Map<String, String> mapping = new HashMap<>();
-		mapping.put("dialLong", "dialLong");
-		mapping.put("dialChar", "dialChar");
+		final Map<String, String> mapping = newBaseMapping();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(1, findAll.getTotalElements());
@@ -391,15 +377,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleGTE.setOp(RuleOperator.GTE);
 		rules.add(ruleGTE);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
-
-		final Map<String, String> mapping = new HashMap<>();
-		mapping.put("dialLong", "dialLong");
-		mapping.put("dialChar", "dialChar");
+		final Map<String, String> mapping = newBaseMapping();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(3, findAll.getTotalElements());
@@ -440,15 +420,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		groupAnd.setRules(rulesGroupAnd);
 		rulesGroupOr.add(groupAnd);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
-
-		final Map<String, String> mapping = new HashMap<>();
-		mapping.put("dialLong", "dialLong");
-		mapping.put("dialChar", "dialChar");
+		final Map<String, String> mapping = newBaseMapping();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
 		Assert.assertTrue(findAll.hasContent());
 
@@ -456,6 +430,13 @@ public class PaginationDaoTest extends AbstractBootTest {
 		// Since there are two "amet" out of LT/GT/NE range
 		Assert.assertEquals(Integer.valueOf(ruleLT.getData()) - Integer.valueOf(ruleGT.getData()) - 1 - 1 + 2, findAll.getTotalElements());
 		Assert.assertEquals(1, findAll.getTotalPages());
+	}
+
+	private Map<String, String> newBaseMapping() {
+		final Map<String, String> mapping = new HashMap<>();
+		mapping.put("dialLong", "dialLong");
+		mapping.put("dialChar", "dialChar");
+		return mapping;
 	}
 
 	/**
@@ -474,10 +455,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ.setOp(RuleOperator.EQ);
 		rulesGroupOr.add(ruleEQ);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -504,10 +482,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ.setOp(RuleOperator.EQ);
 		rulesGroupOr.add(ruleEQ);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -535,10 +510,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ.setOp(RuleOperator.LT);
 		rulesGroupOr.add(ruleEQ);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -564,10 +536,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ.setOp(RuleOperator.EQ);
 		rulesGroupOr.add(ruleEQ);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -594,10 +563,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ.setOp(RuleOperator.EQ);
 		rulesGroupOr.add(ruleEQ);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newOr10();
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final Map<String, String> mapping = new HashMap<>();
@@ -606,6 +572,19 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(1, findAll.getTotalElements());
 		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+	}
+
+	private UiPageRequest newOr10() {
+		final UiPageRequest uiPageRequest = newOr();
+		uiPageRequest.setPageSize(10);
+		return uiPageRequest;
+	}
+
+	private UiPageRequest newOr() {
+		final UiPageRequest uiPageRequest = new UiPageRequest();
+		uiPageRequest.setUiFilter(new UiFilter());
+		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
+		return uiPageRequest;
 	}
 
 	/**
@@ -648,14 +627,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleCT.setOp(RuleOperator.CT);
 		rules.add(ruleCT);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
-		final Map<String, String> mapping = new HashMap<>();
-		mapping.put("dialLong", "dialLong");
-		mapping.put("dialChar", "dialChar");
+		final Map<String, String> mapping = newBaseMapping();
 		final Map<String, CustomSpecification> specifications = new HashMap<>();
 		specifications.put("myCustom", new CustomSpecification() {
 
@@ -673,6 +647,19 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals("Lorem", findAll.getContent().get(1).getDialChar());
 	}
 
+	private UiPageRequest newAnd10() {
+		final UiPageRequest uiPageRequest = newAnd();
+		uiPageRequest.setPageSize(10);
+		return uiPageRequest;
+	}
+
+	private UiPageRequest newAnd() {
+		final UiPageRequest uiPageRequest = new UiPageRequest();
+		uiPageRequest.setUiFilter(new UiFilter());
+		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
+		return uiPageRequest;
+	}
+
 	/**
 	 * Default find all with custom specification.
 	 */
@@ -684,10 +671,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleCT.setOp(RuleOperator.CT);
 		rules.add(ruleCT);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = new HashMap<>();
 		final Map<String, CustomSpecification> specifications = new HashMap<>();
@@ -701,17 +685,18 @@ public class PaginationDaoTest extends AbstractBootTest {
 	 */
 	@Test
 	public void testFindAllWithEnumeration() {
+		assertEnumeration(AuthorizationType.BUSINESS.name());
+	}
+
+	private void assertEnumeration(final String data) {
 		final List<UIRule> rules = new ArrayList<>();
 		final BasicRule ruleCT = new BasicRule();
 		ruleCT.setField("authorization");
 		ruleCT.setOp(RuleOperator.EQ);
-		ruleCT.setData(AuthorizationType.BUSINESS.name());
+		ruleCT.setData(data);
 		rules.add(ruleCT);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("authorization", "authorization");
@@ -745,10 +730,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleCT.setOp(RuleOperator.EQ);
 		ruleCT.setData("1900");
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(Collections.singletonList(ruleCT));
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("parent2", "parent.parent");
@@ -770,10 +752,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleCT.setData(AuthorizationType.BUSINESS.name().toLowerCase(Locale.ENGLISH));
 		rules.add(ruleCT);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("*", "*");
@@ -788,24 +767,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 	 */
 	@Test
 	public void testFindAllWithEnumerationOrdinal() {
-		final List<UIRule> rules = new ArrayList<>();
-		final BasicRule ruleCT = new BasicRule();
-		ruleCT.setField("authorization");
-		ruleCT.setOp(RuleOperator.EQ);
-		ruleCT.setData(String.valueOf(AuthorizationType.BUSINESS.ordinal()));
-		rules.add(ruleCT);
-
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
-		uiPageRequest.getUiFilter().setRules(rules);
-		final Map<String, String> mapping = new HashMap<>();
-		mapping.put("authorization", "authorization");
-		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(21, findAll.getTotalElements());
-		Assert.assertEquals(AuthorizationType.BUSINESS, findAll.getContent().get(0).getAuthorization());
+		assertEnumeration(String.valueOf(AuthorizationType.BUSINESS.ordinal()));
 	}
 
 	@Test
@@ -868,10 +830,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ3.setOp(RuleOperator.EQ);
 		rulesGroup.add(ruleEQ3);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
-		uiPageRequest.setPageSize(10);
+		final UiPageRequest uiPageRequest = newAnd10();
 		uiPageRequest.getUiFilter().setRules(rulesGroup);
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("user1", "link.user.login");
@@ -904,9 +863,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		ruleEQ.setOp(RuleOperator.EQ);
 		rulesGroup.add(ruleEQ);
 
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.AND);
+		final UiPageRequest uiPageRequest = newAnd();
 		uiPageRequest.getUiFilter().setRules(rulesGroup);
 		uiPageRequest.setPageSize(10);
 		final Map<String, String> mapping = new HashMap<>();
@@ -956,9 +913,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final UiSort sort = new UiSort();
 		sort.setColumn("login");
 		sort.setDirection(Direction.ASC);
-		final UiPageRequest uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setGroupOp(FilterOperator.OR);
+		final UiPageRequest uiPageRequest = newOr();
 		uiPageRequest.getUiFilter().setRules(rulesGroup);
 		uiPageRequest.setUiSort(sort);
 		uiPageRequest.setPageSize(10);
