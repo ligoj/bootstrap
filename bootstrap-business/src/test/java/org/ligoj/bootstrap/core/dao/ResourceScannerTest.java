@@ -60,6 +60,21 @@ public class ResourceScannerTest {
 	}
 
 	/**
+	 * Simulate a non existing JAR entry inside a WAR entry.
+	 */
+	@Test
+	public void testFilesInJarInWar() {
+		final ResourceScanner scanner = new ResourceScanner() {
+			@Override
+			protected Enumeration<URL> getOrmUrls() throws IOException {
+				return Collections.enumeration(Arrays.asList(new URL[] { new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/mycompany/MyClass.class") }));
+			}
+
+		};
+		Assert.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class)).getLocatedMappingFiles().isEmpty());
+	}
+
+	/**
 	 * Simulate a non existing JAR entry.
 	 */
 	@Test

@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.archive.scan.internal.StandardScanner;
 import org.hibernate.boot.archive.scan.spi.ScanEnvironment;
 import org.hibernate.boot.archive.scan.spi.ScanOptions;
@@ -76,13 +77,18 @@ public class ResourceScanner extends StandardScanner {
 	 */
 	protected URL getJarUrl(final URL ormUrl) throws MalformedURLException {
 		final URL ormJarUrl;
+		final String urlStr = ormUrl.toString();
 		if ("jar".equals(ormUrl.getProtocol())) {
-			// Extract the jar containing this file
-			ormJarUrl = new URL("file", ormUrl.getHost(), ormUrl.getPath().substring("file:".length(), ormUrl.getPath().indexOf('!')));
+			if (StringUtils.countMatches(ormUrl.getPath(), "!") > 1) {
+				// Cascaded JAR URL, remove only the last fragment
+				ormJarUrl = new URL(urlStr.substring(0, urlStr.lastIndexOf('!')));
+			} else {
+				// Extract the jar containing this file
+				ormJarUrl = new URL("file", ormUrl.getHost(), ormUrl.getPath().substring("file:".length(), ormUrl.getPath().indexOf('!')));
+			}
 		} else {
 			// Remove the trailing path
-			ormJarUrl = new URL(ormUrl.getProtocol(), ormUrl.getHost(),
-					ormUrl.getPath().substring(0, ormUrl.getPath().length() - META_INF_ORM_XML.length() - 1));
+			ormJarUrl = new URL(urlStr.substring(0, urlStr.length() - META_INF_ORM_XML.length() - 1));
 		}
 		return ormJarUrl;
 	}
