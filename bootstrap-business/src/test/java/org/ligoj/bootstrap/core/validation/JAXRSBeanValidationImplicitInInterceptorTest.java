@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotNull;
@@ -24,23 +23,18 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.ligoj.bootstrap.model.system.SystemUser;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.ClassUtils;
-
-import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**
  * {@link JAXRSBeanValidationImplicitInInterceptor} checks.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-@Rollback
-@Transactional
-public class JAXRSBeanValidationImplicitInInterceptorTest {
+public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 
 	@Autowired
 	private JAXRSBeanValidationImplicitInInterceptor validationInInterceptor;

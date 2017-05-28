@@ -10,21 +10,15 @@ import javax.persistence.PersistenceContextType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemDialect;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * JDBC bench test.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/jpa-context-test.xml")
-@Rollback
-@Transactional
-public class DialectDaoTest {
+public class DialectDaoTest extends AbstractBootTest {
 
 	/**
 	 * Entity manager.

@@ -2,32 +2,25 @@ package org.ligoj.bootstrap.resource.system.user;
 
 import java.util.Collections;
 
-import javax.transaction.Transactional;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ligoj.bootstrap.AbstractJpaTest;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test class of {@link UserResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml",
-		"classpath:/META-INF/spring/security-context-test.xml" })
-@Rollback
-@Transactional
-public class UserResourceTest extends AbstractJpaTest {
+public class UserResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private UserResource resource;

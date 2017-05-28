@@ -8,26 +8,19 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.data.domain.Auditable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import org.ligoj.bootstrap.AbstractSecurityTest;
 import org.ligoj.bootstrap.core.AuditedBean;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.model.system.SystemBench;
+import org.springframework.data.domain.Auditable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Audit test
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml" })
-@Rollback
-@Transactional
-public class AuditableTest extends AbstractSecurityTest {
+public class AuditableTest extends AbstractBootTest {
 
 	/**
 	 * Entity manager.

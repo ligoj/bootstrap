@@ -1,15 +1,11 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
-import javax.transaction.Transactional;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ligoj.bootstrap.AbstractSecurityTest;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import net.sf.ehcache.CacheManager;
@@ -18,10 +14,7 @@ import net.sf.ehcache.CacheManager;
  * Test class of {@link CacheResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-@Rollback
-@Transactional
-public class CacheResourceTest extends AbstractSecurityTest {
+public class CacheResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private CacheResource cacheResource;

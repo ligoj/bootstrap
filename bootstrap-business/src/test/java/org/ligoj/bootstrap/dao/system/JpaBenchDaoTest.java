@@ -7,22 +7,15 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import org.ligoj.bootstrap.AbstractJpaTest;
 
 /**
  * JPA bench test.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/jpa-context-test.xml")
-@Rollback
-@Transactional
-public class JpaBenchDaoTest extends AbstractJpaTest {
+public class JpaBenchDaoTest extends AbstractBootTest {
 
 	/**
 	 * JPA DAO provider for performance.

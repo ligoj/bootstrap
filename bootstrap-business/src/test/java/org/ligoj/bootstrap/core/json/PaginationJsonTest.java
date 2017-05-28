@@ -7,13 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.transaction.Transactional;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ligoj.bootstrap.AbstractDataGeneratorTest;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule.RuleOperator;
@@ -26,18 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * JSon pagination test of {@link PaginationJson}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-@Rollback
-@Transactional
-public class PaginationJsonTest extends AbstractDataGeneratorTest {
+public class PaginationJsonTest extends AbstractBootTest {
 
 	@Autowired
 	private PaginationJson paginationJson;

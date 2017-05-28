@@ -14,21 +14,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import de.svenjacobs.loremipsum.LoremIpsum;
-import org.ligoj.bootstrap.AbstractJpaTest;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule.RuleOperator;
 import org.ligoj.bootstrap.core.json.jqgrid.UIRule;
@@ -42,16 +32,19 @@ import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.model.test.DummyBusinessEntity3;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import de.svenjacobs.loremipsum.LoremIpsum;
 
 /**
  * Test class of {@link PaginationDao} {@link DynamicSpecification}, {@link FetchHelper}, {@link CustomSpecification}
  * and {@link AbstractSpecification}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/jpa-context-test.xml")
-@Rollback
-@Transactional
-public class PaginationDaoTest extends AbstractJpaTest {
+public class PaginationDaoTest extends AbstractBootTest {
 
 	@Autowired
 	private PaginationDao paginationDao;

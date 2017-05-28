@@ -11,17 +11,13 @@ import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import org.ligoj.bootstrap.AbstractJpaTest;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.validation.LowerCase;
 import org.ligoj.bootstrap.core.validation.ValidatorBean;
 import org.ligoj.bootstrap.core.validation.Wine;
-import org.ligoj.bootstrap.resource.validation.ValidationResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,10 +26,7 @@ import lombok.Setter;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml", "classpath:/META-INF/spring/rest-context-common.xml" })
-@Rollback
-@Transactional
-public class ValidationTest extends AbstractJpaTest {
+public class ValidationTest extends AbstractBootTest {
 
 	@Autowired
 	private ValidationTestResource wineResource;

@@ -2,26 +2,19 @@ package org.ligoj.bootstrap.resource.system;
 
 import java.util.TimeZone;
 
-import javax.transaction.Transactional;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.ligoj.bootstrap.core.DateUtils;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test class of {@link SystemResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-@Rollback
-@Transactional
-public class SystemResourceTest {
+public class SystemResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemResource resource;

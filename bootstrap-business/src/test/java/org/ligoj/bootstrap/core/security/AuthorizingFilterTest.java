@@ -16,6 +16,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
+import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
+import org.ligoj.bootstrap.model.system.SystemAuthorization;
+import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
+import org.ligoj.bootstrap.model.system.SystemRole;
+import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,29 +33,13 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import org.ligoj.bootstrap.AbstractJpaTest;
-import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
-import org.ligoj.bootstrap.core.security.AuthorizingFilter;
-import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
-import org.ligoj.bootstrap.model.system.SystemAuthorization;
-import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 
 /**
  * Test class of {@link AuthorizingFilter}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/security-context-test.xml",
-		"classpath:/META-INF/spring/business-context-test.xml" })
-@Rollback
-@Transactional
-public class AuthorizingFilterTest extends AbstractJpaTest {
+public class AuthorizingFilterTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemRoleRepository systemRoleRepository;

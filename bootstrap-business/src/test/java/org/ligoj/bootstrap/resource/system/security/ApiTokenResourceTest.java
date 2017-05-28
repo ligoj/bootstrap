@@ -9,25 +9,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import org.ligoj.bootstrap.AbstractJpaTest;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test class of {@link ApiTokenResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml" })
-@Rollback
-@Transactional
-public class ApiTokenResourceTest extends AbstractJpaTest {
+public class ApiTokenResourceTest extends AbstractBootTest {
 
 	private static final String TOKEN = "BWo9iEky2tpPX7RPhovNy5SywYI2fmacfRnLhJSZtfhCclj7IdP0uDZdLzqhUKnBu5svgKbkZS4eeLQVgu5Li2aMTOt9Fr1dLF8zMt7SNiMYyWv6YCFIsEUmeDjswFlf";
 	private static final String TOKEN_CRYPT = "s0RscSFywiK2rU9L5bovd3nSVPx9HGP33IGIbWnhdxADs5MdzQS+ml6T84O2SdtGGexkocaug7He2SxPJhb4J3CRbvDRDuD5Qeq76MPA83x9hL4kZs/mNfW7BW1yV/iHNPXtbO4bURNbnZMPuA+sILYJmRIv2A5I9Vp5OiJy+QGzpE7uVM6wYg==";

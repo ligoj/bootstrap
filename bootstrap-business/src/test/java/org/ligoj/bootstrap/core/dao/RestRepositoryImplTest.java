@@ -12,28 +12,21 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import javax.transaction.Transactional;
-
-import de.svenjacobs.loremipsum.LoremIpsum;
-import org.ligoj.bootstrap.AbstractJpaTest;
 import org.ligoj.bootstrap.dao.system.DialectRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.ligoj.bootstrap.model.system.SystemRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import de.svenjacobs.loremipsum.LoremIpsum;
 
 /**
  * {@link RestRepositoryImpl} class test.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/jpa-context-test.xml")
-@Rollback
-@Transactional
-public class RestRepositoryImplTest extends AbstractJpaTest {
+public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Autowired
 	private DialectRepository repository;

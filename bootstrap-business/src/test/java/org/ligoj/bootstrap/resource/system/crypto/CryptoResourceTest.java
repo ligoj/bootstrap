@@ -1,7 +1,5 @@
 package org.ligoj.bootstrap.resource.system.crypto;
 
-import javax.transaction.Transactional;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -9,24 +7,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import org.ligoj.bootstrap.AbstractJpaTest;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
+import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.resource.system.security.CryptoResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Test class of {@link CryptoResource}
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/jpa-context-test.xml", "classpath:/META-INF/spring/business-context-test.xml",
-		"classpath:/META-INF/spring/security-context-test.xml" })
-@Rollback
-@Transactional
-public class CryptoResourceTest extends AbstractJpaTest {
+public class CryptoResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private CryptoResource resource;
