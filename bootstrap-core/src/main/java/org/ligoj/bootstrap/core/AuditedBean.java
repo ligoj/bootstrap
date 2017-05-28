@@ -94,7 +94,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	 *            {@link DateTime} object.
 	 * @return {@link Date} value or null.
 	 */
-	public static Date toDate(final org.joda.time.DateTime date) {
+	public static Date toDate(final DateTime date) {
 		return date == null ? null : date.toDate();
 	}
 
@@ -105,8 +105,8 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	 *            {@link Date} object.
 	 * @return {@link DateTime} value or null.
 	 */
-	public static org.joda.time.DateTime toDatetime(final Date date) {
-		return date == null ? null : new org.joda.time.DateTime(date);
+	public static DateTime toDatetime(final Date date) {
+		return date == null ? null : new DateTime(date);
 	}
 
 	/**
