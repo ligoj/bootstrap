@@ -8,16 +8,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
-import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -26,10 +20,7 @@ import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,30 +35,11 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	@Autowired
 	private SystemRoleRepository systemRoleRepository;
 
-	private AccessDeniedExceptionMapper accessDeniedExceptionMapper;
-
 	@Autowired
 	private AuthorizingFilter authorizingFilter;
 
 	@Autowired
 	private CacheResource cacheResource;
-
-	@Before
-	public void setup() {
-		accessDeniedExceptionMapper = Mockito.mock(AccessDeniedExceptionMapper.class);
-		final Response responseJson = Response.status(Status.FORBIDDEN).type(MediaType.APPLICATION_JSON_TYPE).entity("json").build();
-		Mockito.when(accessDeniedExceptionMapper.toResponse(ArgumentMatchers.any(AccessDeniedException.class))).thenReturn(responseJson);
-
-		final DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) ((GenericApplicationContext) applicationContext).getBeanFactory();
-		beanFactory.registerSingleton("accessDeniedExceptionMapper", accessDeniedExceptionMapper);
-
-	}
-
-	@After
-	public void teardown() {
-		final DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) ((GenericApplicationContext) applicationContext).getBeanFactory();
-		beanFactory.destroySingleton("accessDeniedExceptionMapper");
-	}
 
 	/**
 	 * No authority
@@ -198,15 +170,15 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	@Test
 	public void doFilterAttachedAuthority3() throws Exception {
 		attachRole(DEFAULT_ROLE, "role2");
-		addSystemAuthorization(HttpMethod.GET, "role2", "^match$");
+		addSystemAuthorization(HttpMethod.GET, "role2", "^rest/match$");
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
 		final FilterChain chain = Mockito.mock(FilterChain.class);
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		final ServletContext servletContext = Mockito.mock(ServletContext.class);
-		Mockito.when(servletContext.getContextPath()).thenReturn("context");
-		Mockito.when(request.getRequestURI()).thenReturn("context/rest/match");
+		Mockito.when(servletContext.getContextPath()).thenReturn("/context");
+		Mockito.when(request.getRequestURI()).thenReturn("/context/rest/match");
 		Mockito.when(request.getQueryString()).thenReturn("query");
 		Mockito.when(request.getMethod()).thenReturn("GET");
 		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);

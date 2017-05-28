@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ligoj.bootstrap.core.SpringUtils;
+import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
+import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
+import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,12 +28,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-
-import org.ligoj.bootstrap.core.SpringUtils;
-import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
-import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
-import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
-import lombok.Setter;
 
 /**
  * URL based security filter based on RBAC strategy. Maintains a set of cache to determine as fast as possible the valid
@@ -39,12 +37,6 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 	@Autowired
 	private AuthorizationResource authorizationResource;
-
-	/**
-	 * Prefix to be removed and also ignored from the request.
-	 */
-	@Setter
-	private String prefix;
 
 	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
@@ -87,11 +79,11 @@ public class AuthorizingFilter extends GenericFilterBean {
 	}
 
 	/**
-	 * Return the full request without query.
+	 * Return the full request without query and without context path. Servlet path is kept. The returned path does not
+	 * starts with '/'.
 	 */
 	private String getFullRequest(final HttpServletRequest httpRequest) {
-		final String fullRequest = httpRequest.getRequestURI();
-		return StringUtils.removeStart(fullRequest.substring(this.getServletContext().getContextPath().length() + prefix.length()), "/");
+		return StringUtils.removeStart(httpRequest.getRequestURI().substring(this.getServletContext().getContextPath().length()), "/");
 	}
 
 	/**
