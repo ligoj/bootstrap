@@ -1,7 +1,5 @@
 package org.ligoj.bootstrap.core.validation;
 
-import java.util.Date;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -48,6 +46,4 @@ public class Wine {
 
 	@Length(max = 500)
 	private String description;
-
-	private Date date;
 }

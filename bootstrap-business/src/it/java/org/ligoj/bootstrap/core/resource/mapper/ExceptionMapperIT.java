@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -23,6 +24,9 @@ import org.junit.Test;
 import org.ligoj.bootstrap.AbstractRestTest;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.BusinessException;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * Exception mapper test using {@link ExceptionMapperResource}
@@ -430,21 +434,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@Test
 	public void testAccessDenied() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/security-403");
-		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("security", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertNull(result.get("message"));
-		} finally {
-			if (response != null) {
-				response.getEntity().getContent().close();
-			}
-		}
+		assertForbidden("/security-403");
 	}
 
 	/**
@@ -452,7 +442,11 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	 */
 	@Test
 	public void testForbiddenException() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/security-403-rs");
+		assertForbidden("/security-403-rs");
+	}
+
+	private void assertForbidden(final String path) throws IOException, ClientProtocolException, JsonParseException, JsonMappingException {
+		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + path);
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);

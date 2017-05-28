@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -25,6 +26,9 @@ import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -128,37 +132,17 @@ public class ValidationJSonIT extends AbstractRestTest {
 
 	@Test
 	public void testInvalidFormatInteger() throws IOException {
-		final HttpPost httppost = new HttpPost(BASE_URI + RESOURCE);
-		httppost.setEntity(new StringEntity("{\"name\":\"" + "Junit2\",\"year\":\"A\"}", ContentType.APPLICATION_JSON));
-		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
-		final HttpResponse response = httpclient.execute(httppost);
-		try {
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertNotNull(content);
-			@SuppressWarnings("all")
-			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
-					.readValue(content, HashMap.class);
-			Assert.assertFalse(result.isEmpty());
-			final Map<String, List<Map<String, Object>>> errors = result.get("errors");
-			Assert.assertNotNull(errors);
-			Assert.assertEquals(1, errors.size());
-			final List<Map<String, Object>> errorsOnYear = errors.get("year");
-			Assert.assertNotNull(errorsOnYear);
-			Assert.assertEquals(1, errorsOnYear.size());
-
-			final Map<String, Object> errorOnYear = errorsOnYear.get(0);
-			Assert.assertEquals("Integer", errorOnYear.get(RULE));
-			Assert.assertNull(errorOnYear.get(PARAMETERS2));
-		} finally {
-			response.getEntity().getContent().close();
-		}
+		testInvalidFormat("year", "Integer");
 	}
 
 	@Test
 	public void testInvalidFormatDate() throws IOException {
+		testInvalidFormat("date", "Date");
+	}
+
+	private void testInvalidFormat(final String property,final String type) throws IOException, ClientProtocolException, JsonParseException, JsonMappingException {
 		final HttpPost httppost = new HttpPost(BASE_URI + RESOURCE);
-		httppost.setEntity(new StringEntity("{\"name\":\"" + "Junit2\",\"date\":\"A\"}", ContentType.APPLICATION_JSON));
+		httppost.setEntity(new StringEntity("{\"name\":\"" + "Junit2\",\""+property+"\":\"A\"}", ContentType.APPLICATION_JSON));
 		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
 		try {
@@ -172,12 +156,12 @@ public class ValidationJSonIT extends AbstractRestTest {
 			final Map<String, List<Map<String, Object>>> errors = result.get("errors");
 			Assert.assertNotNull(errors);
 			Assert.assertEquals(1, errors.size());
-			final List<Map<String, Object>> errorsOnYear = errors.get("date");
+			final List<Map<String, Object>> errorsOnYear = errors.get(property);
 			Assert.assertNotNull(errorsOnYear);
 			Assert.assertEquals(1, errorsOnYear.size());
 
 			final Map<String, Object> errorOnYear = errorsOnYear.get(0);
-			Assert.assertEquals("Date", errorOnYear.get(RULE));
+			Assert.assertEquals(type, errorOnYear.get(RULE));
 			Assert.assertNull(errorOnYear.get(PARAMETERS2));
 		} finally {
 			response.getEntity().getContent().close();
