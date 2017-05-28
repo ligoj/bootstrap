@@ -1,6 +1,7 @@
 package org.ligoj.bootstrap.core.dao;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -12,13 +13,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.MapUtils;
-import org.springframework.data.jpa.domain.Specification;
-
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule.RuleOperator;
 import org.ligoj.bootstrap.core.json.jqgrid.UIRule;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter.FilterOperator;
+import org.springframework.data.jpa.domain.Specification;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -38,7 +39,23 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * Wild card char for "like" operator.
 	 */
-	private static final String LIKE_STR = "%";
+	private static final String LIKE = "%";
+
+	/**
+	 * Mapper to build a {@link Predicate} from data, expression and criteria builder.
+	 */
+	private static final EnumMap<RuleOperator, RuleToPredicate> PREDIACATE_MAPPER = new EnumMap<>(RuleOperator.class);
+	static {
+		PREDIACATE_MAPPER.put(RuleOperator.BW, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), d.toUpperCase(Locale.ENGLISH) + LIKE));
+		PREDIACATE_MAPPER.put(RuleOperator.CN, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH) + LIKE));
+		PREDIACATE_MAPPER.put(RuleOperator.EW, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH)));
+		PREDIACATE_MAPPER.put(RuleOperator.GT, (cb, d, e) -> cb.greaterThan(e, toRawData(d, e)));
+		PREDIACATE_MAPPER.put(RuleOperator.GTE, (cb, d, e) -> cb.greaterThanOrEqualTo(e, toRawData(d, e)));
+		PREDIACATE_MAPPER.put(RuleOperator.LT, (cb, d, e) -> cb.lessThan(e, toRawData(d, e)));
+		PREDIACATE_MAPPER.put(RuleOperator.LTE, (cb, d, e) -> cb.lessThanOrEqualTo(e, toRawData(d, e)));
+		PREDIACATE_MAPPER.put(RuleOperator.NE, (cb, d, e) -> cb.notEqual(e, toRawData(d, e)));
+		PREDIACATE_MAPPER.put(RuleOperator.EQ, (cb, d, e) -> cb.equal(e, toRawData(d, e)));
+	}
 
 	/**
 	 * JQ Grid filters.
@@ -154,45 +171,6 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	}
 
 	/**
-	 * Return the predicate corresponding to the given rule.
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private <X extends Comparable> Predicate getPredicate(final CriteriaBuilder cb, final BasicRule rule, final Expression<X> expression) {
-		final Predicate result;
-		switch (rule.getOp()) {
-		case BW:
-			result = cb.like(cb.upper(expression.as(String.class)), rule.getData().toUpperCase(Locale.ENGLISH) + LIKE_STR);
-			break;
-		case CN:
-			result = cb.like(cb.upper(expression.as(String.class)), LIKE_STR + rule.getData().toUpperCase(Locale.ENGLISH) + LIKE_STR);
-			break;
-		case EW:
-			result = cb.like(cb.upper(expression.as(String.class)), LIKE_STR + rule.getData().toUpperCase(Locale.ENGLISH));
-			break;
-		case GT:
-			result = cb.greaterThan(expression, getRawData(rule.getData(), expression));
-			break;
-		case GTE:
-			result = cb.greaterThanOrEqualTo(expression, getRawData(rule.getData(), expression));
-			break;
-		case LT:
-			result = cb.lessThan(expression, getRawData(rule.getData(), expression));
-			break;
-		case LTE:
-			result = cb.lessThanOrEqualTo(expression, getRawData(rule.getData(), expression));
-			break;
-		case NE:
-			result = cb.notEqual(expression, getRawData(rule.getData(), expression));
-			break;
-		case EQ:
-		default:
-			result = cb.equal(expression, getRawData(rule.getData(), expression));
-			break;
-		}
-		return result;
-	}
-
-	/**
 	 * Return the ORM path from the given rule.
 	 */
 	private <T> Path<T> getOrmPath(final Root<U> root, final BasicRule rule) {
@@ -203,5 +181,12 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 			return null;
 		}
 		return getOrmPath(root, path);
+	}
+
+	/**
+	 * Return the predicate corresponding to the given rule.
+	 */
+	private <X extends Comparable<Object>> Predicate getPredicate(final CriteriaBuilder cb, final BasicRule rule, final Expression<X> expression) {
+		return PREDIACATE_MAPPER.get(rule.getOp()).toPredicate(cb, rule.getData(), expression);
 	}
 }
