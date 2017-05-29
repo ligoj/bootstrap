@@ -81,7 +81,7 @@
 		<profile>
 			<id>minify</id>
 			<properties>
-				<reference-html>${basedir}/src/main/webapp/index-ltr.html</reference-html>
+				<reference-html>${basedir}/src/main/webapp/index.html</reference-html>
 				<theme>bootstrap-material-design</theme>
 				<target-css>${basedir}/src/main/webapp/themes/${theme}/css/_.css</target-css>
 
