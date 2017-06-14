@@ -1,44 +1,44 @@
 package org.ligoj.bootstrap.http.proxy;
 
-import java.awt.ComponentOrientation;
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import lombok.Setter;
 
 /**
  * Filter able to mask the HTML extension from the URL, and forward to the master HTML file as necessary.
  */
-public class HtmlProxyFilter implements Filter {
+public class HtmlProxyFilter extends OncePerRequestFilter {
 
 	/**
-	 * System property name used to determine the runtime level.
+	 * HTML suffix.
 	 */
-	public static final String APP_ENV = "app-env";
+	@Setter
+	private String suffix = "";
 
 	@Override
-	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-		final HttpServletResponse hresponse = (HttpServletResponse) response;
+	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
+			throws ServletException, IOException {
 
 		// Force encoding and IE compatibility
-		hresponse.setHeader("X-UA-Compatible", "IE=edge");
+		response.setHeader("X-UA-Compatible", "IE=edge");
 
 		// Disable cache for these main pages
-		hresponse.setHeader("Cache-Control", "no-cache");
-		hresponse.setHeader("Expires", "0");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Expires", "0");
 
 		// Forward to the real resource : orientation and optimization according to the current environment
 		final String baseName = getBaseName(request);
-		request.getRequestDispatcher("/" + baseName + getOptimizedSuffix(request, baseName) + ".html").forward(request, response);
+		request.getRequestDispatcher("/" + baseName + getOptimizedSuffix(baseName) + ".html").forward(request, response);
 	}
 
 	/**
@@ -60,29 +60,12 @@ public class HtmlProxyFilter implements Filter {
 	/**
 	 * Return the optimized suffix corresponding to the given base name.
 	 */
-	private String getOptimizedSuffix(final ServletRequest request, final String baseName) {
-		if ("index".equals(baseName)) {
-			// Index pages get the orientation suffix in addition of orientation
-			return getOrientationSuffix(request) + System.getProperty(APP_ENV, "");
+	private String getOptimizedSuffix(final String baseName) {
+		if ("index".equals(baseName) || "login".equals(baseName)) {
+			// Use environment code suffix
+			return suffix;
 		}
-		return "login".equals(baseName) ? System.getProperty(APP_ENV, "") : "";
+		// No suffix
+		return "";
 	}
-
-	/**
-	 * Return the orientation suffix from the locale guess from the request.
-	 */
-	private String getOrientationSuffix(final ServletRequest request) {
-		return ComponentOrientation.getOrientation(request.getLocale()).isLeftToRight() ? "-ltr" : "-rtl";
-	}
-
-	@Override
-	public void init(final FilterConfig arg0) {
-		// Nothing to do
-	}
-
-	@Override
-	public void destroy() {
-		// Nothing to do
-	}
-
 }
