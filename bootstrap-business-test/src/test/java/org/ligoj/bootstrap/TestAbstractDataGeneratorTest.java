@@ -192,8 +192,7 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void testCoverageSingleton()
-			throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public void testCoverageSingleton() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		coverageSingleton(Singleton.class);
 	}
 

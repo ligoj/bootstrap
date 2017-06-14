@@ -434,7 +434,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            The utility class
 	 */
 	protected <S> void coverageSingleton(final Class<S> singletonClass)
-			throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+			throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		final Constructor<S> constructor = singletonClass.getDeclaredConstructor();
 		Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 		constructor.setAccessible(true);
