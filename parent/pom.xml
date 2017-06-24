@@ -33,7 +33,13 @@
 		<system>Travis</system>
 		<url>https://travis-ci.org/ligoj/bootstrap</url>
 	</ciManagement>
-
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<properties>
 		<bootstrap.version>1.6.4-SNAPSHOT</bootstrap.version>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
