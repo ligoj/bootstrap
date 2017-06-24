@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -52,7 +53,7 @@
 		<commons-codec>1.10</commons-codec>
 		<commons-collections4.version>4.1</commons-collections4.version>
 		<commons-io.version>2.5</commons-io.version>
-		<commons-lang3.version>3.5</commons-lang3.version>
+		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-logging>1.2</commons-logging>
 		<cxf.version>3.1.9</cxf.version>
 		<dbcp.version>2.1.1</dbcp.version>
@@ -524,7 +525,9 @@
 								<phase>generate-sources</phase>
 								<configuration>
 									<target>
-										<fixcrlf srcdir="${basedir}/src" eol="unix" encoding="UTF-8" includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt" eof="asis" fixlast="false" />
+										<fixcrlf srcdir="${basedir}/src" eol="unix" encoding="UTF-8"
+											includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt"
+											eof="asis" fixlast="false" />
 									</target>
 								</configuration>
 								<goals>
