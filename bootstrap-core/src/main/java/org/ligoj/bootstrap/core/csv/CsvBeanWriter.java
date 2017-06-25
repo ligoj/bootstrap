@@ -5,8 +5,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.lang3.StringEscapeUtils;
-
+import org.apache.commons.text.StringEscapeUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
