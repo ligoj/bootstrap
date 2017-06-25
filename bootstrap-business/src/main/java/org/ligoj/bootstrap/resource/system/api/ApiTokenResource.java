@@ -11,6 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,16 +23,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
-
+import org.apache.commons.text.RandomStringGenerator;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +54,11 @@ import lombok.extern.slf4j.Slf4j;
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
 public class ApiTokenResource {
+
+	/**
+	 * Random string generator.
+	 */
+	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().build();
 
 	@Autowired
 	protected SystemApiTokenRepository repository;
@@ -247,7 +252,7 @@ public class ApiTokenResource {
 	 * Generate a new token.
 	 */
 	private String newToken() {
-		return RandomStringUtils.randomAlphanumeric(tokenLength);
+		return GENERATOR.generate(tokenLength);
 	}
 
 	/**
