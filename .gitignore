@@ -5,3 +5,5 @@
 **/.classpath
 **/dependency-reduced-pom.xml
 /*.exec
+/.idea/
+**/*.iml
