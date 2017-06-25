@@ -22,7 +22,7 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 public class TestAbstractJpaTest extends AbstractJpaTest {
 
 	@Test
-	public <T> void persistEntities() throws IOException {
+	public void persistEntities() throws IOException {
 		em = Mockito.mock(EntityManager.class);
 		csvForJpa = Mockito.mock(CsvForJpa.class);
 		final List<SystemUser> entities = new ArrayList<>();
@@ -32,23 +32,23 @@ public class TestAbstractJpaTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public <T> void persistEntities2() throws IOException {
+	public void persistEntities2() throws IOException {
 		csvForJpa = Mockito.mock(CsvForJpa.class);
 		super.persistEntities("log4j2.json");
 	}
 
 	@Test
-	public <T> void isLazyInitializedFalse() {
+	public void isLazyInitializedFalse() {
 		Assert.assertFalse(super.isLazyInitialized(new PersistentBag()));
 	}
 
 	@Test
-	public <T> void isLazyInitializedFalseArrayList() {
+	public void isLazyInitializedFalseArrayList() {
 		Assert.assertFalse(super.isLazyInitialized(new ArrayList<>()));
 	}
 
 	@Test
-	public <T> void isLazyInitializedTrue() {
+	public void isLazyInitializedTrue() {
 		final PersistentBag bag = new PersistentBag() {
 			private static final long serialVersionUID = 1L;
 

@@ -39,7 +39,6 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	@Autowired
 	private JAXRSBeanValidationImplicitInInterceptor validationInInterceptor;
 
-	@SuppressWarnings("unused")
 	public static class TestClass {
 		public void empty() {
 			//

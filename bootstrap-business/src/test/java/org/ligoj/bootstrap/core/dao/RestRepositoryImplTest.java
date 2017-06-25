@@ -39,7 +39,6 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	private int lastKnownEntity;
 
-	@SuppressWarnings("null")
 	@Before
 	public void setup() {
 		final LoremIpsum loremIpsum = new LoremIpsum();

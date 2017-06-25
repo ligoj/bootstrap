@@ -103,7 +103,7 @@ public class ExceptionMapperResource {
 	@POST
 	@Path("unrecognized-property")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void throwUnrecognizedPropertyException(@SuppressWarnings("unused") final SystemUser user) {
+	public void throwUnrecognizedPropertyException(final SystemUser user) {
 		// Cannot be called;
 	}
 

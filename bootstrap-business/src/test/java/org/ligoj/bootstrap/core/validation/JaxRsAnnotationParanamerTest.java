@@ -19,7 +19,6 @@ import org.springframework.util.ClassUtils;
  */
 public class JaxRsAnnotationParanamerTest {
 
-	@SuppressWarnings("unused")
 	public static class TestClass {
 
 		public void test(final @PathParam("p") String p1, final @HeaderParam("h") String h1, final @FormParam("f") String f1,

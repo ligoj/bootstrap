@@ -8,7 +8,7 @@ import org.junit.Test;
 public class TestAbstractTest extends AbstractTest {
 
 	@Test
-	public <T> void testCheckPermission() {
+	public void testCheckPermission() {
 		// only for coverage
 		SECURITY_MANAGER_THREAD.get().checkPermission(newPermission("name"));
 		final String oldValue = System.getProperty("app-env");
