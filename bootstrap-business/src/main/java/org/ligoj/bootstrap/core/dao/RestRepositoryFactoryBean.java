@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import javax.persistence.EntityManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
@@ -22,10 +23,11 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
  * @param <K>
  *            Entity's key type.
  */
-public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K extends Serializable> extends JpaRepositoryFactoryBean<R, T, K> {
-	
-	@Autowired
-	private static ApplicationContext applicationContext;
+public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K extends Serializable>
+		extends JpaRepositoryFactoryBean<R, T, K> implements ApplicationContextAware {
+
+	private ApplicationContext applicationContext;
+	private static boolean listenersCalled = false;
 
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory(final EntityManager entityManager) {
@@ -47,7 +49,8 @@ public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K exten
 		@Override
 		protected Class<?> getRepositoryBaseClass(final RepositoryMetadata metadata) {
 
-			// The RepositoryMetadata can be safely ignored, it is used by the JpaRepositoryFactory
+			// The RepositoryMetadata can be safely ignored, it is used by the
+			// JpaRepositoryFactory
 			// to check for QueryDslJpaRepository's which is out of scope.
 			return RestRepositoryImpl.class;
 		}
@@ -56,13 +59,23 @@ public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K exten
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean#afterPropertiesSet()
+	 * @see
+	 * org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean#
+	 * afterPropertiesSet()
 	 */
 	@Override
 	public void afterPropertiesSet() {
-		// Invoke pre-spring-data listeners
-		applicationContext.getBeansOfType(AfterJpaBeforeSpringDataListener.class).values()
-				.forEach(AfterJpaBeforeSpringDataListener::callback);
+		if (!listenersCalled) {
+			// Invoke pre-spring-data listeners
+			listenersCalled = true;
+			applicationContext.getBeansOfType(AfterJpaBeforeSpringDataListener.class).values()
+					.forEach(AfterJpaBeforeSpringDataListener::callback);
+		}
 		super.afterPropertiesSet();
+	}
+
+	@Override
+	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 }
