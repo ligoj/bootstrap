@@ -31,13 +31,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Database -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
 		<!-- JSR-907 -->
 		<dependency>
 			<groupId>javax.transaction</groupId>
