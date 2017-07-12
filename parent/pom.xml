@@ -12,7 +12,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.6.5-SNAPSHOT</version>
+	<version>1.6.5</version>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Gfi Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
@@ -42,7 +42,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<bootstrap.version>1.6.5-SNAPSHOT</bootstrap.version>
+		<bootstrap.version>1.6.5</bootstrap.version>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
