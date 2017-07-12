@@ -20,6 +20,7 @@
 			<props>
 				<prop key="hibernate.hbm2ddl.auto">${jpa.hbm2ddl:none}</prop>
 				<prop key="hibernate.ejb.entitymanager_factory_name">entityManagerFactory</prop>
+				<prop key="hibernate.default_schema">${jpa.schema:}</prop>
 			</props>
 		</property>
 	</bean>
