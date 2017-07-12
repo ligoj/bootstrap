@@ -59,11 +59,12 @@ public final class DataTableAttributes {
 	 * 
 	 * @param uriInfo
 	 *            filter data.
-	 * @return the search filter from the query parameters. May be <code>null</code>.
+	 * @return the search filter from the query parameters. May be
+	 *         <code>null</code>.
 	 */
 	public static String getSearch(final UriInfo uriInfo) {
-		return StringUtils
-				.trimToNull(ObjectUtils.defaultIfNull(uriInfo.getQueryParameters().getFirst("q"), uriInfo.getQueryParameters().getFirst(SEARCH)));
+		return StringUtils.trimToEmpty(ObjectUtils.defaultIfNull(uriInfo.getQueryParameters().getFirst("q"),
+				uriInfo.getQueryParameters().getFirst(SEARCH)));
 	}
 
 }

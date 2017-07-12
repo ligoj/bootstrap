@@ -81,7 +81,7 @@ public class InMemoryPagination {
 	 */
 	public TableItem<String> getFilteredStringList(final UriInfo uriInfo, final Stream<String> items) {
 		return applyPagination(uriInfo,
-				items.filter(input -> StringUtils.containsIgnoreCase(input, StringUtils.defaultString(DataTableAttributes.getSearch(uriInfo), "")))
+				items.filter(input -> StringUtils.containsIgnoreCase(input, DataTableAttributes.getSearch(uriInfo)))
 						.collect(Collectors.toList()),
 				Function.identity());
 	}

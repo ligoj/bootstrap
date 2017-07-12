@@ -33,6 +33,6 @@ public class DataTableAttributesTest {
 		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
 		uriInfo.getQueryParameters().add(DataTableAttributes.SEARCH, "   ");
-		Assert.assertNull(DataTableAttributes.getSearch(uriInfo));
+		Assert.assertTrue(DataTableAttributes.getSearch(uriInfo).length() == 0);
 	}
 }
