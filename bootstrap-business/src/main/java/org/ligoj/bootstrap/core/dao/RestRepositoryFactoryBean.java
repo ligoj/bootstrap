@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import javax.persistence.EntityManager;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -75,7 +74,7 @@ public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K exten
 	}
 
 	@Override
-	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(final ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 }

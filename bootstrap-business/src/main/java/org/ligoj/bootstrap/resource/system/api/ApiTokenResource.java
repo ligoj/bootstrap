@@ -67,7 +67,7 @@ public class ApiTokenResource {
 	/**
 	 * Az09 string generator.
 	 */
-	private static RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
+	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
 			.filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).build();
 
 	@Autowired
@@ -218,13 +218,8 @@ public class ApiTokenResource {
 	 *             If the algorithm doesn't exist
 	 */
 	protected byte[] simpleHash(final int iterations, final String password) throws NoSuchAlgorithmException {
+		// This  is not a single hash
 		final MessageDigest digest = MessageDigest.getInstance("SHA-1"); // NOSONAR
-																			// This
-																			// is
-																			// not
-																			// a
-																			// single
-																			// hash
 		digest.reset();
 		byte[] input = digest.digest(password.getBytes(StandardCharsets.UTF_8));
 		for (int i = 0; i < iterations; i++) {
