@@ -19,7 +19,9 @@ public class TechnicalExceptionMapper extends AbstractMapper implements Exceptio
 	@Override
 	public Response toResponse(final TechnicalException exception) {
 		log.error("Technical exception", exception);
-		return toResponse(Status.INTERNAL_SERVER_ERROR, "technical", exception);
+		
+		// Map to internal error without exposing the exception
+		return toResponse(Status.INTERNAL_SERVER_ERROR, "technical", null);
 	}
 
 }

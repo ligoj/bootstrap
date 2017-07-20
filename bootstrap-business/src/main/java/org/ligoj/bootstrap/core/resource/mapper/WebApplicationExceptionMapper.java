@@ -21,7 +21,9 @@ public class WebApplicationExceptionMapper extends AbstractMapper implements Exc
 		if (exception.getResponse().getStatus() != Status.NOT_FOUND.getStatusCode() && exception.getResponse().getStatus() != Status.METHOD_NOT_ALLOWED.getStatusCode()) {
 			log.error("JAX-RS", exception);
 		}
-		return toResponse(Response.Status.fromStatusCode(exception.getResponse().getStatus()), "internal", exception);
+
+		// Map to internal error without exposing the exception
+		return toResponse(Response.Status.fromStatusCode(exception.getResponse().getStatus()), "internal", null);
 	}
 
 }
