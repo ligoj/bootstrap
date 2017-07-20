@@ -42,7 +42,7 @@ public class SystemAuthorization extends AbstractAudited<Integer> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Enumerated(EnumType.ORDINAL)
+	@Enumerated(EnumType.STRING)
 	@NotNull
 	private AuthorizationType type;
 
@@ -62,6 +62,7 @@ public class SystemAuthorization extends AbstractAudited<Integer> {
 	/**
 	 * Authorized URL method. Can be <tt>null</tt> for all methods.
 	 */
+	@Enumerated(EnumType.STRING)
 	private HttpMethod method;
 
 }
