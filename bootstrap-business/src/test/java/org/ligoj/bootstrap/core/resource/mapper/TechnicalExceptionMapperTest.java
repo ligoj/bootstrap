@@ -13,6 +13,6 @@ public class TechnicalExceptionMapperTest extends AbstractMapperTest {
 	public void toResponse() {
 		final TechnicalException exception = new TechnicalException("message-error", "p", "v");
 		check(mock(new TechnicalExceptionMapper()).toResponse(exception), 500,
-				"{\"code\":\"technical\",\"message\":\"message-error\",\"parameters\":[\"p\",\"v\"],\"cause\":null}");
+				"{\"code\":\"technical\",\"message\":null,\"parameters\":null,\"cause\":null}");
 	}
 }
