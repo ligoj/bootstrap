@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
@@ -45,6 +46,9 @@ public class AuthorizationResource {
 
 	@Autowired
 	private RoleResource resource;
+
+	@Value("${security.filter.methods:GET,POST,DELETE,PUT}")
+	private HttpMethod[] methods;
 
 	/**
 	 * Retrieve an element from its identifier.
@@ -172,11 +176,10 @@ public class AuthorizationResource {
 	 */
 	@CacheResult(cacheName = "authorizations")
 	public Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> getAuthorizations() {
-		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache = new EnumMap<>(AuthorizationType.class);
+		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache = new EnumMap<>(
+				AuthorizationType.class);
 		final List<SystemAuthorization> authorizations = repository.findAll();
-		for (final SystemAuthorization authorization : authorizations) {
-			addAuthorization(newCacheRole(newCacheType(authorizationsCache, authorization), authorization), authorization);
-		}
+		authorizations.forEach(a->addAuthorization(newCacheRole(newCacheType(authorizationsCache, a), a), a));
 		return authorizationsCache;
 	}
 
@@ -185,25 +188,16 @@ public class AuthorizationResource {
 	 */
 	private Map<HttpMethod, List<Pattern>> newCacheRole(final Map<String, Map<HttpMethod, List<Pattern>>> existingAuthorizations,
 			final SystemAuthorization authorization) {
-		Map<HttpMethod, List<Pattern>> existingRoleAuthorizations = existingAuthorizations.get(authorization.getRole().getName());
-		if (existingRoleAuthorizations == null) {
-			existingRoleAuthorizations = new EnumMap<>(HttpMethod.class);
-			existingAuthorizations.put(authorization.getRole().getName(), existingRoleAuthorizations);
-		}
-		return existingRoleAuthorizations;
+		return existingAuthorizations.computeIfAbsent(authorization.getRole().getName(), r -> new EnumMap<>(HttpMethod.class));
 	}
 
 	/**
 	 * Cache authorization type
 	 */
 	private Map<String, Map<HttpMethod, List<Pattern>>> newCacheType(
-			final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache, final SystemAuthorization authorization) {
-		Map<String, Map<HttpMethod, List<Pattern>>> existingAuthorizations = authorizationsCache.get(authorization.getType());
-		if (existingAuthorizations == null) {
-			existingAuthorizations = new HashMap<>();
-			authorizationsCache.put(authorization.getType(), existingAuthorizations);
-		}
-		return existingAuthorizations;
+			final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache,
+			final SystemAuthorization authorization) {
+		return authorizationsCache.computeIfAbsent(authorization.getType(), a -> new HashMap<>());
 	}
 
 	/**
@@ -211,11 +205,12 @@ public class AuthorizationResource {
 	 */
 	private void addAuthorization(final Map<HttpMethod, List<Pattern>> existingAuthorizations, final SystemAuthorization authorization) {
 		if (authorization.getMethod() == null) {
-			// All
-			for (final HttpMethod method : HttpMethod.values()) {
+			// All methods
+			for (final HttpMethod method : methods) {
 				addAuthorization(existingAuthorizations, method, authorization.getPattern());
 			}
 		} else {
+			// Only this specific method
 			addAuthorization(existingAuthorizations, authorization.getMethod(), authorization.getPattern());
 		}
 	}
@@ -223,12 +218,8 @@ public class AuthorizationResource {
 	/**
 	 * Add an pattern/method authorization to the given cache.
 	 */
-	private void addAuthorization(final Map<HttpMethod, List<Pattern>> existingAuthorizations, final HttpMethod method, final String pattern) {
-		List<Pattern> patterns = existingAuthorizations.get(method);
-		if (patterns == null) {
-			patterns = new ArrayList<>();
-			existingAuthorizations.put(method, patterns);
-		}
-		patterns.add(Pattern.compile(pattern));
+	private void addAuthorization(final Map<HttpMethod, List<Pattern>> existingAuthorizations, final HttpMethod method,
+			final String pattern) {
+		existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>()).add(Pattern.compile(pattern));
 	}
 }
