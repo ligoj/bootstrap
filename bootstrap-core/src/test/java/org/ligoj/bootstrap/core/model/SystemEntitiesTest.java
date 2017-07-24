@@ -43,7 +43,7 @@ public class SystemEntitiesTest {
 		systemRole.setName("name");
 		Assert.assertSame("name", systemRole.getAuthority());
 		SystemAuthorization.AuthorizationType.values();
-		SystemAuthorization.AuthorizationType.valueOf(SystemAuthorization.AuthorizationType.BUSINESS.name());
+		SystemAuthorization.AuthorizationType.valueOf(SystemAuthorization.AuthorizationType.API.name());
 	}
 
 	@Test

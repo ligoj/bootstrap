@@ -87,7 +87,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		assignment.setUser(user);
 		em.persist(assignment);
 
-		addSystemAuthorization(HttpMethod.GET, role, "^myurl1", AuthorizationType.BUSINESS);
+		addSystemAuthorization(HttpMethod.GET, role, "^myurl1", AuthorizationType.API);
 		addSystemAuthorization(null, role, "^myurl2", AuthorizationType.UI);
 
 		// Invalidate cache of previous test

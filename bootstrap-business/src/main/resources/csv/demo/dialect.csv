@@ -1,6 +1,6 @@
 dialChar;dialBool;dialShort;dialLong;dialDouble;dialDate;link.id;dialEnum;authorization
-A;true;1;6;1,2;12/08/2012;;ALL;BUSINESS
+A;true;1;6;1,2;12/08/2012;;ALL;API
 B;true;2;7;0,2;13/08/2012;1;PERSIST;UI
-C;false;3;8;0,7;14/08/2012;;REFRESH;BUSINESS
+C;false;3;8;0,7;14/08/2012;;REFRESH;API
 D;false;4;9;58897,2;15/08/2012;1;DETACH;
-E;false;5;0;484;16/08/2012;;;BUSINESS
+E;false;5;0;484;16/08/2012;;;API

@@ -89,7 +89,7 @@ public class AuthorizationResource {
 	@Path("user/business")
 	@org.springframework.transaction.annotation.Transactional(readOnly = true)
 	public List<SystemAuthorization> findAuthorizationsBusiness(@Context final SecurityContext context) {
-		return repository.findAllByLogin(context.getUserPrincipal().getName(), SystemAuthorization.AuthorizationType.BUSINESS);
+		return repository.findAllByLogin(context.getUserPrincipal().getName(), SystemAuthorization.AuthorizationType.API);
 	}
 
 	/**

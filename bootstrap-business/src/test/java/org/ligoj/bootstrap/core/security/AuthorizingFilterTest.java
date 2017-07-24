@@ -202,7 +202,7 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 		final SystemAuthorization authorization = new SystemAuthorization();
 		authorization.setRole(role);
 		authorization.setMethod(method);
-		authorization.setType(AuthorizationType.BUSINESS);
+		authorization.setType(AuthorizationType.API);
 		authorization.setPattern(pattern);
 		em.persist(authorization);
 	}

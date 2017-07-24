@@ -132,7 +132,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.persist(assignment2);
 
 		final SystemAuthorization authorization = new SystemAuthorization();
-		authorization.setType(AuthorizationType.BUSINESS);
+		authorization.setType(AuthorizationType.API);
 		authorization.setRole(role);
 		authorization.setPattern("pattern");
 		em.persist(authorization);
@@ -147,7 +147,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals(authorization.getId(), result.get(0).getId());
 		Assert.assertEquals(role.getId(), result.get(0).getRole().getId());
-		Assert.assertEquals(AuthorizationType.BUSINESS, result.get(0).getType());
+		Assert.assertEquals(AuthorizationType.API, result.get(0).getType());
 		Assert.assertEquals("pattern", result.get(0).getPattern());
 	}
 
@@ -200,7 +200,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.clear();
 
 		final AuthorizationEditionVo authorizationUpdate = new AuthorizationEditionVo();
-		authorizationUpdate.setType(AuthorizationType.BUSINESS);
+		authorizationUpdate.setType(AuthorizationType.API);
 		authorizationUpdate.setRole(role2.getId());
 		authorizationUpdate.setPattern("pattern");
 		resource.update(authorizationId, authorizationUpdate);
@@ -255,7 +255,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		final SystemAuthorization authorization = new SystemAuthorization();
 		authorization.setRole(role);
 		authorization.setMethod(method);
-		authorization.setType(AuthorizationType.BUSINESS);
+		authorization.setType(AuthorizationType.API);
 		authorization.setPattern(pattern);
 		em.persist(authorization);
 	}

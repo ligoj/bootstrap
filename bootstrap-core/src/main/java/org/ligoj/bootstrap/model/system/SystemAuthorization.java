@@ -27,9 +27,9 @@ public class SystemAuthorization extends AbstractAudited<Integer> {
 	 */
 	public enum AuthorizationType {
 		/**
-		 * Business authorization.
+		 * API authorization.
 		 */
-		BUSINESS,
+		API,
 
 		/**
 		 * UI authorization.

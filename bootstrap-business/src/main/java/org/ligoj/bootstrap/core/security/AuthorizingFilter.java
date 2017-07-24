@@ -91,7 +91,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 */
 	private boolean isAuthorized(final Collection<? extends GrantedAuthority> authorities, final String request, final HttpMethod method) {
 		final Map<String, Map<HttpMethod, List<Pattern>>> authorizationsCache = authorizationResource.getAuthorizations().get(
-				AuthorizationType.BUSINESS);
+				AuthorizationType.API);
 
 		// Check the authorization
 		if (authorizationsCache != null) {

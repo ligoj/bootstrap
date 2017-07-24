@@ -76,7 +76,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		// Create the authorization
 		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
 		authorization.setPattern(SESSION_RESOURCE);
-		authorization.setType(AuthorizationType.BUSINESS);
+		authorization.setType(AuthorizationType.API);
 		final List<AuthorizationEditionVo> authorizations = new ArrayList<>();
 		authorizations.add(authorization);
 

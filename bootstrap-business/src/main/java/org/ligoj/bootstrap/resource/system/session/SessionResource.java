@@ -85,7 +85,7 @@ public class SessionResource {
 		// Add authorizations
 		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> cache = authorizationResource.getAuthorizations();
 		settings.setAuthorizations(toPatterns(filterRoles(cache.get(AuthorizationType.UI), rolesAsString)));
-		settings.setBusinessAuthorizations(getBusinessAuthorizations(filterRoles(cache.get(AuthorizationType.BUSINESS), rolesAsString)));
+		settings.setBusinessAuthorizations(getBusinessAuthorizations(filterRoles(cache.get(AuthorizationType.API), rolesAsString)));
 	}
 
 	/**

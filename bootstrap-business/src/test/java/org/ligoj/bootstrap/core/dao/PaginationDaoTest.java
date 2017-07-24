@@ -684,7 +684,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 	 */
 	@Test
 	public void testFindAllWithEnumeration() {
-		assertEnumeration(AuthorizationType.BUSINESS.name());
+		assertEnumeration(AuthorizationType.API.name());
 	}
 
 	private void assertEnumeration(final String data) {
@@ -702,7 +702,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping);
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(21, findAll.getTotalElements());
-		Assert.assertEquals(AuthorizationType.BUSINESS, findAll.getContent().get(0).getAuthorization());
+		Assert.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
 	}
 
 	/**
@@ -748,7 +748,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final BasicRule ruleCT = new BasicRule();
 		ruleCT.setField("authorization");
 		ruleCT.setOp(RuleOperator.EQ);
-		ruleCT.setData(AuthorizationType.BUSINESS.name().toLowerCase(Locale.ENGLISH));
+		ruleCT.setData(AuthorizationType.API.name().toLowerCase(Locale.ENGLISH));
 		rules.add(ruleCT);
 
 		final UiPageRequest uiPageRequest = newAnd10();
@@ -758,7 +758,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping);
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(21, findAll.getTotalElements());
-		Assert.assertEquals(AuthorizationType.BUSINESS, findAll.getContent().get(0).getAuthorization());
+		Assert.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
 	}
 
 	/**
@@ -766,7 +766,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 	 */
 	@Test
 	public void testFindAllWithEnumerationOrdinal() {
-		assertEnumeration(String.valueOf(AuthorizationType.BUSINESS.ordinal()));
+		assertEnumeration(String.valueOf(AuthorizationType.API.ordinal()));
 	}
 
 	@Test
@@ -777,13 +777,13 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final BasicRule ruleCT = new BasicRule();
 		ruleCT.setField("authorization");
 		ruleCT.setOp(RuleOperator.EQ);
-		ruleCT.setData(AuthorizationType.BUSINESS.name());
+		ruleCT.setData(AuthorizationType.API.name());
 		rules.add(ruleCT);
 		uiFilter.setRules(rules);
 
 		// Only there for coverage
-		Assert.assertEquals("BasicRule(field=authorization, op=EQ, data=BUSINESS)", ruleCT.toString());
-		Assert.assertEquals("UiFilter(groupOp=AND, rules=[BasicRule(field=authorization, op=EQ, data=BUSINESS)])", uiFilter.toString());
+		Assert.assertEquals("BasicRule(field=authorization, op=EQ, data=API)", ruleCT.toString());
+		Assert.assertEquals("UiFilter(groupOp=AND, rules=[BasicRule(field=authorization, op=EQ, data=API)])", uiFilter.toString());
 	}
 
 	@Test

@@ -95,7 +95,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 		final SystemAuthorization auth = retrieveAuthQuery(result).getSingleResult();
 		Assert.assertNotNull(auth);
 		Assert.assertEquals(".*", auth.getPattern());
-		Assert.assertEquals(AuthorizationType.BUSINESS, auth.getType());
+		Assert.assertEquals(AuthorizationType.API, auth.getType());
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	private AuthorizationEditionVo newAuthorization() {
 		final AuthorizationEditionVo authorizationEditionVo = new AuthorizationEditionVo();
 		authorizationEditionVo.setPattern(".*");
-		authorizationEditionVo.setType(AuthorizationType.BUSINESS);
+		authorizationEditionVo.setType(AuthorizationType.API);
 		return authorizationEditionVo;
 	}
 
@@ -142,7 +142,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 		final SystemAuthorization auth = retrieveAuthQuery(result).getSingleResult();
 		Assert.assertNotNull(auth);
 		Assert.assertEquals(".*", auth.getPattern());
-		Assert.assertEquals(AuthorizationType.BUSINESS, auth.getType());
+		Assert.assertEquals(AuthorizationType.API, auth.getType());
 
 		// check keep existing auth
 		roleVo.getAuthorizations().get(0).setId(auth.getId());
