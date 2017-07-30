@@ -42,7 +42,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	@Before
 	public void setup() {
 		final LoremIpsum loremIpsum = new LoremIpsum();
-		SystemDialect dial1 = null;
+		SystemDialect dial1 = new SystemDialect();
 		for (int i = 0; i < 10; i++) {
 			SystemDialect dial2 = new SystemDialect();
 			dial2.setDialLong((long) i);

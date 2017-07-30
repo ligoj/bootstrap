@@ -59,7 +59,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 	@Before
 	public void setup() {
 		final LoremIpsum loremIpsum = new LoremIpsum();
-		SystemDialect dial1 = null;
+		SystemDialect dial1 = new SystemDialect();
 		for (int i = 0; i < COUNT; i++) {
 			dial1 = new SystemDialect();
 			dial1.setDialLong((long) i);
