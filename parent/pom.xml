@@ -79,7 +79,7 @@
 		<quartz.version>2.3.0</quartz.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<spring-data.version>1.10.4.RELEASE</spring-data.version>
-		<spring.version>4.3.9.RELEASE</spring.version>
+		<spring.version>4.3.10.RELEASE</spring.version>
 		<spring-security.version>4.2.2.RELEASE</spring-security.version>
 		<wiremock.version>2.6.0</wiremock.version>
 
