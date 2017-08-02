@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Repository factory.
  * 
@@ -22,11 +24,16 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
  * @param <K>
  *            Entity's key type.
  */
+@Slf4j
 public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K extends Serializable>
 		extends JpaRepositoryFactoryBean<R, T, K> implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
-	private static boolean listenersCalled = false;
+	
+	/**
+	 * Flag for the last invocations of {@link AfterJpaBeforeSpringDataListener}
+	 */
+	private static long lastListenerInvocation = 0;
 
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory(final EntityManager entityManager) {
@@ -64,15 +71,16 @@ public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K exten
 	 */
 	@Override
 	public void afterPropertiesSet() {
-		if (!listenersCalled) {
+		if (applicationContext.getStartupDate() != lastListenerInvocation) {
 			// Invoke pre-spring-data listeners
-			listenersCalled = true;
+			log.info("Notify EMF is ready before parsing Spring-Data queries");
+			lastListenerInvocation = applicationContext.getStartupDate();
 			applicationContext.getBeansOfType(AfterJpaBeforeSpringDataListener.class).values()
 					.forEach(AfterJpaBeforeSpringDataListener::callback);
 		}
 		super.afterPropertiesSet();
 	}
-
+	
 	@Override
 	public void setApplicationContext(final ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
