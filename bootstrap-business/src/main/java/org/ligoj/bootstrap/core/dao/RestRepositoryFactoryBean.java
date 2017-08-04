@@ -28,6 +28,15 @@ import lombok.extern.slf4j.Slf4j;
 public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K extends Serializable>
 		extends JpaRepositoryFactoryBean<R, T, K> implements ApplicationContextAware {
 
+	/**
+	 * Creates a new {@link JpaRepositoryFactoryBean} for the given repository interface.
+	 * 
+	 * @param repositoryInterface must not be {@literal null}.
+	 */
+	public RestRepositoryFactoryBean(final Class<? extends R> repositoryInterface) {
+		super(repositoryInterface);
+	}
+
 	private ApplicationContext applicationContext;
 	
 	/**
