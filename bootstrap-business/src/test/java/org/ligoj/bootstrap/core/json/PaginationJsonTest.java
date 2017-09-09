@@ -471,7 +471,6 @@ public class PaginationJsonTest extends AbstractBootTest {
 	public void applyPaginationNotLazy() {
 		// create a mock URI info with pagination informations
 		final UriInfo uriInfo = newUriInfo();
-		@SuppressWarnings("unchecked")
 		final Page<SystemUser> page = Mockito.mock(Page.class);
 		final List<SystemUser> list = new ArrayList<>();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.ECHO, "echo");
@@ -494,7 +493,6 @@ public class PaginationJsonTest extends AbstractBootTest {
 	@Test
 	public void applyPaginationNullUriInfo() {
 		// create a mock URI info with pagination informations
-		@SuppressWarnings("unchecked")
 		final Page<SystemUser> page = Mockito.mock(Page.class);
 		final List<SystemUser> list = new ArrayList<>();
 		list.add(new SystemUser());

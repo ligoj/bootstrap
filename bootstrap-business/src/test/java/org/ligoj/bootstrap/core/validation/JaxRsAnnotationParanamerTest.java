@@ -21,6 +21,16 @@ public class JaxRsAnnotationParanamerTest {
 
 	public static class TestClass {
 
+		/**
+		 * 
+		 * @param p1 A path parameter.
+		 * @param h1 A header parameter.
+		 * @param f1 A form parameter.
+		 * @param c1 A cookie parameter.
+		 * @param q1 A query parameter.
+		 * @param n1 Any named parameter.
+		 * @param n A JSR-303 contraint parameter.
+		 */
 		public void test(final @PathParam("p") String p1, final @HeaderParam("h") String h1, final @FormParam("f") String f1,
 				final @CookieParam("c") String c1, @QueryParam("q") String q1, @Named("n") String n1, @NotNull String n) {
 			//
