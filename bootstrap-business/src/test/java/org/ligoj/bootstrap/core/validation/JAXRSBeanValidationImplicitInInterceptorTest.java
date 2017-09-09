@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.PathParam;
@@ -19,7 +20,6 @@ import org.apache.cxf.jaxrs.ext.Nullable;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

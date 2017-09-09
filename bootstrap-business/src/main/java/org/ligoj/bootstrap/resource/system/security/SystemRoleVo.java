@@ -3,9 +3,10 @@ package org.ligoj.bootstrap.resource.system.security;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import org.ligoj.bootstrap.core.NamedBean;
+
 import lombok.Getter;
 import lombok.Setter;
 

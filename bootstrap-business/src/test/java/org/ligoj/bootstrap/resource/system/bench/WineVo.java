@@ -1,13 +1,13 @@
 package org.ligoj.bootstrap.resource.system.bench;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
-
 import org.ligoj.bootstrap.core.validation.UpperCase;
+
 import lombok.Getter;
 import lombok.Setter;
 

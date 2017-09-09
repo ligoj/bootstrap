@@ -12,17 +12,18 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.metadata.ConstraintDescriptor;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.junit.Assert;
 import org.junit.Test;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -30,7 +31,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
-import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import lombok.Getter;
 import lombok.Setter;
 

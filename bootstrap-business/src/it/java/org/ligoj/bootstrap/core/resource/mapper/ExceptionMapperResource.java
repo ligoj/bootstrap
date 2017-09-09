@@ -96,9 +96,12 @@ public class ExceptionMapperResource {
 	public void throwNotImplemented() {
 		throw new NotImplementedException("message");
 	}
-	
+
 	/**
 	 * Unrecognized property.
+	 * 
+	 * @param user
+	 *            User with invalid property.
 	 */
 	@POST
 	@Path("unrecognized-property")
@@ -169,8 +172,9 @@ public class ExceptionMapperResource {
 	@Path("ldap")
 	public void throwCommunicationException() {
 		/*
-		 * As this exception is wrapped by a runtime exception brought bySpring-LDAP (optional dependency), there is no
-		 * way a create a specific Mapper.
+		 * As this exception is wrapped by a runtime exception brought
+		 * bySpring-LDAP (optional dependency), there is no way a create a
+		 * specific Mapper.
 		 */
 		throw new RuntimeException(new CommunicationException("Connection refused"));
 	}
