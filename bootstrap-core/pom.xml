@@ -267,7 +267,6 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.1.0.Final</version>
 		</dependency>
 
 		<!-- JSR-245, JSR-341 -->
