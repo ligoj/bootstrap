@@ -8,7 +8,7 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![Build Status](https://ci.appveyor.com/api/projects/status/j0949l609j75mif3/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/bootstrap/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/ligoj/bootstrap/badge.svg?branch=master)](https://coveralls.io/github/ligoj/bootstrap?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/58caeda8dcaf9e0041b5b978/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58caeda8dcaf9e0041b5b978)
-[![Quality Gate](https://sonarqube.com/api/badges/gate?key=org.ligoj.bootstrap:root)](https://sonarqube.com/dashboard/index/org.ligoj.bootstrap:root)
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.ligoj.bootstrap:root)](https://sonarcloud.io/dashboard/index/org.ligoj.bootstrap:root)
 [![Sourcegraph Badge](https://sourcegraph.com/github.com/ligoj/bootstrap/-/badge.svg)](https://sourcegraph.com/github.com/ligoj/bootstrap?badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6c472b13c5a49b4882d27632f79b6de)](https://www.codacy.com/app/ligoj/bootstrap?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/bootstrap&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/bootstrap/badge)](https://www.codefactor.io/repository/github/ligoj/bootstrap)
