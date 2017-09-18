@@ -52,6 +52,7 @@
 		<commons-beanutils>1.9.3</commons-beanutils>
 		<commons-codec>1.10</commons-codec>
 		<commons-collections4.version>4.1</commons-collections4.version>
+		<commons-collection.version>3.2.2</commons-collection.version>
 		<commons-io.version>2.5</commons-io.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-text.version>1.1</commons-text.version>
@@ -263,6 +264,11 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>${commons-collections4.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>${commons-collection.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
