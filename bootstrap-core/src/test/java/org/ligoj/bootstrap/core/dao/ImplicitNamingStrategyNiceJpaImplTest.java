@@ -33,10 +33,10 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 	public void determineUniqueKeyName() {
 		final ImplicitUniqueKeyNameSource source = Mockito.mock(ImplicitUniqueKeyNameSource.class);
 		mockContext(source);
-		Mockito.when(source.getTableName()).thenReturn(new DatabaseIdentifier("MyTa_ble"));
+		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final List<Identifier> columnsIdentifier = new ArrayList<>();
-		columnsIdentifier.add(new DatabaseIdentifier("MyCol_umn1"));
-		columnsIdentifier.add(new DatabaseIdentifier("MyCol_umn2"));
+		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn1"));
+		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn2"));
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
 
@@ -64,7 +64,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 
 			@Override
 			public Identifier answer(final InvocationOnMock invocation) {
-				return new DatabaseIdentifier((String)invocation.getArguments()[0]) ;
+				return DatabaseIdentifier.toIdentifier((String)invocation.getArguments()[0]) ;
 			}
 		});
 		Mockito.when(jdbcEnvironment.getIdentifierHelper()).thenReturn(identifierHelper);
@@ -80,7 +80,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		final ImplicitJoinColumnNameSource source = Mockito.mock(ImplicitJoinColumnNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ELEMENT_COLLECTION);
-		Mockito.when(source.getReferencedTableName()).thenReturn(new DatabaseIdentifier("MyTa_ble"));
+		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
 		Assert.assertEquals("MyTa_ble", identifier.getText());
 	}
@@ -90,7 +90,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		final ImplicitJoinColumnNameSource source = Mockito.mock(ImplicitJoinColumnNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ENTITY);
-		Mockito.when(source.getReferencedTableName()).thenReturn(new DatabaseIdentifier("MyTa_ble"));
+		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
 		Assert.assertEquals("MyTa_ble", identifier.getText());
 	}
@@ -103,7 +103,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		final AttributePath attributePath= Mockito.mock(AttributePath.class);
 		Mockito.when(attributePath.getProperty()).thenReturn("myProperty");
 		Mockito.when(source.getAttributePath()).thenReturn(attributePath);
-		Mockito.when(source.getReferencedTableName()).thenReturn(new DatabaseIdentifier("MyTa_ble"));
+		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
 		Assert.assertEquals("my_property", identifier.getText());
 	}
@@ -123,10 +123,10 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 	public void determineForeignKeyName() {
 		final ImplicitForeignKeyNameSource source = Mockito.mock(ImplicitForeignKeyNameSource.class);
 		mockContext(source);
-		Mockito.when(source.getTableName()).thenReturn(new DatabaseIdentifier("MyTa_ble"));
+		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final List<Identifier> columnsIdentifier = new ArrayList<>();
-		columnsIdentifier.add(new DatabaseIdentifier("MyCol_umn1"));
-		columnsIdentifier.add(new DatabaseIdentifier("MyCol_umn2"));
+		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn1"));
+		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn2"));
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineForeignKeyName(source);
 		Assert.assertEquals("FK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
