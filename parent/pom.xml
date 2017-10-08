@@ -71,7 +71,7 @@
 		<jetty.version>9.4.7.v20170914</jetty.version>
 		<joda.version>2.9.9</joda.version>
 		<junit.version>4.12</junit.version>
-		<log4j.version>2.9.0</log4j.version>
+		<log4j.version>2.9.1</log4j.version>
 		<lombok.version>1.16.18</lombok.version>
 		<mockito.version>2.10.0</mockito.version>
 		<mysql.version>6.0.6</mysql.version>
