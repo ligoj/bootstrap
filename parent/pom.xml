@@ -70,6 +70,7 @@
 		<jasypt.version>1.9.2</jasypt.version>
 		<jetty.version>9.4.7.v20170914</jetty.version>
 		<joda.version>2.9.9</joda.version>
+		<joda-convert.version>1.9.2</joda-convert.version>
 		<junit.version>4.12</junit.version>
 		<log4j.version>2.9.1</log4j.version>
 		<lombok.version>1.16.18</lombok.version>
@@ -416,7 +417,7 @@
 			<dependency>
 				<groupId>org.joda</groupId>
 				<artifactId>joda-convert</artifactId>
-				<version>1.8.3</version>
+				<version>${joda-convert.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-logging</groupId>
