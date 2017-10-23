@@ -66,7 +66,7 @@
 		<httpclient.version>4.5.3</httpclient.version>
 		<httpcore.version>4.4.8</httpcore.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
-		<jackson.version>2.9.1</jackson.version>
+		<jackson.version>2.9.2</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
 		<jetty.version>9.4.7.v20170914</jetty.version>
 		<joda.version>2.9.9</joda.version>
