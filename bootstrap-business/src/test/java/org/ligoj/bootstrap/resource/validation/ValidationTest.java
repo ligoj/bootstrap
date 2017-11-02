@@ -158,7 +158,7 @@ public class ValidationTest extends AbstractBootTest {
 		Assert.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
 		Assert.assertEquals(3, constraints.get("name").size());
 		Assert.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
-		Assert.assertTrue(constraints.get("name").contains("org.hibernate.validator.constraints.NotEmpty"));
+		Assert.assertTrue(constraints.get("name").contains("javax.validation.constraints.NotEmpty"));
 		Assert.assertTrue(constraints.get("name").contains("org.ligoj.bootstrap.core.validation.UpperCase"));
 	}
 
