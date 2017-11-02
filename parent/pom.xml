@@ -86,7 +86,7 @@
 		<validation-api.version>2.0.0.Final</validation-api.version>
 		<wiremock.version>2.10.1</wiremock.version>
 
-		<jar.selenium>3.5.3</jar.selenium>
+		<jar.selenium>3.6.0</jar.selenium>
 		<cargo.skip>false</cargo.skip>
 		<jetty.skip>false</jetty.skip>
 	</properties>
