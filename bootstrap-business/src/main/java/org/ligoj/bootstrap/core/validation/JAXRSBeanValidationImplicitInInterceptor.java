@@ -26,18 +26,19 @@ import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
+import org.hibernate.validator.internal.util.annotation.AnnotationDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
- * Enforces correct parameters regarding JSR-303 and JSR-349. Eligible beans are all JSR-349 annotated parameters plus
- * non JAX-RS annotated
- * objects.
+ * Enforces correct parameters regarding JSR-303 and JSR-349. Eligible beans are
+ * all JSR-349 annotated parameters plus non JAX-RS annotated objects.
  */
 public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidationInInterceptor {
 
 	/**
-	 * Excluded parameter annotation name or package. {@link String#startsWith(String)} will be used.
+	 * Excluded parameter annotation name or package.
+	 * {@link String#startsWith(String)} will be used.
 	 */
 	@Value("#{'${validation.excludes:javax.ws.rs,org.apache.cxf.jaxrs.ext.multipart.Multipart}'.split(',')}")
 	private Collection<String> excludes = Collections.singleton(QueryParam.class.getPackage().getName());
@@ -48,8 +49,8 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 	/**
 	 * {@link NotNull} descriptor
 	 */
-	private static final ConstraintDescriptorImpl<NotNull> NOT_NULL_DESCRIPTOR = new ConstraintDescriptorImpl<>(new ConstraintHelper(), (Member) null,
-			new NotNull() {
+	private static final ConstraintDescriptorImpl<NotNull> NOT_NULL_DESCRIPTOR = new ConstraintDescriptorImpl<>(new ConstraintHelper(),
+			(Member) null, new AnnotationDescriptor<NotNull>(new NotNull() {
 				@Override
 				public Class<? extends Annotation> annotationType() {
 					return NotNull.class;
@@ -70,10 +71,11 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 				public Class<? extends Payload>[] payload() {
 					return new Class[0];
 				}
-			}, ElementType.PARAMETER);
+			}), ElementType.PARAMETER);
 
 	@Override
-	protected void handleValidation(final Message message, final Object resourceInstance, final Method method, final List<Object> arguments) {
+	protected void handleValidation(final Message message, final Object resourceInstance, final Method method,
+			final List<Object> arguments) {
 		super.handleValidation(message, resourceInstance, method, arguments);
 
 		// Check each parameter
@@ -106,12 +108,13 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 	private void validate(final Object bean, final Method method, final Parameter parameter, final int index,
 			final Set<ConstraintViolation<?>> validationErrors) {
 		if (bean == null) {
-			// Parameter is null, is it manually checked of managed by CXF for multipart?
+			// Parameter is null, is it manually checked of managed by CXF for
+			// multipart?
 			// All non-body parameters are required by default
 			final PathImpl propertyPath = PathImpl.createPathFromString(method.getName());
 			propertyPath.addParameterNode(parameter.getName(), index);
-			validationErrors.add(ConstraintViolationImpl.forParameterValidation(NotNull.class.getName(), null, null, "interpolated", null, null, null,
-					null, propertyPath, NOT_NULL_DESCRIPTOR, null, null, null));
+			validationErrors.add(ConstraintViolationImpl.forParameterValidation(NotNull.class.getName(), null, null, "interpolated", null,
+					null, null, null, propertyPath, NOT_NULL_DESCRIPTOR, null, null, null));
 			return;
 		}
 
@@ -152,14 +155,16 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 	 * 
 	 * @param annotation
 	 *            the {@link Annotation} to check.
-	 * @return <code>true</code> the given Annotation is eligible to bean validation.
+	 * @return <code>true</code> the given Annotation is eligible to bean
+	 *         validation.
 	 */
 	private boolean hasToBeValidated(final Annotation annotation) {
 		return excludes.stream().noneMatch(annotation.annotationType().getName()::startsWith);
 	}
 
 	/**
-	 * Indicates all annotations of given {@link Parameter} are eligible to bean validation.
+	 * Indicates all annotations of given {@link Parameter} are eligible to bean
+	 * validation.
 	 * 
 	 * @param parameter
 	 *            the parameter to check.
