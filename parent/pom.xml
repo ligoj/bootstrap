@@ -50,7 +50,7 @@
 		<cache.version>1.0.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
 		<commons-beanutils>1.9.3</commons-beanutils>
-		<commons-codec>1.10</commons-codec>
+		<commons-codec>1.11</commons-codec>
 		<commons-collections4.version>4.1</commons-collections4.version>
 		<commons-collection.version>3.2.2</commons-collection.version>
 		<commons-io.version>2.5</commons-io.version>
