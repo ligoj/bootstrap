@@ -62,7 +62,7 @@
 		<ehcache.version>2.10.4</ehcache.version>
 		<guava.version>23.2-jre</guava.version>
 		<hibernate.version>5.2.12.Final</hibernate.version>
-		<hibernate-validator.version>6.0.4.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.0.5.Final</hibernate-validator.version>
 		<httpclient.version>4.5.3</httpclient.version>
 		<httpcore.version>4.4.8</httpcore.version>
 		<hsqldb.version>2.4.0</hsqldb.version>
@@ -305,7 +305,7 @@
 
 			<!-- Validation -->
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
 			</dependency>
