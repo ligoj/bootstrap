@@ -17,14 +17,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * Role management.
@@ -159,7 +158,7 @@ public class RoleResource {
 		final SystemRole role = findById(roleVo.getId());
 		role.setName(roleVo.getName());
 		// delete authorizations
-		for (final SystemAuthorization auth : authorizationRepository.findAllByRoleId(role.getId())) {
+		for (final SystemAuthorization auth : authorizationRepository.findAllBy("role.id", role.getId())) {
 			if (roleVo.getAuthorizations().stream().noneMatch(authVo -> auth.getId().equals(authVo.getId()))) {
 				authorizationRepository.delete(auth);
 			}
@@ -187,7 +186,7 @@ public class RoleResource {
 	@Path("{id:\\d+}")
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void remove(@PathParam("id") final int id) {
-		authorizationRepository.delete(authorizationRepository.findAllByRoleId(id));
+		authorizationRepository.deleteAllBy("role.id", id);
 		repository.delete(id);
 	}
 }

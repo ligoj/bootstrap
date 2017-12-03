@@ -22,11 +22,6 @@ import lombok.ToString;
 public class SystemRoleAssignment extends AbstractAudited<Integer> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Associated role.
 	 */
 	@ManyToOne

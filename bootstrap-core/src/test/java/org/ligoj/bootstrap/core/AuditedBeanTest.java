@@ -3,16 +3,15 @@ package org.ligoj.bootstrap.core;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.data.domain.Auditable;
-
 import org.ligoj.bootstrap.core.model.AbstractAudited;
 import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
+import org.ligoj.bootstrap.core.model.Auditable;
 
 /**
- * {@link AuditedBean}, {@link AbstractAudited}, {@link AbstractNamedAuditedEntity} test class.
+ * {@link AuditedBean}, {@link AbstractAudited},
+ * {@link AbstractNamedAuditedEntity} test class.
  */
 public class AuditedBeanTest {
 
@@ -21,13 +20,10 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testCopyAuditData() {
-		final Auditable<String, Integer> from = newAuditable();
+		final Auditable<String, Integer, Date> from = newAuditable();
 		final AbstractNamedAuditedEntity<Integer> to = new AbstractNamedAuditedEntity<Integer>() {
 
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+			// Nothing
 		};
 		to.setName("two");
 		AuditedBean.copyAuditData(from, to);
@@ -50,10 +46,11 @@ public class AuditedBeanTest {
 	/**
 	 * Test {@link AuditedBean#copyAuditData(Auditable, Auditable)}
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testCopyAuditDataFromNull() {
-		final Auditable<String, ?> to = newAuditable();
-		AuditedBean.copyAuditData(null, to);
+		final Auditable<String, ?, Date> to = newAuditable();
+		AuditedBean.copyAuditData(null, (Auditable) to);
 		assertData(to);
 	}
 
@@ -68,16 +65,13 @@ public class AuditedBeanTest {
 	}
 
 	/**
-	 * Test {@link AuditedBean#getCreatedDate()} and {@link AuditedBean#getLastModifiedDate()}
+	 * Test {@link AuditedBean#getCreatedDate()} and
+	 * {@link AuditedBean#getLastModifiedDate()}
 	 */
 	@Test
 	public void testGetDateNull() {
-		final Auditable<String, Integer> from = new AbstractAudited<Integer>() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+		final Auditable<String, Integer, Date> from = new AbstractAudited<Integer>() {
+			// Nothing
 		};
 		final AuditedBean<String, Integer> audited = new AuditedBean<>();
 		audited.copyAuditData(from);
@@ -90,7 +84,7 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testCopyAuditDataInstance() {
-		final Auditable<String, Integer> from = newAuditable();
+		final Auditable<String, Integer, Date> from = newAuditable();
 		final AuditedBean<String, Integer> audited = new AuditedBean<>();
 		audited.copyAuditData(from);
 		assertData(audited);
@@ -105,26 +99,22 @@ public class AuditedBeanTest {
 		return audited;
 	}
 
-	private Auditable<String, Integer> newAuditable() {
-		Auditable<String, Integer> from = new AbstractAudited<Integer>() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+	private Auditable<String, Integer, Date> newAuditable() {
+		final Auditable<String, Integer, Date> from = new AbstractAudited<Integer>() {
+			// Nothing
 		};
 		from.setCreatedBy("any");
 		from.setLastModifiedBy("one");
-		from.setCreatedDate(new DateTime(0));
-		from.setLastModifiedDate(new DateTime(1));
+		from.setCreatedDate(new Date(0));
+		from.setLastModifiedDate(new Date(1));
 		return from;
 	}
 
-	private void assertData(final Auditable<String, ?> to) {
+	private void assertData(final Auditable<String, ?, Date> to) {
 		Assert.assertEquals("any", to.getCreatedBy());
 		Assert.assertEquals("one", to.getLastModifiedBy());
-		Assert.assertEquals(new DateTime(0), to.getCreatedDate());
-		Assert.assertEquals(new DateTime(1), to.getLastModifiedDate());
+		Assert.assertEquals(new Date(0), to.getCreatedDate());
+		Assert.assertEquals(new Date(1), to.getLastModifiedDate());
 	}
 
 	private void assertData(final AuditedBean<String, Integer> audited) {

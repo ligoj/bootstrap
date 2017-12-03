@@ -85,7 +85,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(1, findAll.getTotalPages());
 		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(1, findAll.getTotalPages());
 		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -225,7 +225,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
 		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT, findAll.getTotalPages());
 		Assert.assertEquals(1, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -262,7 +262,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
 		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -281,7 +281,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
 		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertTrue(findAll.hasContent());
 		Assert.assertEquals(COUNT, findAll.getTotalElements());
 		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -598,7 +598,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertEquals(0, findAll.getTotalElements());
 		Assert.assertEquals(1, findAll.getTotalPages());
 		Assert.assertEquals(0, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -611,7 +611,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 		Assert.assertFalse(findAll.hasContent());
 		Assert.assertEquals(0, findAll.getTotalElements());
 		Assert.assertEquals(0, findAll.getContent().size());
-		Assert.assertNull(findAll.getSort());
+		Assert.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**

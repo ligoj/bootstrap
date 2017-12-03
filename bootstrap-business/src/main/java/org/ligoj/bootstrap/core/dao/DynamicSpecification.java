@@ -32,6 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 class DynamicSpecification<U> extends AbstractSpecification implements Specification<U> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Property delimiter. See Property#DELIMITERS property.
 	 */
 	public static final String PROPERTY_DELIMITERS = "_\\.";

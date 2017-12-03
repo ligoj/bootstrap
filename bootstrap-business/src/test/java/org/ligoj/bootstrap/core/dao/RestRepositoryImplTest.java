@@ -1,6 +1,7 @@
 package org.ligoj.bootstrap.core.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -179,10 +180,10 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		Assert.assertFalse(repository.findAll().isEmpty());
 		Assert.assertTrue(repository.deleteAllNoFetch() > 2);
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		Assert.assertTrue(repository.findAll().isEmpty());
 	}
 
@@ -194,10 +195,10 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		list.add(systemDialect.getId());
 		list.add(-1);
 		Assert.assertEquals(1, repository.deleteAll(list));
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test
@@ -205,10 +206,10 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		Assert.assertFalse(repository.findAll().isEmpty());
 		Assert.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId()));
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test
@@ -218,10 +219,10 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
 		repository.deleteAllExpected(list);
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test(expected = JpaObjectRetrievalFailureException.class)
@@ -247,7 +248,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	@Test
 	public void deleteAllIdentifiersNull() {
 		int size = repository.findAll().size();
-		Assert.assertEquals(0, repository.deleteAll(null));
+		Assert.assertEquals(0, repository.deleteAll((Collection<Integer>)null));
 		Assert.assertEquals(size, repository.findAll().size());
 		em.flush();
 		em.clear();
@@ -258,10 +259,10 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	public void deleteExpected() {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		repository.delete(systemDialect.getId());
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test(expected = JpaObjectRetrievalFailureException.class)
@@ -273,10 +274,10 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	public void deleteNoFetch() {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.exists(systemDialect.getId()));
+		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test(expected = JpaObjectRetrievalFailureException.class)

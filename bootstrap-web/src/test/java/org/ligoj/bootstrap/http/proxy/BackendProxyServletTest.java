@@ -181,7 +181,7 @@ public class BackendProxyServletTest {
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
 		Mockito.when(servletConfig.getInitParameter("proxyToKey")).thenReturn("endpoint.rest");
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn(prefix);
-		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("5");
+		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("6");
 		servlet.init(servletConfig);
 	}
 
@@ -489,7 +489,7 @@ public class BackendProxyServletTest {
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn("prefix");
-		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("5");
+		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("6");
 		servlet.init(servletConfig);
 	}
 

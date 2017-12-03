@@ -12,21 +12,14 @@ public class TestAbstractBusinessEntityTest {
 	public void testIsNewNew() {
 		Assert.assertTrue(new AbstractBusinessEntity<Integer>() {
 
-			/**
-			 * SID
-			 */
-			private static final long serialVersionUID = 1L;
+			// Nothing
 		}.isNew());
 	}
 
 	@Test
 	public void testNamed() {
 		AbstractNamedBusinessEntity<Integer> entity = new AbstractNamedBusinessEntity<Integer>() {
-
-			/**
-			 * SID
-			 */
-			private static final long serialVersionUID = 1L;
+			// Nothing
 		};
 		entity.setName("Name");
 		Assert.assertEquals("AbstractNamedBusinessEntity(name=Name)", entity.toString());
@@ -35,11 +28,7 @@ public class TestAbstractBusinessEntityTest {
 	@Test
 	public void testIsNewSet() {
 		AbstractBusinessEntity<Integer> entity = new AbstractBusinessEntity<Integer>() {
-
-			/**
-			 * SID
-			 */
-			private static final long serialVersionUID = 1L;
+			// Nothing
 		};
 		entity.setId(1);
 		Assert.assertFalse(entity.isNew());

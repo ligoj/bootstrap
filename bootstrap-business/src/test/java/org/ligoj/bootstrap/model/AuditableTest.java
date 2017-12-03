@@ -1,18 +1,19 @@
 package org.ligoj.bootstrap.model;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ligoj.bootstrap.core.AuditedBean;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.ligoj.bootstrap.core.model.Auditable;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.model.system.SystemBench;
-import org.springframework.data.domain.Auditable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -115,13 +116,13 @@ public class AuditableTest extends AbstractBootTest {
 		final SystemBench object = new SystemBench();
 		object.setCreatedBy(DEFAULT_USER);
 		object.setLastModifiedBy(DEFAULT_ROLE);
-		object.setCreatedDate(new DateTime());
-		object.setLastModifiedDate(new DateTime());
+		object.setCreatedDate(new Date());
+		object.setLastModifiedDate(new Date());
 		auditedVo.copyAuditData(object);
 		Assert.assertEquals(DEFAULT_USER, auditedVo.getCreatedBy());
 		Assert.assertEquals(DEFAULT_ROLE, auditedVo.getLastModifiedBy());
-		Assert.assertEquals(object.getCreatedDate().toDate(), auditedVo.getCreatedDate());
-		Assert.assertEquals(object.getLastModifiedDate().toDate(), auditedVo.getLastModifiedDate());
+		Assert.assertEquals(object.getCreatedDate(), auditedVo.getCreatedDate());
+		Assert.assertEquals(object.getLastModifiedDate(), auditedVo.getLastModifiedDate());
 	}
 
 	/**
@@ -142,7 +143,7 @@ public class AuditableTest extends AbstractBootTest {
 	 */
 	@Test
 	public void testAuditVoNullCopy() {
-		AuditedBean.copyAuditData(null, (Auditable<String, String>) null);
+		AuditedBean.copyAuditData(null, (Auditable<String, String, Date>) null);
 	}
 
 	/**
@@ -153,8 +154,8 @@ public class AuditableTest extends AbstractBootTest {
 		final SystemBench from = new SystemBench();
 		from.setCreatedBy(DEFAULT_USER);
 		from.setLastModifiedBy(DEFAULT_ROLE);
-		from.setCreatedDate(new DateTime());
-		from.setLastModifiedDate(new DateTime());
+		from.setCreatedDate(new Date());
+		from.setLastModifiedDate(new Date());
 		final SystemBench to = new SystemBench();
 		AuditedBean.copyAuditData(from, to);
 		Assert.assertEquals(DEFAULT_USER, to.getCreatedBy());

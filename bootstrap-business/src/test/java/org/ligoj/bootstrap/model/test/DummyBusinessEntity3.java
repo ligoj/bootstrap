@@ -17,11 +17,6 @@ import lombok.Setter;
 @Table(name = "DEMO_DUMMY")
 public class DummyBusinessEntity3 extends AbstractBusinessEntity<Integer> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@ManyToOne
 	private DummyBusinessEntity3 parent;
 

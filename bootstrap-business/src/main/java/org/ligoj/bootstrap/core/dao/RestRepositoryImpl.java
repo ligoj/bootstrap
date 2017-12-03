@@ -59,7 +59,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	public T findOneExpected(final K id) {
 		return findOneExpected(id, null);
 	}
-
+	
 	@Override
 	public T findOneExpected(final K id, final Map<String, JoinType> fetchedAssociations) {
 		final T entity;
@@ -137,7 +137,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 
 	@Override
 	public void existExpected(final K id) {
-		if (!exists(id)) {
+		if (!existsById(id)) {
 			throw new EntityNotFoundException(id.toString());
 		}
 	}

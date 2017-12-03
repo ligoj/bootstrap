@@ -186,7 +186,7 @@ public class UserResource {
 				roleToDelete.add(role);
 			}
 		}
-		roleAssignmentRepository.delete(roleToDelete);
+		roleAssignmentRepository.deleteAll(roleToDelete);
 		user.getRoles().removeAll(roleToDelete);
 		// create new roles assignment
 		createRoleAssignment(userVo.getRoles(), user);

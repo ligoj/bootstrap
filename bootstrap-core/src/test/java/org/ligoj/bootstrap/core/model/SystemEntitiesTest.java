@@ -1,13 +1,11 @@
 package org.ligoj.bootstrap.core.model;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.data.domain.Auditable;
-
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemBench;
@@ -17,6 +15,7 @@ import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
+
 import lombok.EqualsAndHashCode;
 
 /**
@@ -25,7 +24,8 @@ import lombok.EqualsAndHashCode;
 public class SystemEntitiesTest {
 
 	@Test
-	public void testSystemEntities() throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+	public void testSystemEntities()
+			throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 		testEntity(SystemRole.class);
 		testEntity(SystemBench.class);
 		testEntity(SystemRoleAssignment.class);
@@ -81,13 +81,14 @@ public class SystemEntitiesTest {
 	/**
 	 * Test entity getter/setter and toString.
 	 */
-	private <T> void testEntity(final Class<T> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+	private <T> void testEntity(final Class<T> clazz)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		final T entity = clazz.newInstance();
 		if (entity instanceof Auditable) {
-			final Auditable<?, ?> auditable = (Auditable<?, ?>) entity;
-			auditable.setLastModifiedDate(new DateTime());
-			auditable.setCreatedDate(new DateTime());
+			@SuppressWarnings("unchecked")
+			final Auditable<?, ?, Date> auditable = (Auditable<?, ?, Date>) entity;
+			auditable.setLastModifiedDate(new Date());
+			auditable.setCreatedDate(new Date());
 		}
 		BeanUtilsBean.getInstance().cloneBean(entity).toString();
 	}

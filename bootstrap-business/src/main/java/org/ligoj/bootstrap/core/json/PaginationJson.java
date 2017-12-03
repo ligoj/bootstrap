@@ -184,7 +184,7 @@ public class PaginationJson {
 	public PageRequest getPageRequest(final UriInfo uriInfo, final Map<String, String> ormMapping, final Collection<String> caseSensitiveColumns) {
 		// Update pagination informations
 		if (uriInfo == null) {
-			return new PageRequest(0, 10);
+			return PageRequest.of(0, 10);
 		}
 		final MultivaluedMap<String, String> parameters = uriInfo.getQueryParameters();
 		final int pageLength = getPageLength(parameters);
@@ -201,7 +201,7 @@ public class PaginationJson {
 			final int pageLength, final int firstPage, final Collection<String> caseSensitiveColumns) {
 		return Optional.ofNullable(getSortColumn(parameters))
 				.map(c -> newSortedPageRequest(ormMapping, parameters, pageLength, firstPage, c, caseSensitiveColumns))
-				.orElse(new PageRequest(firstPage, pageLength));
+				.orElse(PageRequest.of(firstPage, pageLength));
 	}
 
 	/**
@@ -231,20 +231,20 @@ public class PaginationJson {
 		final String ormProperty = getOrmColumn(ormMapping, column);
 		if (ormProperty == null) {
 			// Not enough information for build an ORDER BY
-			pageRequest = new PageRequest(firstPage, pageLength);
+			pageRequest = PageRequest.of(firstPage, pageLength);
 		} else {
 			// Ordering query can be built
 			final Sort sort;
 			if ((caseSensitiveColumns == null || !caseSensitiveColumns.contains(column)) && ormProperty.indexOf('(') == -1) {
 				if (ormProperty.indexOf('.') == -1) {
-					sort = new Sort(new Sort.Order(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), ormProperty).ignoreCase());
+					sort = Sort.by(new Sort.Order(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), ormProperty).ignoreCase());
 				} else {
 					sort = JpaSort.unsafe(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), "UPPER(" + ormProperty + ")");
 				}
 			} else {
 				sort = JpaSort.unsafe(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), ormProperty);
 			}
-			pageRequest = new PageRequest(firstPage, pageLength, sort);
+			pageRequest = PageRequest.of(firstPage, pageLength, sort);
 		}
 		return pageRequest;
 	}

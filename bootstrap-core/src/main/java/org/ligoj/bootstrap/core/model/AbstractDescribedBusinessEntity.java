@@ -23,11 +23,6 @@ public abstract class AbstractDescribedBusinessEntity<K extends Serializable> ex
 		IDescribableBean<K> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Human readable description.
 	 */
 	@Length(max = 250)

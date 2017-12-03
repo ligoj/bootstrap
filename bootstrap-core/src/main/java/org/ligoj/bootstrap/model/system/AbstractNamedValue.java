@@ -27,11 +27,6 @@ import lombok.Setter;
 public abstract class AbstractNamedValue<K extends Serializable> extends AbstractNamedAuditedEntity<K> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Value as string.
 	 */
 	@NotEmpty

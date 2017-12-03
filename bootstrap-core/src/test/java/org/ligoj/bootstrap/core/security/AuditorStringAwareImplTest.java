@@ -22,18 +22,18 @@ public class AuditorStringAwareImplTest {
 
 	@Test
 	public void getCurrentAuditorNoUser() {
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, auditor.getCurrentAuditor());
+		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, auditor.getCurrentAuditor().get());
 	}
 
 	@Test
 	public void getCurrentAuditorNoProvider() {
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, new AuditorStringAwareImpl().getCurrentAuditor());
+		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, new AuditorStringAwareImpl().getCurrentAuditor().get());
 	}
 
 	@Test
 	public void getCurrentAuditor() {
 		new SecurityHelper().setUserName("name");
-		Assert.assertEquals("name", auditor.getCurrentAuditor());
+		Assert.assertEquals("name", auditor.getCurrentAuditor().get());
 	}
 
 }

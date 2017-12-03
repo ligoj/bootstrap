@@ -16,9 +16,6 @@ import lombok.Setter;
 @Setter
 public class SystemConfiguration extends AbstractNamedValue<Integer> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
+	// Nothing
 
 }

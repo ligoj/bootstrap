@@ -21,11 +21,6 @@ import lombok.Setter;
 @Setter
 public class Wine extends AbstractPersistable<Integer> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = -1169105186652827176L;
-
 	@Size(max = 50)
 	private String name;
 

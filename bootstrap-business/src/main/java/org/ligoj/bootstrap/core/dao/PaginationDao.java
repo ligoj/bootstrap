@@ -15,6 +15,8 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.commons.collections4.MapUtils;
+import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
+import org.ligoj.bootstrap.core.json.jqgrid.UiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,9 +28,6 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-
-import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
-import org.ligoj.bootstrap.core.json.jqgrid.UiSort;
 
 /**
  * General JPA entity Pagination DAO
@@ -150,7 +149,7 @@ public class PaginationDao {
 		final TypedQuery<T> query2 = em.createQuery(query);
 		if (uiPageRequest.getPage() > 0 && uiPageRequest.getPageSize() > 0 || uiPageRequest.getUiSort() != null) {
 			// Build the main query
-			final Pageable pageable = new PageRequest(Math.max(0, uiPageRequest.getPage() - 1), Math.max(1, uiPageRequest.getPageSize()));
+			final Pageable pageable = PageRequest.of(Math.max(0, uiPageRequest.getPage() - 1), Math.max(1, uiPageRequest.getPageSize()));
 			return readPage(entityType, query2, pageable, spec);
 		}
 
@@ -189,7 +188,7 @@ public class PaginationDao {
 	 */
 	private <T> Page<T> readPage(final Class<T> entityType, final TypedQuery<T> query, final Pageable pageable, final Specification<T> spec) {
 
-		query.setFirstResult(pageable.getOffset());
+		query.setFirstResult((int)pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
 
 		final Long total = getCountQuery(entityType, spec).getSingleResult();

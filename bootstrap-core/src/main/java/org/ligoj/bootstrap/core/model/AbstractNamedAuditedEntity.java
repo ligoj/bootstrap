@@ -28,11 +28,6 @@ import lombok.ToString;
 public abstract class AbstractNamedAuditedEntity<K extends Serializable> extends AbstractAudited<K> implements INamableBean<K> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Object name
 	 */
 	@NotBlank

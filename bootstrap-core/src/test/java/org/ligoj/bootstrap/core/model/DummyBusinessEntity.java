@@ -10,9 +10,6 @@ import lombok.Setter;
 @Setter
 public class DummyBusinessEntity extends AbstractBusinessEntity<String> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
+	// Nothing
 
 }

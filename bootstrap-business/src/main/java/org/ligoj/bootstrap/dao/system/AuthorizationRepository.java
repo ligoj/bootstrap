@@ -48,13 +48,4 @@ public interface AuthorizationRepository extends RestRepository<SystemAuthorizat
 	@Query("FROM SystemAuthorization sa LEFT JOIN FETCH sa.role role WHERE sa.type = ?1")
 	List<SystemAuthorization> findAllByType(SystemAuthorization.AuthorizationType type);
 
-	/**
-	 * Return all authorizations of given role.
-	 * 
-	 * @param role
-	 *            role identifier.
-	 * @return all authorizations of given role.
-	 */
-	@Query("FROM SystemAuthorization sa WHERE sa.role.id = ?1")
-	List<SystemAuthorization> findAllByRoleId(Integer role);
 }

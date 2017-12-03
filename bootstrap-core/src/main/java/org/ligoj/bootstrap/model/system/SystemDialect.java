@@ -25,11 +25,6 @@ import lombok.Setter;
 @Setter
 public class SystemDialect extends AbstractPersistable<Integer> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 5524113622478143153L;
-
 	@Column(name = "DIA_CHAR")
 	private String dialChar;
 

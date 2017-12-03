@@ -1,5 +1,7 @@
 package org.ligoj.bootstrap.core.security;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
@@ -20,10 +22,10 @@ public class AuditorStringAwareImpl implements AuditorAware<String> {
 	private SecurityHelper securityHelper;
 
 	@Override
-	public String getCurrentAuditor() {
+	public Optional<String> getCurrentAuditor() {
 		// Return the known user
-		return securityHelper == null ? SecurityHelper.SYSTEM_USERNAME
-				: StringUtils.defaultIfBlank(securityHelper.getLogin(), SecurityHelper.SYSTEM_USERNAME);
+		return Optional.ofNullable(securityHelper == null ? SecurityHelper.SYSTEM_USERNAME
+				: StringUtils.defaultIfBlank(securityHelper.getLogin(), SecurityHelper.SYSTEM_USERNAME));
 	}
 
 }

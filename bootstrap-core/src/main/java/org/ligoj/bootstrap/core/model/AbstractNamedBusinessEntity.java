@@ -24,11 +24,6 @@ import lombok.ToString;
 @ToString(of = "name")
 public abstract class AbstractNamedBusinessEntity<K extends Serializable> extends AbstractBusinessEntity<K> implements INamableBean<K> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@NotNull
 	@NotBlank
 	private String name;

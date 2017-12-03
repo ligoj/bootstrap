@@ -44,7 +44,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		// create a mock URI info with pagination informations
 		PageRequest pageRequest = paginationJson.getPageRequest(newUriInfo(), null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(0, pageRequest.getOffset());
 		Assert.assertEquals(0, pageRequest.getPageNumber());
 		Assert.assertEquals(10, pageRequest.getPageSize());
@@ -60,7 +60,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "100");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(0, pageRequest.getOffset());
 		Assert.assertEquals(0, pageRequest.getPageNumber());
 		Assert.assertEquals(100, pageRequest.getPageSize());
@@ -77,7 +77,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.START, "220");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(200, pageRequest.getOffset());
 		Assert.assertEquals(2, pageRequest.getPageNumber());
 	}
@@ -93,7 +93,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("page", "2");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(100, pageRequest.getOffset());
 		Assert.assertEquals(1, pageRequest.getPageNumber());
 	}
@@ -149,7 +149,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORTED_COLUMN, "2");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(0, pageRequest.getOffset());
 	}
 
@@ -165,7 +165,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(0, pageRequest.getOffset());
 	}
 
@@ -182,7 +182,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(0, pageRequest.getOffset());
 		Assert.assertEquals(0, pageRequest.getPageNumber());
 		Assert.assertEquals(100, pageRequest.getPageSize());
@@ -201,7 +201,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "desc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, new HashMap<String, String>());
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(0, pageRequest.getOffset());
 		Assert.assertEquals(0, pageRequest.getPageNumber());
 		Assert.assertEquals(100, pageRequest.getPageSize());
@@ -353,7 +353,7 @@ public class PaginationJsonTest extends AbstractBootTest {
 	public void getPageRequestNotUriInfo() {
 		final PageRequest pageRequest = paginationJson.getPageRequest(null, null);
 		Assert.assertNotNull(pageRequest);
-		Assert.assertNull(pageRequest.getSort());
+		Assert.assertFalse(pageRequest.getSort().isSorted());
 		Assert.assertEquals(10, pageRequest.getPageSize());
 		Assert.assertEquals(0, pageRequest.getPageNumber());
 		Assert.assertEquals(0, pageRequest.getOffset());

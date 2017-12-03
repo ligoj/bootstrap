@@ -30,11 +30,6 @@ import lombok.ToString;
 public abstract class AbstractBusinessEntity<K extends Serializable> implements Persistable<K> {
 
 	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
 	 * Business key.
 	 */
 	@Id

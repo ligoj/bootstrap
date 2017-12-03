@@ -23,18 +23,20 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.joda.time.DateTime;
-import org.springframework.data.domain.Auditable;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
-import org.ligoj.bootstrap.core.AuditedBean;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Abstract base class for auditable entities. Stores the audition values in persistent fields.
+ * Abstract base class for auditable entities. Stores the audition values in
+ * persistent fields.
  * 
  * @param <K>
  *            The type of the auditing type's identifier
@@ -42,15 +44,14 @@ import lombok.Setter;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class AbstractAudited<K extends Serializable> extends AbstractPersistable<K> implements Auditable<String, K> {
-
-	private static final long serialVersionUID = 141481953116476081L;
+public abstract class AbstractAudited<K extends Serializable> extends AbstractPersistable<K> implements Auditable<String, K, Date> {
 
 	/**
 	 * Created author will never be updated
 	 */
 	@Column(updatable = false)
 	@JsonProperty(access = Access.READ_ONLY)
+	@CreatedBy
 	private String createdBy;
 
 	/**
@@ -59,32 +60,16 @@ public abstract class AbstractAudited<K extends Serializable> extends AbstractPe
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false)
 	@JsonProperty(access = Access.READ_ONLY)
+	@CreatedDate
 	private Date createdDate;
 
 	@JsonProperty(access = Access.READ_ONLY)
+	@LastModifiedBy
 	private String lastModifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonProperty(access = Access.READ_ONLY)
+	@LastModifiedDate
 	private Date lastModifiedDate;
 
-	@Override
-	public DateTime getCreatedDate() {
-		return AuditedBean.toDatetime(createdDate);
-	}
-
-	@Override
-	public void setCreatedDate(final DateTime createdDate) {
-		this.createdDate = AuditedBean.toDate(createdDate);
-	}
-
-	@Override
-	public DateTime getLastModifiedDate() {
-		return AuditedBean.toDatetime(lastModifiedDate);
-	}
-
-	@Override
-	public void setLastModifiedDate(final DateTime lastModifiedDate) {
-		this.lastModifiedDate = AuditedBean.toDate(lastModifiedDate);
-	}
 }

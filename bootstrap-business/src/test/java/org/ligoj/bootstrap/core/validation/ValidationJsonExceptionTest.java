@@ -21,7 +21,7 @@ import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
-import org.hibernate.validator.internal.util.annotation.AnnotationDescriptor;
+import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
@@ -187,8 +187,8 @@ public class ValidationJsonExceptionTest {
 		}
 	}
 
-	private <T extends Annotation> AnnotationDescriptor<T> getAnnotation(final String fieldName, final Class<T> annotationClass) {
-		return new AnnotationDescriptor<>(FieldUtils.getField(Wine.class, fieldName, true).getAnnotation(annotationClass));
+	private <T extends Annotation> ConstraintAnnotationDescriptor<T> getAnnotation(final String fieldName, final Class<T> annotationClass) {
+		return new ConstraintAnnotationDescriptor<>(FieldUtils.getField(Wine.class, fieldName, true).getAnnotation(annotationClass));
 	}
 
 	@Test

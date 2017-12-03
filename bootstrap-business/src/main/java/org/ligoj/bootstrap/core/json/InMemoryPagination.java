@@ -66,7 +66,7 @@ public class InMemoryPagination {
 	 */
 	public <E, T> TableItem<T> applyPagination(final UriInfo uriInfo, final Collection<E> items, final Function<E, T> transformer) {
 		final UiPageRequest uiPageRequest = paginationJson.getUiPageRequest(uriInfo);
-		final PageRequest pageRequest = new PageRequest(uiPageRequest.getPage() - 1, uiPageRequest.getPageSize());
+		final PageRequest pageRequest = PageRequest.of(uiPageRequest.getPage() - 1, uiPageRequest.getPageSize());
 		return paginationJson.applyPagination(uriInfo, newPage(items, pageRequest), transformer);
 	}
 

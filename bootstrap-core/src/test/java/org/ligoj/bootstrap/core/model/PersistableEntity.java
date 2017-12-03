@@ -5,9 +5,5 @@ package org.ligoj.bootstrap.core.model;
  */
 public class PersistableEntity extends AbstractAudited<Integer> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
+	// Nothing
 }

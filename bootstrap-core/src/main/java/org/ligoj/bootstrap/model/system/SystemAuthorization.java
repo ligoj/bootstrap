@@ -37,11 +37,6 @@ public class SystemAuthorization extends AbstractAudited<Integer> {
 		UI
 	}
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Enumerated(EnumType.STRING)
 	@NotNull
 	private AuthorizationType type;

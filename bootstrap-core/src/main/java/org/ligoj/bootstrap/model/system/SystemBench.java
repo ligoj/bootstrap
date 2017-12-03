@@ -20,11 +20,6 @@ import lombok.Setter;
 @Setter
 public class SystemBench extends AbstractAudited<Integer> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Column(name = "PRF_BOOL")
 	private Boolean prfBool;
 
