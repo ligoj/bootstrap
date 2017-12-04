@@ -137,17 +137,29 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	T findByName(String name);
 
 	/**
-	 * Search an entity with the given entity with the given property has the
-	 * expected value. If not found a null object is returned. When several
+	 * Search an entity having the given property the
+	 * expected value. If not found a <code>null</code> object is returned. When several
 	 * objects are found, only the first one is returned.
 	 * 
 	 * @param property
-	 *            property's name.
+	 *            Property's name.
 	 * @param value
-	 *            property's value.
-	 * @return the entity. <code>null</code> when not found.
+	 *            Property's value.
+	 * @return The entity. <code>null</code> when not found.
 	 */
 	T findBy(String property, Object value);
+
+	/**
+	 * Count entities having the given property the
+	 * expected value.
+	 * 
+	 * @param property
+	 *            Property's name.
+	 * @param value
+	 *            Property's value.
+	 * @return The count.
+	 */
+	long countBy(String property, Object value);
 
 	/**
 	 * Search all entities with the given entity with the given property has the

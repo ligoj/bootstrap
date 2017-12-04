@@ -123,6 +123,18 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		Assert.assertEquals("name", role.getName());
 	}
 
+	@Test
+	public void countBy() {
+		SystemRole role = new SystemRole();
+		role.setName("john");
+		em.persist(role);
+		em.flush();
+		em.clear();
+
+		Assert.assertEquals(1, roleRepository.countBy("name", "john"));
+		Assert.assertEquals(0, roleRepository.countBy("name", "any"));
+	}
+
 	/**
 	 * Default find all by name success.
 	 */
@@ -248,7 +260,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	@Test
 	public void deleteAllIdentifiersNull() {
 		int size = repository.findAll().size();
-		Assert.assertEquals(0, repository.deleteAll((Collection<Integer>)null));
+		Assert.assertEquals(0, repository.deleteAll((Collection<Integer>) null));
 		Assert.assertEquals(size, repository.findAll().size());
 		em.flush();
 		em.clear();

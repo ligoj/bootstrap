@@ -29,7 +29,6 @@ import org.springframework.util.CollectionUtils;
  */
 public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepository<T, K> implements RestRepository<T, K> {
 
-	
 	/**
 	 * Entity manager, only there because of ugly design of Spring Data.
 	 */
@@ -42,7 +41,8 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	private static final String PARAM_VALUE = "value";
 
 	/**
-	 * Creates a new {@link RestRepositoryImpl} to manage objects of the given {@link JpaEntityInformation}.
+	 * Creates a new {@link RestRepositoryImpl} to manage objects of the given
+	 * {@link JpaEntityInformation}.
 	 * 
 	 * @param entityInformation
 	 *            must not be {@literal null}.
@@ -59,7 +59,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	public T findOneExpected(final K id) {
 		return findOneExpected(id, null);
 	}
-	
+
 	@Override
 	public T findOneExpected(final K id, final Map<String, JoinType> fetchedAssociations) {
 		final T entity;
@@ -180,7 +180,14 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 
 	@Override
 	public List<T> findAllBy(final String property, final Object value) {
-		return em.createQuery(String.format(SELECT_BY, ei.getEntityName(), property), ei.getJavaType()).setParameter(PARAM_VALUE, value).getResultList();
+		return em.createQuery(String.format(SELECT_BY, ei.getEntityName(), property), ei.getJavaType()).setParameter(PARAM_VALUE, value)
+				.getResultList();
+	}
+
+	@Override
+	public long countBy(String property, Object value) {
+		return em.createQuery(String.format("SELECT COUNT(*) FROM %s WHERE %s=:value", ei.getEntityName(), property), Long.class)
+				.setParameter(PARAM_VALUE, value).getSingleResult();
 	}
 
 }
