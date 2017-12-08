@@ -162,7 +162,7 @@ public class AuthorizationResource {
 	@Path("{id:\\d+}")
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void remove(@PathParam("id") final int id) {
-		repository.delete(id);
+		repository.deleteById(id);
 	}
 
 	/**

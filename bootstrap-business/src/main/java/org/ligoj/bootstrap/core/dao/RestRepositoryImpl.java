@@ -95,12 +95,6 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 
 	@Override
 	@Transactional
-	public void delete(final K id) {
-		delete(findOneExpected(id));
-	}
-
-	@Override
-	@Transactional
 	public void deleteNoFetch(final K id) {
 		if (em.createQuery(String.format(DELETE_BY, ei.getEntityName(), "id")).setParameter(PARAM_VALUE, id).executeUpdate() != 1) {
 			// No deleted row

@@ -40,14 +40,6 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	void existExpected(K id);
 
 	/**
-	 * Delete an entity that must exists.
-	 * 
-	 * @param id
-	 *            entity's identifier.
-	 */
-	void delete(K id);
-
-	/**
 	 * Retrieves an entity by its id.
 	 * 
 	 * @param id

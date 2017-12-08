@@ -187,6 +187,6 @@ public class RoleResource {
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void remove(@PathParam("id") final int id) {
 		authorizationRepository.deleteAllBy("role.id", id);
-		repository.delete(id);
+		repository.deleteById(id);
 	}
 }

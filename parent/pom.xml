@@ -12,7 +12,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.8.0-SNAPSHOT</version>
+	<version>2.0.0</version>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Gfi Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
@@ -42,7 +42,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<bootstrap.version>1.8.0-SNAPSHOT</bootstrap.version>
+		<bootstrap.version>2.0.0</bootstrap.version>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
@@ -74,12 +74,15 @@
 		<junit.version>4.12</junit.version>
 		<log4j.version>2.10.0</log4j.version>
 		<lombok.version>1.16.18</lombok.version>
+		<mail.version>1.5.6</mail.version>
 		<mockito.version>2.12.0</mockito.version>
 		<mysql.version>6.0.6</mysql.version>
 		<postgresql.version>42.1.4</postgresql.version>
 		<paranamer.version>2.8</paranamer.version>
 		<quartz.version>2.3.0</quartz.version>
 		<slf4j.version>1.7.25</slf4j.version>
+		<spring-boot.version>2.0.0.M7</spring-boot.version>
+		<spring-cloud.version>2.0.0.M5</spring-cloud.version>
 		<spring-data.version>2.0.2.RELEASE</spring-data.version>
 		<spring.version>5.0.2.RELEASE</spring.version>
 		<spring-security.version>5.0.0.RELEASE</spring-security.version>
@@ -98,7 +101,7 @@
 				<artifactId>paranamer</artifactId>
 				<version>${paranamer.version}</version>
 			</dependency>
-		<dependency>
+			<dependency>
 				<groupId>com.samaxes.filter</groupId>
 				<artifactId>cachefilter</artifactId>
 				<version>${cachefilter.version}</version>
@@ -313,6 +316,80 @@
 				<groupId>javax.validation</groupId>
 				<artifactId>validation-api</artifactId>
 				<version>${validation-api.version}</version>
+			</dependency>
+
+			<!-- JSR-919 -->
+			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>${mail.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${spring-boot.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-tomcat</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.hibernate</groupId>
+						<artifactId>hibernate-validator</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jetty</artifactId>
+				<version>${spring-boot.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+				<version>${spring-boot.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.logging.log4j</groupId>
+						<artifactId>log4j-to-slf4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>ch.qos.logback</groupId>
+						<artifactId>logback-classic</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<version>${spring-boot.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-context</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-actuator</artifactId>
+				<version>${spring-boot.version}</version>
+			</dependency>
+			<!-- JSR-925 -->
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>1.1.1</version>
+				<scope>runtime</scope>
 			</dependency>
 
 			<!-- Database -->

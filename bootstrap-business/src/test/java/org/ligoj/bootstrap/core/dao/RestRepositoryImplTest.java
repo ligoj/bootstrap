@@ -270,7 +270,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	@Test
 	public void deleteExpected() {
 		SystemDialect systemDialect = repository.findAll().get(1);
-		repository.delete(systemDialect.getId());
+		repository.deleteById(systemDialect.getId());
 		Assert.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
@@ -279,7 +279,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test(expected = JpaObjectRetrievalFailureException.class)
 	public void deleteExpectedError() {
-		repository.delete(-1);
+		repository.deleteById(-1);
 	}
 
 	@Test
