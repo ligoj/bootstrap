@@ -1,7 +1,5 @@
 package org.ligoj.bootstrap.core.resource;
 
-import java.io.Serializable;
-
 import lombok.Getter;
 
 /**
@@ -18,7 +16,7 @@ public abstract class AbstractParameteredException extends RuntimeException {
 	 * Optional parameters.
 	 */
 	@Getter
-	private final Serializable[] parameters;
+	private final Object[] parameters;
 
 	/**
 	 * Constructor with a message.
@@ -30,7 +28,7 @@ public abstract class AbstractParameteredException extends RuntimeException {
 	 * @param parameters
 	 *            optional parameters.
 	 */
-	protected AbstractParameteredException(final String message, final Throwable cause, final Serializable... parameters) {
+	protected AbstractParameteredException(final String message, final Throwable cause, final Object... parameters) {
 		super(message, cause);
 		this.parameters = parameters;
 	}

@@ -1,7 +1,5 @@
 package org.ligoj.bootstrap.core.resource;
 
-import java.io.Serializable;
-
 /**
  * A technical exception.
  */
@@ -20,7 +18,7 @@ public class TechnicalException extends AbstractParameteredException {
 	 * @param parameters
 	 *            optional parameters.
 	 */
-	public TechnicalException(final String message, final Serializable... parameters) {
+	public TechnicalException(final String message, final Object... parameters) {
 		this(message, null, parameters);
 	}
 
@@ -34,7 +32,7 @@ public class TechnicalException extends AbstractParameteredException {
 	 * @param parameters
 	 *            optional parameters.
 	 */
-	public TechnicalException(final String message, final Throwable cause, final Serializable... parameters) {
+	public TechnicalException(final String message, final Throwable cause, final Object... parameters) {
 		super(message, cause, parameters);
 	}
 }
