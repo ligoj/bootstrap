@@ -1,7 +1,5 @@
 package org.ligoj.bootstrap.core.resource;
 
-import java.io.Serializable;
-
 import javax.validation.constraints.NotNull;
 
 import lombok.Getter;
@@ -29,7 +27,7 @@ public class ServerError {
 	 * Optional parameters.
 	 */
 	@Setter
-	private Serializable[] parameters;
+	private Object[] parameters;
 
 	/**
 	 * Optional cause.
