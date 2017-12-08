@@ -1,7 +1,5 @@
 package org.ligoj.bootstrap.core.resource;
 
-import java.io.Serializable;
-
 /**
  * A business exception.
  */
@@ -25,7 +23,7 @@ public class BusinessException extends AbstractParameteredException {
 	 * @param parameters
 	 *            optional parameters.
 	 */
-	public BusinessException(final String message, final Serializable... parameters) {
+	public BusinessException(final String message, final Object... parameters) {
 		this(message, null, parameters);
 	}
 
@@ -39,7 +37,7 @@ public class BusinessException extends AbstractParameteredException {
 	 * @param parameters
 	 *            optional parameters.
 	 */
-	public BusinessException(final String message, final Throwable cause, final Serializable... parameters) {
+	public BusinessException(final String message, final Throwable cause, final Object... parameters) {
 		super(message, cause, parameters);
 	}
 }

@@ -220,6 +220,6 @@ public class UserResource {
 	@DELETE
 	@Path("{login}")
 	public void delete(@PathParam("login") final String login) {
-		repository.delete(login);
+		repository.deleteById(login);
 	}
 }
