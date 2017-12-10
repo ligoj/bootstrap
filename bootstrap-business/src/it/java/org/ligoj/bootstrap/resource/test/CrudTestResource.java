@@ -183,7 +183,7 @@ public class CrudTestResource {
 	@DELETE
 	@Path("{id:\\d+}")
 	public void remove(@PathParam("id") final int id) {
-		repository.delete(id);
+		repository.deleteById(id);
 	}
 
 	/**
