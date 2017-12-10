@@ -26,7 +26,7 @@ public class ToNameSerializerTest {
 	}
 
 	public class BeanA extends NamedBean<Integer> {
-
+		// Nothing to add
 	}
 
 	@Test
