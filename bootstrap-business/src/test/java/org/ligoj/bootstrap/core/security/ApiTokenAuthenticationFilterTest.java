@@ -34,13 +34,13 @@ public class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	public void testCredential() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("credential")).thenReturn("A");
-		Assert.assertEquals(filter.getPreAuthenticatedCredentials(request), "A");
+		Assert.assertEquals("A", filter.getPreAuthenticatedCredentials(request));
 	}
 
 	@Test
 	public void testNoCredential() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Assert.assertEquals(filter.getPreAuthenticatedCredentials(request), "N/A");
+		Assert.assertEquals("N/A", filter.getPreAuthenticatedCredentials(request));
 	}
 
 	@Test(expected = PreAuthenticatedCredentialsNotFoundException.class)
@@ -60,7 +60,7 @@ public class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	public void testPrincipal() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
-		Assert.assertEquals(filter.getPreAuthenticatedPrincipal(request), DEFAULT_USER);
+		Assert.assertEquals(DEFAULT_USER, filter.getPreAuthenticatedPrincipal(request));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
 		Mockito.when(request.getHeader("credential")).thenReturn("RFYG");
 		Mockito.when(resource.check(DEFAULT_USER, "RFYG")).thenReturn(true);
-		Assert.assertEquals(filter.getPreAuthenticatedPrincipal(request), DEFAULT_USER);
+		Assert.assertEquals(DEFAULT_USER, filter.getPreAuthenticatedPrincipal(request));
 	}
 
 	@Test
