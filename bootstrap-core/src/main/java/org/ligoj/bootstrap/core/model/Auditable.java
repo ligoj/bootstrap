@@ -7,10 +7,10 @@ import org.springframework.data.domain.Persistable;
  * instance (typically some user) is to be defined by a generics definition.
  * 
  * @param <U> the auditing type. Typically some kind of user.
- * @param <ID> the type of the audited type's identifier.
+ * @param <K> the type of the audited type's identifier.
  * @param <D> the type of the audit date.
  */
-public interface Auditable<U, ID, D> extends Persistable<ID> {
+public interface Auditable<U, K, D> extends Persistable<K> {
 
 	/**
 	 * Returns the user who created this entity.
