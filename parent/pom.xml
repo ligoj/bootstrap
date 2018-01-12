@@ -86,7 +86,7 @@
 		<spring-data.version>2.0.2.RELEASE</spring-data.version>
 		<spring.version>5.0.2.RELEASE</spring.version>
 		<spring-security.version>5.0.0.RELEASE</spring-security.version>
-		<validation-api.version>2.0.0.Final</validation-api.version>
+		<validation-api.version>2.0.1.Final</validation-api.version>
 		<wiremock.version>2.12.0</wiremock.version>
 
 		<jar.selenium>3.6.0</jar.selenium>
