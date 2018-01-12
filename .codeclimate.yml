@@ -1,0 +1,9 @@
+---
+engines:
+  duplication:
+    enabled: true
+  markdownlint:
+    enabled: true
+exclude_paths:
+- "**/test/"
+- "**/it/"
