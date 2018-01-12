@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.transaction.Transactional;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.ligoj.bootstrap.core.csv.DummyEntity;
 import org.ligoj.bootstrap.core.csv.DummyEntity2;
 import org.ligoj.bootstrap.core.csv.DummyEntity3;
+import org.ligoj.bootstrap.core.csv.DummyEntity4;
 import org.ligoj.bootstrap.core.csv.Wrapper;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa} utility.
+ * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa}
+ * utility.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
@@ -116,7 +119,8 @@ public class CsvForJpaTest {
 		csvForJpa.toCsv(items, DummyEntity.class, result);
 
 		// Check there is the header and one data line
-		Assert.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;\"Château d\"\"Yquem\";\"World, hold on;\";2;3;6;7;8\n",
+		Assert.assertEquals(
+				"id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;\"Château d\"\"Yquem\";\"World, hold on;\";2;3;6;7;8\n",
 				result.toString());
 	}
 
@@ -200,13 +204,13 @@ public class CsvForJpaTest {
 	}
 
 	/**
-	 * Check CSN reader handles well the protected and unprotected quote and the comma chars.
+	 * Check CSN reader handles well the protected and unprotected quote and the
+	 * comma chars.
 	 */
 	@Test
 	public void toJpaSpecialChars() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader(
-						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"\'\',';4;\"Château d\"\"Yquem\";6;7;8\n"),
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
+				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"\'\',';4;\"Château d\"\"Yquem\";6;7;8\n"),
 				true);
 		Assert.assertEquals(1, jpa.size());
 		final DummyEntity newWine = newWine();
@@ -217,13 +221,13 @@ public class CsvForJpaTest {
 	}
 
 	/**
-	 * Check CSN reader handles well the protected and unprotected quote and the comma chars.
+	 * Check CSN reader handles well the protected and unprotected quote and the
+	 * comma chars.
 	 */
 	@Test
 	public void toJpaSpecialCharsEnds() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader(
-						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"\'\',';4;\"Château d\"\"Yquem\";6;7;\"8\n"),
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
+				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"\'\',';4;\"Château d\"\"Yquem\";6;7;\"8\n"),
 				true);
 		Assert.assertEquals(1, jpa.size());
 		final DummyEntity newWine = newWine();
@@ -234,13 +238,13 @@ public class CsvForJpaTest {
 	}
 
 	/**
-	 * Check CSN reader handles well the protected and unprotected quote and the comma chars.
+	 * Check CSN reader handles well the protected and unprotected quote and the
+	 * comma chars.
 	 */
 	@Test
 	public void toJpaIgnoreSpaces() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader(
-						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"1\"    ; 2 ; 3;4 ; \t  \"5\";   ' 6 '   ; 7 \"   ;  8   \n"),
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
+				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"1\"    ; 2 ; 3;4 ; \t  \"5\";   ' 6 '   ; 7 \"   ;  8   \n"),
 				true);
 		Assert.assertEquals(1, jpa.size());
 		final DummyEntity newWine = newWine();
@@ -293,14 +297,16 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaBufferEnd2() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("9;5;3;1;7;8;6;2;\n\n\r")), false);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("9;5;3;1;7;8;6;2;\n\n\r")),
+				false);
 		Assert.assertEquals(1, jpa.size());
 		assertEquals(newWine(), jpa.get(0));
 	}
 
 	@Test
 	public void toJpaBufferEnd3() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("\n\r9;5;3;1;7;8;6;2")), false);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("\n\r9;5;3;1;7;8;6;2")),
+				false);
 		Assert.assertEquals(1, jpa.size());
 		assertEquals(newWine(), jpa.get(0));
 	}
@@ -365,6 +371,23 @@ public class CsvForJpaTest {
 		Assert.assertEquals("4;5;3;1;7;8;6;2\n", result.toString());
 	}
 
+	@Test
+	public void toCsvEntityJodaTime() throws Exception {
+		final List<DummyEntity4> items = new ArrayList<>();
+		final StringWriter result = new StringWriter();
+		final DummyEntity4 entity = new DummyEntity4();
+		entity.setDate(DateTime.parse("2018-01-01"));
+		items.add(entity);
+		csvForJpa.toCsv(items, DummyEntity4.class, result);
+
+		// Check there is only data (2018-01-01T00:00:00.000+01:00)
+		Assert.assertTrue(result.toString().startsWith("date\n2018-01-01T00:00:00.000"));
+		
+		final List<DummyEntity4> bean = csvForJpa.toBean(DummyEntity4.class, new StringReader(result.toString()));
+		Assert.assertEquals(1, bean.size());
+		Assert.assertEquals(2018, bean.get(0).getDate().getYear());
+	}
+
 	@Test(timeout = 1000)
 	public void toCsvEntityPerformance() throws Exception {
 		final List<DummyEntity> items = newWines();
@@ -401,7 +424,8 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaForeignKeyRecursive() throws IOException {
-		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialChar;link.dialChar\nA;\nB;A\nC;B"), true, true);
+		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialChar;link.dialChar\nA;\nB;A\nC;B"), true,
+				true);
 		Assert.assertEquals(3, jpa.size());
 	}
 
@@ -487,8 +511,8 @@ public class CsvForJpaTest {
 	@Test
 	public void getJpaHeaders() {
 		final String[] jpaHeaders = csvForJpa.getJpaHeaders(DummyEntity2.class);
-		Assert.assertArrayEquals(new String[] { "id", "dialChar", "dialBool", "dialShort", "dialLong", "dialDouble", "dialDate", "localDate",
-				"dialEnum", "link", "user" }, jpaHeaders);
+		Assert.assertArrayEquals(new String[] { "id", "dialChar", "dialBool", "dialShort", "dialLong", "dialDouble", "dialDate",
+				"localDate", "dialEnum", "link", "user" }, jpaHeaders);
 	}
 
 	@Test
