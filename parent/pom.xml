@@ -47,7 +47,7 @@
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.8.13</aspectj.version>
-		<cache.version>1.0.0</cache.version>
+		<cache.version>1.1.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
 		<commons-beanutils>1.9.3</commons-beanutils>
 		<commons-codec>1.11</commons-codec>
