@@ -42,7 +42,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<bootstrap.version>2.0.1</bootstrap.version>
+		<bootstrap.version>2.0.2-SNAPSHOT</bootstrap.version>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
