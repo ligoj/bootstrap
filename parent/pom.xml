@@ -58,7 +58,7 @@
 		<commons-text.version>1.2</commons-text.version>
 		<commons-logging>1.2</commons-logging>
 		<cxf.version>3.2.1</cxf.version>
-		<dbcp.version>2.1.1</dbcp.version>
+		<dbcp.version>2.2.0</dbcp.version>
 		<ehcache.version>2.10.4</ehcache.version>
 		<guava.version>23.6-jre</guava.version>
 		<hibernate.version>5.2.12.Final</hibernate.version>
