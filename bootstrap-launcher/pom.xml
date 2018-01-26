@@ -52,6 +52,12 @@
 			<artifactId>jetty-servlets</artifactId>
 		</dependency>
 
+		<!-- JSR-250 -->
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+		</dependency>
+
 		<!-- Mock & Test -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

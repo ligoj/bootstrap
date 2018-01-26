@@ -55,8 +55,7 @@
 		<!-- JSR-250 -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
-			<artifactId>jsr250-api</artifactId>
-			<scope>provided</scope>
+			<artifactId>javax.annotation-api</artifactId>
 		</dependency>
 
 		<dependency>
