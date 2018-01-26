@@ -77,7 +77,7 @@
 		<junit5.version>1.0.3</junit5.version>
 		<junit.version>4.12</junit.version>
 		<log4j.version>2.10.0</log4j.version>
-		<lombok.version>1.16.18</lombok.version>
+		<lombok.version>1.16.21</lombok.version>
 		<mail.version>1.6.0</mail.version>
 		<mockito.version>2.13.0</mockito.version>
 		<mysql.version>6.0.6</mysql.version>
