@@ -5,14 +5,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -21,6 +19,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.ScreenshotException;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Common Selenium test class, provides convenient methods to interact with browsers.
@@ -135,7 +135,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	@Before
+	@BeforeEach
 	public void setUpDriver() throws Exception { // NOSONAR -- too many exception
 		gridUrl = new URL(GRID_URL);
 		baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()).getParent();
@@ -166,7 +166,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	/**
 	 * Quit the current driver.
 	 */
-	@After
+	@AfterEach
 	public void cleanup() {
 		if (driver != null) {
 			driver.quit();
@@ -180,7 +180,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws InterruptedException
 	 *             from {@link Thread#sleep(long)}
 	 */
-	@AfterClass
+	@AfterAll
 	public static void ensureCleanup() throws InterruptedException {
 		Thread.sleep(2000); // NOSONAR -- Have to pause the thread
 	}

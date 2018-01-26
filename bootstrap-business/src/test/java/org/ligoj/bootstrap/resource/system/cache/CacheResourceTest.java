@@ -1,19 +1,19 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import net.sf.ehcache.CacheManager;
 
 /**
  * Test class of {@link CacheResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class CacheResourceTest extends AbstractBootTest {
 
 	@Autowired
@@ -22,7 +22,7 @@ public class CacheResourceTest extends AbstractBootTest {
 	@Autowired
 	private DummyCacheBean dummyCacheBean;
 
-	@Before
+	@BeforeEach
 	public void cleanCache() {
 		CacheManager.getInstance().getCache("test-cache").removeAll();
 	}
@@ -30,15 +30,15 @@ public class CacheResourceTest extends AbstractBootTest {
 	@Test
 	public void invalidate() {
 		DummyCacheBean.hit = 0;
-		Assert.assertEquals(1, dummyCacheBean.getHit());
-		Assert.assertEquals(1, DummyCacheBean.hit);
-		Assert.assertEquals(1, dummyCacheBean.getHit());
-		Assert.assertEquals(1, DummyCacheBean.hit);
+		Assertions.assertEquals(1, dummyCacheBean.getHit());
+		Assertions.assertEquals(1, DummyCacheBean.hit);
+		Assertions.assertEquals(1, dummyCacheBean.getHit());
+		Assertions.assertEquals(1, DummyCacheBean.hit);
 		cacheResource.invalidate("test-cache");
-		Assert.assertEquals(2, dummyCacheBean.getHit());
-		Assert.assertEquals(2, DummyCacheBean.hit);
-		Assert.assertEquals(2, dummyCacheBean.getHit());
-		Assert.assertEquals(2, DummyCacheBean.hit);
+		Assertions.assertEquals(2, dummyCacheBean.getHit());
+		Assertions.assertEquals(2, DummyCacheBean.hit);
+		Assertions.assertEquals(2, dummyCacheBean.getHit());
+		Assertions.assertEquals(2, DummyCacheBean.hit);
 	}
 
 	@Test
@@ -46,8 +46,8 @@ public class CacheResourceTest extends AbstractBootTest {
 		dummyCacheBean.getHit();
 		cacheResource.invalidate("test-cache");
 		dummyCacheBean.getHit();
-		Assert.assertTrue(cacheResource.getCaches().size() >= 1);
-		Assert.assertTrue(cacheResource.getCaches().stream().filter(c -> "test-cache".equals(c.getName())).anyMatch(this::assertCache));
+		Assertions.assertTrue(cacheResource.getCaches().size() >= 1);
+		Assertions.assertTrue(cacheResource.getCaches().stream().filter(c -> "test-cache".equals(c.getName())).anyMatch(this::assertCache));
 	}
 
 	@Test
@@ -59,13 +59,13 @@ public class CacheResourceTest extends AbstractBootTest {
 	}
 
 	private boolean assertCache(final CacheStatistics cache) {
-		Assert.assertEquals("test-cache", cache.getName());
-		Assert.assertNotNull(cache.getId());
-		Assert.assertTrue(cache.getBytes() > 0);
-		Assert.assertTrue(cache.getHitCount() >= 1);
-		Assert.assertTrue(cache.getMissCount() >= 1);
-		Assert.assertTrue(cache.getOffHeapBytes() == 0);
-		Assert.assertTrue(cache.getSize() == 1);
+		Assertions.assertEquals("test-cache", cache.getName());
+		Assertions.assertNotNull(cache.getId());
+		Assertions.assertTrue(cache.getBytes() > 0);
+		Assertions.assertTrue(cache.getHitCount() >= 1);
+		Assertions.assertTrue(cache.getMissCount() >= 1);
+		Assertions.assertTrue(cache.getOffHeapBytes() == 0);
+		Assertions.assertTrue(cache.getSize() == 1);
 		return true;
 	}
 }

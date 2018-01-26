@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.http.it;
 
-import org.junit.Rule;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -10,13 +10,15 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  */
 public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTest {
 
+	protected TestInfo testName;
+
 	/**
 	 * Test name.
 	 */
-	@Rule
-	// CHECKSTYLE:OFF
-	public TestName testName = new TestName();
-	// CHECKSTYLE:ON
+	@BeforeEach
+	public void initTestName(final TestInfo testInfo) {
+		testName = testInfo;
+	}
 
 	// As default, Firefox, IE and Chrome navigators
 	protected static final DesiredCapabilities[] DEFAULT_CAPABILITIES = new DesiredCapabilities[] { DesiredCapabilities.firefox(),
@@ -46,7 +48,7 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 		target.capability = capability;
 		target.driver = driver;
 		target.prepareBrowser();
-		target.getClass().getMethod(testName.getMethodName()).invoke(target);
+		target.getClass().getMethod(testName.getTestMethod().get().getName()).invoke(target);
 	}
 
 	@SuppressWarnings("all")
@@ -69,6 +71,6 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 * @return <tt>true</tt> when the current thread is running in forked test.
 	 */
 	protected boolean isRepeatMode() {
-		return testName.getMethodName() == null;
+		return testName.getTestMethod() == null;
 	}
 }

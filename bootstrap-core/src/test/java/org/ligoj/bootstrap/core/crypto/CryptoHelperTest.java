@@ -2,8 +2,8 @@ package org.ligoj.bootstrap.core.crypto;
 
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -21,7 +21,7 @@ public class CryptoHelperTest {
 		Mockito.when(stringEncryptor.encrypt("value")).thenReturn("encrypted");
 		final CryptoHelper securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
-		Assert.assertEquals("encrypted", securityHelper.encryptAsNeeded("value"));
+		Assertions.assertEquals("encrypted", securityHelper.encryptAsNeeded("value"));
 	}
 
 	/**
@@ -33,7 +33,7 @@ public class CryptoHelperTest {
 		Mockito.when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
 		final CryptoHelper securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
-		Assert.assertEquals("encrypted", securityHelper.encryptAsNeeded("encrypted"));
+		Assertions.assertEquals("encrypted", securityHelper.encryptAsNeeded("encrypted"));
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class CryptoHelperTest {
 		Mockito.when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
 		final CryptoHelper securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
-		Assert.assertEquals("value", securityHelper.decryptAsNeeded("encrypted"));
+		Assertions.assertEquals("value", securityHelper.decryptAsNeeded("encrypted"));
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class CryptoHelperTest {
 		Mockito.when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
 		final CryptoHelper securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
-		Assert.assertEquals("value", securityHelper.decryptAsNeeded("value"));
+		Assertions.assertEquals("value", securityHelper.decryptAsNeeded("value"));
 	}
 
 }

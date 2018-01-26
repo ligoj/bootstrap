@@ -11,11 +11,10 @@ import javax.persistence.PersistenceContextType;
 import javax.ws.rs.core.UriInfo;
 
 import org.hibernate.collection.internal.PersistentBag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * Basic JPA test support.

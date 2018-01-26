@@ -3,8 +3,8 @@ package org.ligoj.bootstrap.core.json.datatable;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -17,7 +17,7 @@ public class DataTableAttributesTest {
 		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
 		uriInfo.getQueryParameters().add("q", "  S1 ");
-		Assert.assertEquals("S1", DataTableAttributes.getSearch(uriInfo));
+		Assertions.assertEquals("S1", DataTableAttributes.getSearch(uriInfo));
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class DataTableAttributesTest {
 		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
 		uriInfo.getQueryParameters().add(DataTableAttributes.SEARCH, "  S1 ");
-		Assert.assertEquals("S1", DataTableAttributes.getSearch(uriInfo));
+		Assertions.assertEquals("S1", DataTableAttributes.getSearch(uriInfo));
 	}
 
 	@Test
@@ -33,6 +33,6 @@ public class DataTableAttributesTest {
 		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
 		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
 		uriInfo.getQueryParameters().add(DataTableAttributes.SEARCH, "   ");
-		Assert.assertTrue(DataTableAttributes.getSearch(uriInfo).length() == 0);
+		Assertions.assertTrue(DataTableAttributes.getSearch(uriInfo).length() == 0);
 	}
 }

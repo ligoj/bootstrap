@@ -2,8 +2,8 @@ package org.ligoj.bootstrap.http.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -15,13 +15,13 @@ public class HasHeaderRequestMatcherTest {
 	public void testMatches() {
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("header")).thenReturn("value");
-		Assert.assertTrue(new HasHeaderRequestMatcher("header").matches(request));
+		Assertions.assertTrue(new HasHeaderRequestMatcher("header").matches(request));
 	}
 
 	@Test
 	public void testBlank() {
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("header")).thenReturn(" ");
-		Assert.assertFalse(new HasHeaderRequestMatcher("header").matches(request));
+		Assertions.assertFalse(new HasHeaderRequestMatcher("header").matches(request));
 	}
 }

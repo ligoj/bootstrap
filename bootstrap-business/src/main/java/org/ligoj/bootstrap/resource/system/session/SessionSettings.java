@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import lombok.Getter;
 import lombok.Setter;
 

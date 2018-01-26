@@ -4,12 +4,11 @@ import java.util.List;
 
 import javax.persistence.OrderBy;
 
+import org.ligoj.bootstrap.core.dao.RestRepository;
+import org.ligoj.bootstrap.model.test.Wine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-
-import org.ligoj.bootstrap.core.dao.RestRepository;
-import org.ligoj.bootstrap.model.test.Wine;
 
 /**
  * Wines , JDBC based DAO

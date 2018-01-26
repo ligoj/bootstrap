@@ -61,7 +61,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 	/**
 	 * server creation.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void startServer() {
 		server = new ValidationJSonIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
@@ -75,7 +75,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 				ContentType.APPLICATION_JSON));
 		final HttpResponse response = httpclient.execute(httppost);
 		try {
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -90,22 +90,22 @@ public class ValidationJSonIT extends AbstractRestTest {
 		httppost.setHeader("Content-Type", "application/json");
 		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
-		Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+		Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 		final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		Assert.assertNotNull(content);
+		Assertions.assertNotNull(content);
 		@SuppressWarnings("all")
 		final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 				.readValue(content, HashMap.class);
 
-		Assert.assertFalse(result.isEmpty());
+		Assertions.assertFalse(result.isEmpty());
 		final Map<String, List<Map<String, Object>>> errors = result.get("errors");
-		Assert.assertNotNull(errors);
-		Assert.assertEquals(1, errors.size());
+		Assertions.assertNotNull(errors);
+		Assertions.assertEquals(1, errors.size());
 		log.info("### ENTRY ####" + errors.keySet().iterator().next());
-		Assert.assertNotNull(errors.get("wine"));
-		Assert.assertEquals(1, ((List<?>) errors.get("wine")).size());
-		Assert.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).size());
-		Assert.assertEquals(((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).get(RULE), "NotNull");
+		Assertions.assertNotNull(errors.get("wine"));
+		Assertions.assertEquals(1, ((List<?>) errors.get("wine")).size());
+		Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).size());
+		Assertions.assertEquals(((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).get(RULE), "NotNull");
 	}
 
 	@Test
@@ -119,13 +119,13 @@ public class ValidationJSonIT extends AbstractRestTest {
 		for (final Map<String, Object> error : checkResponse) {
 			if (error.get(RULE).equals("Length")) {
 				final Map<?, ?> parameters = (Map<?, ?>) error.get(PARAMETERS2);
-				Assert.assertEquals(2, parameters.size());
-				Assert.assertEquals(0, parameters.get("min"));
-				Assert.assertEquals(50, parameters.get("max"));
+				Assertions.assertEquals(2, parameters.size());
+				Assertions.assertEquals(0, parameters.get("min"));
+				Assertions.assertEquals(50, parameters.get("max"));
 			} else if (error.get(RULE).equals("UpperCase")) {
-				Assert.assertNull(error.get(PARAMETERS2));
+				Assertions.assertNull(error.get(PARAMETERS2));
 			} else {
-				Assert.fail("Unexpected error");
+				Assertions.fail("Unexpected error");
 			}
 		}
 	}
@@ -146,23 +146,23 @@ public class ValidationJSonIT extends AbstractRestTest {
 		httppost.setHeader(ACCEPT_LANGUAGE, "EN");
 		final HttpResponse response = httpclient.execute(httppost);
 		try {
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertNotNull(content);
+			Assertions.assertNotNull(content);
 			@SuppressWarnings("all")
 			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 					.readValue(content, HashMap.class);
-			Assert.assertFalse(result.isEmpty());
+			Assertions.assertFalse(result.isEmpty());
 			final Map<String, List<Map<String, Object>>> errors = result.get("errors");
-			Assert.assertNotNull(errors);
-			Assert.assertEquals(1, errors.size());
+			Assertions.assertNotNull(errors);
+			Assertions.assertEquals(1, errors.size());
 			final List<Map<String, Object>> errorsOnYear = errors.get(property);
-			Assert.assertNotNull(errorsOnYear);
-			Assert.assertEquals(1, errorsOnYear.size());
+			Assertions.assertNotNull(errorsOnYear);
+			Assertions.assertEquals(1, errorsOnYear.size());
 
 			final Map<String, Object> errorOnYear = errorsOnYear.get(0);
-			Assert.assertEquals(type, errorOnYear.get(RULE));
-			Assert.assertNull(errorOnYear.get(PARAMETERS2));
+			Assertions.assertEquals(type, errorOnYear.get(RULE));
+			Assertions.assertNull(errorOnYear.get(PARAMETERS2));
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -181,39 +181,39 @@ public class ValidationJSonIT extends AbstractRestTest {
 		for (final Map<String, Object> error : checkResponse) {
 			if (error.get(RULE).equals("Length")) {
 				final Map<?, ?> parameters = (Map<?, ?>) error.get(PARAMETERS2);
-				Assert.assertEquals(2, parameters.size());
-				Assert.assertEquals(0, parameters.get("min"));
-				Assert.assertEquals(50, parameters.get("max"));
+				Assertions.assertEquals(2, parameters.size());
+				Assertions.assertEquals(0, parameters.get("min"));
+				Assertions.assertEquals(50, parameters.get("max"));
 			} else if (error.get(RULE).equals("UpperCase")) {
-				Assert.assertNull(error.get(PARAMETERS2));
+				Assertions.assertNull(error.get(PARAMETERS2));
 			} else {
-				Assert.fail("Unexpected error");
+				Assertions.fail("Unexpected error");
 			}
 		}
 	}
 
 	private List<Map<String, Object>> checkResponse(final HttpResponse response) throws IOException {
 		try {
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertNotNull(content);
+			Assertions.assertNotNull(content);
 			@SuppressWarnings("all")
 			final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
 					.readValue(content, HashMap.class);
 
-			Assert.assertFalse(result.isEmpty());
+			Assertions.assertFalse(result.isEmpty());
 			final Map<String, List<Map<String, Object>>> errors = result.get("errors");
-			Assert.assertNotNull(errors);
-			Assert.assertFalse(errors.isEmpty());
+			Assertions.assertNotNull(errors);
+			Assertions.assertFalse(errors.isEmpty());
 			final List<Map<String, Object>> errorsOnName = errors.get("name");
-			Assert.assertNotNull(errorsOnName);
-			Assert.assertEquals(2, errorsOnName.size());
-			Assert.assertNotNull(errorsOnName.get(0));
-			Assert.assertNotNull(errorsOnName.get(1));
+			Assertions.assertNotNull(errorsOnName);
+			Assertions.assertEquals(2, errorsOnName.size());
+			Assertions.assertNotNull(errorsOnName.get(0));
+			Assertions.assertNotNull(errorsOnName.get(1));
 			final List<Map<String, Object>> errorsOnYear = errors.get("year");
-			Assert.assertNotNull(errorsOnYear);
-			Assert.assertEquals(1, errorsOnYear.size());
-			Assert.assertNotNull(errorsOnYear.get(0));
+			Assertions.assertNotNull(errorsOnYear);
+			Assertions.assertEquals(1, errorsOnYear.size());
+			Assertions.assertNotNull(errorsOnYear.get(0));
 			return errorsOnName;
 		} finally {
 			response.getEntity().getContent().close();
@@ -223,7 +223,7 @@ public class ValidationJSonIT extends AbstractRestTest {
 	/**
 	 * shutdown server
 	 */
-	@AfterClass
+	@AfterAll
 	public static void tearDown() throws Exception {
 		server.stop();
 	}

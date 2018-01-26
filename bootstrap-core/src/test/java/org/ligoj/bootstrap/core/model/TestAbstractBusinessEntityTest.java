@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.core.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link AbstractBusinessEntity} test class.
@@ -10,7 +10,7 @@ public class TestAbstractBusinessEntityTest {
 
 	@Test
 	public void testIsNewNew() {
-		Assert.assertTrue(new AbstractBusinessEntity<Integer>() {
+		Assertions.assertTrue(new AbstractBusinessEntity<Integer>() {
 
 			// Nothing
 		}.isNew());
@@ -22,7 +22,7 @@ public class TestAbstractBusinessEntityTest {
 			// Nothing
 		};
 		entity.setName("Name");
-		Assert.assertEquals("AbstractNamedBusinessEntity(name=Name)", entity.toString());
+		Assertions.assertEquals("AbstractNamedBusinessEntity(name=Name)", entity.toString());
 	}
 
 	@Test
@@ -31,24 +31,24 @@ public class TestAbstractBusinessEntityTest {
 			// Nothing
 		};
 		entity.setId(1);
-		Assert.assertFalse(entity.isNew());
+		Assertions.assertFalse(entity.isNew());
 	}
 
 	@Test
 	public void testEquals() {
 		final DummyBusinessEntity entity1 = new DummyBusinessEntity();
-		Assert.assertTrue(entity1.equals(entity1));
+		Assertions.assertTrue(entity1.equals(entity1));
 		final DummyBusinessEntity entity2 = new DummyBusinessEntity();
-		Assert.assertTrue(entity1.equals(entity2));
-		Assert.assertFalse(entity1.equals(new DummyBusinessEntity2()));
+		Assertions.assertTrue(entity1.equals(entity2));
+		Assertions.assertFalse(entity1.equals(new DummyBusinessEntity2()));
 		entity1.setId("a");
-		Assert.assertFalse(new DummyBusinessEntity().equals(entity1));
-		Assert.assertFalse(entity1.equals(new DummyBusinessEntity()));
+		Assertions.assertFalse(new DummyBusinessEntity().equals(entity1));
+		Assertions.assertFalse(entity1.equals(new DummyBusinessEntity()));
 		entity2.setId("a");
-		Assert.assertTrue(entity1.equals(entity2));
-		Assert.assertFalse(entity1.equals(null));
+		Assertions.assertTrue(entity1.equals(entity2));
+		Assertions.assertFalse(entity1.equals(null));
 		entity2.setId("b");
-		Assert.assertFalse(entity1.equals(entity2));
+		Assertions.assertFalse(entity1.equals(entity2));
 	}
 
 	@Test
@@ -66,6 +66,6 @@ public class TestAbstractBusinessEntityTest {
 	public void testToString() {
 		final DummyBusinessEntity entity = new DummyBusinessEntity();
 		entity.setId("any");
-		Assert.assertEquals("AbstractBusinessEntity(id=any)", entity.toString());
+		Assertions.assertEquals("AbstractBusinessEntity(id=any)", entity.toString());
 	}
 }

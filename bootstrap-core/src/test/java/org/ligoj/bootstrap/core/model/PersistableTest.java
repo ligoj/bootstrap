@@ -2,8 +2,8 @@ package org.ligoj.bootstrap.core.model;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test persistable entity.
@@ -22,10 +22,10 @@ public class PersistableTest {
 		// For coverage and overriding
 		entity.setId(0);
 
-		Assert.assertEquals("name1", entity.getCreatedBy());
-		Assert.assertEquals("name2", entity.getLastModifiedBy());
-		Assert.assertEquals(now.getTime(), entity.getCreatedDate().getTime());
-		Assert.assertEquals(now.getTime() + 1000, entity.getLastModifiedDate().getTime());
+		Assertions.assertEquals("name1", entity.getCreatedBy());
+		Assertions.assertEquals("name2", entity.getLastModifiedBy());
+		Assertions.assertEquals(now.getTime(), entity.getCreatedDate().getTime());
+		Assertions.assertEquals(now.getTime() + 1000, entity.getLastModifiedDate().getTime());
 	}
 
 	@Test
@@ -33,9 +33,9 @@ public class PersistableTest {
 		final PersistableEntity entity = new PersistableEntity();
 		entity.setCreatedBy("name1");
 		entity.setLastModifiedBy("name2");
-		Assert.assertEquals("name1", entity.getCreatedBy());
-		Assert.assertEquals("name2", entity.getLastModifiedBy());
-		Assert.assertEquals(null, entity.getCreatedDate());
-		Assert.assertEquals(null, entity.getLastModifiedDate());
+		Assertions.assertEquals("name1", entity.getCreatedBy());
+		Assertions.assertEquals("name2", entity.getLastModifiedBy());
+		Assertions.assertEquals(null, entity.getCreatedDate());
+		Assertions.assertEquals(null, entity.getLastModifiedDate());
 	}
 }

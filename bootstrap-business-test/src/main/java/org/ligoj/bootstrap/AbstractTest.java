@@ -2,11 +2,9 @@ package org.ligoj.bootstrap;
 
 import java.security.Permission;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +17,6 @@ public class AbstractTest { // NOPMD NOSONAR
 	protected static final int MOCK_PORT = 8120;
 
 	/**
-	 * Rule manager for exception.
-	 */
-	@Rule
-	// CHECKSTYLE:OFF -- expected by JUnit
-	public ExpectedException thrown = ExpectedException.none();
-	// CHECKSTYLE:ON
-
-	/**
 	 * Original security manager.
 	 */
 	protected static final ThreadLocal<SecurityManager> SECURITY_MANAGER_THREAD = new ThreadLocal<>();
@@ -34,7 +24,7 @@ public class AbstractTest { // NOPMD NOSONAR
 	/**
 	 * Initialize mocks of this class.
 	 */
-	@Before
+	@BeforeEach
 	public void injectMock() {
 		MockitoAnnotations.initMocks(this);
 	}
@@ -42,7 +32,7 @@ public class AbstractTest { // NOPMD NOSONAR
 	/**
 	 * Install a hook to prevent {@link System#exit(int)} to be executed.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void forbidSystemExitCall() {
 		SECURITY_MANAGER_THREAD.set(new SecurityManager() {
 			@Override
@@ -59,7 +49,7 @@ public class AbstractTest { // NOPMD NOSONAR
 	/**
 	 * Restore previous security manager replaced by the one installed by {@link #forbidSystemExitCall()}.
 	 */
-	@AfterClass
+	@AfterAll
 	public static void restoreSystemExitCall() {
 		System.setSecurityManager(SECURITY_MANAGER_THREAD.get());
 	}

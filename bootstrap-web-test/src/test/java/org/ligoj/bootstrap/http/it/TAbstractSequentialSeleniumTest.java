@@ -2,13 +2,14 @@ package org.ligoj.bootstrap.http.it;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
-import junit.framework.AssertionFailedError;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
@@ -18,6 +19,7 @@ import org.openqa.selenium.WebDriver.Options;
 import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Test of {@link AbstractSequentialSeleniumTest}
@@ -74,37 +76,43 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	/**
 	 * Run sequentially (one instance) the given runnable instance with an error.
 	 */
-	@Test(expected = AssertionFailedError.class)
+	@Test
 	public void testSequentialError() {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTestError");
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod())
+				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestError")));
 		mockDriver = Mockito.mock(WebDriver.class);
 		Mockito.when(mockDriver.manage()).thenThrow(new AssertionFailedError());
-		super.runSequential();
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runSequential();
+		});
 	}
 
 	/**
 	 * Run sequentially the given runnable instance with an error.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testSequentialError2() {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTestError");
-		super.runSequential();
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod())
+				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestError")));
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runSequential();
+		});
 	}
 
 	/**
 	 * Create the driver instance
 	 */
 	@Override
-	@Before
+	@BeforeEach
 	public void setUpDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		prepareDriver();
 	}
 
-	@After
+	@AfterEach
 	public void restoreProperties() {
 		if (ORIGINAL_ENV == null) {
 			System.clearProperty("test.selenium.remote");
@@ -123,16 +131,16 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void prepareDriver() throws Exception {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTest");
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod()).thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTest")));
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		remoteDriverClass = WebDriverMock.class.getName();
 		scenario = "sc";
 		super.prepareDriver();
 		mockDriver = Mockito.mock(WebDriverMock.class);
-		Mockito.when(((WebDriverMock) mockDriver).getScreenshotAs(ArgumentMatchers.any(OutputType.class))).thenReturn(
-				new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
+		Mockito.when(((WebDriverMock) mockDriver).getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
+				.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
 		final Options options = Mockito.mock(Options.class);
 		Mockito.when(options.window()).thenReturn(Mockito.mock(Window.class));
 		Mockito.when(mockDriver.manage()).thenReturn(options);

@@ -8,13 +8,12 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.hibernate.collection.internal.PersistentBag;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 /**
  * Test of {@link AbstractJpaTest}
@@ -39,12 +38,12 @@ public class TestAbstractJpaTest extends AbstractJpaTest {
 
 	@Test
 	public void isLazyInitializedFalse() {
-		Assert.assertFalse(super.isLazyInitialized(new PersistentBag()));
+		Assertions.assertFalse(super.isLazyInitialized(new PersistentBag()));
 	}
 
 	@Test
 	public void isLazyInitializedFalseArrayList() {
-		Assert.assertFalse(super.isLazyInitialized(new ArrayList<>()));
+		Assertions.assertFalse(super.isLazyInitialized(new ArrayList<>()));
 	}
 
 	@Test
@@ -56,6 +55,6 @@ public class TestAbstractJpaTest extends AbstractJpaTest {
 				setInitialized();
 			}
 		};
-		Assert.assertTrue(super.isLazyInitialized(bag));
+		Assertions.assertTrue(super.isLazyInitialized(bag));
 	}
 }

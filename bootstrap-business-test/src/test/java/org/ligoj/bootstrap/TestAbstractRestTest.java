@@ -11,7 +11,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -37,7 +38,7 @@ public class TestAbstractRestTest extends AbstractRestTest {
 		startRestServer("log4j2.json");
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testStartRestServerKo1() throws IOException {
 		retries = 1;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
@@ -51,22 +52,29 @@ public class TestAbstractRestTest extends AbstractRestTest {
 		Mockito.when(response.getEntity()).thenReturn(entity);
 		Mockito.when(entity.getContent()).thenReturn(content);
 
-		startRestServer("log4j2.json");
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			startRestServer("log4j2.json");
+		});
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testStartRestServerKo2() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class))).thenThrow(new IOException());
-		startRestServer("log4j2.json");
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			startRestServer("log4j2.json");
+		});
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testStartRestServerKo3() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
-		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class))).thenThrow(new HttpHostConnectException(null, null, new InetAddress[0]));
-		startRestServer("log4j2.json");
+		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class)))
+				.thenThrow(new HttpHostConnectException(null, null, new InetAddress[0]));
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			startRestServer("log4j2.json");
+		});
 	}
 }

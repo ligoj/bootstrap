@@ -1,9 +1,9 @@
 package org.ligoj.bootstrap.core.security;
 
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -13,7 +13,7 @@ public class AuditorStringAwareImplTest {
 
 	private AuditorStringAwareImpl auditor;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		auditor = new AuditorStringAwareImpl();
 		auditor.setSecurityHelper(new SecurityHelper());
@@ -22,18 +22,18 @@ public class AuditorStringAwareImplTest {
 
 	@Test
 	public void getCurrentAuditorNoUser() {
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, auditor.getCurrentAuditor().get());
+		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, auditor.getCurrentAuditor().get());
 	}
 
 	@Test
 	public void getCurrentAuditorNoProvider() {
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, new AuditorStringAwareImpl().getCurrentAuditor().get());
+		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, new AuditorStringAwareImpl().getCurrentAuditor().get());
 	}
 
 	@Test
 	public void getCurrentAuditor() {
 		new SecurityHelper().setUserName("name");
-		Assert.assertEquals("name", auditor.getCurrentAuditor().get());
+		Assertions.assertEquals("name", auditor.getCurrentAuditor().get());
 	}
 
 }

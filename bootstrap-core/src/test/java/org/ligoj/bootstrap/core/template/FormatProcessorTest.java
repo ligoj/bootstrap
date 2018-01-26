@@ -6,9 +6,8 @@ import java.util.LinkedList;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**
@@ -25,7 +24,7 @@ public class FormatProcessorTest {
 		final SystemUser systemUser = new SystemUser();
 		contextData.add(systemUser);
 		final FastDateFormat df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);
-		Assert.assertEquals("2014/05/30", new FormatProcessor<>(df, DateUtils.parseDate("2014/05/30", "yyyy/MM/dd")).getValue(contextData));
+		Assertions.assertEquals("2014/05/30", new FormatProcessor<>(df, DateUtils.parseDate("2014/05/30", "yyyy/MM/dd")).getValue(contextData));
 	}
 
 	/**
@@ -36,7 +35,7 @@ public class FormatProcessorTest {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(DateUtils.parseDate("2014/05/30", "yyyy/MM/dd"));
 		final FastDateFormat df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);
-		Assert.assertEquals("2014/05/30", new FormatProcessor<>(df).getValue(contextData));
+		Assertions.assertEquals("2014/05/30", new FormatProcessor<>(df).getValue(contextData));
 	}
 
 }

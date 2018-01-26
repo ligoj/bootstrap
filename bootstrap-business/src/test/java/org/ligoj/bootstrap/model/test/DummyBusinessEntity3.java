@@ -5,6 +5,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 

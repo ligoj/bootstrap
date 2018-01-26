@@ -2,13 +2,12 @@ package org.ligoj.bootstrap.core.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import lombok.Setter;
-
 import org.apache.commons.lang3.ObjectUtils;
+import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 
-import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
+import lombok.Setter;
 
 /**
  * Authentication based on API token. It is saved with a salt, and associated to a user.

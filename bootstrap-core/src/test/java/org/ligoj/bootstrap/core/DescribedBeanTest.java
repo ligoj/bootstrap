@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.model.AbstractDescribedAuditedEntity;
 import org.ligoj.bootstrap.core.model.AbstractDescribedBusinessEntity;
 import org.ligoj.bootstrap.core.model.AbstractDescribedEntity;
@@ -64,8 +63,8 @@ public class DescribedBeanTest {
 	@Test
 	public void testNamedBean() {
 		final NamedBean<Integer> bean = new NamedBean<>(1, "VALUE");
-		Assert.assertEquals("VALUE", bean.getName());
-		Assert.assertEquals(1, bean.getId().intValue());
+		Assertions.assertEquals("VALUE", bean.getName());
+		Assertions.assertEquals(1, bean.getId().intValue());
 	}
 
 	@Test
@@ -77,11 +76,11 @@ public class DescribedBeanTest {
 		beans.add(new NamedBean<>(1, "value0"));
 		beans.add(new NamedBean<>(2, "VALUE2"));
 		final List<NamedBean<Integer>> beansList = new ArrayList<>(beans);
-		Assert.assertEquals("value0", beansList.get(0).getName());
-		Assert.assertEquals("VALUE1", beansList.get(1).getName());
-		Assert.assertEquals("VALUE2", beansList.get(2).getName());
-		Assert.assertEquals("VALUE3", beansList.get(3).getName());
-		Assert.assertEquals("value4", beansList.get(4).getName());
+		Assertions.assertEquals("value0", beansList.get(0).getName());
+		Assertions.assertEquals("VALUE1", beansList.get(1).getName());
+		Assertions.assertEquals("VALUE2", beansList.get(2).getName());
+		Assertions.assertEquals("VALUE3", beansList.get(3).getName());
+		Assertions.assertEquals("value4", beansList.get(4).getName());
 	}
 
 	/**
@@ -97,11 +96,11 @@ public class DescribedBeanTest {
 		from.setId("KEY");
 		final IDescribableBean<String> to = new DescribedBean<>();
 		DescribedBean.copy(from, to);
-		Assert.assertEquals("one", to.getName());
-		Assert.assertEquals("two", to.getDescription());
-		Assert.assertEquals("KEY", to.getId());
-		Assert.assertEquals(0, from.compareTo(from));
-		Assert.assertEquals("NamedBean(name=one)", to.toString());
+		Assertions.assertEquals("one", to.getName());
+		Assertions.assertEquals("two", to.getDescription());
+		Assertions.assertEquals("KEY", to.getId());
+		Assertions.assertEquals(0, from.compareTo(from));
+		Assertions.assertEquals("NamedBean(name=one)", to.toString());
 	}
 
 	/**
@@ -127,9 +126,9 @@ public class DescribedBeanTest {
 		from.setDescription("any");
 		from.setName("one");
 		from.setId(5);
-		Assert.assertEquals("one", from.getName());
-		Assert.assertTrue(from.toString().endsWith("(name=one)"));
-		Assert.assertEquals(0, from.compareTo(from));
+		Assertions.assertEquals("one", from.getName());
+		Assertions.assertTrue(from.toString().endsWith("(name=one)"));
+		Assertions.assertEquals(0, from.compareTo(from));
 		assertData(DescribedBean.clone(from));
 	}
 
@@ -138,14 +137,14 @@ public class DescribedBeanTest {
 	 */
 	@Test
 	public void testCloneNull() {
-		Assert.assertNull(DescribedBean.clone(null));
+		Assertions.assertNull(DescribedBean.clone(null));
 	}
 
 	private void assertData(final IDescribableBean<Integer> to) {
-		Assert.assertEquals("any", to.getDescription());
-		Assert.assertEquals("one", to.getName());
-		Assert.assertTrue(to.toString().endsWith("(name=one)"));
-		Assert.assertEquals(5, to.getId().intValue());
+		Assertions.assertEquals("any", to.getDescription());
+		Assertions.assertEquals("one", to.getName());
+		Assertions.assertTrue(to.toString().endsWith("(name=one)"));
+		Assertions.assertEquals(5, to.getId().intValue());
 	}
 
 	private DescribedBean<Integer> newDescribedBean() {

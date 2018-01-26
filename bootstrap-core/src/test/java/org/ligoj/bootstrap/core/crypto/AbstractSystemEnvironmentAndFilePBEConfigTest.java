@@ -1,11 +1,11 @@
 package org.ligoj.bootstrap.core.crypto;
 
 import org.jasypt.encryption.StringEncryptor;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -26,52 +26,52 @@ public abstract class AbstractSystemEnvironmentAndFilePBEConfigTest {
 	@Value("${app.test.simpleEncrypted}")
 	private String simpleEncrypted;
 
-	@AfterClass
+	@AfterAll
 	public static void clean() {
 		System.clearProperty("app.crypto.file");
 	}
 
-	@Before
-	@After
+	@BeforeEach
+	@AfterEach
 	public void reset() {
 		System.clearProperty("test.property");
 	}
 
 	@Test
 	public void encryptNotNull() {
-		Assert.assertNotNull(encryptor.encrypt("secret"));
+		Assertions.assertNotNull(encryptor.encrypt("secret"));
 	}
 
 	@Test
 	public void encryptEncrypted() {
-		Assert.assertNotEquals("secret", encryptor.encrypt("secret"));
+		Assertions.assertNotEquals("secret", encryptor.encrypt("secret"));
 	}
 
 	@Test
 	public void encryptSalted() {
-		Assert.assertNotEquals(encryptor.encrypt("secret"), encryptor.encrypt("secret"));
+		Assertions.assertNotEquals(encryptor.encrypt("secret"), encryptor.encrypt("secret"));
 	}
 
 	@Test
 	public void readDefault() {
 		encryptor.encrypt("secret");
-		Assert.assertEquals("Simple Value", simpleValue);
-		Assert.assertEquals("Simple Value-cascaded", simpleCascaded);
-		Assert.assertEquals("secret", simpleEncrypted);
+		Assertions.assertEquals("Simple Value", simpleValue);
+		Assertions.assertEquals("Simple Value-cascaded", simpleCascaded);
+		Assertions.assertEquals("secret", simpleEncrypted);
 	}
 
 	@Test
 	public void setPasswordSysPropertyNameGlobal() {
 		SystemEnvironmentAndFilePBEConfig config = new SystemEnvironmentAndFilePBEConfig();
 		config.setPasswordSysPropertyName("app.test.lazy.password");
-		Assert.assertEquals("secret-spring", config.getPassword());
+		Assertions.assertEquals("secret-spring", config.getPassword());
 	}
 
 	@Test
 	public void setPasswordFilePropertyNameGlobal() {
 		SystemEnvironmentAndFilePBEConfig config = new SystemEnvironmentAndFilePBEConfig();
 		config.setPasswordFilePropertyName("app.test.lazy.file");
-		Assert.assertEquals("secret-spring2", config.getPassword());
+		Assertions.assertEquals("secret-spring2", config.getPassword());
 	}
 
 	@Test
@@ -79,29 +79,33 @@ public abstract class AbstractSystemEnvironmentAndFilePBEConfigTest {
 		SystemEnvironmentAndFilePBEConfig config = new SystemEnvironmentAndFilePBEConfig();
 		System.setProperty("test.property", "-secret-");
 		config.setPasswordSysPropertyName("test.property");
-		Assert.assertEquals("-secret-", config.getPassword());
+		Assertions.assertEquals("-secret-", config.getPassword());
 	}
 
 	@Test
 	public void setPasswordEnvName() {
 		SystemEnvironmentAndFilePBEConfig config = new SystemEnvironmentAndFilePBEConfig();
 		config.setPasswordEnvName("PATH");
-		Assert.assertNotNull(config.getPassword());
+		Assertions.assertNotNull(config.getPassword());
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void setPasswordFileEnvName() {
 		SystemEnvironmentAndFilePBEConfig config = new SystemEnvironmentAndFilePBEConfig();
 		config.setPasswordFileEnvName("PATH");
-		config.getPassword();
+		Assertions.assertThrows(NullPointerException.class, () -> {
+			config.getPassword();
+		});
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void setPasswordFilePropertyName() {
 		SystemEnvironmentAndFilePBEConfig config = new SystemEnvironmentAndFilePBEConfig();
 		System.setProperty("app.crypto.file", "-invalid-");
 		config.setPasswordFilePropertyName("test.property");
-		config.getPassword();
+		Assertions.assertThrows(NullPointerException.class, () -> {
+			config.getPassword();
+		});
 	}
 
 }

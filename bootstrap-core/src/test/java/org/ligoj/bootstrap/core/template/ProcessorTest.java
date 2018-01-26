@@ -3,9 +3,8 @@ package org.ligoj.bootstrap.core.template;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 
@@ -21,7 +20,7 @@ public class ProcessorTest {
 	public void testGetNullValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(3);
-		Assert.assertEquals(new Integer(3), new Processor<>().getValue(contextData));
+		Assertions.assertEquals(new Integer(3), new Processor<>().getValue(contextData));
 	}
 
 	/**
@@ -31,7 +30,7 @@ public class ProcessorTest {
 	public void testGetValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(4);
-		Assert.assertEquals(new Integer(3), new Processor<>(3).getValue(contextData));
+		Assertions.assertEquals(new Integer(3), new Processor<>(3).getValue(contextData));
 	}
 
 	/**
@@ -47,7 +46,7 @@ public class ProcessorTest {
 
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(roleAssignment);
-		Assert.assertEquals("any",
+		Assertions.assertEquals("any",
 				new BeanProcessor<>(SystemUser.class, "login", new BeanProcessor<>(SystemRoleAssignment.class, "user")).getValue(contextData));
 	}
 
@@ -56,6 +55,6 @@ public class ProcessorTest {
 	 */
 	@Test
 	public void testGetWrappedSimpleValue() {
-		Assert.assertEquals(new Integer(8), new Processor<>(new Processor<>(2)).getValue(8));
+		Assertions.assertEquals(new Integer(8), new Processor<>(new Processor<>(2)).getValue(8));
 	}
 }

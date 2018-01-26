@@ -6,7 +6,6 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.NotImplementedException;
-
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 
 /**

@@ -22,8 +22,8 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.Mockito;
 
@@ -36,7 +36,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Check some validation serialization features of {@link ValidationJsonException}.
+ * Check some validation serialization features of
+ * {@link ValidationJsonException}.
  */
 public class ValidationJsonExceptionTest {
 
@@ -44,7 +45,7 @@ public class ValidationJsonExceptionTest {
 	public void testValidationJsonExceptionEmpty() {
 		final InvalidFormatException format = new InvalidFormatException(null, "", "", String.class);
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
-		Assert.assertTrue(validationJsonException.getErrors().isEmpty());
+		Assertions.assertTrue(validationJsonException.getErrors().isEmpty());
 	}
 
 	@Test
@@ -53,8 +54,8 @@ public class ValidationJsonExceptionTest {
 		format.prependPath(null, "property");
 		format.prependPath("property", "property2");
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{property2.property=[{rule=String}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{property2.property=[{rule=String}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Test
@@ -64,8 +65,8 @@ public class ValidationJsonExceptionTest {
 		format.prependPath(null, "property");
 		format.prependPath("property", "property2");
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{property2.property=[{rule=Mapping}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{property2.property=[{rule=Mapping}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Test
@@ -74,8 +75,8 @@ public class ValidationJsonExceptionTest {
 		format.prependPath(null, "property");
 		format.prependPath("property", "property2");
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{property2.property=[{rule=Integer}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{property2.property=[{rule=Integer}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Getter
@@ -97,8 +98,8 @@ public class ValidationJsonExceptionTest {
 			mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class);
 		} catch (final InvalidFormatException e) {
 			final ValidationJsonException validationJsonException = new ValidationJsonException(e);
-			Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-			Assert.assertEquals("{items[0].value=[{rule=Integer}]}", validationJsonException.getErrors().toString());
+			Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+			Assertions.assertEquals("{items[0].value=[{rule=Integer}]}", validationJsonException.getErrors().toString());
 		}
 	}
 
@@ -114,47 +115,49 @@ public class ValidationJsonExceptionTest {
 		format.prependPath("any", "id");
 		format.prependPath(collectionBean, "items");
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{items.id=[{rule=Integer}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{items.id=[{rule=Integer}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Test
 	public void testAddError() {
 		final ValidationJsonException validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text");
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Test
 	public void testSoloError() {
 		final ValidationJsonException validationJsonException = new ValidationJsonException("p1", "text");
 		validationJsonException.addError("p1", "text");
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
-		Assert.assertEquals("p1:text", validationJsonException.getMessage());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
+		Assertions.assertEquals("p1:text", validationJsonException.getMessage());
 	}
 
 	@Test
 	public void testSoloErrorParameter() {
 		final ValidationJsonException validationJsonException = new ValidationJsonException("p1", "text", "param1", "param2");
 		validationJsonException.addError("p1", "text");
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
-		Assert.assertEquals("p1:text{param1,param2}", validationJsonException.getMessage());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
+		Assertions.assertEquals("p1:text{param1,param2}", validationJsonException.getMessage());
 	}
 
 	@Test
 	public void testAddErrorWithParameters() {
 		final ValidationJsonException validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", "key", 5);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{p1=[{rule=text, parameters={key=5}}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{p1=[{rule=text, parameters={key=5}}]}", validationJsonException.getErrors().toString());
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void testAssertNotNullError() {
-		ValidationJsonException.assertNotnull(null);
+		Assertions.assertThrows(ValidationJsonException.class, () -> {
+			ValidationJsonException.assertNotnull(null);
+		});
 	}
 
 	@Test
@@ -162,9 +165,11 @@ public class ValidationJsonExceptionTest {
 		ValidationJsonException.assertNotnull("");
 	}
 
-	@Test(expected = ValidationJsonException.class)
+	@Test
 	public void testAsserNullError() {
-		ValidationJsonException.assertNull("", "x", "y");
+		Assertions.assertThrows(ValidationJsonException.class, () -> {
+			ValidationJsonException.assertNull("", "x", "y");
+		});
 	}
 
 	@Test
@@ -179,12 +184,9 @@ public class ValidationJsonExceptionTest {
 
 	@Test
 	public void testAssertTrueError() {
-		try {
+		Assertions.assertEquals("{value=[{rule=y}]}", Assertions.assertThrows(ValidationJsonException.class, () -> {
 			ValidationJsonException.assertTrue(false, "y");
-			Assert.fail();
-		} catch (final ValidationJsonException ve) {
-			Assert.assertEquals("{value=[{rule=y}]}", ve.getErrors().toString());
-		}
+		}).getErrors().toString());
 	}
 
 	private <T extends Annotation> ConstraintAnnotationDescriptor<T> getAnnotation(final String fieldName, final Class<T> annotationClass) {
@@ -204,19 +206,19 @@ public class ValidationJsonExceptionTest {
 				getAnnotation("grapes", NotEmpty.class), ElementType.FIELD);
 		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
 				getAnnotation("name", Length.class), ElementType.FIELD);
-		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("name-Empty", null, null, "interpolated", Wine.class, bean, new Object(),
-				"value", PathImpl.createPathFromString("name"), notEmptyNameDescriptor, ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("name-length", null, null, "interpolated", Wine.class, bean, new Object(),
-				"value", PathImpl.createPathFromString("name"), lengthNameDescriptor, ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine> forBeanValidation("grapes-Empty", null, null, "interpolated", Wine.class, bean, new Object(),
-				"value", PathImpl.createPathFromString("grapes"), notEmptyGrapesDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-Empty", null, null, "interpolated", Wine.class, bean,
+				new Object(), "value", PathImpl.createPathFromString("name"), notEmptyNameDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-length", null, null, "interpolated", Wine.class, bean,
+				new Object(), "value", PathImpl.createPathFromString("name"), lengthNameDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("grapes-Empty", null, null, "interpolated", Wine.class, bean,
+				new Object(), "value", PathImpl.createPathFromString("grapes"), notEmptyGrapesDescriptor, ElementType.FIELD, null));
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
 
 		final ValidationJsonException validationJsonException = new ValidationJsonException(violationException);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{name=[{rule=name-Empty}, {rule=name-length, parameters={min=0, max=50}}], grapes=[{rule=grapes-Empty}]}",
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{name=[{rule=name-Empty}, {rule=name-length, parameters={min=0, max=50}}], grapes=[{rule=grapes-Empty}]}",
 				validationJsonException.getErrors().toString());
 	}
 
@@ -230,15 +232,15 @@ public class ValidationJsonExceptionTest {
 		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
 				getAnnotation("name", NotEmpty.class), ElementType.FIELD);
 		PathImpl path = PathImpl.createPathFromString("name");
-		violations.add(ConstraintViolationImpl.<Wine> forParameterValidation("name-Empty", null, null, "interpolated", Wine.class, bean, new Object(),
-				"value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null, null));
+		violations.add(ConstraintViolationImpl.<Wine>forParameterValidation("name-Empty", null, null, "interpolated", Wine.class, bean,
+				new Object(), "value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null, null));
 		path.addParameterNode("parameter1", 0);
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
 
 		final ValidationJsonException validationJsonException = new ValidationJsonException(violationException);
-		Assert.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assert.assertEquals("{parameter1=[{rule=name-Empty}]}", validationJsonException.getErrors().toString());
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{parameter1=[{rule=name-Empty}]}", validationJsonException.getErrors().toString());
 	}
 }

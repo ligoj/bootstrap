@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.core.resource.mapper;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 
 /**

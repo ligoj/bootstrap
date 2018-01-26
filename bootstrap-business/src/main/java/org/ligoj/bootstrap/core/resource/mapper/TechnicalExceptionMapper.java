@@ -7,6 +7,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

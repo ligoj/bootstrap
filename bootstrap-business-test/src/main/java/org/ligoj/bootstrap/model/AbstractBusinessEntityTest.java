@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 /**
@@ -22,7 +22,7 @@ public abstract class AbstractBusinessEntityTest {
 	/**
 	 * Prepare {@link BeanUtilsBean}
 	 */
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.beanUtilsBean = BeanUtilsBean.getInstance();
 	}
@@ -65,11 +65,11 @@ public abstract class AbstractBusinessEntityTest {
 			throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		final T systemUser = modelClass.newInstance();
 		final T systemUser2 = modelClass.newInstance();
-		Assert.assertFalse(systemUser.equals(null)); // NOPMD NOSONAR -- for coverage
-		Assert.assertEquals(systemUser, systemUser);
-		Assert.assertEquals(systemUser, systemUser2);
-		Assert.assertFalse(systemUser.equals(1));
-		Assert.assertNotSame(0, systemUser.hashCode());
+		Assertions.assertFalse(systemUser.equals(null)); // NOPMD NOSONAR -- for coverage
+		Assertions.assertEquals(systemUser, systemUser);
+		Assertions.assertEquals(systemUser, systemUser2);
+		Assertions.assertFalse(systemUser.equals(1));
+		Assertions.assertNotSame(0, systemUser.hashCode());
 
 		// Get all identifier combinations
 		final List<List<String>> combinations = combinations(idProperties);
@@ -88,7 +88,7 @@ public abstract class AbstractBusinessEntityTest {
 			final T beanValued = modelClass.newInstance();
 			setValues(beanValued, combination);
 			testCombinations(modelClass, combinations, combination, beanValued);
-			Assert.assertNotSame(0, beanValued.hashCode());
+			Assertions.assertNotSame(0, beanValued.hashCode());
 		}
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractBusinessEntityTest {
 			throws InstantiationException, IllegalAccessException, InvocationTargetException {
 		final T beanValued2 = modelClass.newInstance();
 		setValues(beanValued2, properties);
-		Assert.assertEquals(properties.equals(combination), beanValued.equals(beanValued2));
+		Assertions.assertEquals(properties.equals(combination), beanValued.equals(beanValued2));
 	}
 
 	/**

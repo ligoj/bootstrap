@@ -7,17 +7,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemDialect;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * JDBC bench test.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DialectDaoTest extends AbstractBootTest {
 
 	/**
@@ -43,13 +43,13 @@ public class DialectDaoTest extends AbstractBootTest {
 		em.clear();
 		// read entity from database and test values
 		final SystemDialect dialFromDb = em.find(SystemDialect.class, dial.getId());
-		Assert.assertEquals(dial.getDialChar(), dialFromDb.getDialChar());
-		Assert.assertEquals(dial.getDialBool(), dialFromDb.getDialBool());
-		Assert.assertEquals(dial.getDialDate(), dialFromDb.getDialDate());
-		Assert.assertEquals(dial.getDialDouble(), dialFromDb.getDialDouble(),0.00001);
-		Assert.assertEquals(dial.getDialEnum(), dialFromDb.getDialEnum());
-		Assert.assertEquals(dial.getDialLong(), dialFromDb.getDialLong());
-		Assert.assertEquals(dial.getDialShort(), dialFromDb.getDialShort());
+		Assertions.assertEquals(dial.getDialChar(), dialFromDb.getDialChar());
+		Assertions.assertEquals(dial.getDialBool(), dialFromDb.getDialBool());
+		Assertions.assertEquals(dial.getDialDate(), dialFromDb.getDialDate());
+		Assertions.assertEquals(dial.getDialDouble(), dialFromDb.getDialDouble(),0.00001);
+		Assertions.assertEquals(dial.getDialEnum(), dialFromDb.getDialEnum());
+		Assertions.assertEquals(dial.getDialLong(), dialFromDb.getDialLong());
+		Assertions.assertEquals(dial.getDialShort(), dialFromDb.getDialShort());
 	}
 
 }

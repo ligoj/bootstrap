@@ -15,10 +15,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule.RuleOperator;
 import org.ligoj.bootstrap.core.json.jqgrid.UIRule;
@@ -35,7 +35,7 @@ import org.ligoj.bootstrap.model.test.DummyBusinessEntity3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.svenjacobs.loremipsum.LoremIpsum;
 
@@ -43,7 +43,7 @@ import de.svenjacobs.loremipsum.LoremIpsum;
  * Test class of {@link PaginationDao} {@link DynamicSpecification}, {@link FetchHelper}, {@link CustomSpecification}
  * and {@link AbstractSpecification}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PaginationDaoTest extends AbstractBootTest {
 
 	@Autowired
@@ -56,7 +56,7 @@ public class PaginationDaoTest extends AbstractBootTest {
 	 */
 	private int lastKnownEntity;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		final LoremIpsum loremIpsum = new LoremIpsum();
 		SystemDialect dial1 = new SystemDialect();
@@ -81,11 +81,11 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final UiPageRequest uiPageRequest = new UiPageRequest();
 		uiPageRequest.setPage(0);
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, null, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(1, findAll.getTotalPages());
-		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(1, findAll.getTotalPages());
+		Assertions.assertEquals(COUNT, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -96,11 +96,11 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final UiPageRequest uiPageRequest = new UiPageRequest();
 		uiPageRequest.setUiFilter(new UiFilter());
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, null, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(1, findAll.getTotalPages());
-		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(1, findAll.getTotalPages());
+		Assertions.assertEquals(COUNT, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -112,10 +112,10 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.setUiFilter(new UiFilter());
 		uiPageRequest.getUiFilter().setRules(new ArrayList<UIRule>());
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, null, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -127,10 +127,10 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.setUiFilter(new UiFilter());
 		uiPageRequest.getUiFilter().setRules(new ArrayList<UIRule>());
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, null, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -170,9 +170,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		fetchs.put("linkedChildren.link", JoinType.LEFT);
 
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, fetchs);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getContent().size());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getContent().size());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -205,9 +205,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		mapping.put("link.dialLong", "link.dialLong");
 
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getContent().size());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getContent().size());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -220,12 +220,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.setPageSize(10);
 		final Map<String, String> mapping = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(10, findAll.getSize());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
-		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(10, findAll.getSize());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT / 10, findAll.getTotalPages());
+		Assertions.assertEquals(10, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -239,12 +239,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.setPage(1);
 		final Map<String, String> mapping = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getSize());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT, findAll.getTotalPages());
-		Assert.assertEquals(1, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getSize());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT, findAll.getTotalPages());
+		Assertions.assertEquals(1, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -257,12 +257,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.setPage(1);
 		final Map<String, String> mapping = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(10, findAll.getSize());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
-		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(10, findAll.getSize());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT / 10, findAll.getTotalPages());
+		Assertions.assertEquals(10, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -276,12 +276,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.setPage(0);
 		final Map<String, String> mapping = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(10, findAll.getSize());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
-		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(10, findAll.getSize());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT / 10, findAll.getTotalPages());
+		Assertions.assertEquals(10, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -297,12 +297,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("any", "dialLong");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(10, findAll.getSize());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT / 10, findAll.getTotalPages());
-		Assert.assertEquals(10, findAll.getContent().size());
-		Assert.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().get(0).getDialLong());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(10, findAll.getSize());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT / 10, findAll.getTotalPages());
+		Assertions.assertEquals(10, findAll.getContent().size());
+		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().get(0).getDialLong());
 	}
 
 	/**
@@ -320,10 +320,10 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
-		Assert.assertEquals(COUNT, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertEquals(COUNT, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -352,11 +352,11 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = newBaseMapping();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getTotalElements());
-		Assert.assertEquals(1, findAll.getContent().size());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getTotalElements());
+		Assertions.assertEquals(1, findAll.getContent().size());
 		// 44th element is "est"
-		Assert.assertEquals("est", findAll.getContent().get(0).getDialChar());
+		Assertions.assertEquals("est", findAll.getContent().get(0).getDialChar());
 	}
 
 	/**
@@ -380,9 +380,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.getUiFilter().setRules(rules);
 		final Map<String, String> mapping = newBaseMapping();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(3, findAll.getTotalElements());
-		Assert.assertEquals(3, findAll.getContent().size());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(3, findAll.getTotalElements());
+		Assertions.assertEquals(3, findAll.getContent().size());
 	}
 
 	/**
@@ -423,12 +423,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 		final Map<String, String> mapping = newBaseMapping();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
+		Assertions.assertTrue(findAll.hasContent());
 
 		// LT-GT-1 - 1*NE + 2*EQ
 		// Since there are two "amet" out of LT/GT/NE range
-		Assert.assertEquals(Integer.valueOf(ruleLT.getData()) - Integer.valueOf(ruleGT.getData()) - 1 - 1 + 2, findAll.getTotalElements());
-		Assert.assertEquals(1, findAll.getTotalPages());
+		Assertions.assertEquals(Integer.valueOf(ruleLT.getData()) - Integer.valueOf(ruleGT.getData()) - 1 - 1 + 2, findAll.getTotalElements());
+		Assertions.assertEquals(1, findAll.getTotalPages());
 	}
 
 	private Map<String, String> newBaseMapping() {
@@ -460,9 +460,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("link", "link.id");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getTotalElements());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getTotalElements());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -488,9 +488,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		mapping.put("link", "link");
 		mapping.put("link.link", "link.link.id");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getTotalElements());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getTotalElements());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -515,8 +515,8 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("dialDate", "dialDate");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
 	}
 
 	/**
@@ -541,9 +541,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("id", "id");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getTotalElements());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getTotalElements());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -568,9 +568,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("dialDouble", "dialDouble");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getTotalElements());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getTotalElements());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	private UiPageRequest newOr10() {
@@ -593,12 +593,12 @@ public class PaginationDaoTest extends AbstractBootTest {
 	public void testFindAllEmpty() {
 		final UiPageRequest uiPageRequest = new UiPageRequest();
 		final Page<SystemUser> findAll = paginationDao.findAll(SystemUser.class, uiPageRequest, null);
-		Assert.assertFalse(findAll.hasContent());
-		Assert.assertEquals(0, findAll.getSize());
-		Assert.assertEquals(0, findAll.getTotalElements());
-		Assert.assertEquals(1, findAll.getTotalPages());
-		Assert.assertEquals(0, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertFalse(findAll.hasContent());
+		Assertions.assertEquals(0, findAll.getSize());
+		Assertions.assertEquals(0, findAll.getTotalElements());
+		Assertions.assertEquals(1, findAll.getTotalPages());
+		Assertions.assertEquals(0, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -608,10 +608,10 @@ public class PaginationDaoTest extends AbstractBootTest {
 	public void testFindAllEmpty2() {
 		final UiPageRequest uiPageRequest = new UiPageRequest();
 		final Page<SystemUser> findAll = paginationDao.findAll(SystemUser.class, uiPageRequest, null, null);
-		Assert.assertFalse(findAll.hasContent());
-		Assert.assertEquals(0, findAll.getTotalElements());
-		Assert.assertEquals(0, findAll.getContent().size());
-		Assert.assertFalse(findAll.getSort().isSorted());
+		Assertions.assertFalse(findAll.hasContent());
+		Assertions.assertEquals(0, findAll.getTotalElements());
+		Assertions.assertEquals(0, findAll.getContent().size());
+		Assertions.assertFalse(findAll.getSort().isSorted());
 	}
 
 	/**
@@ -634,16 +634,16 @@ public class PaginationDaoTest extends AbstractBootTest {
 
 			@Override
 			public Predicate toPredicate(final Root<?> root, final CriteriaQuery<?> query, final CriteriaBuilder cb, final BasicRule rule) {
-				Assert.assertEquals(ruleCT.getData(), rule.getData());
+				Assertions.assertEquals(ruleCT.getData(), rule.getData());
 				return cb.equal(root.get("dialChar"), rule.getData());
 			}
 
 		});
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, specifications, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(2, findAll.getTotalElements());
-		Assert.assertEquals("Lorem", findAll.getContent().get(0).getDialChar());
-		Assert.assertEquals("Lorem", findAll.getContent().get(1).getDialChar());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(2, findAll.getTotalElements());
+		Assertions.assertEquals("Lorem", findAll.getContent().get(0).getDialChar());
+		Assertions.assertEquals("Lorem", findAll.getContent().get(1).getDialChar());
 	}
 
 	private UiPageRequest newAnd10() {
@@ -675,8 +675,8 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		final Map<String, CustomSpecification> specifications = new HashMap<>();
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, specifications, null);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(COUNT, findAll.getTotalElements());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(COUNT, findAll.getTotalElements());
 	}
 
 	/**
@@ -700,9 +700,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("authorization", "authorization");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(21, findAll.getTotalElements());
-		Assert.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(21, findAll.getTotalElements());
+		Assertions.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
 	}
 
 	/**
@@ -734,9 +734,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("parent2", "parent.parent");
 		final Page<DummyBusinessEntity3> findAll = paginationDao.findAll(DummyBusinessEntity3.class, uiPageRequest, mapping);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getTotalElements());
-		Assert.assertEquals(1960, findAll.getContent().get(0).getId().intValue());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getTotalElements());
+		Assertions.assertEquals(1960, findAll.getContent().get(0).getId().intValue());
 	}
 
 	/**
@@ -756,9 +756,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, String> mapping = new HashMap<>();
 		mapping.put("*", "*");
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(21, findAll.getTotalElements());
-		Assert.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(21, findAll.getTotalElements());
+		Assertions.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
 	}
 
 	/**
@@ -782,8 +782,8 @@ public class PaginationDaoTest extends AbstractBootTest {
 		uiFilter.setRules(rules);
 
 		// Only there for coverage
-		Assert.assertEquals("BasicRule(field=authorization, op=EQ, data=API)", ruleCT.toString());
-		Assert.assertEquals("UiFilter(groupOp=AND, rules=[BasicRule(field=authorization, op=EQ, data=API)])", uiFilter.toString());
+		Assertions.assertEquals("BasicRule(field=authorization, op=EQ, data=API)", ruleCT.toString());
+		Assertions.assertEquals("UiFilter(groupOp=AND, rules=[BasicRule(field=authorization, op=EQ, data=API)])", uiFilter.toString());
 	}
 
 	@Test
@@ -837,9 +837,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		mapping.put("user3", "user.login");
 
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getContent().size());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getContent().size());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -871,9 +871,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, JoinType> fetchs = new LinkedHashMap<>();
 		fetchs.put("link.user", JoinType.INNER);
 		final Page<SystemDialect> findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, fetchs);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(1, findAll.getContent().size());
-		Assert.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getContent().size());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
 	}
 
 	/**
@@ -923,9 +923,9 @@ public class PaginationDaoTest extends AbstractBootTest {
 		final Map<String, JoinType> fetchs = new LinkedHashMap<>();
 		fetchs.put("roles", JoinType.LEFT);
 		final Page<SystemUser> findAll = paginationDao.findAll(SystemUser.class, uiPageRequest, mapping, null, fetchs);
-		Assert.assertTrue(findAll.hasContent());
-		Assert.assertEquals(2, findAll.getContent().size());
-		Assert.assertEquals(DEFAULT_USER, findAll.getContent().get(0).getLogin());
-		Assert.assertEquals(DEFAULT_USER + "b", findAll.getContent().get(1).getLogin());
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(2, findAll.getContent().size());
+		Assertions.assertEquals(DEFAULT_USER, findAll.getContent().get(0).getLogin());
+		Assertions.assertEquals(DEFAULT_USER + "b", findAll.getContent().get(1).getLogin());
 	}
 }

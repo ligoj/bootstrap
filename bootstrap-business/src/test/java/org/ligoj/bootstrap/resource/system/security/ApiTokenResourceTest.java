@@ -3,23 +3,21 @@ package org.ligoj.bootstrap.resource.system.security;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link ApiTokenResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ApiTokenResourceTest extends AbstractBootTest {
 
 	private static final String TOKEN = "BWo9iEky2tpPX7RPhovNy5SywYI2fmacfRnLhJSZtfhCclj7IdP0uDZdLzqhUKnBu5svgKbkZS4eeLQVgu5Li2aMTOt9Fr1dLF8zMt7SNiMYyWv6YCFIsEUmeDjswFlf";
@@ -35,7 +33,7 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 	@Autowired
 	private SystemApiTokenRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp2() {
 		SystemApiToken entity = new SystemApiToken();
 		entity.setToken(TOKEN_CRYPT);
@@ -56,92 +54,94 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 	@Test
 	public void getToken() throws GeneralSecurityException {
 		final String tokens = resource.getToken("name");
-		Assert.assertEquals(TOKEN, tokens);
+		Assertions.assertEquals(TOKEN, tokens);
 	}
 
 	@Test
 	public void getTokenNames() {
 		final List<String> tokensName = resource.getTokenNames();
-		Assert.assertEquals(1, tokensName.size());
-		Assert.assertEquals("name", tokensName.get(0));
+		Assertions.assertEquals(1, tokensName.size());
+		Assertions.assertEquals("name", tokensName.get(0));
 	}
 
 	@Test
 	public void check() {
-		Assert.assertTrue("name", resource.check(DEFAULT_USER, TOKEN));
+		Assertions.assertTrue(resource.check(DEFAULT_USER, TOKEN));
 	}
 
 	@Test
 	public void checkNoUser() {
-		Assert.assertFalse("name", resource.check("any", TOKEN));
+		Assertions.assertFalse(resource.check("any", TOKEN));
 	}
 
 	@Test
 	public void checkWrongUser() {
-		Assert.assertFalse("name", resource.check("other", TOKEN));
+		Assertions.assertFalse(resource.check("other", TOKEN));
 	}
 
 	@Test
 	public void checkWrongKey() {
-		Assert.assertFalse("name", resource.check(DEFAULT_USER, TOKEN2));
+		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN2));
 	}
 
 	@Test
 	public void checkInvalidDigest() {
 		final ApiTokenResource resource = new ApiTokenResource();
 		resource.setTokenDigest("any");
-		Assert.assertFalse("name", resource.check(DEFAULT_USER, TOKEN));
+		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN));
 	}
 
 	@Test
 	public void create() throws GeneralSecurityException {
-		Assert.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
 		final String token = resource.create("new-api");
 
 		// Check new state
 		final SystemApiToken newToken = repository.findByNameExpected("new-api");
-		Assert.assertNotNull(token);
-		Assert.assertEquals(DEFAULT_USER, newToken.getUser());
-		Assert.assertNotNull(newToken.getHash());
+		Assertions.assertNotNull(token);
+		Assertions.assertEquals(DEFAULT_USER, newToken.getUser());
+		Assertions.assertNotNull(newToken.getHash());
 		final List<String> tokens = resource.getTokenNames();
-		Assert.assertEquals(2, tokens.size());
-		Assert.assertEquals("new-api", tokens.get(1));
-		Assert.assertEquals(token, resource.getToken("new-api"));
+		Assertions.assertEquals(2, tokens.size());
+		Assertions.assertEquals("new-api", tokens.get(1));
+		Assertions.assertEquals(token, resource.getToken("new-api"));
 	}
 
-	@Test(expected = EntityNotFoundException.class)
+	@Test
 	public void updateNotExist() throws GeneralSecurityException {
-		resource.update("any");
+		Assertions.assertThrows(GeneralSecurityException.class, () -> {
+			resource.update("any");
+		});
 	}
 
 	@Test
 	public void update() throws GeneralSecurityException {
 		List<String> tokens = resource.getTokenNames();
-		Assert.assertEquals(1, tokens.size());
-		Assert.assertEquals("name", tokens.get(0));
+		Assertions.assertEquals(1, tokens.size());
+		Assertions.assertEquals("name", tokens.get(0));
 		final String token = resource.update("name");
 
 		// Check new state
-		Assert.assertNotNull(token);
+		Assertions.assertNotNull(token);
 		tokens = resource.getTokenNames();
-		Assert.assertEquals(1, tokens.size());
-		Assert.assertEquals("name", tokens.get(0));
-		Assert.assertEquals(token, resource.getToken("name"));
+		Assertions.assertEquals(1, tokens.size());
+		Assertions.assertEquals("name", tokens.get(0));
+		Assertions.assertEquals(token, resource.getToken("name"));
 		final SystemApiToken newToken = repository.findByUserAndName(DEFAULT_USER, "name");
-		Assert.assertNotNull(newToken);
-		Assert.assertEquals(DEFAULT_USER, newToken.getUser());
-		Assert.assertNotNull(newToken.getToken());
-		Assert.assertNotNull(newToken.getHash());
+		Assertions.assertNotNull(newToken);
+		Assertions.assertEquals(DEFAULT_USER, newToken.getUser());
+		Assertions.assertNotNull(newToken.getToken());
+		Assertions.assertNotNull(newToken.getHash());
 	}
 
 	@Test
 	public void remove() {
-		Assert.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
 		resource.remove("name");
 
 		// Check new state
 		repository.findByNameExpected("name");
-		Assert.assertEquals(1, repository.findAllByUser("other").size());
-		Assert.assertEquals(0, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertEquals(1, repository.findAllByUser("other").size());
+		Assertions.assertEquals(0, repository.findAllByUser(DEFAULT_USER).size());
 	}
 }

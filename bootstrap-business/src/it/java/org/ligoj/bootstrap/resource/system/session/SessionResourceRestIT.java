@@ -56,7 +56,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	/**
 	 * server creation.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void startServer() {
 		server = new SessionResourceRestIT().startRestServer("./src/test/resources/WEB-INF/web-test.xml");
 	}
@@ -64,7 +64,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	/**
 	 * Create a role and one authorization for user DEFAULT_USER. Only run once.
 	 */
-	@Before
+	@BeforeEach
 	public void prepareSecurityContext() {
 		if (setUpIsDone) {
 			return;
@@ -105,7 +105,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		message.setEntity(new StringEntity("{\"id\":0}", ContentType.APPLICATION_JSON));
 		final HttpResponse response = httpclient.execute(message);
 		try {
-			Assert.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
 		} finally {
 			IOUtils.closeQuietly(response.getEntity().getContent());
 		}
@@ -121,7 +121,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		message.setEntity(new StringEntity("{\"id\":0}", ContentType.APPLICATION_JSON));
 		final HttpResponse response = httpclient.execute(message);
 		try {
-			Assert.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
 		} finally {
 			IOUtils.closeQuietly(response.getEntity().getContent());
 		}
@@ -139,25 +139,25 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		final HttpResponse response = httpclient.execute(message);
 
 		try {
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
 			final SessionSettings settings = new ObjectMapperTrim().readValue(response.getEntity().getContent(), SessionSettings.class);
 
 			// Check the application settings (session scope)
-			Assert.assertNotNull(settings);
-			Assert.assertNotNull(settings.getRoles());
-			Assert.assertEquals(2, settings.getRoles().size());
-			Assert.assertTrue(settings.getRoles().contains("USER"));
-			Assert.assertTrue(settings.getRoles().contains("test"));
-			Assert.assertNotNull(settings.getAuthorizations());
-			Assert.assertNotNull(settings.getBusinessAuthorizations());
-			Assert.assertEquals(DEFAULT_USER, settings.getUserName());
+			Assertions.assertNotNull(settings);
+			Assertions.assertNotNull(settings.getRoles());
+			Assertions.assertEquals(2, settings.getRoles().size());
+			Assertions.assertTrue(settings.getRoles().contains("USER"));
+			Assertions.assertTrue(settings.getRoles().contains("test"));
+			Assertions.assertNotNull(settings.getAuthorizations());
+			Assertions.assertNotNull(settings.getBusinessAuthorizations());
+			Assertions.assertEquals(DEFAULT_USER, settings.getUserName());
 
 			// Check the application settings (singleton)
-			Assert.assertNotNull(settings.getApplicationSettings());
-			Assert.assertNotNull(settings.getApplicationSettings().getBuildNumber());
-			Assert.assertNotNull(settings.getApplicationSettings().getBuildTimestamp());
-			Assert.assertNotNull(settings.getApplicationSettings().getBuildVersion());
+			Assertions.assertNotNull(settings.getApplicationSettings());
+			Assertions.assertNotNull(settings.getApplicationSettings().getBuildNumber());
+			Assertions.assertNotNull(settings.getApplicationSettings().getBuildTimestamp());
+			Assertions.assertNotNull(settings.getApplicationSettings().getBuildVersion());
 		} finally {
 			IOUtils.closeQuietly(response.getEntity().getContent());
 		}
@@ -166,7 +166,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	/**
 	 * shutdown server
 	 */
-	@AfterClass
+	@AfterAll
 	public static void tearDown() throws Exception {
 		server.stop();
 	}

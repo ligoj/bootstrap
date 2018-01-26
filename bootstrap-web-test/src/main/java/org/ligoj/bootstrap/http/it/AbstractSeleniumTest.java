@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -41,7 +41,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 * Assert the given URL equals to the given one.
 	 */
 	protected void asserUrl(final String url) {
-		Assert.assertEquals(driver.getCurrentUrl(), url);
+		Assertions.assertEquals(driver.getCurrentUrl(), url);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 	 *            Id of the select2
 	 */
 	protected void assertSelect2Values(final String expectedValues, final String select2Id) {
-		Assert.assertEquals(expectedValues, arrayToString(select2GetValues(select2Id)));
+		Assertions.assertEquals(expectedValues, arrayToString(select2GetValues(select2Id)));
 	}
 
 	/**

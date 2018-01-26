@@ -4,7 +4,7 @@ import java.util.Collections;
 
 import javax.validation.ConstraintViolationException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 import org.springframework.transaction.TransactionSystemException;
 

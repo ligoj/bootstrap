@@ -2,18 +2,18 @@ package org.ligoj.bootstrap.resource.system;
 
 import java.util.TimeZone;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link SystemResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SystemResourceTest extends AbstractBootTest {
 
 	@Autowired
@@ -22,20 +22,20 @@ public class SystemResourceTest extends AbstractBootTest {
 	@Test
 	public void getConfiguration() {
 		final SystemVo systemVo = resource.getConfiguration();
-		Assert.assertTrue(systemVo.getCpu().getTotal() > 0);
-		Assert.assertTrue(systemVo.getMemory().getFreeMemory() > 0);
-		Assert.assertTrue(systemVo.getMemory().getMaxMemory() > 0);
-		Assert.assertTrue(systemVo.getMemory().getTotalMemory() > 0);
-		Assert.assertEquals(TimeZone.getDefault().getID(), systemVo.getDate().getDefaultTimeZone());
-		Assert.assertEquals(TimeZone.getDefault().getID(), systemVo.getDate().getOriginalDefaultTimeZone());
-		Assert.assertEquals(DateUtils.getApplicationTimeZone().getID(), systemVo.getDate().getTimeZone());
-		Assert.assertTrue(System.currentTimeMillis() >= systemVo.getDate().getDate().getTime());
-		Assert.assertTrue(System.currentTimeMillis() - 1000 < systemVo.getDate().getDate().getTime());
-		Assert.assertTrue(systemVo.getFiles().size() > 0);
-		Assert.assertTrue(systemVo.getFiles().get(0).getFreeSpace() > 0);
-		Assert.assertTrue(systemVo.getFiles().get(0).getTotalSpace() > 0);
-		Assert.assertTrue(systemVo.getFiles().get(0).getUsableSpace() > 0);
-		Assert.assertTrue(systemVo.getFiles().get(0).getAbsolutePath().length() > 0);
+		Assertions.assertTrue(systemVo.getCpu().getTotal() > 0);
+		Assertions.assertTrue(systemVo.getMemory().getFreeMemory() > 0);
+		Assertions.assertTrue(systemVo.getMemory().getMaxMemory() > 0);
+		Assertions.assertTrue(systemVo.getMemory().getTotalMemory() > 0);
+		Assertions.assertEquals(TimeZone.getDefault().getID(), systemVo.getDate().getDefaultTimeZone());
+		Assertions.assertEquals(TimeZone.getDefault().getID(), systemVo.getDate().getOriginalDefaultTimeZone());
+		Assertions.assertEquals(DateUtils.getApplicationTimeZone().getID(), systemVo.getDate().getTimeZone());
+		Assertions.assertTrue(System.currentTimeMillis() >= systemVo.getDate().getDate().getTime());
+		Assertions.assertTrue(System.currentTimeMillis() - 1000 < systemVo.getDate().getDate().getTime());
+		Assertions.assertTrue(systemVo.getFiles().size() > 0);
+		Assertions.assertTrue(systemVo.getFiles().get(0).getFreeSpace() > 0);
+		Assertions.assertTrue(systemVo.getFiles().get(0).getTotalSpace() > 0);
+		Assertions.assertTrue(systemVo.getFiles().get(0).getUsableSpace() > 0);
+		Assertions.assertTrue(systemVo.getFiles().get(0).getAbsolutePath().length() > 0);
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class SystemResourceTest extends AbstractBootTest {
 		TimeZone timeZone = DateUtils.getApplicationTimeZone();
 		try {
 			resource.setApplicationTimeZone("GMT");
-			Assert.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
+			Assertions.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
 		} finally {
 			DateUtils.setApplicationTimeZone(timeZone);
 		}
@@ -54,7 +54,7 @@ public class SystemResourceTest extends AbstractBootTest {
 		TimeZone timeZone = TimeZone.getDefault();
 		try {
 			resource.setTimeZone("GMT");
-			Assert.assertEquals("GMT", TimeZone.getDefault().getID());
+			Assertions.assertEquals("GMT", TimeZone.getDefault().getID());
 		} finally {
 			TimeZone.setDefault(timeZone);
 		}

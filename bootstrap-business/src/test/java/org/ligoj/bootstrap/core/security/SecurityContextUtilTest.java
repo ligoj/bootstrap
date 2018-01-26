@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.core.security;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -27,7 +27,7 @@ public class SecurityContextUtilTest {
 
 		// make the assertion of untouched user name
 		final String nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
-		Assert.assertEquals(USER_NAME, nameAuthenticated);
+		Assertions.assertEquals(USER_NAME, nameAuthenticated);
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class SecurityContextUtilTest {
 
 		// make the assertion
 		final String nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
-		Assert.assertEquals(USER_NAME, nameAuthenticated);
+		Assertions.assertEquals(USER_NAME, nameAuthenticated);
 	}
 
 }

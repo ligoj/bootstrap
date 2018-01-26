@@ -2,8 +2,8 @@ package org.ligoj.bootstrap.http.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -15,13 +15,13 @@ public class HasParameterRequestMatcherTest {
 	public void testMatches() {
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getParameter("parameter")).thenReturn("value");
-		Assert.assertTrue(new HasParameterRequestMatcher("parameter").matches(request));
+		Assertions.assertTrue(new HasParameterRequestMatcher("parameter").matches(request));
 	}
 
 	@Test
 	public void testBlank() {
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getParameter("parameter")).thenReturn(" ");
-		Assert.assertFalse(new HasParameterRequestMatcher("parameter").matches(request));
+		Assertions.assertFalse(new HasParameterRequestMatcher("parameter").matches(request));
 	}
 }

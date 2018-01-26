@@ -27,9 +27,9 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.mock.web.DelegatingServletOutputStream;
@@ -45,7 +45,7 @@ public class BackendProxyServletTest {
 
 	private Callback callback;
 
-	@Before
+	@BeforeEach
 	public void setup() throws IllegalAccessException {
 		servletContext = Mockito.mock(ServletContext.class);
 		servlet = new BackendProxyServlet() {
@@ -73,9 +73,11 @@ public class BackendProxyServletTest {
 		setupRedirection("/", "/");
 	}
 
-	@Test(expected = UnavailableException.class)
+	@Test
 	public void initNoEndpoint() throws ServletException {
-		setupRedirection("/", "");
+		Assertions.assertThrows(UnavailableException.class, () -> {
+			setupRedirection("/", "");
+		});
 	}
 
 	@Test
@@ -84,7 +86,7 @@ public class BackendProxyServletTest {
 
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("/some");
-		Assert.assertNull(servlet.rewriteTarget(request));
+		Assertions.assertNull(servlet.rewriteTarget(request));
 	}
 
 	@Test
@@ -94,7 +96,7 @@ public class BackendProxyServletTest {
 
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("/blacklist/any");
-		Assert.assertNull(servlet.rewriteTarget(request));
+		Assertions.assertNull(servlet.rewriteTarget(request));
 	}
 
 	@Test
@@ -103,7 +105,7 @@ public class BackendProxyServletTest {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertEquals("http://proxified:1/endpoint/any", rewriteURI);
+		Assertions.assertEquals("http://proxified:1/endpoint/any", rewriteURI);
 	}
 
 	/**
@@ -116,7 +118,7 @@ public class BackendProxyServletTest {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertNull(rewriteURI);
+		Assertions.assertNull(rewriteURI);
 	}
 
 	@Test
@@ -126,7 +128,7 @@ public class BackendProxyServletTest {
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getQueryString()).thenReturn("query");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
+		Assertions.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
 	}
 
 	@Test
@@ -137,7 +139,7 @@ public class BackendProxyServletTest {
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getQueryString()).thenReturn("api-key=VALUE-1-a");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertEquals("http://proxified:1/endpoint/any", rewriteURI);
+		Assertions.assertEquals("http://proxified:1/endpoint/any", rewriteURI);
 	}
 
 	@Test
@@ -148,7 +150,7 @@ public class BackendProxyServletTest {
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getQueryString()).thenReturn("p=2&api-key=VALUE-1-a&q=3&r");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertEquals("http://proxified:1/endpoint/any?p=2&q=3&r", rewriteURI);
+		Assertions.assertEquals("http://proxified:1/endpoint/any?p=2&q=3&r", rewriteURI);
 	}
 
 	@Test
@@ -159,7 +161,7 @@ public class BackendProxyServletTest {
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getQueryString()).thenReturn("api-key=VALUE-1-a&q=3&r");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertEquals("http://proxified:1/endpoint/any?q=3&r", rewriteURI);
+		Assertions.assertEquals("http://proxified:1/endpoint/any?q=3&r", rewriteURI);
 	}
 
 	@Test
@@ -170,7 +172,7 @@ public class BackendProxyServletTest {
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getQueryString()).thenReturn("query");
 		final String rewriteURI = servlet.rewriteTarget(request);
-		Assert.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
+		Assertions.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
 	}
 
 	private void setupRedirection(final String prefix, final String proxyTo) throws ServletException {
@@ -244,7 +246,7 @@ public class BackendProxyServletTest {
 		Mockito.when(request.getAsyncContext()).thenReturn(asyncContext);
 		servlet.onProxyResponseFailure(request, response, null, new Exception());
 		Mockito.verify(response).setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-		Assert.assertEquals("{\"code\":\"business-down\"}", byteArrayOutputStream.toString(StandardCharsets.UTF_8.name()));
+		Assertions.assertEquals("{\"code\":\"business-down\"}", byteArrayOutputStream.toString(StandardCharsets.UTF_8.name()));
 	}
 
 	@Test
@@ -289,82 +291,82 @@ public class BackendProxyServletTest {
 
 	@Test
 	public void filterServerResponseHeaderSkipXContent() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "x-content-type-options", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "x-content-type-options", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipXFrame() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "x-frame-options", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "x-frame-options", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipXXss() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "x-xss-protection", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "x-xss-protection", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipPragma() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "pragma", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "pragma", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipCacheControl() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "cache-control", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "cache-control", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipVisited() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "visited", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "visited", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipServer() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "Server", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "Server", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipExprires() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "Expires", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "Expires", null));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSkipDate() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "Date", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "Date", null));
 	}
 
 	@Test
 	public void filterServerResponseHeader() {
-		Assert.assertEquals("application/json;charset=UTF-8",
+		Assertions.assertEquals("application/json;charset=UTF-8",
 				servlet.filterServerResponseHeader(null, null, "Content-Type", "application/json;charset=UTF-8"));
 	}
 
 	@Test
 	public void filterServerResponseHeaderSessionID() {
-		Assert.assertNull(servlet.filterServerResponseHeader(null, null, "set-cookie", "JSESSIONID=BLOCKED"));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "set-cookie", "JSESSIONID=BLOCKED"));
 	}
 
 	@Test
 	public void filterServerResponseHeaderOk() {
-		Assert.assertEquals("SOME=PASS", servlet.filterServerResponseHeader(null, null, "set-cookie", "SOME=PASS"));
+		Assertions.assertEquals("SOME=PASS", servlet.filterServerResponseHeader(null, null, "set-cookie", "SOME=PASS"));
 	}
 
 	@Test
 	public void isAjaxRequestXRequest() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		Assert.assertTrue(BackendProxyServlet.isAjaxRequest(request));
+		Assertions.assertTrue(BackendProxyServlet.isAjaxRequest(request));
 	}
 
 	@Test
 	public void isAjaxRequest() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Assert.assertFalse(BackendProxyServlet.isAjaxRequest(request));
+		Assertions.assertFalse(BackendProxyServlet.isAjaxRequest(request));
 	}
 
 	@Test
 	public void getRoot() {
 		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Assert.assertEquals(request, servlet.getRoot(new HttpServletRequestWrapper(request)));
+		Assertions.assertEquals(request, servlet.getRoot(new HttpServletRequestWrapper(request)));
 	}
 
 	/**
@@ -481,7 +483,7 @@ public class BackendProxyServletTest {
 		Mockito.verify(response, Mockito.times(1)).addHeader("Content-Type", "text/html");
 	}
 
-	@Test(expected = UnavailableException.class)
+	@Test
 	public void getRequiredInitParameter() throws ServletException {
 		final ServletConfig servletConfig = Mockito.mock(ServletConfig.class);
 
@@ -490,7 +492,9 @@ public class BackendProxyServletTest {
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn("prefix");
 		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("6");
-		servlet.init(servletConfig);
+		Assertions.assertThrows(UnavailableException.class, () -> {
+			servlet.init(servletConfig);
+		});
 	}
 
 	@Test

@@ -4,8 +4,8 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	/**
 	 * Prepare the Spring Security in the context, not the REST one.
 	 */
-	@Before
+	@BeforeEach
 	public void setUp() {
 		initSpringSecurityContext(getAuthenticationName());
 	}
@@ -68,7 +68,7 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	/**
 	 * Cleanup security context.
 	 */
-	@After
+	@AfterEach
 	public void cleanup() {
 		SecurityContextHolder.clearContext();
 	}

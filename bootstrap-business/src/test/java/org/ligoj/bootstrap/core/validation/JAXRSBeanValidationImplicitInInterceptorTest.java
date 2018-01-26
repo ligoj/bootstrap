@@ -20,20 +20,20 @@ import org.apache.cxf.jaxrs.ext.Nullable;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.ClassUtils;
 
 /**
  * {@link JAXRSBeanValidationImplicitInInterceptor} checks.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 
 	@Autowired
@@ -159,18 +159,18 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	public void jsr349SimpleInvalid() {
 		try {
 			validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Simple"), Arrays.asList(new Object[] { null }));
-			Assert.fail("Expected validation errors");
+			Assertions.fail("Expected validation errors");
 		} catch (final ConstraintViolationException cve) {
 
 			// Check all expected errors are there.
 			final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-			Assert.assertNotNull(constraintViolations);
-			Assert.assertEquals(1, constraintViolations.size());
+			Assertions.assertNotNull(constraintViolations);
+			Assertions.assertEquals(1, constraintViolations.size());
 
 			// Check expected errors
 			final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
-			Assert.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
-			Assert.assertEquals("jsr349Simple.param", error1.getPropertyPath().toString());
+			Assertions.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
+			Assertions.assertEquals("jsr349Simple.param", error1.getPropertyPath().toString());
 		}
 	}
 
@@ -233,19 +233,19 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		userDto.setLogin("");
 		try {
 			validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"), Arrays.asList(userDto));
-			Assert.fail("Expected validation errors");
+			Assertions.fail("Expected validation errors");
 		} catch (final ConstraintViolationException cve) {
 
 			// Check all expected errors are there.
 			final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-			Assert.assertNotNull(constraintViolations);
-			Assert.assertEquals(1, constraintViolations.size());
+			Assertions.assertNotNull(constraintViolations);
+			Assertions.assertEquals(1, constraintViolations.size());
 
 			// Check expected errors
 			final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
-			Assert.assertEquals(NotEmpty.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
-			Assert.assertEquals("", error1.getInvalidValue());
-			Assert.assertEquals("login", error1.getPropertyPath().toString());
+			Assertions.assertEquals(NotEmpty.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
+			Assertions.assertEquals("", error1.getInvalidValue());
+			Assertions.assertEquals("login", error1.getPropertyPath().toString());
 		}
 	}
 
@@ -257,18 +257,18 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		final SystemUser userDto = null;
 		try {
 			validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"), Arrays.asList(userDto));
-			Assert.fail("Expected validation errors");
+			Assertions.fail("Expected validation errors");
 		} catch (final ConstraintViolationException cve) {
 
 			// Check all expected errors are there.
 			final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-			Assert.assertNotNull(constraintViolations);
-			Assert.assertEquals(1, constraintViolations.size());
+			Assertions.assertNotNull(constraintViolations);
+			Assertions.assertEquals(1, constraintViolations.size());
 
 			// Check expected errors
 			final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
-			Assert.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
-			Assert.assertEquals("object.param", error1.getPropertyPath().toString());
+			Assertions.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
+			Assertions.assertEquals("object.param", error1.getPropertyPath().toString());
 		}
 	}
 
@@ -321,18 +321,18 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 			final SystemUser userDto = new SystemUser();
 			userDto.setLogin("junit");
 			validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Object"), Arrays.asList(new Object[] { null }));
-			Assert.fail("Expected validation errors");
+			Assertions.fail("Expected validation errors");
 		} catch (final ConstraintViolationException cve) {
 
 			// Check all expected errors are there.
 			final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-			Assert.assertNotNull(constraintViolations);
-			Assert.assertEquals(1, constraintViolations.size());
+			Assertions.assertNotNull(constraintViolations);
+			Assertions.assertEquals(1, constraintViolations.size());
 
 			// Check expected errors
 			final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
-			Assert.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
-			Assert.assertEquals("jsr349Object.p", error1.getPropertyPath().toString());
+			Assertions.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
+			Assertions.assertEquals("jsr349Object.p", error1.getPropertyPath().toString());
 		}
 	}
 
@@ -346,18 +346,18 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 			userDto.setLogin("junit");
 			validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Collection"),
 					Arrays.asList(Arrays.asList(userDto, userDto, userDto)));
-			Assert.fail("Expected validation errors");
+			Assertions.fail("Expected validation errors");
 		} catch (final ConstraintViolationException cve) {
 
 			// Check all expected errors are there.
 			final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-			Assert.assertNotNull(constraintViolations);
-			Assert.assertEquals(1, constraintViolations.size());
+			Assertions.assertNotNull(constraintViolations);
+			Assertions.assertEquals(1, constraintViolations.size());
 
 			// Check expected errors
 			final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
-			Assert.assertEquals(Size.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
-			Assert.assertEquals("jsr349Collection.params", error1.getPropertyPath().toString());
+			Assertions.assertEquals(Size.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
+			Assertions.assertEquals("jsr349Collection.params", error1.getPropertyPath().toString());
 		}
 	}
 

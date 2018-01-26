@@ -3,6 +3,7 @@ package org.ligoj.bootstrap.resource.system.security;
 import javax.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
+
 import lombok.Getter;
 import lombok.Setter;
 

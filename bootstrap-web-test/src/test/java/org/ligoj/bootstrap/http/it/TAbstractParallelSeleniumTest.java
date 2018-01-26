@@ -2,13 +2,14 @@ package org.ligoj.bootstrap.http.it;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
-import junit.framework.AssertionFailedError;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
@@ -19,6 +20,7 @@ import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Test of {@link AbstractParallelSeleniumTest}
@@ -52,39 +54,49 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 	}
 
 	/**
-	 * Run sequentially (one instance) the given runnable instance with an exception.
+	 * Run sequentially (one instance) the given runnable instance with an
+	 * exception.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testParallelIOE() {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTestIOE");
-		super.runParallel();
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod())
+				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestIOE")));
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	/**
 	 * Run asynchronously the given runnable instance with an error.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testParallelRunningError() {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenThrow(new AssertionFailedError());
-		super.runParallel();
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod()).thenThrow(new AssertionFailedError());
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	/**
-	 * Run asynchronously the given runnable instance with an error during the initialization.
+	 * Run asynchronously the given runnable instance with an error during the
+	 * initialization.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testParallelInitializationError() {
 		localDriverClass = RemoteWebDriverMock.class.getName();
 		remoteDriverClass = RemoteWebDriverMock.class.getName();
-		super.runParallel();
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	/**
-	 * Run asynchronously the given runnable instance with an error during the initialization.
+	 * Run asynchronously the given runnable instance with an error during the
+	 * initialization.
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testParallelInitializationErrorNotCaught() {
 		localDriverClass = RemoteWebDriverMock.class.getName();
 		remoteDriverClass = RemoteWebDriverMock.class.getName();
@@ -92,51 +104,60 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 		final DesiredCapabilities mockCapability = Mockito.mock(DesiredCapabilities.class);
 		Mockito.when(mockCapability.toString()).thenThrow(new IllegalStateException());
 		repeatedCapabilities = new DesiredCapabilities[] { mockCapability };
-
-		super.runParallel();
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	/**
 	 * Run asynchronously the given runnable instance with an error.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testParallelIOE3() {
 		mockDriver = Mockito.mock(RemoteWebDriver.class);
 		localDriverClass = RemoteWebDriverIOEMock.class.getName();
 		remoteDriverClass = RemoteWebDriverIOEMock.class.getName();
-		super.runParallel();
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	/**
 	 * Run asynchronously the given runnable instance with an error.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testParallelIOE4() {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTestIOE");
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod())
+				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestIOE")));
 		final DesiredCapabilities mockCapability = Mockito.mock(DesiredCapabilities.class);
 		Mockito.when(mockCapability.getBrowserName()).thenThrow(new IllegalStateException());
 		repeatedCapabilities = new DesiredCapabilities[] { mockCapability };
-		super.runParallel();
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	/**
 	 * Run test.
 	 */
 	public void mockTestParallelLong() throws InterruptedException {
-		Thread.sleep(getNextSleep());  // NOSONAR -- Have to pause the thread
+		Thread.sleep(getNextSleep()); // NOSONAR -- Have to pause the thread
 	}
 
 	/**
 	 * Run asynchronously the given runnable instance with abnormally long run.
 	 */
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testParallelLong() {
 		sleep = 0;
 		maxRetry = 3;
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTestParallelLong");
-		super.runParallel();
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod())
+				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestParallelLong")));
+		Assertions.assertThrows(AssertionError.class, () -> {
+			super.runParallel();
+		});
 	}
 
 	@Override
@@ -172,14 +193,14 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 	 * Create the driver instance
 	 */
 	@Override
-	@Before
+	@BeforeEach
 	public void setUpDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		prepareDriver();
 	}
 
-	@After
+	@AfterEach
 	public void restoreProperties() {
 		if (ORIGINAL_ENV == null) {
 			System.clearProperty("test.selenium.remote");
@@ -198,16 +219,16 @@ public class TAbstractParallelSeleniumTest extends AbstractParallelSeleniumTest 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void prepareDriver() throws Exception {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTest");
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod()).thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTest")));
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		remoteDriverClass = WebDriverMock.class.getName();
 		scenario = "sc";
 		super.prepareDriver();
 		mockDriver = Mockito.mock(WebDriverMock.class);
-		Mockito.when(((WebDriverMock) mockDriver).getScreenshotAs(ArgumentMatchers.any(OutputType.class))).thenReturn(
-				new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
+		Mockito.when(((WebDriverMock) mockDriver).getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
+				.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
 		final Options options = Mockito.mock(Options.class);
 		Mockito.when(options.window()).thenReturn(Mockito.mock(Window.class));
 		Mockito.when(mockDriver.manage()).thenReturn(options);

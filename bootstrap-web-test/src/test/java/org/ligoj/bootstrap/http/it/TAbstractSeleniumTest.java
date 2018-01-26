@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
@@ -43,21 +43,21 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 		cleanup();
 	}
 
-	@Before
+	@BeforeEach
 	public void clearTimeout() {
 		timeout = 1;
 	}
 
 	@Test
 	public void testExtractScreenShot() {
-		Assert.assertNull(extractScreenShot(new WebDriverException()));
+		Assertions.assertNull(extractScreenShot(new WebDriverException()));
 	}
 
 	@Test
 	public void testExtractScreenShot2() {
 		final ScreenshotException se = Mockito.mock(ScreenshotException.class);
 		Mockito.when(se.getBase64EncodedScreenshot()).thenReturn("ex");
-		Assert.assertEquals("ex", extractScreenShot(new WebDriverException(se)));
+		Assertions.assertEquals("ex", extractScreenShot(new WebDriverException(se)));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 			Mockito.when(mockDriver.getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
 					.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
 			screenshot("test.png");
-			Assert.assertTrue(new File(baseDir, "sc/firefox/001-test.png").exists());
+			Assertions.assertTrue(new File(baseDir, "sc/firefox/001-test.png").exists());
 		} finally {
 			FileUtils.deleteDirectory(new File(baseDir, "sc"));
 		}
@@ -86,7 +86,7 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 			Mockito.when(mockDriver.getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
 					.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()).getParentFile());
 			screenshot("test.png");
-			Assert.assertFalse(new File(baseDir, "sc/test.png").exists());
+			Assertions.assertFalse(new File(baseDir, "sc/test.png").exists());
 		} finally {
 			FileUtils.deleteDirectory(new File(baseDir, "sc"));
 		}
@@ -303,10 +303,10 @@ public class TAbstractSeleniumTest extends AbstractSeleniumTest {
 		final List<String> elements = new ArrayList<>();
 		elements.add("a");
 		elements.add("a");
-		Assert.assertEquals("[a,a]", arrayToString(elements));
+		Assertions.assertEquals("[a,a]", arrayToString(elements));
 	}
 
-	@After
+	@AfterEach
 	public void restoreProperties() {
 		if (ORIGINAL_ENV == null) {
 			System.clearProperty("test.selenium.remote");

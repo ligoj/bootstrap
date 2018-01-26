@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.io.Resource;
 
@@ -25,7 +25,7 @@ public class GlobalPropertyUtilsTest {
 	public void testNoLocations() throws IOException {
 		new GlobalPropertyUtils().setLocations(new Resource[0]);
 		new GlobalPropertyUtils().loadProperties(new Properties());
-		Assert.assertNull(GlobalPropertyUtils.getProperty("key"));
+		Assertions.assertNull(GlobalPropertyUtils.getProperty("key"));
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class GlobalPropertyUtilsTest {
 		Mockito.when(resources[0].getInputStream()).thenReturn(null);
 		new GlobalPropertyUtils().setLocations(resources);
 		new GlobalPropertyUtils().loadProperties(new Properties());
-		Assert.assertNull(GlobalPropertyUtils.getProperty("key"));
+		Assertions.assertNull(GlobalPropertyUtils.getProperty("key"));
 	}
 
 	/**
@@ -64,13 +64,15 @@ public class GlobalPropertyUtilsTest {
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testLocationInputError2() throws IOException {
 		final Resource[] resources = new Resource[1];
 		final Resource resource = Mockito.mock(Resource.class);
 		resources[0] = resource;
 		Mockito.doThrow(new IllegalStateException()).when(resource).getInputStream();
-		new GlobalPropertyUtils().setLocations(resources);
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			new GlobalPropertyUtils().setLocations(resources);
+		});
 	}
 
 	/**
@@ -88,6 +90,6 @@ public class GlobalPropertyUtilsTest {
 		resources[0] = resource;
 		new GlobalPropertyUtils().setLocations(resources);
 		new GlobalPropertyUtils().loadProperties(new Properties());
-		Assert.assertEquals("value", GlobalPropertyUtils.getProperty("key"));
+		Assertions.assertEquals("value", GlobalPropertyUtils.getProperty("key"));
 	}
 }

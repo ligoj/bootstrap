@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
@@ -15,18 +15,18 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * {@link RbacUserDetailsService} test class.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@Autowired
 	private RbacUserDetailsService userDetailsService;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		final SystemUser user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
@@ -41,13 +41,13 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 	@Test
 	public void testUnknownUser() {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername("none");
-		Assert.assertEquals(1, userDetails.getAuthorities().size());
-		Assert.assertEquals(SystemRole.DEFAULT_ROLE, userDetails.getAuthorities().iterator().next().getAuthority());
-		Assert.assertEquals("none", userDetails.getUsername());
+		Assertions.assertEquals(1, userDetails.getAuthorities().size());
+		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, userDetails.getAuthorities().iterator().next().getAuthority());
+		Assertions.assertEquals("none", userDetails.getUsername());
 		em.flush();
 		final SystemUser user = em.find(SystemUser.class, "none");
-		Assert.assertNotNull(user.getLastConnection());
-		Assert.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertNotNull(user.getLastConnection());
+		Assertions.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -56,12 +56,12 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 	@Test
 	public void testWellKnownUser() {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(DEFAULT_USER);
-		Assert.assertEquals(1, userDetails.getAuthorities().size());
-		Assert.assertEquals(SystemRole.DEFAULT_ROLE, userDetails.getAuthorities().iterator().next().getAuthority());
-		Assert.assertEquals(DEFAULT_USER, userDetails.getUsername());
+		Assertions.assertEquals(1, userDetails.getAuthorities().size());
+		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, userDetails.getAuthorities().iterator().next().getAuthority());
+		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		final SystemUser user = em.find(SystemUser.class, DEFAULT_USER);
-		Assert.assertNotNull(user.getLastConnection());
-		Assert.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertNotNull(user.getLastConnection());
+		Assertions.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -75,12 +75,12 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(DEFAULT_USER);
-		Assert.assertEquals(1, userDetails.getAuthorities().size());
-		Assert.assertEquals(SystemRole.DEFAULT_ROLE, userDetails.getAuthorities().iterator().next().getAuthority());
-		Assert.assertEquals(DEFAULT_USER, userDetails.getUsername());
+		Assertions.assertEquals(1, userDetails.getAuthorities().size());
+		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, userDetails.getAuthorities().iterator().next().getAuthority());
+		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		user = em.find(SystemUser.class, DEFAULT_USER);
-		Assert.assertNotNull(user.getLastConnection());
-		Assert.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertNotNull(user.getLastConnection());
+		Assertions.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -109,14 +109,14 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 		em.persist(roleAssignment2);
 
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(DEFAULT_USER);
-		Assert.assertEquals(DEFAULT_USER, userDetails.getUsername());
+		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		user = em.find(SystemUser.class, DEFAULT_USER);
-		Assert.assertNotNull(user.getLastConnection());
-		Assert.assertEquals(expectedTime, user.getLastConnection().getTime());
-		Assert.assertEquals(2, userDetails.getAuthorities().size());
+		Assertions.assertNotNull(user.getLastConnection());
+		Assertions.assertEquals(expectedTime, user.getLastConnection().getTime());
+		Assertions.assertEquals(2, userDetails.getAuthorities().size());
 		final Iterator<? extends GrantedAuthority> iterator = userDetails.getAuthorities().iterator();
-		Assert.assertEquals(SystemRole.DEFAULT_ROLE, iterator.next().getAuthority());
-		Assert.assertEquals(DEFAULT_ROLE, iterator.next().getAuthority());
+		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, iterator.next().getAuthority());
+		Assertions.assertEquals(DEFAULT_ROLE, iterator.next().getAuthority());
 
 	}
 

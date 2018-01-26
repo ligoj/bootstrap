@@ -2,10 +2,9 @@ package org.ligoj.bootstrap.dao.system;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Query;
-
 import org.ligoj.bootstrap.core.dao.RestRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * API token repository.

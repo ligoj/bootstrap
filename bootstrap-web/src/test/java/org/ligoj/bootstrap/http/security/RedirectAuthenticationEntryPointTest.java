@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.web.RedirectStrategy;
 
@@ -20,7 +20,7 @@ public class RedirectAuthenticationEntryPointTest {
 
 	private RedirectAuthenticationEntryPoint entryPoint;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		entryPoint = new RedirectAuthenticationEntryPoint("http://h");
 		final Set<String> redirectUrls = new HashSet<>();

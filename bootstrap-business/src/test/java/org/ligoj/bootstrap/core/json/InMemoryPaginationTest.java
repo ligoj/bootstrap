@@ -5,23 +5,23 @@ import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * JSon pagination test of {@link InMemoryPagination}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class InMemoryPaginationTest extends AbstractBootTest {
 
 	private InMemoryPagination inMemoryPagination;
 
-	@Before
+	@BeforeEach
 	public void prepareObject() {
 		inMemoryPagination = new InMemoryPagination();
 		inMemoryPagination.paginationJson = new PaginationJson();
@@ -38,7 +38,7 @@ public class InMemoryPaginationTest extends AbstractBootTest {
 	@Test
 	public void testSimple() {
 		final TableItem<String> items = inMemoryPagination.getFilteredStringList(newUriInfo(), newItems(15));
-		Assert.assertEquals(10, items.getData().size());
+		Assertions.assertEquals(10, items.getData().size());
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class InMemoryPaginationTest extends AbstractBootTest {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().add(DataTableAttributes.SEARCH, "Tem5");
 		final TableItem<String> items = inMemoryPagination.getFilteredStringList(uriInfo, newItems(15));
-		Assert.assertEquals(1, items.getData().size());
+		Assertions.assertEquals(1, items.getData().size());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class InMemoryPaginationTest extends AbstractBootTest {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().add("q", "Tem5");
 		final TableItem<String> items = inMemoryPagination.getFilteredStringList(uriInfo, newItems(15));
-		Assert.assertEquals(1, items.getData().size());
+		Assertions.assertEquals(1, items.getData().size());
 	}
 
 	@Test
@@ -65,11 +65,11 @@ public class InMemoryPaginationTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("rows", "11");
 		final TableItem<String> items = inMemoryPagination.getFilteredStringList(uriInfo, newItems(15));
 
-		Assert.assertEquals(4, items.getData().size());
-		Assert.assertEquals(15, items.getRecordsTotal());
-		Assert.assertTrue(items.getData().contains("item0"));
-		Assert.assertTrue(items.getData().contains("item1"));
-		Assert.assertTrue(items.getData().contains("item2"));
-		Assert.assertTrue(items.getData().contains("item3"));
+		Assertions.assertEquals(4, items.getData().size());
+		Assertions.assertEquals(15, items.getRecordsTotal());
+		Assertions.assertTrue(items.getData().contains("item0"));
+		Assertions.assertTrue(items.getData().contains("item1"));
+		Assertions.assertTrue(items.getData().contains("item2"));
+		Assertions.assertTrue(items.getData().contains("item3"));
 	}
 }

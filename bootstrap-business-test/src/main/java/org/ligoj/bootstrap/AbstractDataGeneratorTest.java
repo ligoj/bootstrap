@@ -19,9 +19,9 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.SpringUtils;
 import org.mockito.Mockito;
@@ -58,8 +58,8 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	/**
 	 * Restore original Spring application context
 	 */
-	@After
-	@Before
+	@AfterEach
+	@BeforeEach
 	public void restoreApplicationContext() {
 		if (applicationContext != null) {
 			// This test was running in a Spring context, restore the shared context
@@ -436,7 +436,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	protected <S> void coverageSingleton(final Class<S> singletonClass)
 			throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		final Constructor<S> constructor = singletonClass.getDeclaredConstructor();
-		Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+		Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 		constructor.setAccessible(true);
 		constructor.newInstance();
 	}

@@ -1,11 +1,13 @@
 package org.ligoj.bootstrap.http.it;
 
 import java.io.File;
+import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.rules.TestName;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
@@ -39,36 +41,36 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 
 	}
 
-	@org.junit.Test
+	@org.junit.jupiter.api.Test
 	public void testCloneAndRun() throws Exception {
-		testName = Mockito.mock(TestName.class);
-		Mockito.when(testName.getMethodName()).thenReturn("mockTest");
+		testName = Mockito.mock(TestInfo.class);
+		Mockito.when(testName.getTestMethod()).thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTest")));
 		cloneAndRun(new Test(), null, null);
 	}
 
-	@org.junit.Test
+	@org.junit.jupiter.api.Test
 	public void testPrepareBrowser() {
 		new TAbstractRepeatableSeleniumTest().prepareBrowser();
 	}
 
-	@org.junit.Test
+	@org.junit.jupiter.api.Test
 	public void testRepeatMode() throws Exception {
-		Assert.assertFalse(isRepeatMode());
-		Assert.assertTrue(this.getClass().newInstance().isRepeatMode());
+		Assertions.assertFalse(isRepeatMode());
+		Assertions.assertTrue(this.getClass().newInstance().isRepeatMode());
 	}
 
 	/**
 	 * Create the driver instance
 	 */
 	@Override
-	@Before
+	@BeforeEach
 	public void setUpDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		super.setUpDriver();
 	}
 
-	@After
+	@AfterEach
 	public void restoreProperties() {
 		if (ORIGINAL_ENV == null) {
 			System.clearProperty("test.selenium.remote");
@@ -86,8 +88,8 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 		scenario = "sc";
 		super.prepareDriver();
 		mockDriver = Mockito.mock(WebDriverMock.class);
-		Mockito.when(mockDriver.getScreenshotAs(ArgumentMatchers.any(OutputType.class))).thenReturn(
-				new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
+		Mockito.when(mockDriver.getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
+				.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
 		final Options options = Mockito.mock(Options.class);
 		Mockito.when(options.window()).thenReturn(Mockito.mock(Window.class));
 		Mockito.when(mockDriver.manage()).thenReturn(options);

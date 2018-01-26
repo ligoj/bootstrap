@@ -13,8 +13,8 @@ import org.hibernate.boot.archive.scan.spi.ScanEnvironment;
 import org.hibernate.boot.archive.scan.spi.ScanOptions;
 import org.hibernate.boot.archive.scan.spi.ScanParameters;
 import org.hibernate.boot.archive.scan.spi.ScanResult;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
@@ -25,7 +25,7 @@ public class ResourceScannerTest {
 	/**
 	 * Simulate {@link IOException} for {@link ResourceScanner#getJarUrl(URL)}
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testInJarUrlIoException() {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
@@ -34,13 +34,15 @@ public class ResourceScannerTest {
 			}
 
 		};
-		scanner.scan(newScanEnvironment(), null, null);
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			scanner.scan(newScanEnvironment(), null, null);
+		});
 	}
 
 	/**
 	 * Simulate {@link IOException} for {@link ResourceScanner#getOrmUrls()}
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testFilesInJarIoException() {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
@@ -49,7 +51,9 @@ public class ResourceScannerTest {
 			}
 
 		};
-		scanner.scan(newScanEnvironment(), null, null);
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			scanner.scan(newScanEnvironment(), null, null);
+		});
 	}
 
 	private ScanEnvironment newScanEnvironment() {
@@ -67,11 +71,13 @@ public class ResourceScannerTest {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
-				return Collections.enumeration(Arrays.asList(new URL[] { new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/mycompany/MyClass.class") }));
+				return Collections.enumeration(
+						Arrays.asList(new URL[] { new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/mycompany/MyClass.class") }));
 			}
 
 		};
-		Assert.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class)).getLocatedMappingFiles().isEmpty());
+		Assertions.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
+				.getLocatedMappingFiles().isEmpty());
 	}
 
 	/**
@@ -86,7 +92,8 @@ public class ResourceScannerTest {
 			}
 
 		};
-		Assert.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class)).getLocatedMappingFiles().isEmpty());
+		Assertions.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
+				.getLocatedMappingFiles().isEmpty());
 	}
 
 	/**
@@ -95,8 +102,9 @@ public class ResourceScannerTest {
 	@Test
 	public void testFilesInJarIoException2() {
 		final ResourceScanner scanner = new ResourceScanner();
-		ScanResult scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class));
-		Assert.assertNotNull(scan);
+		ScanResult scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
+				Mockito.mock(ScanParameters.class));
+		Assertions.assertNotNull(scan);
 	}
 
 }

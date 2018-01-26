@@ -14,8 +14,8 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.jetty.server.Server;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +40,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 	/**
 	 * Initialize overridden values.
 	 */
-	@Before
+	@BeforeEach
 	public void configureCient() {
 		retries = DEFAULT_RETRIES;
 		httpclient = HttpClientBuilder.create().build();
@@ -49,7 +49,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 	/**
 	 * Close client.
 	 */
-	@After
+	@AfterEach
 	public void closeCient() {
 		IOUtils.closeQuietly(httpclient);
 	}

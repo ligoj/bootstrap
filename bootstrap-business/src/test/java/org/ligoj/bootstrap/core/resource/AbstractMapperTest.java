@@ -2,7 +2,7 @@ package org.ligoj.bootstrap.core.resource;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -21,7 +21,7 @@ public abstract class AbstractMapperTest {
 	}
 
 	protected void check(Response response, int status, String content) {
-		Assert.assertEquals(status, response.getStatus());
-		Assert.assertEquals(content, response.getEntity().toString());
+		Assertions.assertEquals(status, response.getStatus());
+		Assertions.assertEquals(content, response.getEntity().toString());
 	}
 }

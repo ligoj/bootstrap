@@ -3,8 +3,8 @@ package org.ligoj.bootstrap.core;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.model.AbstractAudited;
 import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 import org.ligoj.bootstrap.core.model.Auditable;
@@ -28,9 +28,9 @@ public class AuditedBeanTest {
 		to.setName("two");
 		AuditedBean.copyAuditData(from, to);
 		assertData(to);
-		Assert.assertEquals("two", to.getName());
-		Assert.assertEquals(0, to.compareTo(to));
-		Assert.assertTrue(to.toString().endsWith("(name=two)"));
+		Assertions.assertEquals("two", to.getName());
+		Assertions.assertEquals(0, to.compareTo(to));
+		Assertions.assertTrue(to.toString().endsWith("(name=two)"));
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class AuditedBeanTest {
 	public void testToString() {
 		final AuditedBean<Serializable, Serializable> auditedBean = new AuditedBean<>();
 		auditedBean.setId(0);
-		Assert.assertEquals("AuditedBean(id=0)", auditedBean.toString());
+		Assertions.assertEquals("AuditedBean(id=0)", auditedBean.toString());
 	}
 
 	/**
@@ -75,8 +75,8 @@ public class AuditedBeanTest {
 		};
 		final AuditedBean<String, Integer> audited = new AuditedBean<>();
 		audited.copyAuditData(from);
-		Assert.assertNull(audited.getCreatedDate());
-		Assert.assertNull(audited.getLastModifiedDate());
+		Assertions.assertNull(audited.getCreatedDate());
+		Assertions.assertNull(audited.getLastModifiedDate());
 	}
 
 	/**
@@ -111,16 +111,16 @@ public class AuditedBeanTest {
 	}
 
 	private void assertData(final Auditable<String, ?, Date> to) {
-		Assert.assertEquals("any", to.getCreatedBy());
-		Assert.assertEquals("one", to.getLastModifiedBy());
-		Assert.assertEquals(new Date(0), to.getCreatedDate());
-		Assert.assertEquals(new Date(1), to.getLastModifiedDate());
+		Assertions.assertEquals("any", to.getCreatedBy());
+		Assertions.assertEquals("one", to.getLastModifiedBy());
+		Assertions.assertEquals(new Date(0), to.getCreatedDate());
+		Assertions.assertEquals(new Date(1), to.getLastModifiedDate());
 	}
 
 	private void assertData(final AuditedBean<String, Integer> audited) {
-		Assert.assertEquals("any", audited.getCreatedBy());
-		Assert.assertEquals("one", audited.getLastModifiedBy());
-		Assert.assertEquals(new Date(0), audited.getCreatedDate());
-		Assert.assertEquals(new Date(1), audited.getLastModifiedDate());
+		Assertions.assertEquals("any", audited.getCreatedBy());
+		Assertions.assertEquals("one", audited.getLastModifiedBy());
+		Assertions.assertEquals(new Date(0), audited.getCreatedDate());
+		Assertions.assertEquals(new Date(1), audited.getLastModifiedDate());
 	}
 }

@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemBench;
@@ -41,7 +41,7 @@ public class SystemEntitiesTest {
 	public void testSystemRole() {
 		final SystemRole systemRole = new SystemRole();
 		systemRole.setName("name");
-		Assert.assertSame("name", systemRole.getAuthority());
+		Assertions.assertSame("name", systemRole.getAuthority());
 		SystemAuthorization.AuthorizationType.values();
 		SystemAuthorization.AuthorizationType.valueOf(SystemAuthorization.AuthorizationType.API.name());
 	}
@@ -49,24 +49,24 @@ public class SystemEntitiesTest {
 	@Test
 	public void testSystemUser() {
 		final SystemUser systemUser = new SystemUser();
-		Assert.assertFalse(systemUser.equals(null));
-		Assert.assertTrue(systemUser.equals(new SystemUser()));
-		Assert.assertTrue(systemUser.equals(systemUser));
-		Assert.assertEquals("SystemUser(login=null)", systemUser.toString());
-		Assert.assertTrue(systemUser.hashCode() != 0);
+		Assertions.assertFalse(systemUser.equals(null));
+		Assertions.assertTrue(systemUser.equals(new SystemUser()));
+		Assertions.assertTrue(systemUser.equals(systemUser));
+		Assertions.assertEquals("SystemUser(login=null)", systemUser.toString());
+		Assertions.assertTrue(systemUser.hashCode() != 0);
 		systemUser.setLogin("name");
-		Assert.assertFalse(systemUser.equals(null));
-		Assert.assertFalse(systemUser.equals(new SystemUser()));
-		Assert.assertFalse(new SystemUser().equals(systemUser));
-		Assert.assertEquals("SystemUser(login=name)", systemUser.toString());
-		Assert.assertTrue(systemUser.hashCode() != 0);
+		Assertions.assertFalse(systemUser.equals(null));
+		Assertions.assertFalse(systemUser.equals(new SystemUser()));
+		Assertions.assertFalse(new SystemUser().equals(systemUser));
+		Assertions.assertEquals("SystemUser(login=name)", systemUser.toString());
+		Assertions.assertTrue(systemUser.hashCode() != 0);
 
 		final SystemUser other = new SystemUser();
 		other.setLogin("other");
-		Assert.assertFalse(systemUser.equals(other));
+		Assertions.assertFalse(systemUser.equals(other));
 		other.setLogin("name");
-		Assert.assertTrue(systemUser.equals(other));
-		Assert.assertFalse(systemUser.equals(new DummySystemUser()));
+		Assertions.assertTrue(systemUser.equals(other));
+		Assertions.assertFalse(systemUser.equals(new DummySystemUser()));
 	}
 
 	@EqualsAndHashCode(of = "other", callSuper = true)

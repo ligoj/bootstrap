@@ -1,9 +1,9 @@
 package org.ligoj.bootstrap.core.security;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -17,12 +17,12 @@ public class SecurityHelperTest {
 	 */
 	public static final String SYSTEM_USERNAME = "_system";
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		SecurityContextHolder.clearContext();
 	}
 
-	@After
+	@AfterEach
 	public void cleanup() {
 		SecurityContextHolder.clearContext();
 	}
@@ -32,7 +32,7 @@ public class SecurityHelperTest {
 	 */
 	@Test
 	public void setUserNameNull() {
-		Assert.assertNull(new SecurityHelper().setUserName(null));
+		Assertions.assertNull(new SecurityHelper().setUserName(null));
 	}
 
 	/**
@@ -41,8 +41,8 @@ public class SecurityHelperTest {
 	@Test
 	public void setUserName() {
 		final SecurityContext sc = new SecurityHelper().setUserName("name");
-		Assert.assertEquals("name", sc.getAuthentication().getName());
-		Assert.assertEquals("name", new SecurityHelper().getLogin());
+		Assertions.assertEquals("name", sc.getAuthentication().getName());
+		Assertions.assertEquals("name", new SecurityHelper().getLogin());
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class SecurityHelperTest {
 	 */
 	@Test
 	public void getLogin() {
-		Assert.assertNull(new SecurityHelper().getLogin());
+		Assertions.assertNull(new SecurityHelper().getLogin());
 	}
 
 }

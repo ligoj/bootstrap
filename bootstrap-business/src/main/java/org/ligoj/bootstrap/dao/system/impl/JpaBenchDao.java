@@ -7,11 +7,10 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-import org.springframework.stereotype.Repository;
-
 import org.ligoj.bootstrap.dao.system.BenchResult;
 import org.ligoj.bootstrap.dao.system.ISystemPerformanceJpaDao;
 import org.ligoj.bootstrap.model.system.SystemBench;
+import org.springframework.stereotype.Repository;
 
 /**
  * JPA implementation of performance tests. This is a special DAO managing its own transaction.

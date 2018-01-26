@@ -2,8 +2,8 @@ package org.ligoj.bootstrap.http.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
@@ -19,7 +19,7 @@ public class ExtendedSecurityExpressionHandlerTest {
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("header")).thenReturn("value");
 		Mockito.when(invocation.getRequest()).thenReturn(request);
-		Assert.assertTrue(((ExtendedWebSecurityExpressionRoot) new ExtendedSecurityExpressionHandler().createSecurityExpressionRoot(
+		Assertions.assertTrue(((ExtendedWebSecurityExpressionRoot) new ExtendedSecurityExpressionHandler().createSecurityExpressionRoot(
 				Mockito.mock(Authentication.class), invocation)).hasHeader("header"));
 	}
 
@@ -29,7 +29,7 @@ public class ExtendedSecurityExpressionHandlerTest {
 		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getParameter("parameter")).thenReturn("value");
 		Mockito.when(invocation.getRequest()).thenReturn(request);
-		Assert.assertTrue(((ExtendedWebSecurityExpressionRoot) new ExtendedSecurityExpressionHandler().createSecurityExpressionRoot(
+		Assertions.assertTrue(((ExtendedWebSecurityExpressionRoot) new ExtendedSecurityExpressionHandler().createSecurityExpressionRoot(
 				Mockito.mock(Authentication.class), invocation)).hasParameter("parameter"));
 	}
 }

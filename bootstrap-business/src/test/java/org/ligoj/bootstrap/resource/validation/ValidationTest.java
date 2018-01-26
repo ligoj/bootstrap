@@ -1,5 +1,6 @@
 package org.ligoj.bootstrap.resource.validation;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -8,15 +9,15 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.validation.LowerCase;
 import org.ligoj.bootstrap.core.validation.ValidatorBean;
 import org.ligoj.bootstrap.core.validation.Wine;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,7 @@ import lombok.Setter;
  * Check JSR-303 features. Also check over @Service beans.
  * 
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ValidationTest extends AbstractBootTest {
 
 	@Autowired
@@ -42,24 +43,30 @@ public class ValidationTest extends AbstractBootTest {
 		validator.validateCheck(newWine());
 	}
 
-	@Test(timeout = 7000)
+	@Test
 	public void testPerformance() {
 		Wine newWine = newWine();
-		for (int i = 10000; i-- > 0;) {
-			validator.validateCheck(newWine);
-		}
+		Assertions.assertTimeout(Duration.ofSeconds(7), () -> {
+			for (int i = 10000; i-- > 0;) {
+				validator.validateCheck(newWine);
+			}
+		});
 	}
 
-	@Test(expected = ConstraintViolationException.class)
+	@Test
 	public void testEmptyBean() {
-		validator.validateCheck(new Wine());
+		Assertions.assertThrows(ConstraintViolationException.class, () -> {
+			validator.validateCheck(new Wine());
+		});
 	}
 
-	@Test(expected = ConstraintViolationException.class)
+	@Test
 	public void testHibernateExtension() {
 		final Wine wine = newWine();
 		wine.setYear(1);
-		validator.validateCheck(wine);
+		Assertions.assertThrows(ConstraintViolationException.class, () -> {
+			validator.validateCheck(wine);
+		});
 	}
 
 	@Test
@@ -80,12 +87,12 @@ public class ValidationTest extends AbstractBootTest {
 		final Wine wine = newWine();
 		wine.setName("c");
 		final Set<ConstraintViolation<Wine>> validate = validator.validate(wine);
-		Assert.assertEquals(1, validate.size());
+		Assertions.assertEquals(1, validate.size());
 		final ConstraintViolation<?> constraintViolation = validate.iterator().next();
-		Assert.assertEquals(wine.getName(), constraintViolation.getInvalidValue());
-		Assert.assertEquals(wine, constraintViolation.getLeafBean());
-		Assert.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message", constraintViolation.getMessageTemplate());
-		Assert.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message", constraintViolation.getMessage());
+		Assertions.assertEquals(wine.getName(), constraintViolation.getInvalidValue());
+		Assertions.assertEquals(wine, constraintViolation.getLeafBean());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message", constraintViolation.getMessageTemplate());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message", constraintViolation.getMessage());
 	}
 
 	/**
@@ -96,12 +103,12 @@ public class ValidationTest extends AbstractBootTest {
 		final SampleBean wine = new SampleBean();
 		wine.setLowerOnly("C");
 		final Set<ConstraintViolation<SampleBean>> validate = validator.validate(wine);
-		Assert.assertEquals(1, validate.size());
+		Assertions.assertEquals(1, validate.size());
 		final ConstraintViolation<?> constraintViolation = validate.iterator().next();
-		Assert.assertEquals(wine.getLowerOnly(), constraintViolation.getInvalidValue());
-		Assert.assertEquals(wine, constraintViolation.getLeafBean());
-		Assert.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message", constraintViolation.getMessageTemplate());
-		Assert.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message", constraintViolation.getMessage());
+		Assertions.assertEquals(wine.getLowerOnly(), constraintViolation.getInvalidValue());
+		Assertions.assertEquals(wine, constraintViolation.getLeafBean());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message", constraintViolation.getMessageTemplate());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message", constraintViolation.getMessage());
 	}
 
 	/**
@@ -112,7 +119,7 @@ public class ValidationTest extends AbstractBootTest {
 		final SampleBean wine = new SampleBean();
 		wine.setLowerOnly(null);
 		final Set<ConstraintViolation<SampleBean>> validate = validator.validate(wine);
-		Assert.assertTrue(validate.isEmpty());
+		Assertions.assertTrue(validate.isEmpty());
 	}
 
 	/**
@@ -123,7 +130,7 @@ public class ValidationTest extends AbstractBootTest {
 		final SampleBean wine = new SampleBean();
 		wine.setLowerOnly("c");
 		final Set<ConstraintViolation<SampleBean>> validate = validator.validate(wine);
-		Assert.assertTrue(validate.isEmpty());
+		Assertions.assertTrue(validate.isEmpty());
 	}
 
 	@Test
@@ -142,8 +149,8 @@ public class ValidationTest extends AbstractBootTest {
 	@Test
 	public void testEmptyValidationDescription() throws ClassNotFoundException {
 		final Map<String, List<String>> constraints = validationResource.describe(String.class.getName());
-		Assert.assertNotNull(constraints);
-		Assert.assertTrue(constraints.isEmpty());
+		Assertions.assertNotNull(constraints);
+		Assertions.assertTrue(constraints.isEmpty());
 	}
 
 	/**
@@ -152,14 +159,14 @@ public class ValidationTest extends AbstractBootTest {
 	@Test
 	public void testValidationDescription() throws ClassNotFoundException {
 		final Map<String, List<String>> constraints = validationResource.describe(Wine.class.getName());
-		Assert.assertNotNull(constraints);
-		Assert.assertFalse(constraints.isEmpty());
-		Assert.assertEquals(1, constraints.get("picture").size());
-		Assert.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
-		Assert.assertEquals(3, constraints.get("name").size());
-		Assert.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
-		Assert.assertTrue(constraints.get("name").contains("javax.validation.constraints.NotEmpty"));
-		Assert.assertTrue(constraints.get("name").contains("org.ligoj.bootstrap.core.validation.UpperCase"));
+		Assertions.assertNotNull(constraints);
+		Assertions.assertFalse(constraints.isEmpty());
+		Assertions.assertEquals(1, constraints.get("picture").size());
+		Assertions.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
+		Assertions.assertEquals(3, constraints.get("name").size());
+		Assertions.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
+		Assertions.assertTrue(constraints.get("name").contains("javax.validation.constraints.NotEmpty"));
+		Assertions.assertTrue(constraints.get("name").contains("org.ligoj.bootstrap.core.validation.UpperCase"));
 	}
 
 	private class SampleBean {

@@ -3,19 +3,19 @@ package org.ligoj.bootstrap.resource.system.user;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemUserSettingRepository;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link UserSettingResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UserSettingResourceTest extends AbstractBootTest {
 
 	@Autowired
@@ -29,31 +29,31 @@ public class UserSettingResourceTest extends AbstractBootTest {
 		resource.saveOrUpdate("k", "v");
 		em.clear();
 		final List<SystemUserSetting> all = repository.findAll();
-		Assert.assertFalse(all.isEmpty());
+		Assertions.assertFalse(all.isEmpty());
 		final SystemUserSetting setting = all.get(0);
-		Assert.assertEquals("k", setting.getName());
-		Assert.assertEquals("v", setting.getValue());
-		Assert.assertEquals(DEFAULT_USER, setting.getLogin());
+		Assertions.assertEquals("k", setting.getName());
+		Assertions.assertEquals("v", setting.getValue());
+		Assertions.assertEquals(DEFAULT_USER, setting.getLogin());
 	}
 
 	@Test
 	public void findAll() {
 		newSetting();
 		final Map<String, Object> all = resource.findAll();
-		Assert.assertFalse(all.isEmpty());
-		Assert.assertEquals("v", all.get("k"));
+		Assertions.assertFalse(all.isEmpty());
+		Assertions.assertEquals("v", all.get("k"));
 	}
 
 	@Test
 	public void findByName() {
 		newSetting();
-		Assert.assertEquals("v", resource.findByName("k"));
+		Assertions.assertEquals("v", resource.findByName("k"));
 	}
 
 	@Test
 	public void findByNameNull() {
 		newSetting();
-		Assert.assertNull(resource.findByName("any"));
+		Assertions.assertNull(resource.findByName("any"));
 	}
 
 	@Test
@@ -61,8 +61,8 @@ public class UserSettingResourceTest extends AbstractBootTest {
 		newSetting();
 		resource.saveOrUpdate("k", "w");
 		final Map<String, Object> all = resource.findAll();
-		Assert.assertFalse(all.isEmpty());
-		Assert.assertEquals("w", all.get("k"));
+		Assertions.assertFalse(all.isEmpty());
+		Assertions.assertEquals("w", all.get("k"));
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class UserSettingResourceTest extends AbstractBootTest {
 		newSetting();
 		resource.delete("k");
 		final Map<String, Object> all = resource.findAll();
-		Assert.assertTrue(all.isEmpty());
+		Assertions.assertTrue(all.isEmpty());
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class UserSettingResourceTest extends AbstractBootTest {
 		repository.saveAndFlush(userSetting);
 		em.clear();
 		final Map<String, Object> all = resource.findAll();
-		Assert.assertTrue(all.isEmpty());
+		Assertions.assertTrue(all.isEmpty());
 	}
 
 	private void newSetting() {

@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,7 +25,7 @@ public class JSonMapperTest {
 
 	public static final int ITERATION = 100000;
 
-	@Before
+	@BeforeEach
 	public void initializeMapper() throws IOException {
 		jackSonMapper = new ObjectMapper();
 		warmup();
@@ -52,9 +52,9 @@ public class JSonMapperTest {
 			lastObject = readObject("{\"date\":5}", TestDate.class);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastObject);
-		Assert.assertNotNull(lastObject.getDate());
-		Assert.assertEquals(5L, lastObject.getDate().getTime());
+		Assertions.assertNotNull(lastObject);
+		Assertions.assertNotNull(lastObject.getDate());
+		Assertions.assertEquals(5L, lastObject.getDate().getTime());
 		log.info("read-date\t" + (end - start));
 	}
 
@@ -68,8 +68,8 @@ public class JSonMapperTest {
 			lastValue = writeValue(lastObject);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastValue);
-		Assert.assertEquals(readObject(lastValue, TestDate.class), lastObject);
+		Assertions.assertNotNull(lastValue);
+		Assertions.assertEquals(readObject(lastValue, TestDate.class), lastObject);
 		log.info("write-date\t" + (end - start));
 	}
 
@@ -92,9 +92,9 @@ public class JSonMapperTest {
 					TestLong.class);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastObject);
-		Assert.assertNotNull(lastObject.getNumberLong());
-		Assert.assertEquals(6L, lastObject.getNumberLong().longValue());
+		Assertions.assertNotNull(lastObject);
+		Assertions.assertNotNull(lastObject.getNumberLong());
+		Assertions.assertEquals(6L, lastObject.getNumberLong().longValue());
 		log.info("read-long\t" + (end - start));
 	}
 
@@ -108,8 +108,8 @@ public class JSonMapperTest {
 			lastValue = writeValue(lastObject);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastValue);
-		Assert.assertEquals(readObject(lastValue, TestLong.class), lastObject);
+		Assertions.assertNotNull(lastValue);
+		Assertions.assertEquals(readObject(lastValue, TestLong.class), lastObject);
 		log.info("write-long\t" + (end - start));
 	}
 
@@ -136,9 +136,9 @@ public class JSonMapperTest {
 			lastObject = readObject(value, TestStringArray.class);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastObject);
-		Assert.assertNotNull(lastObject.getArray());
-		Assert.assertEquals(100, lastObject.getArray().size());
+		Assertions.assertNotNull(lastObject);
+		Assertions.assertNotNull(lastObject.getArray());
+		Assertions.assertEquals(100, lastObject.getArray().size());
 		log.info("read-string-list\t" + (end - start));
 	}
 
@@ -156,8 +156,8 @@ public class JSonMapperTest {
 			lastValue = writeValue(lastObject);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastValue);
-		Assert.assertEquals(readObject(lastValue, TestStringArray.class), lastObject);
+		Assertions.assertNotNull(lastValue);
+		Assertions.assertEquals(readObject(lastValue, TestStringArray.class), lastObject);
 		log.info("write-string-list\t" + (end - start));
 	}
 
@@ -184,9 +184,9 @@ public class JSonMapperTest {
 			lastObject = readObject(value, TestGenericArray.class);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastObject);
-		Assert.assertNotNull(lastObject.getArray());
-		Assert.assertEquals(100, lastObject.getArray().size());
+		Assertions.assertNotNull(lastObject);
+		Assertions.assertNotNull(lastObject.getArray());
+		Assertions.assertEquals(100, lastObject.getArray().size());
 		log.info("read-generic-list\t" + (end - start));
 	}
 
@@ -206,8 +206,8 @@ public class JSonMapperTest {
 			lastValue = writeValue(lastObject);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastValue);
-		Assert.assertEquals(readObject(lastValue, TestGenericArray.class), lastObject);
+		Assertions.assertNotNull(lastValue);
+		Assertions.assertEquals(readObject(lastValue, TestGenericArray.class), lastObject);
 		log.info("write-generic-list\t" + (end - start));
 	}
 
@@ -236,12 +236,12 @@ public class JSonMapperTest {
 			lastObject = (List<Map<Object, Object>>) readObject(value, List.class);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastObject);
-		Assert.assertEquals(20, lastObject.size());
+		Assertions.assertNotNull(lastObject);
+		Assertions.assertEquals(20, lastObject.size());
 		final Map<Object, Object> object = lastObject.get(0);
-		Assert.assertNotNull(object);
-		Assert.assertEquals("Val", object.get("value"));
-		Assert.assertEquals(6, ((Integer) object.get("key")).intValue());
+		Assertions.assertNotNull(object);
+		Assertions.assertEquals("Val", object.get("value"));
+		Assertions.assertEquals(6, ((Integer) object.get("key")).intValue());
 		log.info("read-generic-object-array\t" + (end - start));
 	}
 
@@ -260,8 +260,8 @@ public class JSonMapperTest {
 			lastValue = writeValue(lastObject);
 		}
 		final long end = System.currentTimeMillis();
-		Assert.assertNotNull(lastValue);
-		Assert.assertArrayEquals(lastObject, readObject(lastValue, TestGenericObjectArray[].class));
+		Assertions.assertNotNull(lastValue);
+		Assertions.assertArrayEquals(lastObject, readObject(lastValue, TestGenericObjectArray[].class));
 		log.info("write-generic-object-array\t" + (end - start));
 	}
 

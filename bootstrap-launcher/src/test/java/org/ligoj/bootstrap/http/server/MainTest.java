@@ -1,13 +1,10 @@
 package org.ligoj.bootstrap.http.server;
 
-import org.junit.Assert;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.ligoj.bootstrap.http.server.Main;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class of {@link Main}
@@ -15,17 +12,17 @@ import org.ligoj.bootstrap.http.server.Main;
  */
 public class MainTest {
 
-	@Before
+	@BeforeEach
 	public void init() {
 		MainTest.cleanup();
 	}
 
-	@After
+	@AfterEach
 	public void cleanupInstance() {
 		MainTest.cleanup();
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanup() {
 		System.clearProperty("jetty.properties");
 		System.clearProperty("jetty.xml");
@@ -38,9 +35,9 @@ public class MainTest {
 	public void testNoPropertiesFile() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/no.properties");
 		final Main main = new Main();
-		Assert.assertFalse(main.getServer().isStarting());
-		Assert.assertFalse(main.getServer().isStopping());
-		Assert.assertFalse(main.getServer().isStarted());
+		Assertions.assertFalse(main.getServer().isStarting());
+		Assertions.assertFalse(main.getServer().isStopping());
+		Assertions.assertFalse(main.getServer().isStarted());
 	}
 
 	/**
@@ -51,9 +48,9 @@ public class MainTest {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-empty-test.properties");
 		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
 		final Main main = new Main();
-		Assert.assertFalse(main.getServer().isStarting());
-		Assert.assertFalse(main.getServer().isStopping());
-		Assert.assertFalse(main.getServer().isStarted());
+		Assertions.assertFalse(main.getServer().isStarting());
+		Assertions.assertFalse(main.getServer().isStopping());
+		Assertions.assertFalse(main.getServer().isStarted());
 	}
 
 	/**
@@ -65,9 +62,9 @@ public class MainTest {
 		System.setProperty("jetty.xml", "META-INF/jetty/jetty-fail-test.xml");
 		try {
 			Main.main();
-			Assert.fail("Server should faild to start");
+			Assertions.fail("Server should faild to start");
 		} catch (java.lang.NoSuchMethodException nsme) {
-			Assert.assertEquals("class org.eclipse.jetty.server.Server.setUnknownProperty(class java.lang.Object)", nsme.getMessage());
+			Assertions.assertEquals("class org.eclipse.jetty.server.Server.setUnknownProperty(class java.lang.Object)", nsme.getMessage());
 		}
 	}
 
@@ -87,18 +84,18 @@ public class MainTest {
 				try {
 					Main.main();
 				} catch (final Exception e) {
-					Assert.fail("Server failed to start"); // NOSONAR - This a special thread
+					Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
 				}
 			}
 		});
 		thread.start();
 		Thread.sleep(1500); // NOSONAR -- Have to pause the thread for the test
-		Assert.assertTrue(Main.getLastStartedServer().isStarted());
+		Assertions.assertTrue(Main.getLastStartedServer().isStarted());
 		thread.stop();
-		Assert.assertTrue(Main.getLastStartedServer().isRunning());
+		Assertions.assertTrue(Main.getLastStartedServer().isRunning());
 		Thread.sleep(500); // NOSONAR -- Have to pause the thread for the test
 		Main.getLastStartedServer().stop();
-		Assert.assertTrue(Main.getLastStartedServer().isStopped());
+		Assertions.assertTrue(Main.getLastStartedServer().isStopped());
 	}
 
 
@@ -117,14 +114,14 @@ public class MainTest {
 				try {
 					Main.main();
 				} catch (final Exception e) {
-					Assert.fail("Server failed to start"); // NOSONAR - This a special thread
+					Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
 				}
 			}
 		});
 		thread.start();
 		Thread.sleep(1500); // NOSONAR -- Have to pause the thread for the test
-		Assert.assertTrue(Main.getLastStartedServer().isStarted());
+		Assertions.assertTrue(Main.getLastStartedServer().isStarted());
 		Main.getLastStartedServer().stop();
-		Assert.assertTrue(Main.getLastStartedServer().isStopped());
+		Assertions.assertTrue(Main.getLastStartedServer().isStopped());
 	}
 }

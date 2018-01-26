@@ -9,25 +9,24 @@ import java.util.Map;
 
 import javax.persistence.criteria.JoinType;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.dao.system.DialectRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.svenjacobs.loremipsum.LoremIpsum;
 
 /**
  * {@link RestRepositoryImpl} class test.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Autowired
@@ -41,7 +40,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	private int lastKnownEntity;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		final LoremIpsum loremIpsum = new LoremIpsum();
 		SystemDialect dial1 = new SystemDialect();
@@ -70,17 +69,19 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	@Test
 	public void findOneExpected() {
 		final SystemDialect dialect = repository.findOne(lastKnownEntity);
-		Assert.assertNotNull(dialect);
-		Assert.assertNotNull(dialect.getLink());
-		Assert.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
+		Assertions.assertNotNull(dialect);
+		Assertions.assertNotNull(dialect.getLink());
+		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
 	}
 
 	/**
 	 * Find one without expected result.
 	 */
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void findOneExpectedError() {
-		repository.findOneExpected(-1);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			repository.findOneExpected(-1);
+		});
 	}
 
 	/**
@@ -92,9 +93,9 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		fetch.put("link", JoinType.LEFT);
 		fetch.put("link.children", JoinType.LEFT);
 		final SystemDialect dialect = repository.findOneExpected(lastKnownEntity, fetch);
-		Assert.assertNotNull(dialect);
-		Assert.assertNotNull(dialect.getLink());
-		Assert.assertTrue(isLazyInitialized(dialect.getLink().getChildren()));
+		Assertions.assertNotNull(dialect);
+		Assertions.assertNotNull(dialect.getLink());
+		Assertions.assertTrue(isLazyInitialized(dialect.getLink().getChildren()));
 	}
 
 	/**
@@ -103,9 +104,9 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	@Test
 	public void findOneExpectedEmptyFetch() {
 		final SystemDialect dialect = repository.findOneExpected(lastKnownEntity, null);
-		Assert.assertNotNull(dialect);
-		Assert.assertNotNull(dialect.getLink());
-		Assert.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
+		Assertions.assertNotNull(dialect);
+		Assertions.assertNotNull(dialect.getLink());
+		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
 	}
 
 	/**
@@ -120,8 +121,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.clear();
 
 		role = roleRepository.findByName("name");
-		Assert.assertNotNull(role);
-		Assert.assertEquals("name", role.getName());
+		Assertions.assertNotNull(role);
+		Assertions.assertEquals("name", role.getName());
 	}
 
 	@Test
@@ -132,8 +133,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		Assert.assertEquals(1, roleRepository.countBy("name", "john"));
-		Assert.assertEquals(0, roleRepository.countBy("name", "any"));
+		Assertions.assertEquals(1, roleRepository.countBy("name", "john"));
+		Assertions.assertEquals(0, roleRepository.countBy("name", "any"));
 	}
 
 	/**
@@ -151,9 +152,9 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.clear();
 
 		List<SystemRole> roles = roleRepository.findAllBy("name", "value1");
-		Assert.assertNotNull(roles);
-		Assert.assertEquals(1, roles.size());
-		Assert.assertEquals("value1", roles.get(0).getName());
+		Assertions.assertNotNull(roles);
+		Assertions.assertEquals(1, roles.size());
+		Assertions.assertEquals("value1", roles.get(0).getName());
 	}
 
 	/**
@@ -161,7 +162,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	@Test
 	public void findByNameNull() {
-		Assert.assertNull(roleRepository.findByName("any"));
+		Assertions.assertNull(roleRepository.findByName("any"));
 	}
 
 	/**
@@ -176,128 +177,136 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.clear();
 
 		role = roleRepository.findByNameExpected("name");
-		Assert.assertNotNull(role);
-		Assert.assertEquals("name", role.getName());
+		Assertions.assertNotNull(role);
+		Assertions.assertEquals("name", role.getName());
 	}
 
 	/**
 	 * Find by name without expected result.
 	 */
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void findByNameExpectedError() {
-		roleRepository.findByNameExpected("any");
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			roleRepository.findByNameExpected("any");
+		});
 	}
 
 	@Test
 	public void deleteAllNoFetch() {
 		SystemDialect systemDialect = repository.findAll().get(1);
-		Assert.assertFalse(repository.findAll().isEmpty());
-		Assert.assertTrue(repository.deleteAllNoFetch() > 2);
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertTrue(repository.deleteAllNoFetch() > 2);
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
-		Assert.assertTrue(repository.findAll().isEmpty());
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertTrue(repository.findAll().isEmpty());
 	}
 
 	@Test
 	public void deleteAllIdentifiers() {
 		SystemDialect systemDialect = repository.findAll().get(1);
-		Assert.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
 		list.add(-1);
-		Assert.assertEquals(1, repository.deleteAll(list));
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertEquals(1, repository.deleteAll(list));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test
 	public void deleteAllBy() {
 		SystemDialect systemDialect = repository.findAll().get(1);
-		Assert.assertFalse(repository.findAll().isEmpty());
-		Assert.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId()));
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
 	@Test
 	public void deleteAllExpected() {
 		final SystemDialect systemDialect = repository.findAll().get(1);
-		Assert.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
 		repository.deleteAllExpected(list);
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void deleteAllExpectedFailed() {
 		final SystemDialect systemDialect = repository.findAll().get(1);
-		Assert.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
 		list.add(-1);
-		repository.deleteAllExpected(list);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			repository.deleteAllExpected(list);
+		});
 	}
 
 	@Test
 	public void deleteAllIdentifiersEmpty() {
 		int size = repository.findAll().size();
-		Assert.assertEquals(0, repository.deleteAll(new ArrayList<Integer>()));
-		Assert.assertEquals(size, repository.findAll().size());
+		Assertions.assertEquals(0, repository.deleteAll(new ArrayList<Integer>()));
+		Assertions.assertEquals(size, repository.findAll().size());
 		em.flush();
 		em.clear();
-		Assert.assertEquals(size, repository.findAll().size());
+		Assertions.assertEquals(size, repository.findAll().size());
 	}
 
 	@Test
 	public void deleteAllIdentifiersNull() {
 		int size = repository.findAll().size();
-		Assert.assertEquals(0, repository.deleteAll((Collection<Integer>) null));
-		Assert.assertEquals(size, repository.findAll().size());
+		Assertions.assertEquals(0, repository.deleteAll((Collection<Integer>) null));
+		Assertions.assertEquals(size, repository.findAll().size());
 		em.flush();
 		em.clear();
-		Assert.assertEquals(size, repository.findAll().size());
+		Assertions.assertEquals(size, repository.findAll().size());
 	}
 
 	@Test
 	public void deleteExpected() {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		repository.deleteById(systemDialect.getId());
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
-	@Test(expected = EmptyResultDataAccessException.class)
+	@Test
 	public void deleteExpectedError() {
-		repository.deleteById(-1);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			repository.deleteById(-1);
+		});
 	}
 
 	@Test
 	public void deleteNoFetch() {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
 		em.clear();
-		Assert.assertFalse(repository.existsById(systemDialect.getId()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 	}
 
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void deleteNoFetchError() {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
-		repository.deleteNoFetch(systemDialect.getId());
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			repository.deleteNoFetch(systemDialect.getId());
+		});
 	}
 
 	@Test
@@ -306,9 +315,11 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		repository.existExpected(systemDialect.getId());
 	}
 
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void existExpectedFail() {
-		repository.existExpected(-1);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			repository.existExpected(-1);
+		});
 	}
 
 }

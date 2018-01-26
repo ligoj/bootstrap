@@ -23,6 +23,6 @@ public class TAbstractSeleniumITCase extends AbstractSeleniumTest {
 	@Test
 	public void testExtractScreenShot() {
 		driver.get("https://www.google.com");
-		Assert.assertEquals("Google", driver.getTitle());
+		Assertions.assertEquals("Google", driver.getTitle());
 	}
 }

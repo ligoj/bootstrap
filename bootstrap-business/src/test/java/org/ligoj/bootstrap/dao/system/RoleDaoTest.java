@@ -2,19 +2,19 @@ package org.ligoj.bootstrap.dao.system;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link SystemRoleRepository}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class RoleDaoTest extends AbstractBootTest {
 
 	/**
@@ -23,13 +23,13 @@ public class RoleDaoTest extends AbstractBootTest {
 	@Autowired
 	private SystemRoleRepository repository;
 
-	@Before
+	@BeforeEach
 	public void prepareData() throws IOException {
 		persistEntities(SystemRole.class, "csv/system-test/role.csv");
 	}
 
 	@Test
 	public void testFindAllSN1() {
-		Assert.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertFalse(repository.findAll().isEmpty());
 	}
 }

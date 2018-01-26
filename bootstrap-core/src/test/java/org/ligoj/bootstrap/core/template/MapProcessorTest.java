@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**
@@ -26,7 +25,7 @@ public class MapProcessorTest {
 		contextData.add(systemUser);
 		final Map<String, String> map = new HashMap<>();
 		map.put("any", "value");
-		Assert.assertEquals("value", new MapProcessor<>(map, SystemUser.class, "login").getValue(contextData));
+		Assertions.assertEquals("value", new MapProcessor<>(map, SystemUser.class, "login").getValue(contextData));
 	}
 
 }

@@ -10,10 +10,10 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.dao.DataIntegrityViolationException;
-
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.resource.ServerError;
+import org.springframework.dao.DataIntegrityViolationException;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

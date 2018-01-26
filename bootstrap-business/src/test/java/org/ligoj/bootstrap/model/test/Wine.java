@@ -7,8 +7,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Length;
-
 import org.ligoj.bootstrap.core.model.AbstractPersistable;
+
 import lombok.Getter;
 import lombok.Setter;
 

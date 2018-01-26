@@ -1,6 +1,7 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
 import org.ligoj.bootstrap.core.NamedBean;
+
 import lombok.Getter;
 import lombok.Setter;
 

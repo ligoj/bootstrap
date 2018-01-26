@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.core.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.NamedBean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,7 +33,7 @@ public class ToNameSerializerTest {
 	public void serialize() throws JsonProcessingException {
 		final BeanA bean = new BeanA();
 		bean.setName("john");
-		Assert.assertEquals("{\"entity\":\"john\"}", new ObjectMapper().writeValueAsString(new Bean(bean)));
+		Assertions.assertEquals("{\"entity\":\"john\"}", new ObjectMapper().writeValueAsString(new Bean(bean)));
 	}
 
 }

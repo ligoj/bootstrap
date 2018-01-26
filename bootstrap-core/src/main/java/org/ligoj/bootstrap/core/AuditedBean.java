@@ -1,11 +1,9 @@
 package org.ligoj.bootstrap.core;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Date;
 import java.util.function.Function;
 
-import org.joda.time.DateTime;
 import org.ligoj.bootstrap.core.model.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -87,50 +85,6 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 			this.createdBy = userConverter.apply(from.getCreatedBy());
 			this.lastModifiedBy = userConverter.apply(from.getLastModifiedBy());
 		}
-	}
-
-	/**
-	 * Null safe {@link DateTime} to {@link Date} conversion.
-	 * 
-	 * @param date
-	 *            {@link DateTime} object.
-	 * @return {@link Date} value or null.
-	 */
-	public static Date toDate(final DateTime date) {
-		return date == null ? null : date.toDate();
-	}
-
-	/**
-	 * Null safe {@link Instant} to {@link Date} conversion.
-	 * 
-	 * @param date
-	 *            {@link Instant} object.
-	 * @return {@link Date} value or null.
-	 */
-	public static Date toDate(final Instant instant) {
-		return instant == null ? null : Date.from(instant);
-	}
-
-	/**
-	 * Null safe {@link Date} to {@link DateTime} conversion.
-	 * 
-	 * @param date
-	 *            {@link Date} object.
-	 * @return {@link DateTime} value or null.
-	 */
-	public static DateTime toDatetime(final Date date) {
-		return date == null ? null : new DateTime(date);
-	}
-
-	/**
-	 * Null safe {@link Date} to {@link Instant} conversion.
-	 * 
-	 * @param date
-	 *            {@link Date} object.
-	 * @return {@link Instant} value or null.
-	 */
-	public static Instant toInstant(final Date date) {
-		return date == null ? null : date.toInstant();
 	}
 
 	/**

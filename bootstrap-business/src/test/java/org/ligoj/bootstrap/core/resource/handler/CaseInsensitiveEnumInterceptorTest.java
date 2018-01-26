@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.core.resource.handler;
 
 import org.apache.cxf.message.Message;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**

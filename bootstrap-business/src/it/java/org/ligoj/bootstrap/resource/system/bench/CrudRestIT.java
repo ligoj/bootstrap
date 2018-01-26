@@ -57,7 +57,7 @@ public class CrudRestIT extends AbstractRestTest {
 	/**
 	 * server creation.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void startServer() {
 		server = new CrudRestIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
@@ -84,9 +84,9 @@ public class CrudRestIT extends AbstractRestTest {
 				ContentType.APPLICATION_JSON));
 		final HttpResponse response = HTTP_CLIENT.execute(httppost);
 		try {
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertTrue(NumberUtils.isDigits(content));
+			Assertions.assertTrue(NumberUtils.isDigits(content));
 			return Integer.valueOf(content);
 		} finally {
 			response.getEntity().getContent().close();
@@ -99,7 +99,7 @@ public class CrudRestIT extends AbstractRestTest {
 	private void deleteAll() throws IOException {
 		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE);
 		final HttpResponse response = HTTP_CLIENT.execute(httpdelete);
-		Assert.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
+		Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class CrudRestIT extends AbstractRestTest {
 	public void testFindByUnknownId() throws IOException {
 		final HttpGet httpget = new HttpGet(BASE_URI + RESOURCE + "/0");
 		final HttpResponse response = HTTP_CLIENT.execute(httpget);
-		Assert.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
+		Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
 	}
 
 	/**
@@ -127,10 +127,10 @@ public class CrudRestIT extends AbstractRestTest {
 		final HttpGet httpget = new HttpGet(BASE_URI + RESOURCE + "/" + id);
 		final HttpResponse response = HTTP_CLIENT.execute(httpget);
 		try {
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertTrue(content.matches(".*\"id\":\"?" + id + ".*"));
+			Assertions.assertTrue(content.matches(".*\"id\":\"?" + id + ".*"));
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -156,7 +156,7 @@ public class CrudRestIT extends AbstractRestTest {
 				+ "\"region\":\"Southern Rhone / Gigondas\"," + "\"year\":2009,\"picture\":\"saint_cosme.jpg\","
 				+ "\"description\":\"The aromas of fruit ...\"}", ContentType.APPLICATION_JSON));
 		final HttpResponse response = HTTP_CLIENT.execute(httpput);
-		Assert.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
+		Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
 	}
 
 	/**
@@ -168,24 +168,24 @@ public class CrudRestIT extends AbstractRestTest {
 		final HttpGet httpget = new HttpGet(BASE_URI + RESOURCE + FIND_ALL_PARAMETERS);
 		final HttpResponse response = HTTP_CLIENT.execute(httpget);
 		try {
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("1", result.get("draw"));
-			Assert.assertTrue((Integer) result.get("recordsFiltered") > 0);
-			Assert.assertTrue((Integer) result.get("recordsTotal") > 0);
+			Assertions.assertEquals("1", result.get("draw"));
+			Assertions.assertTrue((Integer) result.get("recordsFiltered") > 0);
+			Assertions.assertTrue((Integer) result.get("recordsTotal") > 0);
 			@SuppressWarnings("unchecked")
 			final List<Map<String, Object>> list = (List<Map<String, Object>>) result.get("data");
-			Assert.assertFalse(list.isEmpty());
+			Assertions.assertFalse(list.isEmpty());
 			final Map<String, Object> item = list.get(0);
-			Assert.assertTrue((Integer) item.get("id") >= 0);
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("name")));
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("grapes")));
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("region")));
-			Assert.assertTrue((Integer) item.get("year") > 0);
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("picture")));
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("description")));
+			Assertions.assertTrue((Integer) item.get("id") >= 0);
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("name")));
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("grapes")));
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("region")));
+			Assertions.assertTrue((Integer) item.get("year") > 0);
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("picture")));
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("description")));
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -200,24 +200,24 @@ public class CrudRestIT extends AbstractRestTest {
 		final HttpGet httpget = new HttpGet(BASE_URI + RESOURCE + "/query/alias" + FIND_ALL_PARAMETERS);
 		final HttpResponse response = HTTP_CLIENT.execute(httpget);
 		try {
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("1", result.get("draw"));
-			Assert.assertTrue((Integer) result.get("recordsFiltered") > 0);
-			Assert.assertTrue((Integer) result.get("recordsTotal") > 0);
+			Assertions.assertEquals("1", result.get("draw"));
+			Assertions.assertTrue((Integer) result.get("recordsFiltered") > 0);
+			Assertions.assertTrue((Integer) result.get("recordsTotal") > 0);
 			@SuppressWarnings("unchecked")
 			final List<Map<String, Object>> list = (List<Map<String, Object>>) result.get("data");
-			Assert.assertFalse(list.isEmpty());
+			Assertions.assertFalse(list.isEmpty());
 			final Map<String, Object> item = list.get(0);
-			Assert.assertTrue((Integer) item.get("id") >= 0);
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("name")));
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("grapes")));
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("region")));
-			Assert.assertTrue((Integer) item.get("year") > 0);
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("picture")));
-			Assert.assertTrue(StringUtils.isNotEmpty((String) item.get("description")));
+			Assertions.assertTrue((Integer) item.get("id") >= 0);
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("name")));
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("grapes")));
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("region")));
+			Assertions.assertTrue((Integer) item.get("year") > 0);
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("picture")));
+			Assertions.assertTrue(StringUtils.isNotEmpty((String) item.get("description")));
 		} finally {
 			response.getEntity().getContent().close();
 		}
@@ -241,7 +241,7 @@ public class CrudRestIT extends AbstractRestTest {
 		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/" + id);
 		final HttpResponse response = HTTP_CLIENT.execute(httpdelete);
 		try {
-			Assert.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
 		} finally {
 			if (response.getEntity() != null) {
 				response.getEntity().getContent().close();
@@ -317,7 +317,7 @@ public class CrudRestIT extends AbstractRestTest {
 	/**
 	 * Clean objects
 	 */
-	@Before
+	@BeforeEach
 	public void cleanup() throws Exception {
 		deleteAll();
 	}
@@ -325,7 +325,7 @@ public class CrudRestIT extends AbstractRestTest {
 	/**
 	 * shutdown server
 	 */
-	@AfterClass
+	@AfterAll
 	public static void tearDown() throws Exception {
 		server.stop();
 	}

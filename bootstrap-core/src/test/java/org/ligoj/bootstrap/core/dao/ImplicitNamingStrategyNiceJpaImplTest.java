@@ -17,8 +17,8 @@ import org.hibernate.boot.spi.InFlightMetadataCollector;
 import org.hibernate.boot.spi.MetadataBuildingContext;
 import org.hibernate.engine.jdbc.env.spi.IdentifierHelper;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -40,7 +40,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
 
-		Assert.assertEquals("UK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
+		Assertions.assertEquals("UK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(attributePath.getProperty()).thenReturn("myProperty");
 		Mockito.when(source.getAttributePath()).thenReturn(attributePath);
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineAnyKeyColumnName(source);
-		Assert.assertEquals("my_property", identifier.getText());
+		Assertions.assertEquals("my_property", identifier.getText());
 	}
 
 	private void mockContext(final ImplicitNameSource source) {
@@ -82,7 +82,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ELEMENT_COLLECTION);
 		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
-		Assert.assertEquals("MyTa_ble", identifier.getText());
+		Assertions.assertEquals("MyTa_ble", identifier.getText());
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ENTITY);
 		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
-		Assert.assertEquals("MyTa_ble", identifier.getText());
+		Assertions.assertEquals("MyTa_ble", identifier.getText());
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(source.getAttributePath()).thenReturn(attributePath);
 		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
-		Assert.assertEquals("my_property", identifier.getText());
+		Assertions.assertEquals("my_property", identifier.getText());
 	}
 	
 	@Test
@@ -117,7 +117,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(source.getAssociationOwningAttributePath()).thenReturn(attributePath);
 		Mockito.when(source.getOwningPhysicalTableName()).thenReturn("Table1");
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinTableName(source);
-		Assert.assertEquals("Table1_my_property", identifier.getText());
+		Assertions.assertEquals("Table1_my_property", identifier.getText());
 	}
 	@Test
 	public void determineForeignKeyName() {
@@ -129,7 +129,7 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn2"));
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
 		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineForeignKeyName(source);
-		Assert.assertEquals("FK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
+		Assertions.assertEquals("FK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
 	}
 	
 	

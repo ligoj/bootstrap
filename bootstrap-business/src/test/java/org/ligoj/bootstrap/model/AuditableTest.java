@@ -6,21 +6,21 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.AuditedBean;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.model.Auditable;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.model.system.SystemBench;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Audit test
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AuditableTest extends AbstractBootTest {
 
 	/**
@@ -35,10 +35,10 @@ public class AuditableTest extends AbstractBootTest {
 	@Test
 	public void testNullAudit() {
 		final SystemBench entity = new SystemBench();
-		Assert.assertNull(entity.getCreatedBy());
-		Assert.assertNull(entity.getCreatedDate());
-		Assert.assertNull(entity.getLastModifiedBy());
-		Assert.assertNull(entity.getLastModifiedDate());
+		Assertions.assertNull(entity.getCreatedBy());
+		Assertions.assertNull(entity.getCreatedDate());
+		Assertions.assertNull(entity.getLastModifiedBy());
+		Assertions.assertNull(entity.getLastModifiedDate());
 	}
 
 	/**
@@ -50,11 +50,11 @@ public class AuditableTest extends AbstractBootTest {
 		final SystemBench entity = new SystemBench();
 		em.persist(entity);
 		em.flush();
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getCreatedBy());
-		Assert.assertNotNull(entity.getCreatedDate());
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getLastModifiedBy());
-		Assert.assertNotNull(entity.getLastModifiedDate());
-		Assert.assertEquals(entity.getLastModifiedDate(), entity.getCreatedDate());
+		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getCreatedBy());
+		Assertions.assertNotNull(entity.getCreatedDate());
+		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getLastModifiedBy());
+		Assertions.assertNotNull(entity.getLastModifiedDate());
+		Assertions.assertEquals(entity.getLastModifiedDate(), entity.getCreatedDate());
 	}
 
 	/**
@@ -69,11 +69,11 @@ public class AuditableTest extends AbstractBootTest {
 		SecurityContextHolder.clearContext();
 		entity.setPrfBool(true);
 		em.flush();
-		Assert.assertEquals(DEFAULT_USER, entity.getCreatedBy());
-		Assert.assertNotNull(entity.getCreatedDate());
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getLastModifiedBy());
-		Assert.assertNotNull(entity.getLastModifiedDate());
-		Assert.assertNotEquals(entity.getLastModifiedDate(),entity.getCreatedDate());
+		Assertions.assertEquals(DEFAULT_USER, entity.getCreatedBy());
+		Assertions.assertNotNull(entity.getCreatedDate());
+		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getLastModifiedBy());
+		Assertions.assertNotNull(entity.getLastModifiedDate());
+		Assertions.assertNotEquals(entity.getLastModifiedDate(),entity.getCreatedDate());
 	}
 
 	/**
@@ -100,11 +100,11 @@ public class AuditableTest extends AbstractBootTest {
 
 		// Reload the entity to check the state
 		entityUpdate = em.find(SystemBench.class,entity.getId());
-		Assert.assertEquals(DEFAULT_USER, entityUpdate.getCreatedBy());
-		Assert.assertNotNull(entityUpdate.getCreatedDate());
-		Assert.assertEquals(SecurityHelper.SYSTEM_USERNAME, entityUpdate.getLastModifiedBy());
-		Assert.assertNotNull(entityUpdate.getLastModifiedDate());
-		Assert.assertNotEquals(entityUpdate.getLastModifiedDate(),entityUpdate.getCreatedDate());
+		Assertions.assertEquals(DEFAULT_USER, entityUpdate.getCreatedBy());
+		Assertions.assertNotNull(entityUpdate.getCreatedDate());
+		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, entityUpdate.getLastModifiedBy());
+		Assertions.assertNotNull(entityUpdate.getLastModifiedDate());
+		Assertions.assertNotEquals(entityUpdate.getLastModifiedDate(),entityUpdate.getCreatedDate());
 	}
 
 	/**
@@ -119,10 +119,10 @@ public class AuditableTest extends AbstractBootTest {
 		object.setCreatedDate(new Date());
 		object.setLastModifiedDate(new Date());
 		auditedVo.copyAuditData(object);
-		Assert.assertEquals(DEFAULT_USER, auditedVo.getCreatedBy());
-		Assert.assertEquals(DEFAULT_ROLE, auditedVo.getLastModifiedBy());
-		Assert.assertEquals(object.getCreatedDate(), auditedVo.getCreatedDate());
-		Assert.assertEquals(object.getLastModifiedDate(), auditedVo.getLastModifiedDate());
+		Assertions.assertEquals(DEFAULT_USER, auditedVo.getCreatedBy());
+		Assertions.assertEquals(DEFAULT_ROLE, auditedVo.getLastModifiedBy());
+		Assertions.assertEquals(object.getCreatedDate(), auditedVo.getCreatedDate());
+		Assertions.assertEquals(object.getLastModifiedDate(), auditedVo.getLastModifiedDate());
 	}
 
 	/**
@@ -132,10 +132,10 @@ public class AuditableTest extends AbstractBootTest {
 	public void testAuditVoNull() {
 		final AuditedBean<String, Integer> auditedVo = new AuditedBean<>();
 		auditedVo.copyAuditData(null);
-		Assert.assertNull(auditedVo.getCreatedBy());
-		Assert.assertNull(auditedVo.getLastModifiedBy());
-		Assert.assertNull(auditedVo.getCreatedDate());
-		Assert.assertNull(auditedVo.getLastModifiedDate());
+		Assertions.assertNull(auditedVo.getCreatedBy());
+		Assertions.assertNull(auditedVo.getLastModifiedBy());
+		Assertions.assertNull(auditedVo.getCreatedDate());
+		Assertions.assertNull(auditedVo.getLastModifiedDate());
 	}
 
 	/**
@@ -158,10 +158,10 @@ public class AuditableTest extends AbstractBootTest {
 		from.setLastModifiedDate(new Date());
 		final SystemBench to = new SystemBench();
 		AuditedBean.copyAuditData(from, to);
-		Assert.assertEquals(DEFAULT_USER, to.getCreatedBy());
-		Assert.assertEquals(DEFAULT_ROLE, to.getLastModifiedBy());
-		Assert.assertEquals(from.getCreatedDate(), to.getCreatedDate());
-		Assert.assertEquals(from.getLastModifiedDate(), to.getLastModifiedDate());
+		Assertions.assertEquals(DEFAULT_USER, to.getCreatedBy());
+		Assertions.assertEquals(DEFAULT_ROLE, to.getLastModifiedBy());
+		Assertions.assertEquals(from.getCreatedDate(), to.getCreatedDate());
+		Assertions.assertEquals(from.getLastModifiedDate(), to.getLastModifiedDate());
 	}
 
 }

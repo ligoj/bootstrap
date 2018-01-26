@@ -3,12 +3,12 @@ package org.ligoj.bootstrap.http.it;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Test class base supporting parallel executions on different browsers.
@@ -17,7 +17,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSeleniumTest {
 
 	/**
-	 * Retries count for slow browsers do not responding while at least on has already finished its execution.
+	 * Retries count for slow browsers do not responding while at least on has
+	 * already finished its execution.
 	 */
 	private static final int DEFAULT_MAX_RETRY = 100;
 
@@ -32,11 +33,12 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	protected int aliveCheck = DEFAULT_ALIVE_CHECK;
 
 	/**
-	 * Retries count for slow browsers do not responding while at least on has already finished its execution.
+	 * Retries count for slow browsers do not responding while at least on has
+	 * already finished its execution.
 	 */
 	protected int maxRetry = DEFAULT_MAX_RETRY;
 
-	@Before
+	@BeforeEach
 	@Override
 	public void setUpDriver() throws Exception { // NOSONAR -- too much exception
 		super.setUpDriver();
@@ -64,8 +66,8 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 			log.error("Weird Exception during the run ...", e);
 			faillures.add("Weird Exception during the run ...");
 		}
-		Assert.assertTrue("All browsers test failed", faillures.size() != success.length);
-		Assert.assertEquals("Some browsers test failed", 0, faillures.size());
+		Assertions.assertTrue(faillures.size() != success.length, "All browsers test failed");
+		Assertions.assertEquals(0, faillures.size(), "Some browsers test failed");
 	}
 
 	/**
@@ -99,7 +101,8 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	/**
 	 * Monitor a thread
 	 */
-	private void monitorThread(final Thread[] threads, final boolean[] success, final State state, final int index, final WebDriver... drivers) // NOPMD
+	private void monitorThread(final Thread[] threads, final boolean[] success, final State state, final int index,
+			final WebDriver... drivers) // NOPMD
 			throws InterruptedException {
 		final Thread thread = threads[index]; // NOPMD -- thread
 		if (thread != null) {

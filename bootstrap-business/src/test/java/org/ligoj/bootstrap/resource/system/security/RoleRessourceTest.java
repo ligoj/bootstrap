@@ -6,10 +6,10 @@ import java.util.List;
 
 import javax.persistence.TypedQuery;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
@@ -17,12 +17,12 @@ import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link RoleResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class RoleRessourceTest extends AbstractBootTest {
 
 	@Autowired
@@ -32,7 +32,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 
 	private Integer roleTestId;
 
-	@Before
+	@BeforeEach
 	public void setUp2() throws IOException {
 		persistEntities(SystemRole.class, "csv/system-test/role.csv");
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
@@ -49,7 +49,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	@Test
 	public void testFindAll() {
 		final TableItem<SystemRole> result = resource.findAll();
-		Assert.assertEquals(5, result.getData().size());
+		Assertions.assertEquals(5, result.getData().size());
 	}
 
 	/**
@@ -58,8 +58,8 @@ public class RoleRessourceTest extends AbstractBootTest {
 	@Test
 	public void testFindAllFetchAuth() {
 		final TableItem<SystemRoleVo> result = resource.findAllFetchAuth();
-		Assert.assertEquals(5, result.getData().size());
-		Assert.assertEquals(2, result.getData().get(0).getAuthorizations().size());
+		Assertions.assertEquals(5, result.getData().size());
+		Assertions.assertEquals(2, result.getData().get(0).getAuthorizations().size());
 	}
 
 	/**
@@ -68,16 +68,18 @@ public class RoleRessourceTest extends AbstractBootTest {
 	@Test
 	public void testFindById() {
 		final SystemRole result = resource.findById(roleTestId);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(roleTestName, result.getName());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(roleTestName, result.getName());
 	}
 
 	/**
 	 * test find by id service. Id is not in database
 	 */
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void testFindByIdNotFound() {
-		resource.findById(-1);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			resource.findById(-1);
+		});
 	}
 
 	/**
@@ -90,12 +92,12 @@ public class RoleRessourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		final SystemRole result = em.find(SystemRole.class, resultId);
-		Assert.assertNotNull(result);
-		Assert.assertEquals("TEST", result.getName());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals("TEST", result.getName());
 		final SystemAuthorization auth = retrieveAuthQuery(result).getSingleResult();
-		Assert.assertNotNull(auth);
-		Assert.assertEquals(".*", auth.getPattern());
-		Assert.assertEquals(AuthorizationType.API, auth.getType());
+		Assertions.assertNotNull(auth);
+		Assertions.assertEquals(".*", auth.getPattern());
+		Assertions.assertEquals(AuthorizationType.API, auth.getType());
 	}
 
 	/**
@@ -137,12 +139,12 @@ public class RoleRessourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		final SystemRole result = em.find(SystemRole.class, roleTestId);
-		Assert.assertNotNull(result);
-		Assert.assertEquals("TEST", result.getName());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals("TEST", result.getName());
 		final SystemAuthorization auth = retrieveAuthQuery(result).getSingleResult();
-		Assert.assertNotNull(auth);
-		Assert.assertEquals(".*", auth.getPattern());
-		Assert.assertEquals(AuthorizationType.API, auth.getType());
+		Assertions.assertNotNull(auth);
+		Assertions.assertEquals(".*", auth.getPattern());
+		Assertions.assertEquals(AuthorizationType.API, auth.getType());
 
 		// check keep existing auth
 		roleVo.getAuthorizations().get(0).setId(auth.getId());
@@ -151,7 +153,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 		// check result
 		em.flush();
 		em.clear();
-		Assert.assertEquals(2, retrieveAuthQuery(result).getResultList().size());
+		Assertions.assertEquals(2, retrieveAuthQuery(result).getResultList().size());
 
 		// check remove auth
 		roleVo.getAuthorizations().clear();
@@ -159,7 +161,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 		// check result
 		em.flush();
 		em.clear();
-		Assert.assertTrue(retrieveAuthQuery(result).getResultList().isEmpty());
+		Assertions.assertTrue(retrieveAuthQuery(result).getResultList().isEmpty());
 	}
 
 	private TypedQuery<SystemAuthorization> retrieveAuthQuery(final SystemRole result) {
@@ -176,6 +178,6 @@ public class RoleRessourceTest extends AbstractBootTest {
 		// check result
 		em.flush();
 		em.clear();
-		Assert.assertNull(em.find(SystemRole.class, roleTestId));
+		Assertions.assertNull(em.find(SystemRole.class, roleTestId));
 	}
 }

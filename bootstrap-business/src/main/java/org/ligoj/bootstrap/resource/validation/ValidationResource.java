@@ -10,10 +10,9 @@ import javax.validation.metadata.PropertyDescriptor;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import org.ligoj.bootstrap.core.validation.ValidatorBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import org.ligoj.bootstrap.core.validation.ValidatorBean;
 
 /**
  * Validation resource.

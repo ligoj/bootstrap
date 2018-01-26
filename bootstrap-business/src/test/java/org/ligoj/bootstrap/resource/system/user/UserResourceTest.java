@@ -4,22 +4,22 @@ import java.util.Collections;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link UserResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UserResourceTest extends AbstractBootTest {
 
 	@Autowired
@@ -30,7 +30,7 @@ public class UserResourceTest extends AbstractBootTest {
 	/**
 	 * Push a Junit user
 	 */
-	@Before
+	@BeforeEach
 	public void prepare() {
 		// Save ROLE
 		final SystemRole newRole = new SystemRole();
@@ -59,23 +59,23 @@ public class UserResourceTest extends AbstractBootTest {
 	public void findAll() {
 		final UriInfo uriInfo = newUriInfo();
 		final TableItem<String> users = resource.findAll(uriInfo);
-		Assert.assertEquals(1, users.getData().size());
-		Assert.assertEquals(DEFAULT_USER, users.getData().get(0));
+		Assertions.assertEquals(1, users.getData().size());
+		Assertions.assertEquals(DEFAULT_USER, users.getData().get(0));
 	}
 
 	@Test
 	public void findAllWithRoles() {
 		final UriInfo uriInfo = newUriInfo();
 		final TableItem<SystemUserVo> users = resource.findAllWithRoles(uriInfo);
-		Assert.assertEquals(1, users.getData().size());
-		Assert.assertEquals(DEFAULT_USER, users.getData().get(0).getLogin());
-		Assert.assertEquals(DEFAULT_ROLE, users.getData().get(0).getRoles().get(0).getName());
+		Assertions.assertEquals(1, users.getData().size());
+		Assertions.assertEquals(DEFAULT_USER, users.getData().get(0).getLogin());
+		Assertions.assertEquals(DEFAULT_ROLE, users.getData().get(0).getRoles().get(0).getName());
 	}
 
 	@Test
 	public void create() {
 		resource.create(newUser());
-		Assert.assertEquals("fdaugan", resource.findById("fdaugan").getLogin());
+		Assertions.assertEquals("fdaugan", resource.findById("fdaugan").getLogin());
 	}
 
 	@Test
@@ -86,23 +86,23 @@ public class UserResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		SystemUser userDto = resource.findById(DEFAULT_USER);
-		Assert.assertNotNull(userDto);
-		Assert.assertEquals(0, userDto.getRoles().size());
+		Assertions.assertNotNull(userDto);
+		Assertions.assertEquals(0, userDto.getRoles().size());
 		// add role
 		userVo.getRoles().add(defaultRoleId);
 		resource.update(userVo);
 		em.flush();
 		em.clear();
 		userDto = resource.findById(DEFAULT_USER);
-		Assert.assertNotNull(userDto);
-		Assert.assertEquals(1, userDto.getRoles().size());
+		Assertions.assertNotNull(userDto);
+		Assertions.assertEquals(1, userDto.getRoles().size());
 		// nothing to do
 		resource.update(userVo);
 		em.flush();
 		em.clear();
 		userDto = resource.findById(DEFAULT_USER);
-		Assert.assertNotNull(userDto);
-		Assert.assertEquals(1, userDto.getRoles().size());
+		Assertions.assertNotNull(userDto);
+		Assertions.assertEquals(1, userDto.getRoles().size());
 	}
 
 	/**
@@ -111,8 +111,8 @@ public class UserResourceTest extends AbstractBootTest {
 	@Test
 	public void findById() {
 		final SystemUser userDto = resource.findById(DEFAULT_USER);
-		Assert.assertNotNull(userDto);
-		Assert.assertEquals(DEFAULT_USER, userDto.getLogin());
+		Assertions.assertNotNull(userDto);
+		Assertions.assertEquals(DEFAULT_USER, userDto.getLogin());
 	}
 
 	/**

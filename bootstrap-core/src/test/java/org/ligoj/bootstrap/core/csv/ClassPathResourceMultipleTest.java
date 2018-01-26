@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.csv.ClassPathResourceMultiple;
 
 /**
@@ -19,7 +18,7 @@ public class ClassPathResourceMultipleTest {
 	public void testGetInputStream2Paths() throws IOException {
 		final ClassPathResourceMultiple resource = new ClassPathResourceMultiple("csv/demo", DummyEntity.class);
 		InputStream stream = resource.getInputStream();
-		Assert.assertNotNull(stream);
+		Assertions.assertNotNull(stream);
 		IOUtils.closeQuietly(stream);
 	}
 
@@ -27,13 +26,15 @@ public class ClassPathResourceMultipleTest {
 	public void testGetInputStream1Path() throws IOException {
 		final ClassPathResourceMultiple resource = new ClassPathResourceMultiple("csv/demo", dummyminus.class);
 		InputStream stream = resource.getInputStream();
-		Assert.assertNotNull(stream);
+		Assertions.assertNotNull(stream);
 		IOUtils.closeQuietly(stream);
 	}
 
-	@Test(expected = FileNotFoundException.class)
+	@Test
 	public void testGetInputStreamNotFound() throws IOException {
 		final ClassPathResourceMultiple resource = new ClassPathResourceMultiple("csv/demo", DummyEntity3.class);
-		IOUtils.closeQuietly(resource.getInputStream());
+		Assertions.assertThrows(FileNotFoundException.class, () -> {
+			IOUtils.closeQuietly(resource.getInputStream());
+		});
 	}
 }

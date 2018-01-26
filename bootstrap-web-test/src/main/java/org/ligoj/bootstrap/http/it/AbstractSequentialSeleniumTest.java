@@ -3,12 +3,12 @@ package org.ligoj.bootstrap.http.it;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Test class base supporting sequential executions on different browsers.
@@ -16,7 +16,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 @Slf4j
 public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableSeleniumTest {
 
-	@Before
+	@BeforeEach
 	@Override
 	public void setUpDriver() throws Exception { // NOPMD -- too much exception
 		super.setUpDriver();
@@ -37,8 +37,8 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 		}
 
 		final List<String> faillures = checkResults(success);
-		Assert.assertTrue("All browsers test failed", faillures.size() != success.length);
-		Assert.assertEquals("Some browsers test failed", 0, faillures.size());
+		Assertions.assertTrue(faillures.size() != success.length, "All browsers test failed");
+		Assertions.assertEquals(0, faillures.size(), "Some browsers test failed");
 	}
 
 	/**
@@ -58,7 +58,8 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 	/**
 	 * Run a capability.
 	 */
-	private void runSequentialIndex(final WebDriver[] drivers, final boolean[] success, final int driverIndex, final DesiredCapabilities capability) {
+	private void runSequentialIndex(final WebDriver[] drivers, final boolean[] success, final int driverIndex,
+			final DesiredCapabilities capability) {
 		AbstractSequentialSeleniumTest seleniumTest = this;
 		try {
 			final WebDriver driver = getRemoteDriver(capability);

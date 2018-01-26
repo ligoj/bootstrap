@@ -1,7 +1,6 @@
 package org.ligoj.bootstrap.model;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**

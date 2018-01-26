@@ -46,7 +46,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	/**
 	 * server creation.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void startServer() {
 		server = new ExceptionMapperIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
@@ -60,12 +60,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("internal", result.get("code"));
-			Assert.assertNull(result.get("message"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("internal", result.get("code"));
+			Assertions.assertNull(result.get("message"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -82,12 +82,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("internal", result.get("code"));
-			Assert.assertNull(result.get("message"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("internal", result.get("code"));
+			Assertions.assertNull(result.get("message"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -104,12 +104,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("internal", result.get("code"));
-			Assert.assertNull(result.get("message"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("internal", result.get("code"));
+			Assertions.assertNull(result.get("message"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -126,12 +126,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("integrity-foreign", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("assignment/project", result.get("message"));
+			Assertions.assertEquals("integrity-foreign", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("assignment/project", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -148,12 +148,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("integrity-unicity", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("2003/PRIMARY", result.get("message"));
+			Assertions.assertEquals("integrity-unicity", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("2003/PRIMARY", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -170,12 +170,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("integrity-unknown", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("Any SQL error", result.get("message"));
+			Assertions.assertEquals("integrity-unknown", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("Any SQL error", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -212,12 +212,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertNull(result.get("message"));
-			Assert.assertEquals("database-down", result.get("code"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertNull(result.get("message"));
+			Assertions.assertEquals("database-down", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -234,12 +234,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("Connection refused", result.get("message"));
-			Assert.assertEquals("ldap-down", result.get("code"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("Connection refused", result.get("message"));
+			Assertions.assertEquals("ldap-down", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -256,12 +256,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertNull(result.get("message"));
-			Assert.assertEquals("mail-down", result.get("code"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertNull(result.get("message"));
+			Assertions.assertEquals("mail-down", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -278,15 +278,15 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("message", result.get("message"));
-			Assert.assertEquals("technical", result.get("code"));
-			Assert.assertNotNull(result.get("cause"));
+			Assertions.assertEquals("message", result.get("message"));
+			Assertions.assertEquals("technical", result.get("code"));
+			Assertions.assertNotNull(result.get("cause"));
 			@SuppressWarnings("unchecked")
 			final Map<?, ?> cause = (Map<String, String>) result.get("cause");
-			Assert.assertEquals("message", cause.get("message"));
+			Assertions.assertEquals("message", cause.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -303,19 +303,19 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals(BusinessException.KEY_UNKNOW_ID, result.get("message"));
-			Assert.assertEquals("business", result.get("code"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals(BusinessException.KEY_UNKNOW_ID, result.get("message"));
+			Assertions.assertEquals("business", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
 
 			@SuppressWarnings("unchecked")
 			final List<Object> parameters = (List<Object>) result.get("parameters");
-			Assert.assertNotNull(parameters);
-			Assert.assertEquals(2, parameters.size());
-			Assert.assertEquals("parameter1", parameters.get(0));
-			Assert.assertEquals("parameter2", parameters.get(1));
+			Assertions.assertNotNull(parameters);
+			Assertions.assertEquals(2, parameters.size());
+			Assertions.assertEquals("parameter1", parameters.get(0));
+			Assertions.assertEquals("parameter2", parameters.get(1));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -332,12 +332,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("internal", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("HTTP 500 Internal Server Error", result.get("message"));
+			Assertions.assertEquals("internal", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("HTTP 500 Internal Server Error", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -354,9 +354,9 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertEquals("{errors={dialDouble=[{rule=Double}]}}", new ObjectMapperTrim().readValue(content, HashMap.class).toString());
+			Assertions.assertEquals("{errors={dialDouble=[{rule=Double}]}}", new ObjectMapperTrim().readValue(content, HashMap.class).toString());
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -370,12 +370,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("internal", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("HTTP 404 Not Found", result.get("message"));
+			Assertions.assertEquals("internal", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("HTTP 404 Not Found", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -392,12 +392,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpget);
-			Assert.assertEquals(HttpStatus.SC_METHOD_NOT_ALLOWED, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_METHOD_NOT_ALLOWED, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("internal", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("HTTP 405 Method Not Allowed", result.get("message"));
+			Assertions.assertEquals("internal", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("HTTP 405 Method Not Allowed", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -426,12 +426,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("security", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertNull(result.get("message"));
+			Assertions.assertEquals("security", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertNull(result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -448,12 +448,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("security", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("message", result.get("message"));
+			Assertions.assertEquals("security", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("message", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -470,12 +470,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_NOT_IMPLEMENTED, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_NOT_IMPLEMENTED, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("not-implemented", result.get("code"));
-			Assert.assertNull(result.get("cause"));
-			Assert.assertEquals("message", result.get("message"));
+			Assertions.assertEquals("not-implemented", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
+			Assertions.assertEquals("message", result.get("message"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -492,24 +492,24 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertNotNull(result.get("errors"));
-			Assert.assertTrue(result.get("errors") instanceof Map<?, ?>);
+			Assertions.assertNotNull(result.get("errors"));
+			Assertions.assertTrue(result.get("errors") instanceof Map<?, ?>);
 			@SuppressWarnings("unchecked")
 			final Map<?, ?> errors = (Map<String, Object>) result.get("errors");
-			Assert.assertEquals(1, errors.size());
-			Assert.assertNotNull(errors.get("jsr303"));
-			Assert.assertTrue(errors.get("jsr303") instanceof List);
+			Assertions.assertEquals(1, errors.size());
+			Assertions.assertNotNull(errors.get("jsr303"));
+			Assertions.assertTrue(errors.get("jsr303") instanceof List);
 			@SuppressWarnings("unchecked")
 			final List<Map<String, String>> rules = (List<Map<String, String>>) errors.get("jsr303");
-			Assert.assertEquals(1, rules.size());
-			Assert.assertNotNull(rules.get(0));
-			Assert.assertEquals(1, rules.get(0).size());
-			Assert.assertNotNull(rules.get(0).get("rule"));
-			Assert.assertEquals("NotNull", rules.get(0).get("rule"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals(1, rules.size());
+			Assertions.assertNotNull(rules.get(0));
+			Assertions.assertEquals(1, rules.get(0).size());
+			Assertions.assertNotNull(rules.get(0).get("rule"));
+			Assertions.assertEquals("NotNull", rules.get(0).get("rule"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -526,28 +526,28 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertNotNull(result.get("errors"));
-			Assert.assertTrue(result.get("errors") instanceof Map<?, ?>);
+			Assertions.assertNotNull(result.get("errors"));
+			Assertions.assertTrue(result.get("errors") instanceof Map<?, ?>);
 			@SuppressWarnings("unchecked")
 			final Map<?, ?> errors = (Map<String, Object>) result.get("errors");
-			Assert.assertEquals(1, errors.size());
-			Assert.assertNotNull(errors.get("name"));
-			Assert.assertTrue(errors.get("name") instanceof List);
+			Assertions.assertEquals(1, errors.size());
+			Assertions.assertNotNull(errors.get("name"));
+			Assertions.assertTrue(errors.get("name") instanceof List);
 			@SuppressWarnings("unchecked")
 			final List<Map<String, ?>> rules = (List<Map<String, ?>>) errors.get("name");
-			Assert.assertEquals(1, rules.size());
-			Assert.assertNotNull(rules.get(0));
-			Assert.assertEquals(2, rules.get(0).size());
-			Assert.assertNotNull(rules.get(0).get("rule"));
-			Assert.assertEquals("Length", rules.get(0).get("rule"));
+			Assertions.assertEquals(1, rules.size());
+			Assertions.assertNotNull(rules.get(0));
+			Assertions.assertEquals(2, rules.get(0).size());
+			Assertions.assertNotNull(rules.get(0).get("rule"));
+			Assertions.assertEquals("Length", rules.get(0).get("rule"));
 			@SuppressWarnings("unchecked")
 			final Map<String, Integer> parameters = (Map<String, Integer>) rules.get(0).get("parameters");
-			Assert.assertEquals(0, parameters.get("min").intValue());
-			Assert.assertEquals(200, parameters.get("max").intValue());
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals(0, parameters.get("min").intValue());
+			Assertions.assertEquals(200, parameters.get("max").intValue());
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -564,12 +564,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("message", result.get("message"));
-			Assert.assertEquals("technical", result.get("code"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("message", result.get("message"));
+			Assertions.assertEquals("technical", result.get("code"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -587,24 +587,24 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		try {
 			httppost.setEntity(new StringEntity("{\"login\":\"JUNIT" + "\",\"any\":\"Grenache / Syrah\"}", ContentType.APPLICATION_JSON));
 			response = httpclient.execute(httppost);
-			Assert.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertNotNull(result.get("errors"));
-			Assert.assertTrue(result.get("errors") instanceof Map<?, ?>);
+			Assertions.assertNotNull(result.get("errors"));
+			Assertions.assertTrue(result.get("errors") instanceof Map<?, ?>);
 			@SuppressWarnings("unchecked")
 			final Map<?, ?> errors = (Map<String, Object>) result.get("errors");
-			Assert.assertEquals(1, errors.size());
-			Assert.assertNotNull(errors.get("any"));
-			Assert.assertTrue(errors.get("any") instanceof List);
+			Assertions.assertEquals(1, errors.size());
+			Assertions.assertNotNull(errors.get("any"));
+			Assertions.assertTrue(errors.get("any") instanceof List);
 			@SuppressWarnings("unchecked")
 			final List<Map<String, String>> rules = (List<Map<String, String>>) errors.get("any");
-			Assert.assertEquals(1, rules.size());
-			Assert.assertNotNull(rules.get(0));
-			Assert.assertEquals(1, rules.get(0).size());
-			Assert.assertNotNull(rules.get(0).get("rule"));
-			Assert.assertEquals("Mapping", rules.get(0).get("rule"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals(1, rules.size());
+			Assertions.assertNotNull(rules.get(0));
+			Assertions.assertEquals(1, rules.get(0).size());
+			Assertions.assertNotNull(rules.get(0).get("rule"));
+			Assertions.assertEquals("Mapping", rules.get(0).get("rule"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -621,12 +621,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("entity", result.get("code"));
-			Assert.assertEquals("key", result.get("message"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("entity", result.get("code"));
+			Assertions.assertEquals("key", result.get("message"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -643,12 +643,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_CONFLICT, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_CONFLICT, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("database-lock", result.get("code"));
-			Assert.assertNull(result.get("message"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("database-lock", result.get("code"));
+			Assertions.assertNull(result.get("message"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -677,12 +677,12 @@ public class ExceptionMapperIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpdelete);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assert.assertEquals("entity", result.get("code"));
-			Assert.assertEquals(message, result.get("message"));
-			Assert.assertNull(result.get("cause"));
+			Assertions.assertEquals("entity", result.get("code"));
+			Assertions.assertEquals(message, result.get("message"));
+			Assertions.assertNull(result.get("cause"));
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -693,7 +693,7 @@ public class ExceptionMapperIT extends AbstractRestTest {
 	/**
 	 * shutdown server
 	 */
-	@AfterClass
+	@AfterAll
 	public static void tearDown() throws Exception {
 		server.stop();
 	}

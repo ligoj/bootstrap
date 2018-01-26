@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
@@ -19,17 +19,17 @@ import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link AuthorizationResource}
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AuthorizationResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private AuthorizationResource resource;
-	
+
 	@Autowired
 	private CacheResource cacheResource;
 
@@ -38,13 +38,14 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 
 	private Integer authorizationId;
 
-	@Before
+	@BeforeEach
 	public void setUp2() throws IOException {
 		persistEntities(SystemRole.class, "csv/system-test/role.csv");
 		persistEntities(SystemUser.class, "csv/system-test/user.csv");
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
 		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
-		authorizationId = em.createQuery("FROM SystemAuthorization", SystemAuthorization.class).setMaxResults(1).getResultList().get(0).getId();
+		authorizationId = em.createQuery("FROM SystemAuthorization", SystemAuthorization.class).setMaxResults(1).getResultList().get(0)
+				.getId();
 	}
 
 	/**
@@ -56,9 +57,9 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 
 		// Also check the lazy lading issue
 		em.clear();
-		Assert.assertNotNull(result);
-		Assert.assertEquals(authorizationId, result.getId());
-		Assert.assertNotNull(result.getRole());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(authorizationId, result.getId());
+		Assertions.assertNotNull(result.getRole());
 	}
 
 	/**
@@ -99,11 +100,11 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 
 		// Also check the lazy lading issue
 		em.clear();
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(authorization.getId(), result.get(0).getId());
-		Assert.assertEquals(role.getId(), result.get(0).getRole().getId());
-		Assert.assertEquals(AuthorizationType.UI, result.get(0).getType());
-		Assert.assertEquals("pattern", result.get(0).getPattern());
+		Assertions.assertEquals(1, result.size());
+		Assertions.assertEquals(authorization.getId(), result.get(0).getId());
+		Assertions.assertEquals(role.getId(), result.get(0).getRole().getId());
+		Assertions.assertEquals(AuthorizationType.UI, result.get(0).getType());
+		Assertions.assertEquals("pattern", result.get(0).getPattern());
 	}
 
 	/**
@@ -144,11 +145,11 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 
 		// Also check the lazy lading issue
 		em.clear();
-		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(authorization.getId(), result.get(0).getId());
-		Assert.assertEquals(role.getId(), result.get(0).getRole().getId());
-		Assert.assertEquals(AuthorizationType.API, result.get(0).getType());
-		Assert.assertEquals("pattern", result.get(0).getPattern());
+		Assertions.assertEquals(1, result.size());
+		Assertions.assertEquals(authorization.getId(), result.get(0).getId());
+		Assertions.assertEquals(role.getId(), result.get(0).getRole().getId());
+		Assertions.assertEquals(AuthorizationType.API, result.get(0).getType());
+		Assertions.assertEquals("pattern", result.get(0).getPattern());
 	}
 
 	/**
@@ -171,21 +172,23 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		final SystemAuthorization result = em.find(SystemAuthorization.class, resultId);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(role.getId(), result.getRole().getId());
-		Assert.assertEquals(AuthorizationType.UI, result.getType());
-		Assert.assertEquals("pattern", result.getPattern());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(role.getId(), result.getRole().getId());
+		Assertions.assertEquals(AuthorizationType.UI, result.getType());
+		Assertions.assertEquals("pattern", result.getPattern());
 	}
 
 	/**
 	 * test create service without a valid role.
 	 */
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void testCreateNoRole() {
 		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
 		authorization.setRole(-1);
 		authorization.setPattern("any");
-		resource.create(authorization);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			resource.create(authorization);
+		});
 	}
 
 	/**
@@ -209,40 +212,46 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		final SystemAuthorization result = em.find(SystemAuthorization.class, authorizationId);
-		Assert.assertNotNull(result);
-		Assert.assertEquals(role2.getName(), result.getRole().getName());
-		Assert.assertEquals("pattern", result.getPattern());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(role2.getName(), result.getRole().getName());
+		Assertions.assertEquals("pattern", result.getPattern());
 	}
 
 	/**
 	 * test update service without a valid role.
 	 */
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void testUpdateNoRole() {
 		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
 		authorization.setRole(-1);
 		authorization.setPattern("pattern");
-		resource.update(authorizationId, authorization);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			resource.update(authorizationId, authorization);
+		});
 	}
 
 	/**
 	 * test update service without a valid identifier.
 	 */
-	@Test(expected = JpaObjectRetrievalFailureException.class)
+	@Test
 	public void testUpdateInvalidId() {
-		resource.update(-1, null);
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+			resource.update(-1, null);
+		});
 	}
 
 	/**
 	 * Synchronized/invalid pattern test
 	 */
-	@Test(expected = PatternSyntaxException.class)
+	@Test
 	public void testInvalidPatternFromDb() {
 		addSystemAuthorization(HttpMethod.GET, "role1", "^(my\\(url");
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
-		resource.getAuthorizations();
+		Assertions.assertThrows(PatternSyntaxException.class, () -> {
+			resource.getAuthorizations();
+		});
 	}
 
 	private void addSystemAuthorization(final HttpMethod method, final String roleName, final String pattern) {
@@ -270,6 +279,6 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		// check result
 		em.flush();
 		em.clear();
-		Assert.assertNull(em.find(SystemAuthorization.class, authorizationId));
+		Assertions.assertNull(em.find(SystemAuthorization.class, authorizationId));
 	}
 }

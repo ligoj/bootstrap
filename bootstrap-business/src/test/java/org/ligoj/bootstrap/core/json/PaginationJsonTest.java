@@ -9,9 +9,9 @@ import java.util.function.Function;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
@@ -25,12 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * JSon pagination test of {@link PaginationJson}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PaginationJsonTest extends AbstractBootTest {
 
 	@Autowired
@@ -43,11 +43,11 @@ public class PaginationJsonTest extends AbstractBootTest {
 	public void getPageRequestNoPageSize() {
 		// create a mock URI info with pagination informations
 		PageRequest pageRequest = paginationJson.getPageRequest(newUriInfo(), null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertEquals(10, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertEquals(10, pageRequest.getPageSize());
 	}
 
 	/**
@@ -59,11 +59,11 @@ public class PaginationJsonTest extends AbstractBootTest {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "100");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -76,10 +76,10 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "100");
 		uriInfo.getQueryParameters().add(DataTableAttributes.START, "220");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(200, pageRequest.getOffset());
-		Assert.assertEquals(2, pageRequest.getPageNumber());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(200, pageRequest.getOffset());
+		Assertions.assertEquals(2, pageRequest.getPageNumber());
 	}
 
 	/**
@@ -92,10 +92,10 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "100");
 		uriInfo.getQueryParameters().add("page", "2");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(100, pageRequest.getOffset());
-		Assert.assertEquals(1, pageRequest.getPageNumber());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(100, pageRequest.getOffset());
+		Assertions.assertEquals(1, pageRequest.getPageNumber());
 	}
 
 	/**
@@ -105,13 +105,13 @@ public class PaginationJsonTest extends AbstractBootTest {
 	public void buildFilter() {
 		final UiFilter buildFilter = paginationJson
 				.buildFilter("{\"groupOp\":\"and\"," + "\"rules\":[{\"data\":\"data\",\"field\":\"field\",\"op\":\"eq\"}]}");
-		Assert.assertEquals(FilterOperator.AND, buildFilter.getGroupOp());
-		Assert.assertNotNull(buildFilter.getRules());
-		Assert.assertEquals(1, buildFilter.getRules().size());
+		Assertions.assertEquals(FilterOperator.AND, buildFilter.getGroupOp());
+		Assertions.assertNotNull(buildFilter.getRules());
+		Assertions.assertEquals(1, buildFilter.getRules().size());
 		final BasicRule rule = (BasicRule) buildFilter.getRules().get(0);
-		Assert.assertEquals("data", rule.getData());
-		Assert.assertEquals("field", rule.getField());
-		Assert.assertEquals(RuleOperator.EQ, rule.getOp());
+		Assertions.assertEquals("data", rule.getData());
+		Assertions.assertEquals("field", rule.getField());
+		Assertions.assertEquals(RuleOperator.EQ, rule.getOp());
 
 		// For coverage
 		RuleOperator.valueOf(RuleOperator.values()[0].name());
@@ -124,8 +124,8 @@ public class PaginationJsonTest extends AbstractBootTest {
 	@Test
 	public void buildFilterInvalid() {
 		final UiFilter buildFilter = paginationJson.buildFilter("{\"source\":\"source\",\"groupOp\":\"?\"}");
-		Assert.assertEquals(null, buildFilter.getGroupOp());
-		Assert.assertEquals(null, buildFilter.getRules());
+		Assertions.assertEquals(null, buildFilter.getGroupOp());
+		Assertions.assertEquals(null, buildFilter.getRules());
 	}
 
 	/**
@@ -134,8 +134,8 @@ public class PaginationJsonTest extends AbstractBootTest {
 	@Test
 	public void buildFilterNull() {
 		final UiFilter buildFilter = paginationJson.buildFilter(null);
-		Assert.assertEquals(null, buildFilter.getGroupOp());
-		Assert.assertEquals(null, buildFilter.getRules());
+		Assertions.assertEquals(null, buildFilter.getGroupOp());
+		Assertions.assertEquals(null, buildFilter.getRules());
 	}
 
 	/**
@@ -148,9 +148,9 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "100");
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORTED_COLUMN, "2");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(0, pageRequest.getOffset());
 	}
 
 	/**
@@ -164,9 +164,9 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORTED_COLUMN, "2");
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(0, pageRequest.getOffset());
 	}
 
 	/**
@@ -181,11 +181,11 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("columns[2][data]", "col1");
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -200,11 +200,11 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("columns[2][data]", "col1");
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "desc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, new HashMap<String, String>());
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -220,15 +220,15 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final Map<String, String> map = Collections.singletonMap("col1", "colOrm");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, map);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNull(pageRequest.getSort().getOrderFor("colOrm?"));
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
-		Assert.assertTrue(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNull(pageRequest.getSort().getOrderFor("colOrm?"));
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
+		Assertions.assertTrue(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -243,15 +243,15 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("sortd", "asc");
 		final Map<String, String> map = Collections.singletonMap("col1", "colOrm");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, map);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNull(pageRequest.getSort().getOrderFor("colOrm?"));
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
-		Assert.assertTrue(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNull(pageRequest.getSort().getOrderFor("colOrm?"));
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
+		Assertions.assertTrue(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -265,15 +265,15 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("sortd", "asc");
 		final Map<String, String> map = Collections.singletonMap("*", "*");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, map);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNull(pageRequest.getSort().getOrderFor("col1?"));
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("col1"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("col1").getDirection());
-		Assert.assertTrue(pageRequest.getSort().getOrderFor("col1").isIgnoreCase());
-		Assert.assertEquals(10, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNull(pageRequest.getSort().getOrderFor("col1?"));
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("col1"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("col1").getDirection());
+		Assertions.assertTrue(pageRequest.getSort().getOrderFor("col1").isIgnoreCase());
+		Assertions.assertEquals(10, pageRequest.getPageSize());
 	}
 
 	/**
@@ -289,14 +289,14 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final Map<String, String> map = Collections.singletonMap("col1", "c.colOrm");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, map);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNull(pageRequest.getSort().getOrderFor("c.colOrm?"));
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("UPPER(c.colOrm)"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("UPPER(c.colOrm)").getDirection());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNull(pageRequest.getSort().getOrderFor("c.colOrm?"));
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("UPPER(c.colOrm)"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("UPPER(c.colOrm)").getDirection());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -312,15 +312,15 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final Map<String, String> map = Collections.singletonMap("col1", "COUNT(colOrm)");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, map);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNull(pageRequest.getSort().getOrderFor("colOrm"));
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("COUNT(colOrm)"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("COUNT(colOrm)").getDirection());
-		Assert.assertFalse(pageRequest.getSort().getOrderFor("COUNT(colOrm)").isIgnoreCase());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNull(pageRequest.getSort().getOrderFor("colOrm"));
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("COUNT(colOrm)"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("COUNT(colOrm)").getDirection());
+		Assertions.assertFalse(pageRequest.getSort().getOrderFor("COUNT(colOrm)").isIgnoreCase());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -336,14 +336,14 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, Collections.singletonMap("col1", "colOrm"),
 				Collections.singleton("col1"));
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
-		Assert.assertFalse(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
+		Assertions.assertFalse(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -352,11 +352,11 @@ public class PaginationJsonTest extends AbstractBootTest {
 	@Test
 	public void getPageRequestNotUriInfo() {
 		final PageRequest pageRequest = paginationJson.getPageRequest(null, null);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertFalse(pageRequest.getSort().isSorted());
-		Assert.assertEquals(10, pageRequest.getPageSize());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertFalse(pageRequest.getSort().isSorted());
+		Assertions.assertEquals(10, pageRequest.getPageSize());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertEquals(0, pageRequest.getOffset());
 	}
 
 	/**
@@ -372,14 +372,14 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, Collections.singletonMap("col1", "colOrm"),
 				Collections.singleton("any"));
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
-		Assert.assertTrue(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("colOrm"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("colOrm").getDirection());
+		Assertions.assertTrue(pageRequest.getSort().getOrderFor("colOrm").isIgnoreCase());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -395,13 +395,13 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORT_DIRECTION, "asc");
 		final PageRequest pageRequest = paginationJson.getPageRequest(uriInfo, Collections.singletonMap("col1", "c.colOrm"),
 				Collections.singleton("any"));
-		Assert.assertNotNull(pageRequest);
-		Assert.assertNotNull(pageRequest.getSort());
-		Assert.assertEquals(0, pageRequest.getOffset());
-		Assert.assertEquals(0, pageRequest.getPageNumber());
-		Assert.assertNotNull(pageRequest.getSort().getOrderFor("UPPER(c.colOrm)"));
-		Assert.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("UPPER(c.colOrm)").getDirection());
-		Assert.assertEquals(100, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertNotNull(pageRequest.getSort());
+		Assertions.assertEquals(0, pageRequest.getOffset());
+		Assertions.assertEquals(0, pageRequest.getPageNumber());
+		Assertions.assertNotNull(pageRequest.getSort().getOrderFor("UPPER(c.colOrm)"));
+		Assertions.assertEquals(Direction.ASC, pageRequest.getSort().getOrderFor("UPPER(c.colOrm)").getDirection());
+		Assertions.assertEquals(100, pageRequest.getPageSize());
 	}
 
 	/**
@@ -412,13 +412,13 @@ public class PaginationJsonTest extends AbstractBootTest {
 		// create a mock URI info with pagination informations
 		final UriInfo uriInfo = newUriInfo();
 		final UiPageRequest pageRequest = paginationJson.getUiPageRequest(uriInfo);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertEquals(1, pageRequest.getPage());
-		Assert.assertEquals(10, pageRequest.getPageSize());
-		Assert.assertNotNull(pageRequest.getUiFilter());
-		Assert.assertNull(pageRequest.getUiFilter().getGroupOp());
-		Assert.assertNull(pageRequest.getUiFilter().getRules());
-		Assert.assertNull(pageRequest.getUiSort());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertEquals(1, pageRequest.getPage());
+		Assertions.assertEquals(10, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest.getUiFilter());
+		Assertions.assertNull(pageRequest.getUiFilter().getGroupOp());
+		Assertions.assertNull(pageRequest.getUiFilter().getRules());
+		Assertions.assertNull(pageRequest.getUiSort());
 	}
 
 	/**
@@ -433,15 +433,15 @@ public class PaginationJsonTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().add("sord", "desc");
 		uriInfo.getQueryParameters().add("sidx", "colX");
 		final UiPageRequest pageRequest = paginationJson.getUiPageRequest(uriInfo);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertEquals(1, pageRequest.getPage());
-		Assert.assertEquals(10, pageRequest.getPageSize());
-		Assert.assertNotNull(pageRequest.getUiFilter());
-		Assert.assertNull(pageRequest.getUiFilter().getGroupOp());
-		Assert.assertNull(pageRequest.getUiFilter().getRules());
-		Assert.assertNotNull(pageRequest.getUiSort());
-		Assert.assertEquals("colX", pageRequest.getUiSort().getColumn());
-		Assert.assertEquals(Direction.DESC, pageRequest.getUiSort().getDirection());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertEquals(1, pageRequest.getPage());
+		Assertions.assertEquals(10, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest.getUiFilter());
+		Assertions.assertNull(pageRequest.getUiFilter().getGroupOp());
+		Assertions.assertNull(pageRequest.getUiFilter().getRules());
+		Assertions.assertNotNull(pageRequest.getUiSort());
+		Assertions.assertEquals("colX", pageRequest.getUiSort().getColumn());
+		Assertions.assertEquals(Direction.DESC, pageRequest.getUiSort().getDirection());
 	}
 
 	/**
@@ -453,15 +453,15 @@ public class PaginationJsonTest extends AbstractBootTest {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().add("sidx", "colX");
 		final UiPageRequest pageRequest = paginationJson.getUiPageRequest(uriInfo);
-		Assert.assertNotNull(pageRequest);
-		Assert.assertEquals(1, pageRequest.getPage());
-		Assert.assertEquals(10, pageRequest.getPageSize());
-		Assert.assertNotNull(pageRequest.getUiFilter());
-		Assert.assertNull(pageRequest.getUiFilter().getGroupOp());
-		Assert.assertNull(pageRequest.getUiFilter().getRules());
-		Assert.assertNotNull(pageRequest.getUiSort());
-		Assert.assertEquals("colX", pageRequest.getUiSort().getColumn());
-		Assert.assertEquals(Direction.ASC, pageRequest.getUiSort().getDirection());
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertEquals(1, pageRequest.getPage());
+		Assertions.assertEquals(10, pageRequest.getPageSize());
+		Assertions.assertNotNull(pageRequest.getUiFilter());
+		Assertions.assertNull(pageRequest.getUiFilter().getGroupOp());
+		Assertions.assertNull(pageRequest.getUiFilter().getRules());
+		Assertions.assertNotNull(pageRequest.getUiSort());
+		Assertions.assertEquals("colX", pageRequest.getUiSort().getColumn());
+		Assertions.assertEquals(Direction.ASC, pageRequest.getUiSort().getDirection());
 	}
 
 	/**
@@ -479,12 +479,12 @@ public class PaginationJsonTest extends AbstractBootTest {
 		Mockito.when(page.getTotalElements()).thenReturn(1L);
 		final TableItem<SystemUser> pageRequest = paginationJson.applyPagination(uriInfo, page, Function.identity());
 
-		Assert.assertNotNull(pageRequest);
-		Assert.assertEquals(1, pageRequest.getData().size());
-		Assert.assertEquals(1, pageRequest.getRecordsTotal());
-		Assert.assertEquals(1, pageRequest.getRecordsFiltered());
-		Assert.assertEquals("echo", pageRequest.getDraw());
-		Assert.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertEquals(1, pageRequest.getData().size());
+		Assertions.assertEquals(1, pageRequest.getRecordsTotal());
+		Assertions.assertEquals(1, pageRequest.getRecordsFiltered());
+		Assertions.assertEquals("echo", pageRequest.getDraw());
+		Assertions.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
 	}
 
 	/**
@@ -499,9 +499,9 @@ public class PaginationJsonTest extends AbstractBootTest {
 		Mockito.when(page.getContent()).thenReturn(list);
 		final TableItem<SystemUser> pageRequest = paginationJson.applyPagination(null, page, Function.identity());
 
-		Assert.assertNotNull(pageRequest);
-		Assert.assertEquals(1, pageRequest.getData().size());
-		Assert.assertNull(pageRequest.getDraw());
-		Assert.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
+		Assertions.assertNotNull(pageRequest);
+		Assertions.assertEquals(1, pageRequest.getData().size());
+		Assertions.assertNull(pageRequest.getDraw());
+		Assertions.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
 	}
 }

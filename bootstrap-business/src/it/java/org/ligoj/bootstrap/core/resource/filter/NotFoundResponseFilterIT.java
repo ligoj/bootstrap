@@ -33,7 +33,7 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	/**
 	 * server creation.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void startServer() {
 		server = new NotFoundResponseFilterIT().startRestServer("./src/test/resources/WEB-INF/web-test-nodb.xml");
 	}
@@ -44,8 +44,8 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
-			Assert.assertNull(response.getEntity());
+			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getStatusLine().getStatusCode());
+			Assertions.assertNull(response.getEntity());
 		} finally {
 			if (response != null && response.getEntity() != null) {
 				response.getEntity().getContent().close();
@@ -59,8 +59,8 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
-			Assert.assertEquals("{\"code\":\"data\"}", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
+			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals("{\"code\":\"data\"}", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
 		} finally {
 			if (response != null && response.getEntity() != null) {
 				response.getEntity().getContent().close();
@@ -74,8 +74,8 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
-			Assert.assertEquals("{\"code\":\"entity\",\"message\":\"789\"}",
+			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals("{\"code\":\"entity\",\"message\":\"789\"}",
 					IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
 		} finally {
 			if (response != null && response.getEntity() != null) {
@@ -90,9 +90,9 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 		HttpResponse response = null;
 		try {
 			response = httpclient.execute(httpGet);
-			Assert.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			Assert.assertEquals("string", content);
+			Assertions.assertEquals("string", content);
 		} finally {
 			if (response != null) {
 				response.getEntity().getContent().close();
@@ -103,7 +103,7 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	/**
 	 * shutdown server
 	 */
-	@AfterClass
+	@AfterAll
 	public static void tearDown() throws Exception {
 		server.stop();
 	}

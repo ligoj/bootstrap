@@ -15,9 +15,9 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.SequenceIdentifierGeneratorStrategyProvider.OptimizedSequenceStyleGenerator;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -33,7 +33,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	 */
 	@Test
 	public void testFactoryConfiguration() throws InstantiationException, IllegalAccessException {
-		Assert.assertEquals(OptimizedSequenceStyleGenerator.class,
+		Assertions.assertEquals(OptimizedSequenceStyleGenerator.class,
 				SequenceIdentifierGeneratorStrategyProvider.class.newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
 	}
 
@@ -100,7 +100,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		final Properties params = new Properties();
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
-		Assert.assertEquals("my_table_SEQ",
+		Assertions.assertEquals("my_table_SEQ",
 				newStyleGenerator().determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment()).getObjectName().getText());
 	}
 
@@ -112,11 +112,11 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		final Properties params = new Properties();
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
-		Assert.assertEquals("my_table_SEQ",
+		Assertions.assertEquals("my_table_SEQ",
 				newStyleGenerator().determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment()).getObjectName().getText());
 	}
 
-	@After
+	@AfterEach
 	public void clearProperty() {
 		System.clearProperty("hibernate.new_sequence_naming");
 	}

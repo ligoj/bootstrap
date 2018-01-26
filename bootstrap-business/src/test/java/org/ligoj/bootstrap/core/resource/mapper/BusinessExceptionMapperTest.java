@@ -2,7 +2,7 @@ package org.ligoj.bootstrap.core.resource.mapper;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 

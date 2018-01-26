@@ -7,14 +7,13 @@ import java.util.Date;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
-import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 
 /**
  * Test class of {@link ObjectMapperTrim}
@@ -26,75 +25,81 @@ public class ObjectMapperTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void testSerialization() throws JsonProcessingException {
-		Assert.assertEquals("\"accepted\"", mapper.writeValueAsString(Status.ACCEPTED));
-		Assert.assertEquals("\"ACCEPTED\"", vanillaMapper.writeValueAsString(Status.ACCEPTED));
+		Assertions.assertEquals("\"accepted\"", mapper.writeValueAsString(Status.ACCEPTED));
+		Assertions.assertEquals("\"ACCEPTED\"", vanillaMapper.writeValueAsString(Status.ACCEPTED));
 	}
 
 	@Test
 	public void dateSerializer() throws IOException {
-		Assert.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()), mapper.writeValueAsString(getDate(2016, 8, 2)));
+		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()), mapper.writeValueAsString(getDate(2016, 8, 2)));
 	}
 
 	@Test
 	public void localDateTimeSerializer() throws IOException {
-		Assert.assertEquals(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()),
+		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()),
 				mapper.writeValueAsString(LocalDateTime.of(2016, 8, 2, 12, 54, 32)));
 	}
 
 	@Test
 	public void localDateSerializer() throws IOException {
-		Assert.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()), mapper.writeValueAsString(LocalDate.of(2016, 8, 2)));
+		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()), mapper.writeValueAsString(LocalDate.of(2016, 8, 2)));
 	}
 
 	@Test
 	public void dateDeserializer() throws IOException {
-		Assert.assertEquals(getDate(2016, 8, 2), mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), Date.class));
+		Assertions.assertEquals(getDate(2016, 8, 2), mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), Date.class));
 		// Non assertable value, depends on the system timezone
 		mapper.readValue("\"2016-08-02\"", Date.class);
 	}
 
 	@Test
 	public void localDateDeserializer() throws IOException {
-		Assert.assertEquals("2016-08-02", mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
-		Assert.assertNull(mapper.readValue("\"2016-08-02\"", LocalDate.class));
+		Assertions.assertEquals("2016-08-02", mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
+		Assertions.assertNull(mapper.readValue("\"2016-08-02\"", LocalDate.class));
 	}
 
 	@Test
 	public void localDateTimeDeserializer() throws IOException {
-		Assert.assertEquals("2016-08-02T12:54:32",
+		Assertions.assertEquals("2016-08-02T12:54:32",
 				mapper.readValue(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()), LocalDateTime.class).toString());
-		Assert.assertNull(mapper.readValue("\"2016-08-02\"", LocalDateTime.class));
+		Assertions.assertNull(mapper.readValue("\"2016-08-02\"", LocalDateTime.class));
 	}
 
-	@Test(expected = JsonParseException.class)
+	@Test
 	public void dateDeserializerFailed() throws IOException {
-		Assert.assertEquals(getDate(2016, 8, 2), mapper.readValue("any", Date.class));
+		Assertions.assertThrows(JsonParseException.class, () -> {
+			Assertions.assertEquals(getDate(2016, 8, 2), mapper.readValue("any", Date.class));
+		});
 	}
 
 	@Test
 	public void localDateDeserializerFailed() throws IOException {
-		Assert.assertEquals("2016-08-02", mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
+		Assertions.assertEquals("2016-08-02", mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
 	}
 
 	@Test
 	public void localDateTimeDeserializerFailed() throws IOException {
-		Assert.assertEquals("2016-08-02T12:54:32",
+		Assertions.assertEquals("2016-08-02T12:54:32",
 				mapper.readValue(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()), LocalDateTime.class).toString());
 	}
 
 	@Test
 	public void testDeserialization() throws IOException {
-		Assert.assertEquals(Status.ACCEPTED, mapper.readValue("\"accepted\"", Status.class));
-		Assert.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"ACCEPTED\"", Status.class));
+		Assertions.assertEquals(Status.ACCEPTED, mapper.readValue("\"accepted\"", Status.class));
+		Assertions.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"ACCEPTED\"", Status.class));
 	}
 
-	@Test(expected = InvalidFormatException.class)
+	@Test
 	public void testDeserializationFailed() throws IOException {
-		Assert.assertEquals(Status.ACCEPTED, mapper.readValue("\"ACCEPTED\"", Status.class));
+		Assertions.assertThrows(InvalidFormatException.class, () -> {
+			Assertions.assertEquals(Status.ACCEPTED, mapper.readValue("\"ACCEPTED\"", Status.class));
+		});
 	}
 
-	@Test(expected = InvalidFormatException.class)
+	@Test
 	public void testDeserializationFailed2() throws IOException {
-		Assert.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"accepted\"", Status.class));
+		Assertions.assertThrows(InvalidFormatException.class, () -> {
+			Assertions.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"accepted\"", Status.class));
+		});
 	}
 }

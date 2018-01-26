@@ -4,8 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.TimeZone;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Check dare utilities of DateUtils.
@@ -14,7 +14,7 @@ public class DateUtilsTest {
 
 	@Test
 	public void newCalendar() {
-		Assert.assertEquals(DateUtils.newCalendar().getTimeZone(), DateUtils.getApplicationTimeZone());
+		Assertions.assertEquals(DateUtils.newCalendar().getTimeZone(), DateUtils.getApplicationTimeZone());
 	}
 
 	@Test
@@ -22,7 +22,7 @@ public class DateUtilsTest {
 		TimeZone timeZone = DateUtils.getApplicationTimeZone();
 		try {
 			DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("GMT"));
-			Assert.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
+			Assertions.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
 		} finally {
 			DateUtils.setApplicationTimeZone(timeZone);
 		}

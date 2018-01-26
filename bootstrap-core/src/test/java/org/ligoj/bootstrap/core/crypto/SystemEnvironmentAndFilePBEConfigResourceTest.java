@@ -1,31 +1,31 @@
 package org.ligoj.bootstrap.core.crypto;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link SystemEnvironmentAndFilePBEConfig} using a classpath resource file.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 public class SystemEnvironmentAndFilePBEConfigResourceTest extends AbstractSystemEnvironmentAndFilePBEConfigTest {
 
-	@BeforeClass
+	@BeforeAll
 	public static void init() {
 		System.setProperty("app.crypto.file", "security.key");
 	}
 
 	@Test
 	public void getPasswordFromFileClasspath() {
-		Assert.assertEquals("secret", new SystemEnvironmentAndFilePBEConfig().getPasswordFromFile("security.key"));
+		Assertions.assertEquals("secret", new SystemEnvironmentAndFilePBEConfig().getPasswordFromFile("security.key"));
 	}
 
 	@Test
 	public void getPasswordFromFileClasspathFailed() {
-		Assert.assertNull(new SystemEnvironmentAndFilePBEConfig().getPasswordFromFile("any.key"));
+		Assertions.assertNull(new SystemEnvironmentAndFilePBEConfig().getPasswordFromFile("any.key"));
 	}
 }

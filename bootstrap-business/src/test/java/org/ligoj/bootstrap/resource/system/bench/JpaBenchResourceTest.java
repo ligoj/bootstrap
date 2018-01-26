@@ -9,21 +9,21 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.dao.system.BenchResult;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Test class of {@link JpaBenchResource}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class JpaBenchResourceTest extends AbstractBootTest {
 
 	/**
@@ -72,13 +72,13 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 0);
-			Assert.assertNull(resource.downloadLobFile());
+			Assertions.assertNull(resource.downloadLobFile());
 		} finally {
 			IOUtils.closeQuietly(openStream);
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testDownloadDataBlobError() throws Exception {
 		final URL jarLocation = getBlobFile();
 		InputStream openStream = null;
@@ -92,7 +92,9 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 			final OutputStream output = Mockito.mock(OutputStream.class);
 			Mockito.doThrow(new IOException()).when(output).write(ArgumentMatchers.any(byte[].class));
 
-			downloadLobFile.write(output);
+			Assertions.assertThrows(IllegalStateException.class, () -> {
+				downloadLobFile.write(output);
+			});
 		} finally {
 			IOUtils.closeQuietly(openStream);
 		}
@@ -111,7 +113,7 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 			final StreamingOutput downloadLobFile = resource.downloadLobFile();
 			final ByteArrayOutputStream output = new ByteArrayOutputStream();
 			downloadLobFile.write(output);
-			org.junit.Assert.assertTrue(output.toByteArray().length > 3000000);
+			Assertions.assertTrue(output.toByteArray().length > 3000000);
 		} finally {
 			IOUtils.closeQuietly(openStream);
 		}
@@ -159,9 +161,9 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 	 * Check the result.
 	 */
 	private void assertResult(final BenchResult prepareData, final int expectedEntries) {
-		Assert.assertNotNull(prepareData);
-		Assert.assertEquals(expectedEntries, prepareData.getEntries());
-		Assert.assertTrue(prepareData.getDuration() >= 0);
+		Assertions.assertNotNull(prepareData);
+		Assertions.assertEquals(expectedEntries, prepareData.getEntries());
+		Assertions.assertTrue(prepareData.getDuration() >= 0);
 	}
 
 	/**
