@@ -450,7 +450,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaForeignKeyNotExist1() throws IOException {
+	public void toJpaForeignKeyNotExist1() {
 		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id!\n8000"), true);
 		});
@@ -470,7 +470,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaEnumInvalid() throws IOException {
+	public void toJpaEnumInvalid() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialEnum\n_ERROR_"), true);
 		});
@@ -489,7 +489,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaForeignKeyNaturalNotExist() throws IOException {
+	public void toJpaForeignKeyNaturalNotExist() {
 		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login\nnobody"), true);
 		});
@@ -497,7 +497,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaForeignKeyNaturalNotExist2() throws IOException {
+	public void toJpaForeignKeyNaturalNotExist2() {
 		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login!\nnobody"), true);
 		});
@@ -505,7 +505,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaForeignKeyNotExist2() throws IOException {
+	public void toJpaForeignKeyNotExist2() {
 		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n8000"), true);
 		});
@@ -513,7 +513,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaForeignKeyNotExist3() throws IOException {
+	public void toJpaForeignKeyNotExist3() {
 		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n-8000"), true);
 		});
@@ -595,7 +595,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void resetInvalidPath() throws IOException {
+	public void resetInvalidPath() {
 		Assertions.assertThrows(FileNotFoundException.class, () -> {
 			csvForJpa.reset("csv/__", DummyEntity.class);
 		});

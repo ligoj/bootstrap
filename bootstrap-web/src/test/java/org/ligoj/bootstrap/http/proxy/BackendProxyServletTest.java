@@ -74,7 +74,7 @@ public class BackendProxyServletTest {
 	}
 
 	@Test
-	public void initNoEndpoint() throws ServletException {
+	public void initNoEndpoint() {
 		Assertions.assertThrows(UnavailableException.class, () -> {
 			setupRedirection("/", "");
 		});
@@ -484,7 +484,7 @@ public class BackendProxyServletTest {
 	}
 
 	@Test
-	public void getRequiredInitParameter() throws ServletException {
+	public void getRequiredInitParameter() {
 		final ServletConfig servletConfig = Mockito.mock(ServletConfig.class);
 
 		Mockito.when(servletConfig.getServletName()).thenReturn("a");

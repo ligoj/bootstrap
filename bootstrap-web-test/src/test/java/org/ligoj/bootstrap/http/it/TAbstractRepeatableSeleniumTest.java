@@ -56,7 +56,7 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 	@org.junit.jupiter.api.Test
 	public void testRepeatMode() throws Exception {
 		Assertions.assertFalse(isRepeatMode());
-		Assertions.assertTrue(this.getClass().newInstance().isRepeatMode());
+		Assertions.assertTrue(this.getClass().getDeclaredConstructor().newInstance().isRepeatMode());
 	}
 
 	/**

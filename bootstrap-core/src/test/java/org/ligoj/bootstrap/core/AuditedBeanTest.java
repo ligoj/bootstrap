@@ -21,7 +21,7 @@ public class AuditedBeanTest {
 	@Test
 	public void testCopyAuditData() {
 		final Auditable<String, Integer, Date> from = newAuditable();
-		final AbstractNamedAuditedEntity<Integer> to = new AbstractNamedAuditedEntity<Integer>() {
+		final AbstractNamedAuditedEntity<Integer> to = new AbstractNamedAuditedEntity<>() {
 
 			// Nothing
 		};
@@ -70,7 +70,7 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testGetDateNull() {
-		final Auditable<String, Integer, Date> from = new AbstractAudited<Integer>() {
+		final Auditable<String, Integer, Date> from = new AbstractAudited<>() {
 			// Nothing
 		};
 		final AuditedBean<String, Integer> audited = new AuditedBean<>();
@@ -100,7 +100,7 @@ public class AuditedBeanTest {
 	}
 
 	private Auditable<String, Integer, Date> newAuditable() {
-		final Auditable<String, Integer, Date> from = new AbstractAudited<Integer>() {
+		final Auditable<String, Integer, Date> from = new AbstractAudited<>() {
 			// Nothing
 		};
 		from.setCreatedBy("any");

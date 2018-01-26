@@ -20,7 +20,7 @@ public class ProcessorTest {
 	public void testGetNullValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(3);
-		Assertions.assertEquals(new Integer(3), new Processor<>().getValue(contextData));
+		Assertions.assertEquals(Integer.valueOf(3), new Processor<>().getValue(contextData));
 	}
 
 	/**
@@ -30,7 +30,7 @@ public class ProcessorTest {
 	public void testGetValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(4);
-		Assertions.assertEquals(new Integer(3), new Processor<>(3).getValue(contextData));
+		Assertions.assertEquals(Integer.valueOf(3), new Processor<>(3).getValue(contextData));
 	}
 
 	/**
@@ -55,6 +55,6 @@ public class ProcessorTest {
 	 */
 	@Test
 	public void testGetWrappedSimpleValue() {
-		Assertions.assertEquals(new Integer(8), new Processor<>(new Processor<>(2)).getValue(8));
+		Assertions.assertEquals(Integer.valueOf(8), new Processor<>(new Processor<>(2)).getValue(8));
 	}
 }

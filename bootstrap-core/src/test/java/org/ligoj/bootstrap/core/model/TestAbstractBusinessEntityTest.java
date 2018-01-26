@@ -18,7 +18,7 @@ public class TestAbstractBusinessEntityTest {
 
 	@Test
 	public void testNamed() {
-		AbstractNamedBusinessEntity<Integer> entity = new AbstractNamedBusinessEntity<Integer>() {
+		AbstractNamedBusinessEntity<Integer> entity = new AbstractNamedBusinessEntity<>() {
 			// Nothing
 		};
 		entity.setName("Name");
@@ -27,7 +27,7 @@ public class TestAbstractBusinessEntityTest {
 
 	@Test
 	public void testIsNewSet() {
-		AbstractBusinessEntity<Integer> entity = new AbstractBusinessEntity<Integer>() {
+		AbstractBusinessEntity<Integer> entity = new AbstractBusinessEntity<>() {
 			// Nothing
 		};
 		entity.setId(1);

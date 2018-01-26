@@ -126,7 +126,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 *             from driver loader and many lock management.
 	 */
 	protected WebDriver getLocalDriver() throws Exception { // NOSONAR -- too many exception
-		return (WebDriver) Class.forName(localDriverClass).newInstance();
+		return (WebDriver) Class.forName(localDriverClass).getDeclaredConstructor().newInstance();
 	}
 
 	/**

@@ -31,7 +31,7 @@ public class ClassPathResourceMultipleTest {
 	}
 
 	@Test
-	public void testGetInputStreamNotFound() throws IOException {
+	public void testGetInputStreamNotFound() {
 		final ClassPathResourceMultiple resource = new ClassPathResourceMultiple("csv/demo", DummyEntity3.class);
 		Assertions.assertThrows(FileNotFoundException.class, () -> {
 			IOUtils.closeQuietly(resource.getInputStream());

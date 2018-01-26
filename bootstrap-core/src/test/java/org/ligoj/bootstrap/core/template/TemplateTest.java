@@ -48,7 +48,7 @@ public class TemplateTest {
 	 * Not mapped tag.
 	 */
 	@Test
-	public void testWriteNotMappedTag() throws IOException {
+	public void testWriteNotMappedTag() {
 		Assertions.assertThrows(Exception.class, () -> {
 			new Template<>("{{any/}}").write(writer, new HashMap<String, Processor<?>>(), null);
 		}, "Not mapped template tag {{any}} found at position 0");
@@ -58,7 +58,7 @@ public class TemplateTest {
 	 * Not invalid end tag.
 	 */
 	@Test
-	public void testWriteInvalidEnd() throws IOException {
+	public void testWriteInvalidEnd() {
 		Assertions.assertThrows(Exception.class, () -> {
 			new Template<>("{{any/}").write(writer, new HashMap<String, Processor<?>>(), null);
 		}, "Invalid opening tag syntax '{{' without '}}' at position 0");
@@ -68,7 +68,7 @@ public class TemplateTest {
 	 * Not invalid end tag.
 	 */
 	@Test
-	public void testWriteInvalidEndOverlay() throws IOException {
+	public void testWriteInvalidEndOverlay() {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>(new String[] { "value" }));
 		Assertions.assertThrows(Exception.class, () -> {
@@ -80,7 +80,7 @@ public class TemplateTest {
 	 * Missing closing tag.
 	 */
 	@Test
-	public void testWriteNoClosing() throws IOException {
+	public void testWriteNoClosing() {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>());
 		Assertions.assertThrows(Exception.class, () -> {
@@ -103,7 +103,7 @@ public class TemplateTest {
 	 * Missing closing tag.
 	 */
 	@Test
-	public void testWriteNoClosingNesting() throws IOException {
+	public void testWriteNoClosingNesting() {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>(new String[] { "value" }));
 		tags.put("one", new Processor<>());
@@ -116,7 +116,7 @@ public class TemplateTest {
 	 * Empty tag name.
 	 */
 	@Test
-	public void testWriteEmptyTag() throws IOException {
+	public void testWriteEmptyTag() {
 		Assertions.assertThrows(Exception.class, () -> {
 			new Template<>("{{}}").write(writer, new HashMap<String, Processor<?>>(), null);
 		}, "Empty tag {{}} found at position 0");
@@ -126,7 +126,7 @@ public class TemplateTest {
 	 * Too long tag name.
 	 */
 	@Test
-	public void testWriteTooLongTag() throws IOException {
+	public void testWriteTooLongTag() {
 		Assertions.assertThrows(Exception.class, () -> {
 			new Template<>("{{" + StringUtils.repeat('z', 101) + "}}..").write(writer, new HashMap<String, Processor<?>>(), null);
 		}, "Too long (max is 100 tag zzzzzzzzzzzzzzzzzzzzzzzzzzzz...}} found at position 0");

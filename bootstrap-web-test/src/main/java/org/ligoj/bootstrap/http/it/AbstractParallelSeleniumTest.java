@@ -187,7 +187,7 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 			public void run() {
 				AbstractParallelSeleniumTest seleniumTest = AbstractParallelSeleniumTest.this;
 				try {
-					seleniumTest = AbstractParallelSeleniumTest.this.getClass().newInstance();
+					seleniumTest = AbstractParallelSeleniumTest.this.getClass().getDeclaredConstructor().newInstance();
 					AbstractParallelSeleniumTest.this.cloneAndRun(seleniumTest, driver, capability);
 					success[driverIndex] = true;
 				} catch (final Exception e) {

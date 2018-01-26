@@ -83,7 +83,7 @@ public class SystemEntitiesTest {
 	 */
 	private <T> void testEntity(final Class<T> clazz)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		final T entity = clazz.newInstance();
+		final T entity = clazz.getDeclaredConstructor().newInstance();
 		if (entity instanceof Auditable) {
 			@SuppressWarnings("unchecked")
 			final Auditable<?, ?, Date> auditable = (Auditable<?, ?, Date>) entity;

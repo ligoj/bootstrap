@@ -182,7 +182,7 @@ public abstract class AbstractCsvReader<T> {
 
 		// Build the instance
 		try {
-			final T bean = clazz.newInstance();
+			final T bean = clazz.getDeclaredConstructor().newInstance();
 
 			// Fill the instance
 			fillInstance(bean, values);

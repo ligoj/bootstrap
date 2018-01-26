@@ -1,6 +1,5 @@
 package org.ligoj.bootstrap.core.csv;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -160,7 +159,7 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanInvalidForeignKey() throws IOException {
+	public void toBeanInvalidForeignKey() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForBean.toBean(DummyEntity2.class, "csv/demo/dummyentity2.csv");
 		});

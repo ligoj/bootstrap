@@ -64,7 +64,7 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 		try {
 			final WebDriver driver = getRemoteDriver(capability);
 			drivers[driverIndex] = driver;
-			seleniumTest = this.getClass().newInstance();
+			seleniumTest = this.getClass().getDeclaredConstructor().newInstance();
 			cloneAndRun(seleniumTest, driver, capability);
 			success[driverIndex] = true;
 		} catch (final Exception e) {

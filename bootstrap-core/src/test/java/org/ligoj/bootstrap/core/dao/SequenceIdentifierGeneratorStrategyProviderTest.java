@@ -1,5 +1,6 @@
 package org.ligoj.bootstrap.core.dao;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import org.hibernate.boot.model.naming.Identifier;
@@ -30,11 +31,15 @@ import org.mockito.stubbing.Answer;
 public class SequenceIdentifierGeneratorStrategyProviderTest {
 	/**
 	 * Check strategy configuration.
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws  
 	 */
 	@Test
-	public void testFactoryConfiguration() throws InstantiationException, IllegalAccessException {
+	public void testFactoryConfiguration() throws ReflectiveOperationException {
 		Assertions.assertEquals(OptimizedSequenceStyleGenerator.class,
-				SequenceIdentifierGeneratorStrategyProvider.class.newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
+				SequenceIdentifierGeneratorStrategyProvider.class.getDeclaredConstructor().newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
 	}
 
 	/**

@@ -144,7 +144,7 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void testReadList() throws IOException {
+	public void testReadList() {
 		Assertions.assertThrows(FileNotFoundException.class, () -> {
 			readList("none");
 		});
