@@ -2,18 +2,12 @@ package org.ligoj.bootstrap.core.json;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * Simple wrapper item for test.
  * 
  * @param <K>
  *            Wrapped data type
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 public class TableItem<K> {
 	/**
 	 * Records in data base.
