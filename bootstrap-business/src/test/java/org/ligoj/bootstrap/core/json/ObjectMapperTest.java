@@ -66,7 +66,7 @@ public class ObjectMapperTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void dateDeserializerFailed() throws IOException {
+	public void dateDeserializerFailed() {
 		Assertions.assertThrows(JsonParseException.class, () -> {
 			Assertions.assertEquals(getDate(2016, 8, 2), mapper.readValue("any", Date.class));
 		});
@@ -90,14 +90,14 @@ public class ObjectMapperTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void testDeserializationFailed() throws IOException {
+	public void testDeserializationFailed() {
 		Assertions.assertThrows(InvalidFormatException.class, () -> {
 			Assertions.assertEquals(Status.ACCEPTED, mapper.readValue("\"ACCEPTED\"", Status.class));
 		});
 	}
 
 	@Test
-	public void testDeserializationFailed2() throws IOException {
+	public void testDeserializationFailed2() {
 		Assertions.assertThrows(InvalidFormatException.class, () -> {
 			Assertions.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"accepted\"", Status.class));
 		});

@@ -15,6 +15,15 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.ligoj.bootstrap.core.SpringUtils;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
+import org.ligoj.bootstrap.core.resource.BusinessException;
+import org.ligoj.bootstrap.core.resource.TechnicalException;
+import org.ligoj.bootstrap.core.validation.ValidationJsonException;
+import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
+import org.ligoj.bootstrap.model.system.SystemDialect;
+import org.ligoj.bootstrap.model.system.SystemRole;
+import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,16 +35,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.TransactionSystemException;
-
-import org.ligoj.bootstrap.core.SpringUtils;
-import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
-import org.ligoj.bootstrap.core.resource.BusinessException;
-import org.ligoj.bootstrap.core.resource.TechnicalException;
-import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
-import org.ligoj.bootstrap.model.system.SystemDialect;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**
  * Mapper exception resource test.

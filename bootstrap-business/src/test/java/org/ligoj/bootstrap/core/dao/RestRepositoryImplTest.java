@@ -18,6 +18,7 @@ import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -285,7 +286,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	public void deleteExpectedError() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
+		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
 			repository.deleteById(-1);
 		});
 	}

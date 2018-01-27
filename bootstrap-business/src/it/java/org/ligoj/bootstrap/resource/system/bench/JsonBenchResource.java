@@ -17,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.joda.time.DateTime;
-
 import org.ligoj.bootstrap.core.json.TableItem;
 
 /**

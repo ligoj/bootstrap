@@ -71,6 +71,6 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 * @return <tt>true</tt> when the current thread is running in forked test.
 	 */
 	protected boolean isRepeatMode() {
-		return testName.getTestMethod() == null;
+		return testName == null || testName.getTestMethod() == null;
 	}
 }

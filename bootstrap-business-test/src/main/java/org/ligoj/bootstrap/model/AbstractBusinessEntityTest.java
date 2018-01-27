@@ -41,7 +41,7 @@ public abstract class AbstractBusinessEntityTest {
 	 * @param <T>
 	 *            The type of the entity to test.
 	 */
-	protected <T> void testEqualsAndHash(final Class<T> modelClass) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+	protected <T> void testEqualsAndHash(final Class<T> modelClass) throws ReflectiveOperationException {
 		testEqualsAndHash(modelClass, "id");
 	}
 
@@ -60,12 +60,13 @@ public abstract class AbstractBusinessEntityTest {
 	 *             due to reflection.
 	 * @param <T>
 	 *            The type of the entity to test.
+	 * @throws ReflectiveOperationException
 	 */
-	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		final T systemUser = modelClass.newInstance();
-		final T systemUser2 = modelClass.newInstance();
-		Assertions.assertFalse(systemUser.equals(null)); // NOPMD NOSONAR -- for coverage
+	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties) throws ReflectiveOperationException {
+		final T systemUser = modelClass.getDeclaredConstructor().newInstance();
+		final T systemUser2 = modelClass.getDeclaredConstructor().newInstance();
+		Assertions.assertFalse(systemUser.equals(null)); // NOPMD NOSONAR -- for
+															// coverage
 		Assertions.assertEquals(systemUser, systemUser);
 		Assertions.assertEquals(systemUser, systemUser2);
 		Assertions.assertFalse(systemUser.equals(1));
@@ -83,16 +84,17 @@ public abstract class AbstractBusinessEntityTest {
 	}
 
 	private <T> void testCombinations(final Class<T> modelClass, final List<List<String>> combinations)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException {
+			throws ReflectiveOperationException {
 		for (final List<String> combination : combinations) {
-			final T beanValued = modelClass.newInstance();
+			final T beanValued = modelClass.getDeclaredConstructor().newInstance();
 			setValues(beanValued, combination);
 			testCombinations(modelClass, combinations, combination, beanValued);
 			Assertions.assertNotSame(0, beanValued.hashCode());
 		}
 	}
 
-	private <T> void setValues(final T beanValued, final List<String> combination) throws IllegalAccessException, InvocationTargetException {
+	private <T> void setValues(final T beanValued, final List<String> combination)
+			throws IllegalAccessException, InvocationTargetException {
 		for (final String propertyString : combination) {
 			beanUtilsBean.setProperty(beanValued, propertyString, 1);
 		}
@@ -102,7 +104,7 @@ public abstract class AbstractBusinessEntityTest {
 	 * Test the given combinations.
 	 */
 	private <T> void testCombinations(final Class<T> modelClass, final List<List<String>> combinations, final List<String> combination,
-			final T beanValued) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+			final T beanValued) throws ReflectiveOperationException {
 		for (final List<String> properties : combinations) {
 			testCombination(modelClass, combination, beanValued, properties);
 		}
@@ -111,9 +113,9 @@ public abstract class AbstractBusinessEntityTest {
 	/**
 	 * Test the given combination.
 	 */
-	private <T> void testCombination(final Class<T> modelClass, final List<String> combination, final T beanValued, final List<String> properties)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		final T beanValued2 = modelClass.newInstance();
+	private <T> void testCombination(final Class<T> modelClass, final List<String> combination, final T beanValued,
+			final List<String> properties) throws ReflectiveOperationException {
+		final T beanValued2 = modelClass.getDeclaredConstructor().newInstance();
 		setValues(beanValued2, properties);
 		Assertions.assertEquals(properties.equals(combination), beanValued.equals(beanValued2));
 	}

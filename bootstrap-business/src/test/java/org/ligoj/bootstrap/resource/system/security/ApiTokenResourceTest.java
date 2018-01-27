@@ -3,6 +3,8 @@ package org.ligoj.bootstrap.resource.system.security;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,8 +110,8 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void updateNotExist() throws GeneralSecurityException {
-		Assertions.assertThrows(GeneralSecurityException.class, () -> {
+	public void updateNotExist() {
+		Assertions.assertThrows(EntityNotFoundException.class, () -> {
 			resource.update("any");
 		});
 	}

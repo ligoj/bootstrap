@@ -12,14 +12,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.eclipse.jetty.server.Server;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.AbstractRestTest;
 import org.ligoj.bootstrap.core.SpringUtils;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
@@ -31,9 +28,9 @@ import org.ligoj.bootstrap.resource.system.user.SystemUserEditionVo;
 import org.ligoj.bootstrap.resource.system.user.UserResource;
 
 /**
- * Spring Security configuration and {@link SessionResource} access from REST interface.
+ * Spring Security configuration and {@link SessionResource} access from REST
+ * interface.
  */
-@FixMethodOrder(MethodSorters.JVM)
 public class SessionResourceRestIT extends AbstractRestTest {
 
 	/**
@@ -112,7 +109,8 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	}
 
 	/**
-	 * Username is provided but without authority and not in white list gives 403
+	 * Username is provided but without authority and not in white list gives
+	 * 403
 	 */
 	@Test
 	public void testProtectedResourceNotAuthorizedMeans403() throws IOException {

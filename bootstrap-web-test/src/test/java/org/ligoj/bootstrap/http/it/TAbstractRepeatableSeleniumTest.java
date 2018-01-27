@@ -44,7 +44,7 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 	@org.junit.jupiter.api.Test
 	public void testCloneAndRun() throws Exception {
 		testName = Mockito.mock(TestInfo.class);
-		Mockito.when(testName.getTestMethod()).thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTest")));
+		Mockito.when(testName.getTestMethod()).thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(Test.class, "mockTest")));
 		cloneAndRun(new Test(), null, null);
 	}
 
