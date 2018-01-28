@@ -21,17 +21,22 @@ Key features:
 - Exception to REST/HTTP code mapping
 - Advanced JAX-RS validation
 - Tuned Jackson configuration for minified playload and validation
-- Test powered with CSV data load to and from JPA entities
+- Test powered with CSV data load to/from JPA entities
 - TDD ready with pre-built asserts with Mockito and Wiremock
 - Optional encrypted properties support and database configuration with Jasypt
 - Tuned configuration for dev, build and production
 - Spring-Data extensions for performance, minimal code and exception handling
 
 A Spring based front/back architecture
-- Spring Security/Web/Data
+- Spring Boot/Security/Web/Data
 - CXF
 - JPA / Hibernate
 - Hibernate Validator for JPA and JAX-RS
+- JUnit 5
+
+Requirements
+- Java-9
+- Maven 3.5
 
 TODO :
 - Documentation, 
