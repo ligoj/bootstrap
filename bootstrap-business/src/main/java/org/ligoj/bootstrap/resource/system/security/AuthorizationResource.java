@@ -50,7 +50,7 @@ public class AuthorizationResource {
 	private HttpMethod[] methods;
 
 	/**
-	 * Retrieve an element from its identifier.
+	 * Retrieve an authorization from its identifier.
 	 * 
 	 * @param id
 	 *            Element's identifier.
@@ -81,7 +81,7 @@ public class AuthorizationResource {
 	 * Retrieve all business authorizations of current user.
 	 * 
 	 * @param context
-	 *            security context.
+	 *            Security context.
 	 * @return all business authorizations of current user.
 	 */
 	@GET
@@ -92,7 +92,7 @@ public class AuthorizationResource {
 	}
 
 	/**
-	 * Create a new element.
+	 * Create a new authorization.
 	 * 
 	 * @param entity
 	 *            New object to persist.
@@ -178,7 +178,7 @@ public class AuthorizationResource {
 		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache = new EnumMap<>(
 				AuthorizationType.class);
 		final List<SystemAuthorization> authorizations = repository.findAll();
-		authorizations.forEach(a->addAuthorization(newCacheRole(newCacheType(authorizationsCache, a), a), a));
+		authorizations.forEach(a -> addAuthorization(newCacheRole(newCacheType(authorizationsCache, a), a), a));
 		return authorizationsCache;
 	}
 
