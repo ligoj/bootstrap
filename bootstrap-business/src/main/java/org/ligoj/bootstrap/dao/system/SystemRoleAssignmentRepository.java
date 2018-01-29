@@ -2,15 +2,15 @@ package org.ligoj.bootstrap.dao.system;
 
 import java.util.List;
 
+import org.ligoj.bootstrap.core.dao.RestRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 /**
  * SystemRoleAssignment repository.
  */
-public interface SystemRoleAssignmentRepository extends JpaRepository<SystemRoleAssignment, Integer> {
+public interface SystemRoleAssignmentRepository extends RestRepository<SystemRoleAssignment, Integer> {
 
 	/**
 	 * Return all roles whatever the context, date or applied resource.

@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
+import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemRole;
@@ -36,6 +37,9 @@ public class RoleResource {
 
 	@Autowired
 	private SystemRoleRepository repository;
+
+	@Autowired
+	private SystemRoleAssignmentRepository roleAssignmentRepository;
 
 	@Autowired
 	private AuthorizationRepository authorizationRepository;
@@ -177,16 +181,17 @@ public class RoleResource {
 	}
 
 	/**
-	 * Delete Role from its ID
+	 * Delete Role from its identifier
 	 * 
 	 * @param id
-	 *            : ID of the Role to delete
+	 *            Identifier of the role to delete.
 	 */
 	@DELETE
 	@Path("{id:\\d+}")
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void remove(@PathParam("id") final int id) {
 		authorizationRepository.deleteAllBy("role.id", id);
+		roleAssignmentRepository.deleteAllBy("role.id", id);
 		repository.deleteById(id);
 	}
 }
