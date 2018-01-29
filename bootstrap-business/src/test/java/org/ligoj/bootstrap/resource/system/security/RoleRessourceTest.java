@@ -12,9 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.TableItem;
+import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.model.system.SystemRole;
+import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
+import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,6 +31,9 @@ public class RoleRessourceTest extends AbstractBootTest {
 	@Autowired
 	private RoleResource resource;
 
+	@Autowired
+	private SystemUserRepository userRepository;
+
 	private String roleTestName;
 
 	private Integer roleTestId;
@@ -36,6 +42,8 @@ public class RoleRessourceTest extends AbstractBootTest {
 	public void setUp2() throws IOException {
 		persistEntities(SystemRole.class, "csv/system-test/role.csv");
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
+		persistEntities(SystemUser.class, "csv/system-test/user.csv");
+		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
 		final SystemRole role = em.createQuery("FROM SystemRole", SystemRole.class).setMaxResults(1).getResultList().get(0);
 		roleTestId = role.getId();
 		roleTestName = role.getName();
@@ -47,7 +55,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test find all service
 	 */
 	@Test
-	public void testFindAll() {
+	public void findAll() {
 		final TableItem<SystemRole> result = resource.findAll();
 		Assertions.assertEquals(5, result.getData().size());
 	}
@@ -56,7 +64,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test find all service
 	 */
 	@Test
-	public void testFindAllFetchAuth() {
+	public void findAllFetchAuth() {
 		final TableItem<SystemRoleVo> result = resource.findAllFetchAuth();
 		Assertions.assertEquals(5, result.getData().size());
 		Assertions.assertEquals(2, result.getData().get(0).getAuthorizations().size());
@@ -66,7 +74,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test find by id service
 	 */
 	@Test
-	public void testFindById() {
+	public void findById() {
 		final SystemRole result = resource.findById(roleTestId);
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(roleTestName, result.getName());
@@ -76,7 +84,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test find by id service. Id is not in database
 	 */
 	@Test
-	public void testFindByIdNotFound() {
+	public void findByIdNotFound() {
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
 			resource.findById(-1);
 		});
@@ -86,7 +94,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test create service
 	 */
 	@Test
-	public void testCreate() {
+	public void create() {
 		final int resultId = resource.create(newRoleVo());
 		// check result
 		em.flush();
@@ -130,7 +138,7 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test update service
 	 */
 	@Test
-	public void testUpdate() {
+	public void update() {
 		final SystemRoleVo roleVo = newRoleVo();
 		// test update name and add authorization
 		roleVo.setId(roleTestId);
@@ -172,12 +180,28 @@ public class RoleRessourceTest extends AbstractBootTest {
 	 * test remove service
 	 */
 	@Test
-	public void testRemove() {
+	public void remove() {
 		resource.remove(roleTestId);
 
 		// check result
 		em.flush();
 		em.clear();
 		Assertions.assertNull(em.find(SystemRole.class, roleTestId));
+	}
+
+	@Test
+	public void isAdmin() {
+		Assertions.assertTrue(userRepository.isAdmin("alongchu"));
+		Assertions.assertFalse(userRepository.isAdmin("jdupont"));
+	}
+
+	@Test
+	public void isAdminNoRole() {
+		Assertions.assertFalse(userRepository.isAdmin("any"));
+	}
+
+	@Test
+	public void isAdminOtherUser() {
+		Assertions.assertFalse(userRepository.isAdmin("jdupont"));
 	}
 }
