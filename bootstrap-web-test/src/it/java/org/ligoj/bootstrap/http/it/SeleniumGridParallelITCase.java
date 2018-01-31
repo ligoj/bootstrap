@@ -1,6 +1,5 @@
 package org.ligoj.bootstrap.http.it;
 
-import org.junit.Test;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**

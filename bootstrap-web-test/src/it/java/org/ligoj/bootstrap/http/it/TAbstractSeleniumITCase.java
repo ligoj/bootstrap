@@ -1,7 +1,7 @@
 package org.ligoj.bootstrap.http.it;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
