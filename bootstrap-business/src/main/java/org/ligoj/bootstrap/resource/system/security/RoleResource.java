@@ -35,6 +35,11 @@ import org.springframework.stereotype.Service;
 @Produces(MediaType.APPLICATION_JSON)
 public class RoleResource {
 
+	/**
+	 * Role identifier JQL path.
+	 */
+	private static final String ROLE_ID = "role.id";
+
 	@Autowired
 	private SystemRoleRepository repository;
 
@@ -162,7 +167,7 @@ public class RoleResource {
 		final SystemRole role = findById(roleVo.getId());
 		role.setName(roleVo.getName());
 		// delete authorizations
-		for (final SystemAuthorization auth : authorizationRepository.findAllBy("role.id", role.getId())) {
+		for (final SystemAuthorization auth : authorizationRepository.findAllBy(ROLE_ID, role.getId())) {
 			if (roleVo.getAuthorizations().stream().noneMatch(authVo -> auth.getId().equals(authVo.getId()))) {
 				authorizationRepository.delete(auth);
 			}
@@ -190,8 +195,8 @@ public class RoleResource {
 	@Path("{id:\\d+}")
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void remove(@PathParam("id") final int id) {
-		authorizationRepository.deleteAllBy("role.id", id);
-		roleAssignmentRepository.deleteAllBy("role.id", id);
+		authorizationRepository.deleteAllBy(ROLE_ID, id);
+		roleAssignmentRepository.deleteAllBy(ROLE_ID, id);
 		repository.deleteById(id);
 	}
 }
