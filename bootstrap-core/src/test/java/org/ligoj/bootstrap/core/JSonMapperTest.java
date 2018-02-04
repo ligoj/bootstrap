@@ -217,7 +217,7 @@ public class JSonMapperTest {
 		private V value;
 	}
 
-	@SuppressWarnings({ "cast", "unchecked" })
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testReadGenericObjectArray() throws IOException {
 		final StringBuilder valueBuffer = new StringBuilder("[");
@@ -247,7 +247,7 @@ public class JSonMapperTest {
 
 	@Test
 	public void testWriteGenericObjectArray() throws IOException {
-		@SuppressWarnings({ "cast", "unchecked" })
+		@SuppressWarnings("unchecked")
 		final TestGenericObjectArray<Integer, String>[] lastObject = (TestGenericObjectArray<Integer, String>[]) new TestGenericObjectArray[20];
 		for (int i = 20; i-- > 0;) {
 			lastObject[i] = new TestGenericObjectArray<>();
