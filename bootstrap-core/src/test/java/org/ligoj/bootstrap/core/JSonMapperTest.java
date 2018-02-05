@@ -233,7 +233,7 @@ public class JSonMapperTest {
 		final long start = System.currentTimeMillis();
 		List<Map<Object, Object>> lastObject = new ArrayList<>();
 		for (int i = ITERATION; i-- > 0;) {
-			lastObject = (List<Map<Object, Object>>) readObject(value, List.class);
+			lastObject = readObject(value, List.class);
 		}
 		final long end = System.currentTimeMillis();
 		Assertions.assertNotNull(lastObject);
@@ -248,7 +248,7 @@ public class JSonMapperTest {
 	@Test
 	public void testWriteGenericObjectArray() throws IOException {
 		@SuppressWarnings("unchecked")
-		final TestGenericObjectArray<Integer, String>[] lastObject = (TestGenericObjectArray<Integer, String>[]) new TestGenericObjectArray[20];
+		final TestGenericObjectArray<Integer, String>[] lastObject = new TestGenericObjectArray[20];
 		for (int i = 20; i-- > 0;) {
 			lastObject[i] = new TestGenericObjectArray<>();
 			lastObject[i].setKey(6);

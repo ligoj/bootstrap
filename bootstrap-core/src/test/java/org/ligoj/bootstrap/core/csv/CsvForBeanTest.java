@@ -182,7 +182,7 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanMapDuplicateKey() throws Exception {
+	public void toBeanMapDuplicateKey() {
 		final TechnicalException e = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForBean.toBean(DummyEntity3.class, new StringReader("login;map$key1;map$key1\nfdaugan;value1;value2"));
 		}, "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
@@ -191,7 +191,7 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanMapNotMapDuplicateKey() throws Exception {
+	public void toBeanMapNotMapDuplicateKey() {
 		final TechnicalException e = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForBean.toBean(DummyEntity3.class, new StringReader("login;lastConnection$key1;lastConnection$key1\nfdaugan;value1;value2"));
 		}, "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");

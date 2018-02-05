@@ -127,7 +127,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toCsvEntityEmptyError() throws Exception {
+	public void toCsvEntityEmptyError() {
 		final List<DummyEntity> items = new ArrayList<>();
 		final StringWriter result = new StringWriter();
 		items.add(null);
@@ -156,21 +156,21 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaUnknownProperty() throws Exception {
+	public void toJpaUnknownProperty() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity.class, new StringReader("blah\n4\n"), true);
 		});
 	}
 
 	@Test
-	public void toJpaInvalidTrailing() throws Exception {
+	public void toJpaInvalidTrailing() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity.class, new StringReader("'8' \t7\n"), false);
 		});
 	}
 
 	@Test
-	public void toJpaTooMuchValues() throws Exception {
+	public void toJpaTooMuchValues() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity.class, new StringReader("id\n4;1\n"), true);
 		});
@@ -322,7 +322,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaUnknownClass() throws Exception {
+	public void toJpaUnknownClass() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(Integer.class, new StringReader("n\n1\n"), true);
 		});
@@ -348,7 +348,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpatoJpaEntityPerformance() throws Exception {
+	public void toJpatoJpaEntityPerformance() {
 		final StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 10000; i-- > 0;) {
 			stringBuilder.append("1;4;5;3;7;8;6;2\n");
@@ -360,7 +360,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toCsvPerformance() throws Exception {
+	public void toCsvPerformance() {
 		final List<DummyEntity> items = newWines();
 		final StringWriter result = new StringWriter();
 		Assertions.assertTimeout(Duration.ofSeconds(2), () -> {
@@ -372,7 +372,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaMissingValues() throws Exception {
+	public void toJpaMissingValues() {
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForJpa.toJpa(DummyEntity.class, new StringReader("4;3.5;5;5;5;5;5;5;5;5;5;5\n"), false);
 		});
@@ -407,7 +407,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toCsvEntityPerformance() throws Exception {
+	public void toCsvEntityPerformance() {
 		final List<DummyEntity> items = newWines();
 		final StringWriter result = new StringWriter();
 		Assertions.assertTimeout(Duration.ofSeconds(1), () -> {
