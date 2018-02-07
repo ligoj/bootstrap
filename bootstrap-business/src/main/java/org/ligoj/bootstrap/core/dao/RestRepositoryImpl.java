@@ -4,14 +4,18 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.ligoj.bootstrap.core.SpringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -27,22 +31,22 @@ import org.springframework.util.CollectionUtils;
  * @param <K>
  *            Entity's key type.
  */
-public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepository<T, K> implements RestRepository<T, K> {
+public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepository<T, K>
+		implements RestRepository<T, K> {
 
 	/**
 	 * Entity manager, only there because of ugly design of Spring Data.
 	 */
 	private final EntityManager em;
 	private final JpaEntityInformation<T, ?> ei;
-	private static final String SELECT_BY = "FROM %s WHERE %s=:value";
+	private static final String EQ = "%s=:%s";
+	private static final String SELECT_BY = "FROM %s WHERE " + EQ;
 	private static final String DELETE_ALL = "DELETE %s";
-	private static final String DELETE_BY = DELETE_ALL + " WHERE %s=:value";
-	private static final String DELETE_ALL_IN = "DELETE %s WHERE id IN (:ids)";
-	private static final String PARAM_VALUE = "value";
+	private static final String DELETE_BY = DELETE_ALL + " WHERE " + EQ;
+	private static final String DELETE_ALL_IN = DELETE_ALL + " WHERE %s IN (:%s)";
 
 	/**
-	 * Creates a new {@link RestRepositoryImpl} to manage objects of the given
-	 * {@link JpaEntityInformation}.
+	 * Creates a new {@link RestRepositoryImpl} to manage objects of the given {@link JpaEntityInformation}.
 	 * 
 	 * @param entityInformation
 	 *            must not be {@literal null}.
@@ -68,11 +72,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 		} else {
 			entity = findOne(id, fetchedAssociations);
 		}
-
-		if (entity == null) {
-			throw new EntityNotFoundException(id.toString());
-		}
-		return entity;
+		return Optional.ofNullable(entity).orElseThrow(() -> new EntityNotFoundException(id.toString()));
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	@Override
 	@Transactional
 	public void deleteNoFetch(final K id) {
-		if (em.createQuery(String.format(DELETE_BY, ei.getEntityName(), "id")).setParameter(PARAM_VALUE, id).executeUpdate() != 1) {
+		if (update(DELETE_BY, "id", id, ArrayUtils.EMPTY_STRING_ARRAY) != 1) {
 			// No deleted row
 			throw new EntityNotFoundException(id.toString());
 		}
@@ -109,7 +109,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 		if (org.apache.commons.collections4.CollectionUtils.isEmpty(identifiers)) {
 			return 0;
 		}
-		return em.createQuery(String.format(DELETE_ALL_IN, ei.getEntityName())).setParameter("ids", identifiers).executeUpdate();
+		return update(DELETE_ALL_IN, "id", identifiers, ArrayUtils.EMPTY_STRING_ARRAY);
 	}
 
 	@Override
@@ -138,13 +138,14 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 
 	@Override
 	public T findBy(final String property, final Object value) {
-		final List<T> resultList = em.createQuery(String.format(SELECT_BY, ei.getEntityName(), property), ei.getJavaType())
-				.setParameter(PARAM_VALUE, value).setMaxResults(1).getResultList();
-		if (resultList.isEmpty()) {
-			// No result, null return
-			return null;
-		}
-		return resultList.get(0);
+		return findBy(property, value, ArrayUtils.EMPTY_STRING_ARRAY);
+	}
+
+	@Override
+	public T findBy(final String property, final Object value, final String[] properties, final Object... values) {
+		// No result, null return
+		return newQuery(SELECT_BY, property, value, properties, values).setMaxResults(1).getResultList().stream()
+				.findFirst().orElse(null);
 	}
 
 	@Override
@@ -159,29 +160,76 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 
 	@Override
 	public T findByExpected(final String property, final Object value) {
-		final T entity = findBy(property, value);
-		if (entity == null) {
-			throw new EntityNotFoundException(String.valueOf(value));
-		}
-		return entity;
+		return Optional.ofNullable(findBy(property, value))
+				.orElseThrow(() -> new EntityNotFoundException(String.valueOf(value)));
 	}
 
 	@Override
 	@Transactional
 	public int deleteAllBy(final String property, final Object value) {
-		return em.createQuery(String.format(DELETE_BY, ei.getEntityName(), property)).setParameter(PARAM_VALUE, value).executeUpdate();
+		return deleteAllBy(property, value, ArrayUtils.EMPTY_STRING_ARRAY);
+	}
+
+	@Override
+	public int deleteAllBy(String property, Object value, String[] properties, Object... values) {
+		return update(DELETE_BY, property, value, properties, values);
 	}
 
 	@Override
 	public List<T> findAllBy(final String property, final Object value) {
-		return em.createQuery(String.format(SELECT_BY, ei.getEntityName(), property), ei.getJavaType()).setParameter(PARAM_VALUE, value)
-				.getResultList();
+		return findAllBy(property, value, ArrayUtils.EMPTY_STRING_ARRAY);
+	}
+
+	@Override
+	public List<T> findAllBy(final String property, final Object value, final String[] properties,
+			final Object... values) {
+		return newQuery(SELECT_BY, property, value, properties, values).getResultList();
+	}
+
+	/**
+	 * Generate a new {@link TypedQuery} from the base pattern, with initial WHERE constraint
+	 * <code>property=:value</code> and some optional more constraints pairs.
+	 */
+	private TypedQuery<T> newQuery(final String patternQuery, final String property, final Object value,
+			final String[] properties, final Object... values) {
+		final StringBuilder baseQuery = new StringBuilder(
+				String.format(patternQuery, ei.getEntityName(), property, property));
+		for (final String addProperty : properties) {
+			baseQuery.append(" AND ");
+			baseQuery.append(String.format(EQ, addProperty, addProperty));
+		}
+		final TypedQuery<T> query = em.createQuery(baseQuery.toString(), ei.getJavaType());
+		query.setParameter(property, value);
+		for (int index = 0; index < values.length; index++) {
+			query.setParameter(properties[index], values[index]);
+		}
+		return query;
+	}
+
+	/**
+	 * Generate a new {@link Query} from the base pattern, with initial WHERE constraint <code>property=:value</code>
+	 * and some optional more constraints pairs.
+	 */
+	private int update(final String patternQuery, final String property, final Object value, final String[] properties,
+			final Object... values) {
+		final StringBuilder baseQuery = new StringBuilder(
+				String.format(patternQuery, ei.getEntityName(), property, property));
+		for (final String addProperty : properties) {
+			baseQuery.append(" AND ");
+			baseQuery.append(String.format(EQ, addProperty, addProperty));
+		}
+		final Query query = em.createQuery(baseQuery.toString());
+		query.setParameter(property, value);
+		for (int index = 0; index < values.length; index++) {
+			query.setParameter(properties[index], values[index]);
+		}
+		return query.executeUpdate();
 	}
 
 	@Override
 	public long countBy(String property, Object value) {
-		return em.createQuery(String.format("SELECT COUNT(*) FROM %s WHERE %s=:value", ei.getEntityName(), property), Long.class)
-				.setParameter(PARAM_VALUE, value).getSingleResult();
+		return em.createQuery(String.format("SELECT COUNT(*) FROM %s WHERE %s=:value", ei.getEntityName(), property),
+				Long.class).setParameter("value", value).getSingleResult();
 	}
 
 }

@@ -65,11 +65,30 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	/**
+	 * Default find, and found.
+	 */
+	@Test
+	public void findOne() {
+		final SystemDialect dialect = repository.findOne(lastKnownEntity);
+		Assertions.assertNotNull(dialect);
+		Assertions.assertNotNull(dialect.getLink());
+		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
+	}
+
+	/**
+	 * Default find, and not found.
+	 */
+	@Test
+	public void findOneNotFound() {
+		Assertions.assertNull(repository.findOne(-1));
+	}
+
+	/**
 	 * Default find one with expected result.
 	 */
 	@Test
 	public void findOneExpected() {
-		final SystemDialect dialect = repository.findOne(lastKnownEntity);
+		final SystemDialect dialect = repository.findOneExpected(lastKnownEntity);
 		Assertions.assertNotNull(dialect);
 		Assertions.assertNotNull(dialect.getLink());
 		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
@@ -124,6 +143,19 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		role = roleRepository.findByName("name");
 		Assertions.assertNotNull(role);
 		Assertions.assertEquals("name", role.getName());
+	}
+
+	@Test
+	public void findByMoreProperties() {
+		SystemRole role = new SystemRole();
+		role.setName("role");
+		em.persist(role);
+		em.flush();
+		em.clear();
+
+		role = roleRepository.findBy("name", "role", new String[] { "id" }, role.getId());
+		Assertions.assertNotNull(role);
+		Assertions.assertEquals("role", role.getName());
 	}
 
 	@Test
@@ -227,6 +259,32 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
+	}
+
+	@Test
+	public void deleteAllByMoreProperties() {
+		SystemDialect systemDialect = repository.findAll().get(1);
+		Assertions.assertFalse(repository.findAll().isEmpty());
+		Assertions.assertEquals(0,
+				repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" }, "some"));
+		Assertions.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" },
+				systemDialect.getDialChar()));
+		Assertions.assertEquals(0, repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" },
+				systemDialect.getDialChar()));
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
+		em.flush();
+		em.clear();
+		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
+
+		SystemRole role = new SystemRole();
+		role.setName("role");
+		em.persist(role);
+		em.flush();
+		em.clear();
+
+		role = roleRepository.findBy("name", "role", new String[] { "id" }, role.getId());
+		Assertions.assertNotNull(role);
+		Assertions.assertEquals("role", role.getName());
 	}
 
 	@Test

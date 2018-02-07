@@ -22,8 +22,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 public interface RestRepository<T, K extends Serializable> extends JpaRepository<T, K> {
 
 	/**
-	 * Search an expected entity with the given identifier. If not found a
-	 * runtime exception is raised.
+	 * Search an expected entity with the given identifier. If not found a runtime exception is raised.
 	 * 
 	 * @param id
 	 *            entity's identifier.
@@ -44,8 +43,7 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	 * 
 	 * @param id
 	 *            must not be {@literal null}.
-	 * @return the entity with the given id or {@literal Optional#empty()} if
-	 *         none found
+	 * @return the entity with the given id or {@literal Optional#empty()} if none found
 	 * @throws IllegalArgumentException
 	 *             if {@code id} is {@literal null}.
 	 * @see #findById(K)
@@ -67,8 +65,27 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	int deleteAllBy(String property, Object value);
 
 	/**
-	 * Delete an entity that must exists and without fetching it from the data
-	 * base. Warning, the entity manager state will not reflect this deletion.
+	/**
+	 * Delete all entities having the given property with the expected value.
+	 * 
+	 * @param property
+	 *            property's name.
+	 * @param value
+	 *            property's value.
+	 * @param properties
+	 *            Additional property names. Each additional property will correspond to another "AND" clause in the
+	 *            initial "WHERE" clause.
+	 * @param values
+	 *            Additional property values. Each additional values (same amount than properties will correspond to
+	 *            another "AND" clause in the initial "WHERE" clause.
+	 * @return the amount of deleted entities
+	 * @since 2.1.1
+	 */
+	int deleteAllBy(String property, Object value, String[] properties, Object... values);
+
+	/**
+	 * Delete an entity that must exists and without fetching it from the data base. Warning, the entity manager state
+	 * will not reflect this deletion.
 	 * 
 	 * @param id
 	 *            entity's identifier.
@@ -76,51 +93,45 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	void deleteNoFetch(K id);
 
 	/**
-	 * Delete all entities without fetching them from the data base. Warning,
-	 * the entity manager state will not reflect this deletion.
+	 * Delete all entities without fetching them from the data base. Warning, the entity manager state will not reflect
+	 * this deletion.
 	 * 
 	 * @return the amount of deleted entities
 	 */
 	int deleteAllNoFetch();
 
 	/**
-	 * Delete all entities matching to the given identifiers and return the
-	 * amount of deleted entities.
+	 * Delete all entities matching to the given identifiers and return the amount of deleted entities.
 	 * 
 	 * @return the number of deleted entities
 	 */
 	int deleteAll(Collection<K> identifiers);
 
 	/**
-	 * Delete all entities matching to the given identifiers and return the
-	 * amount of deleted entities. If one or more entities have not been
-	 * deleted, a runtime exception is raised.
+	 * Delete all entities matching to the given identifiers and return the amount of deleted entities. If one or more
+	 * entities have not been deleted, a runtime exception is raised.
 	 * 
 	 * @return the number of deleted entities.
 	 */
 	int deleteAllExpected(Collection<K> identifiers);
 
 	/**
-	 * Search an expected entity with the given identifier with fetched
-	 * associations. If not found a runtime exception is raised. When several
-	 * objects are found, only the first one is returned.
+	 * Search an expected entity with the given identifier with fetched associations. If not found a runtime exception
+	 * is raised. When several objects are found, only the first one is returned.
 	 * 
 	 * @param id
 	 *            entity's identifier.
 	 * @param fetchedAssociations
-	 *            A map of association to fetch. The map keys for composites
-	 *            associations should not have two times the same identifier
-	 *            &lt;"contrat.contrat", JoinType.INNER&gt; is not possible
-	 *            although &lt;"contrats.contrat", JoinType.INNER&gt; is
-	 *            accepted.
+	 *            A map of association to fetch. The map keys for composites associations should not have two times the
+	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
 	 * @return the non <code>null</code> entity.
 	 */
 	T findOneExpected(K id, Map<String, JoinType> fetchedAssociations);
 
 	/**
-	 * Search an entity with the given entity with the given name. If not found
-	 * a <code>null</code> object is returned. When several objects are found,
-	 * only the first one is returned.
+	 * Search an entity with the given entity with the given name. If not found a <code>null</code> object is returned.
+	 * When several objects are found, only the first one is returned.
 	 * 
 	 * @param name
 	 *            entity's name.
@@ -129,9 +140,8 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	T findByName(String name);
 
 	/**
-	 * Search an entity having the given property the
-	 * expected value. If not found a <code>null</code> object is returned. When several
-	 * objects are found, only the first one is returned.
+	 * Search an entity having the given property the expected value. If not found a <code>null</code> object is
+	 * returned. When several objects are found, only the first one is returned.
 	 * 
 	 * @param property
 	 *            Property's name.
@@ -142,8 +152,26 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	T findBy(String property, Object value);
 
 	/**
-	 * Count entities having the given property the
-	 * expected value.
+	 * Search an entity having the given property the expected value. If not found a <code>null</code> object is
+	 * returned. When several objects are found, only the first one is returned.
+	 * 
+	 * @param property
+	 *            Property's name.
+	 * @param value
+	 *            Property's value.
+	 * @param properties
+	 *            Additional property names. Each additional property will correspond to another "AND" clause in the
+	 *            initial "WHERE" clause.
+	 * @param values
+	 *            Additional property values. Each additional values (same amount than properties will correspond to
+	 *            another "AND" clause in the initial "WHERE" clause.
+	 * @return The entity. <code>null</code> when not found.
+	 * @since 2.1.1
+	 */
+	T findBy(String property, Object value, String[] properties, Object... values);
+
+	/**
+	 * Count entities having the given property the expected value.
 	 * 
 	 * @param property
 	 *            Property's name.
@@ -154,8 +182,8 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	long countBy(String property, Object value);
 
 	/**
-	 * Search all entities with the given entity with the given property has the
-	 * expected value. If not found a null object is returned.
+	 * Search all entities with the given entity with the given property has the expected value. If not found an empty
+	 * list is returned.
 	 * 
 	 * @param property
 	 *            property's name.
@@ -166,9 +194,27 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	List<T> findAllBy(String property, Object value);
 
 	/**
-	 * Search an entity with the given entity with the given name. If not found
-	 * a runtime exception is raised. When several objects are found, only the
-	 * first one is returned.
+	 * Search all entities with the given entity with the given property has the expected associated value. If not found
+	 * an empty list is returned.
+	 * 
+	 * @param property
+	 *            property's name.
+	 * @param value
+	 *            property's value.
+	 * @param properties
+	 *            Additional property names. Each additional property will correspond to another "AND" clause in the
+	 *            initial "WHERE" clause.
+	 * @param values
+	 *            Additional property values. Each additional values (same amount than properties will correspond to
+	 *            another "AND" clause in the initial "WHERE" clause.
+	 * @return the entities. Never <code>null</code>.
+	 * @since 2.1.1
+	 */
+	List<T> findAllBy(String property, Object value, String[] properties, Object... values);
+
+	/**
+	 * Search an entity with the given entity with the given name. If not found a runtime exception is raised. When
+	 * several objects are found, only the first one is returned.
 	 * 
 	 * @param name
 	 *            entity's name.
@@ -177,9 +223,8 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	T findByNameExpected(String name);
 
 	/**
-	 * Search an entity with the given entity with the given property has the
-	 * expected value. If not found a runtime exception is raised. When several
-	 * objects are found, only the first one is returned.
+	 * Search an entity with the given entity with the given property has the expected value. If not found a runtime
+	 * exception is raised. When several objects are found, only the first one is returned.
 	 * 
 	 * @param property
 	 *            property's name.
