@@ -26,7 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link RoleResource}
  */
 @ExtendWith(SpringExtension.class)
-public class RoleRessourceTest extends AbstractBootTest {
+public class RoleResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private RoleResource resource;

@@ -44,6 +44,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	private static final String DELETE_ALL = "DELETE %s";
 	private static final String DELETE_BY = DELETE_ALL + " WHERE " + EQ;
 	private static final String DELETE_ALL_IN = DELETE_ALL + " WHERE %s IN (:%s)";
+	private static final String PARAM_VALUE = "value";
 
 	/**
 	 * Creates a new {@link RestRepositoryImpl} to manage objects of the given {@link JpaEntityInformation}.
@@ -193,15 +194,15 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	private TypedQuery<T> newQuery(final String patternQuery, final String property, final Object value,
 			final String[] properties, final Object... values) {
 		final StringBuilder baseQuery = new StringBuilder(
-				String.format(patternQuery, ei.getEntityName(), property, property));
-		for (final String addProperty : properties) {
+				String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE));
+		for (int index = 0; index < values.length; index++) {
 			baseQuery.append(" AND ");
-			baseQuery.append(String.format(EQ, addProperty, addProperty));
+			baseQuery.append(String.format(EQ, properties[index], PARAM_VALUE + index));
 		}
 		final TypedQuery<T> query = em.createQuery(baseQuery.toString(), ei.getJavaType());
-		query.setParameter(property, value);
+		query.setParameter(PARAM_VALUE, value);
 		for (int index = 0; index < values.length; index++) {
-			query.setParameter(properties[index], values[index]);
+			query.setParameter(PARAM_VALUE + index, values[index]);
 		}
 		return query;
 	}
@@ -213,15 +214,15 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	private int update(final String patternQuery, final String property, final Object value, final String[] properties,
 			final Object... values) {
 		final StringBuilder baseQuery = new StringBuilder(
-				String.format(patternQuery, ei.getEntityName(), property, property));
-		for (final String addProperty : properties) {
+				String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE));
+		for (int index = 0; index < values.length; index++) {
 			baseQuery.append(" AND ");
-			baseQuery.append(String.format(EQ, addProperty, addProperty));
+			baseQuery.append(String.format(EQ, properties[index], PARAM_VALUE + index));
 		}
 		final Query query = em.createQuery(baseQuery.toString());
-		query.setParameter(property, value);
+		query.setParameter(PARAM_VALUE, value);
 		for (int index = 0; index < values.length; index++) {
-			query.setParameter(properties[index], values[index]);
+			query.setParameter(PARAM_VALUE + index, values[index]);
 		}
 		return query.executeUpdate();
 	}
@@ -229,7 +230,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	@Override
 	public long countBy(String property, Object value) {
 		return em.createQuery(String.format("SELECT COUNT(*) FROM %s WHERE %s=:value", ei.getEntityName(), property),
-				Long.class).setParameter("value", value).getSingleResult();
+				Long.class).setParameter(PARAM_VALUE, value).getSingleResult();
 	}
 
 }

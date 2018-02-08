@@ -14,9 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.dao.system.DialectRepository;
+import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.ligoj.bootstrap.model.system.SystemRole;
+import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
+import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
@@ -35,6 +38,9 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemRoleRepository roleRepository;
+
+	@Autowired
+	private SystemRoleAssignmentRepository roleAssignmentRepository;
 
 	/**
 	 * Last know identifier.
@@ -156,6 +162,28 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		role = roleRepository.findBy("name", "role", new String[] { "id" }, role.getId());
 		Assertions.assertNotNull(role);
 		Assertions.assertEquals("role", role.getName());
+	}
+
+	@Test
+	public void findByDeepPathMoreProperties() {
+		SystemRole role = new SystemRole();
+		role.setName("role");
+		em.persist(role);
+		SystemUser user = new SystemUser();
+		user.setLogin(DEFAULT_USER);
+		em.persist(user);
+
+		SystemRoleAssignment assignment = new SystemRoleAssignment();
+		assignment.setRole(role);
+		assignment.setUser(user);
+		em.persist(assignment);
+
+		em.flush();
+		em.clear();
+
+		assignment = roleAssignmentRepository.findBy("role.name", "role", new String[] { "user.login" }, DEFAULT_USER);
+		Assertions.assertNotNull(assignment);
+		Assertions.assertEquals("role", assignment.getRole().getName());
 	}
 
 	@Test
@@ -285,6 +313,29 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		role = roleRepository.findBy("name", "role", new String[] { "id" }, role.getId());
 		Assertions.assertNotNull(role);
 		Assertions.assertEquals("role", role.getName());
+	}
+
+	@Test
+	public void deleteAllByDeepPathMoreProperties() {
+		SystemRole role = new SystemRole();
+		role.setName("role");
+		em.persist(role);
+		SystemUser user = new SystemUser();
+		user.setLogin(DEFAULT_USER);
+		em.persist(user);
+
+		SystemRoleAssignment assignment = new SystemRoleAssignment();
+		assignment.setRole(role);
+		assignment.setUser(user);
+		em.persist(assignment);
+
+		em.flush();
+		em.clear();
+
+		final int nb = roleAssignmentRepository.deleteAllBy("role.id", role.getId(), new String[] { "user.login" },
+				DEFAULT_USER);
+		Assertions.assertNotNull(assignment);
+		Assertions.assertEquals(1, nb);
 	}
 
 	@Test
