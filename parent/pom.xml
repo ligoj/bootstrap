@@ -59,7 +59,7 @@
 		<commons-lang3.version>3.7</commons-lang3.version>
 		<commons-text.version>1.2</commons-text.version>
 		<commons-logging>1.2</commons-logging>
-		<cxf.version>3.2.1</cxf.version>
+		<cxf.version>3.2.2</cxf.version>
 		<dbcp.version>2.2.0</dbcp.version>
 		<ehcache.version>2.10.4</ehcache.version>
 		<guava.version>23.6-jre</guava.version>
