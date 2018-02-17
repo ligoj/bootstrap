@@ -61,20 +61,4 @@
 	<bean id="unixTimestampParameterHandler" class="org.ligoj.bootstrap.core.resource.handler.UnixTimestampParameterHandler" />
 	<bean id="caseInsensitiveEnumInterceptor"  class="org.ligoj.bootstrap.core.resource.handler.CaseInsensitiveEnumInterceptor"/>
 	<bean id="insensitiveEnumParameterHandler"  class="org.ligoj.bootstrap.core.resource.handler.InsensitiveEnumParameterHandler"/>
-
-	<!-- Jettison Provider -->
-	<!-- 
-	<bean id="jettisonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
-		<property name="dropRootElement" value="true" />
-		<property name="dropCollectionWrapperElement" value="true" />
-		<property name="serializeAsArray" value="true" />
-		<property name="supportUnwrapped" value="true" />
-		<property name="wrapperMap">
-			<util:map>
-			</util:map>
-		</property>
-		<property name="readXsiType" value="false" />
-		<property name="writeXsiType" value="false" />
-	</bean>
-	-->
 </beans>
