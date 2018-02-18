@@ -3,6 +3,9 @@ package org.ligoj.bootstrap.core;
 import java.io.Serializable;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.SafeHtml;
+import org.hibernate.validator.constraints.SafeHtml.Attribute;
+import org.hibernate.validator.constraints.SafeHtml.Tag;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +21,7 @@ import lombok.Setter;
 public class DescribedBean<K extends Serializable> extends NamedBean<K> implements IDescribableBean<K> {
 
 	@Length(max = 250)
+	@SafeHtml(additionalTagsWithAttributes = @Tag(name = "a", attributesWithProtocols = @Attribute(name = "href", protocols = "#")))
 	private String description;
 
 	/**
