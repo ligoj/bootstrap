@@ -1,21 +1,22 @@
 package org.ligoj.bootstrap.core.json;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Locale;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
  * This mapper makes sure all enum values are converted in lower case. The conversion is done only once per value and
  * cached internally by the Enum[Serializer/Deserializer].
- * 
- * @author Fabrice Daugan
  */
 public class ObjectMapperTrim extends ObjectMapper {
 
@@ -24,42 +25,34 @@ public class ObjectMapperTrim extends ObjectMapper {
 	/**
 	 * Extend the {@link JacksonAnnotationIntrospector} only for enum value.
 	 */
-	protected static final AnnotationIntrospector CUSTOM_ANNOTATION_INTROSPECTOR = new JacksonAnnotationIntrospector() {
+	@SuppressWarnings({ "serial", "rawtypes" })
+	protected static class LowerCasingEnumSerializer extends StdSerializer<Enum> {
 
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * @deprecated And yet no other global configuration is possible
-		 */
-		@Override
-		@Deprecated
-		public String findEnumValue(final Enum<?> value) {
-			// Simple override, just before the save in the cache. Is used for both serialization processes.
-			return value.name().toLowerCase(Locale.ENGLISH);
+		public LowerCasingEnumSerializer() {
+			super(Enum.class);
 		}
 
 		@Override
-		public String[] findEnumValues(final Class<?> enumType, final Enum<?>[] enumValues, final String[] names) {
-			for (int i = 0; i < enumValues.length; ++i) {
-				names[i] = findEnumValue(enumValues[i]);
-			}
-			return names;
+		public void serialize(Enum value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+			jgen.writeString(value.name().toLowerCase());
 		}
-
 	};
 
 	/**
 	 * Default constructor overriding the default annotation introspector.
 	 */
 	public ObjectMapperTrim() {
-		setAnnotationIntrospector(CUSTOM_ANNOTATION_INTROSPECTOR);
-		final SimpleModule testModule = new SimpleModule("MyModule", new Version(1, 0, 0, null, null, null));
-		testModule.addDeserializer(Date.class, DateDeserializer.INSTANCE);
-		testModule.addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
-		testModule.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
-		testModule.addSerializer(Date.class, DateSerializer.INSTANCE);
-		testModule.addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
-		testModule.addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
-		registerModule(testModule);
+		final SimpleModule module = new SimpleModule("BootstrapModule", new Version(1, 0, 1, null, null, null));
+		module.addDeserializer(Date.class, DateDeserializer.INSTANCE);
+		module.addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
+		module.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
+		module.addSerializer(Date.class, DateSerializer.INSTANCE);
+		module.addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
+		module.addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
+		module.addSerializer(Enum.class, new LowerCasingEnumSerializer());
+		
+		// Case insensitive enumeration
+		enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		registerModule(module);
 	}
 }

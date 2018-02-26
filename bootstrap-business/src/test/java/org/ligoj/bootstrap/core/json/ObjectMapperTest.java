@@ -24,82 +24,73 @@ public class ObjectMapperTest extends AbstractDataGeneratorTest {
 	private com.fasterxml.jackson.databind.ObjectMapper vanillaMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
 	@Test
-	public void testSerialization() throws JsonProcessingException {
+	public void serializationEnum() throws JsonProcessingException {
 		Assertions.assertEquals("\"accepted\"", mapper.writeValueAsString(Status.ACCEPTED));
 		Assertions.assertEquals("\"ACCEPTED\"", vanillaMapper.writeValueAsString(Status.ACCEPTED));
 	}
 
 	@Test
-	public void dateSerializer() throws IOException {
-		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()), mapper.writeValueAsString(getDate(2016, 8, 2)));
+	public void serializationDate() throws IOException {
+		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()),
+				mapper.writeValueAsString(getDate(2016, 8, 2)));
 	}
 
 	@Test
-	public void localDateTimeSerializer() throws IOException {
+	public void serializationLocalDateTime() throws IOException {
 		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()),
 				mapper.writeValueAsString(LocalDateTime.of(2016, 8, 2, 12, 54, 32)));
 	}
 
 	@Test
-	public void localDateSerializer() throws IOException {
-		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()), mapper.writeValueAsString(LocalDate.of(2016, 8, 2)));
+	public void serializationLocalDate() throws IOException {
+		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()),
+				mapper.writeValueAsString(LocalDate.of(2016, 8, 2)));
 	}
 
 	@Test
-	public void dateDeserializer() throws IOException {
-		Assertions.assertEquals(getDate(2016, 8, 2), mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), Date.class));
+	public void deserializationDate() throws IOException {
+		Assertions.assertEquals(getDate(2016, 8, 2),
+				mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), Date.class));
 		// Non assertable value, depends on the system timezone
 		mapper.readValue("\"2016-08-02\"", Date.class);
 	}
 
 	@Test
-	public void localDateDeserializer() throws IOException {
-		Assertions.assertEquals("2016-08-02", mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
+	public void deserializationLocalDate() throws IOException {
+		Assertions.assertEquals("2016-08-02",
+				mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
 		Assertions.assertNull(mapper.readValue("\"2016-08-02\"", LocalDate.class));
 	}
 
 	@Test
-	public void localDateTimeDeserializer() throws IOException {
-		Assertions.assertEquals("2016-08-02T12:54:32",
-				mapper.readValue(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()), LocalDateTime.class).toString());
+	public void deserializationLocalDateTime() throws IOException {
+		Assertions.assertEquals("2016-08-02T12:54:32", mapper
+				.readValue(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()), LocalDateTime.class).toString());
 		Assertions.assertNull(mapper.readValue("\"2016-08-02\"", LocalDateTime.class));
 	}
 
 	@Test
-	public void dateDeserializerFailed() {
-		Assertions.assertThrows(JsonParseException.class, () -> {
-			Assertions.assertEquals(getDate(2016, 8, 2), mapper.readValue("any", Date.class));
-		});
+	public void deserializationDateFailed() {
+		Assertions.assertThrows(JsonParseException.class, () -> mapper.readValue("any", Date.class));
 	}
 
 	@Test
-	public void localDateDeserializerFailed() throws IOException {
-		Assertions.assertEquals("2016-08-02", mapper.readValue(String.valueOf(getDate(2016, 8, 2).getTime()), LocalDate.class).toString());
-	}
-
-	@Test
-	public void localDateTimeDeserializerFailed() throws IOException {
-		Assertions.assertEquals("2016-08-02T12:54:32",
-				mapper.readValue(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()), LocalDateTime.class).toString());
-	}
-
-	@Test
-	public void testDeserialization() throws IOException {
+	public void deserializationEnum() throws IOException {
 		Assertions.assertEquals(Status.ACCEPTED, mapper.readValue("\"accepted\"", Status.class));
+		Assertions.assertEquals(Status.ACCEPTED, mapper.readValue("\"ACCEPTED\"", Status.class));
 		Assertions.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"ACCEPTED\"", Status.class));
+		Assertions.assertThrows(InvalidFormatException.class,
+				() -> vanillaMapper.readValue("\"accepted\"", Status.class));
 	}
 
 	@Test
-	public void testDeserializationFailed() {
-		Assertions.assertThrows(InvalidFormatException.class, () -> {
-			Assertions.assertEquals(Status.ACCEPTED, mapper.readValue("\"ACCEPTED\"", Status.class));
-		});
+	public void deserializationEnumFailed() {
+		Assertions.assertThrows(InvalidFormatException.class, () -> mapper.readValue("\"some\"", Status.class));
 	}
 
 	@Test
-	public void testDeserializationFailed2() {
-		Assertions.assertThrows(InvalidFormatException.class, () -> {
-			Assertions.assertEquals(Status.ACCEPTED, vanillaMapper.readValue("\"accepted\"", Status.class));
-		});
+	public void deserializationEnumFailed2() {
+		Assertions.assertThrows(InvalidFormatException.class,
+				() -> vanillaMapper.readValue("\"accepted\"", Status.class));
 	}
 }
