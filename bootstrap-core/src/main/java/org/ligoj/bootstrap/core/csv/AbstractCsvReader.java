@@ -26,8 +26,7 @@ import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
- * CSV reader implementation based on Camel implementation (see
- * "BindyCsvDataFormat") where some issues have been fixed.
+ * CSV reader implementation based on Camel implementation (see "BindyCsvDataFormat") where some issues have been fixed.
  * 
  * @param <T>
  *            Bean type.
@@ -79,6 +78,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * ISO8601 format with milliseconds - 2018-01-01T00:00:00.000+01:00
+	 * 
 	 * @see <a href="https://docs.oracle.com/javase/9/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>
 	 */
 	public static final String DATE_PATTERN_ISO2 = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
@@ -86,10 +86,11 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Date patterns together.
 	 */
-	protected static final String[] DATE_PATTERNS = { DATE_PATTERN_HMS, DATE_PATTERN_HM, DATE_PATTERN, DATE_PATTERN_EN_HMS,
-			DATE_PATTERN_EN_HM, DATE_PATTERN_EN, DATE_PATTERN_HMS.replace('/', '-'), DATE_PATTERN_HM.replace('/', '-'),
-			DATE_PATTERN.replace('/', '-'), DATE_PATTERN_EN_HMS.replace('/', '-'), DATE_PATTERN_EN_HM.replace('/', '-'),
-			DATE_PATTERN_EN.replace('/', '-'), DATE_PATTERN_ISO, DATE_PATTERN_ISO2 };
+	protected static final String[] DATE_PATTERNS = { DATE_PATTERN_HMS, DATE_PATTERN_HM, DATE_PATTERN,
+			DATE_PATTERN_EN_HMS, DATE_PATTERN_EN_HM, DATE_PATTERN_EN, DATE_PATTERN_HMS.replace('/', '-'),
+			DATE_PATTERN_HM.replace('/', '-'), DATE_PATTERN.replace('/', '-'), DATE_PATTERN_EN_HMS.replace('/', '-'),
+			DATE_PATTERN_EN_HM.replace('/', '-'), DATE_PATTERN_EN.replace('/', '-'), DATE_PATTERN_ISO,
+			DATE_PATTERN_ISO2 };
 
 	/**
 	 * The ordered headers used to build the target bean.
@@ -114,12 +115,12 @@ public abstract class AbstractCsvReader<T> {
 	 * @param beanType
 	 *            Class of bean to build.
 	 * @param headers
-	 *            Headers, an ordered property list. Header with <code>null</code>
-	 *            or empty name will skip the corresponding column.
+	 *            Headers, an ordered property list. Header with <code>null</code> or empty name will skip the
+	 *            corresponding column. Column values are also trimmed.
 	 */
 	public AbstractCsvReader(final Reader reader, final Class<T> beanType, final String... headers) {
 		this.csvReader = new CsvReader(reader);
-		this.headers = headers;
+		this.headers = StringUtils.stripAll(headers);
 		this.clazz = beanType;
 
 		// Put default date patterns
@@ -176,8 +177,8 @@ public abstract class AbstractCsvReader<T> {
 			return null;
 		}
 		if (headers.length < values.size()) {
-			throw new TechnicalException(String.format("Too much values for type %s. Expected : %d, got : %d : %s", clazz.getName(),
-					headers.length, values.size(), values));
+			throw new TechnicalException(String.format("Too much values for type %s. Expected : %d, got : %d : %s",
+					clazz.getName(), headers.length, values.size(), values));
 		}
 
 		// Build the instance
@@ -280,8 +281,8 @@ public abstract class AbstractCsvReader<T> {
 
 		// Check duplicate entries
 		if (map.put(key, rawValue) != null) {
-			throw new TechnicalException(
-					"Duplicate map entry key='" + key + "' for map property " + property + " in class " + bean.getClass().getName());
+			throw new TechnicalException("Duplicate map entry key='" + key + "' for map property " + property
+					+ " in class " + bean.getClass().getName());
 		}
 	}
 
@@ -327,8 +328,8 @@ public abstract class AbstractCsvReader<T> {
 			if (field.getType().isEnum()) {
 				// Ignore case of Enum name
 				final Class<E> enumClass = (Class<E>) field.getType();
-				beanUtilsBean.setProperty(bean, property, Enum.valueOf(enumClass,
-						EnumUtils.getEnumMap(enumClass).keySet().stream().filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
+				beanUtilsBean.setProperty(bean, property, Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass)
+						.keySet().stream().filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
 			} else {
 				beanUtilsBean.setProperty(bean, property, rawValue);
 			}

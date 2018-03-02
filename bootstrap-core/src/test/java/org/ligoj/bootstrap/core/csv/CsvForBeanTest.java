@@ -40,7 +40,7 @@ public class CsvForBeanTest {
 		csvForBean.toCsv(new ArrayList<DummyEntity>(), DummyEntity.class, result);
 
 		// Check there is only the header
-		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n", result.toString());
+		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe; wnePict ;wneRegn;wneYear\n", result.toString());
 
 		// Only there for coverage
 		Wrapper.values();
