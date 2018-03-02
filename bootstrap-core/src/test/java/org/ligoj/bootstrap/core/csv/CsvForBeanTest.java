@@ -40,7 +40,7 @@ public class CsvForBeanTest {
 		csvForBean.toCsv(new ArrayList<DummyEntity>(), DummyEntity.class, result);
 
 		// Check there is only the header
-		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe; wnePict ;wneRegn;wneYear\n", result.toString());
+		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n", result.toString());
 
 		// Only there for coverage
 		Wrapper.values();
@@ -103,7 +103,7 @@ public class CsvForBeanTest {
 
 	@Test
 	public void toBeanNullHeader() throws Exception {
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader("name;;;;;;;wneYear\n4;1;2;3;5;6;7;'8'"));
+		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader("name;;;   ;;;;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
 		DummyEntity wine2 = items.get(0);
 		Assertions.assertEquals("4", wine2.getName());
@@ -115,7 +115,15 @@ public class CsvForBeanTest {
 		Assertions.assertNull(wine2.getWneGrpe());
 		Assertions.assertNull(wine2.getWnePict());
 		Assertions.assertNull(wine2.getWneRegn());
+	}
 
+	@Test
+	public void toBeanTrimHeader() throws Exception {
+		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader("name; wneYear \n4;1"));
+		Assertions.assertEquals(1, items.size());
+		DummyEntity wine2 = items.get(0);
+		Assertions.assertEquals("4", wine2.getName());
+		Assertions.assertEquals(1, wine2.getWneYear().intValue());
 	}
 
 	@Test
