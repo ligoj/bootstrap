@@ -33,8 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa}
- * utility.
+ * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa} utility.
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
@@ -107,7 +106,8 @@ public class CsvForJpaTest {
 		csvForJpa.toCsv(items, DummyEntity.class, result);
 
 		// Check there is the header and one data line
-		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;;2;3;6;7;8\n", result.toString());
+		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;;2;3;6;7;8\n",
+				result.toString());
 	}
 
 	@Test
@@ -144,7 +144,8 @@ public class CsvForJpaTest {
 		csvForJpa.toCsv(items, DummyEntity.class, result);
 
 		// Check there is the header and one data line
-		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n", result.toString());
+		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n",
+				result.toString());
 	}
 
 	@Test
@@ -214,8 +215,7 @@ public class CsvForJpaTest {
 	}
 
 	/**
-	 * Check CSN reader handles well the protected and unprotected quote and the
-	 * comma chars.
+	 * Check CSN reader handles well the protected and unprotected quote and the comma chars.
 	 */
 	@Test
 	public void toJpaSpecialChars() throws Exception {
@@ -231,8 +231,7 @@ public class CsvForJpaTest {
 	}
 
 	/**
-	 * Check CSN reader handles well the protected and unprotected quote and the
-	 * comma chars.
+	 * Check CSN reader handles well the protected and unprotected quote and the comma chars.
 	 */
 	@Test
 	public void toJpaSpecialCharsEnds() throws Exception {
@@ -248,8 +247,7 @@ public class CsvForJpaTest {
 	}
 
 	/**
-	 * Check CSN reader handles well the protected and unprotected quote and the
-	 * comma chars.
+	 * Check CSN reader handles well the protected and unprotected quote and the comma chars.
 	 */
 	@Test
 	public void toJpaIgnoreSpaces() throws Exception {
@@ -268,8 +266,9 @@ public class CsvForJpaTest {
 	 */
 	@Test
 	public void toJpaEmbeddedNewLine() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader("wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World\n, hold\non\";2;3;4;5;6;7;8\n"), true);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
+				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World\n, hold\non\";2;3;4;5;6;7;8\n"),
+				true);
 		Assertions.assertEquals(1, jpa.size());
 		final DummyEntity newWine = newWine();
 		newWine.setWneCnty("World\n, hold\non");
@@ -301,22 +300,23 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaNoValues2() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("\r")), false);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("\r")),
+				false);
 		Assertions.assertTrue(jpa.isEmpty());
 	}
 
 	@Test
 	public void toJpaBufferEnd2() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("9;5;3;1;7;8;6;2;\n\n\r")),
-				false);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class,
+				new BufferedReader(new StringReader("9;5;3;1;7;8;6;2;\n\n\r")), false);
 		Assertions.assertEquals(1, jpa.size());
 		assertEquals(newWine(), jpa.get(0));
 	}
 
 	@Test
 	public void toJpaBufferEnd3() throws Exception {
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("\n\r9;5;3;1;7;8;6;2")),
-				false);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class,
+				new BufferedReader(new StringReader("\n\r9;5;3;1;7;8;6;2")), false);
 		Assertions.assertEquals(1, jpa.size());
 		assertEquals(newWine(), jpa.get(0));
 	}
@@ -343,7 +343,8 @@ public class CsvForJpaTest {
 			stringBuilder.append(i);
 			stringBuilder.append('\r');
 		}
-		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(stringBuilder.toString()), true);
+		final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(stringBuilder.toString()),
+				true);
 		Assertions.assertEquals(10000, jpa.size());
 	}
 
@@ -354,7 +355,8 @@ public class CsvForJpaTest {
 			stringBuilder.append("1;4;5;3;7;8;6;2\n");
 		}
 		Assertions.assertTimeout(Duration.ofSeconds(2), () -> {
-			final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(stringBuilder.toString()), false);
+			final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(stringBuilder.toString()),
+					false);
 			Assertions.assertEquals(10000, jpa.size());
 		});
 	}
@@ -444,8 +446,8 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaForeignKeyRecursive() throws IOException {
-		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialChar;link.dialChar\nA;\nB;A\nC;B"), true,
-				true);
+		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class,
+				new StringReader("dialChar;link.dialChar\nA;\nB;A\nC;B"), true, true);
 		Assertions.assertEquals(3, jpa.size());
 	}
 
@@ -490,41 +492,41 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaForeignKeyNaturalNotExist() {
-		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login\nnobody"), true);
-		});
-		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = nobody", iau.getCause().getMessage());
+		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = nobody",
+				Assertions.assertThrows(TechnicalException.class, () -> {
+					csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login\nnobody"), true);
+				}).getCause().getMessage());
 	}
 
 	@Test
 	public void toJpaForeignKeyNaturalNotExist2() {
-		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login!\nnobody"), true);
-		});
-		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = nobody", iau.getCause().getMessage());
+		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = nobody",
+				Assertions.assertThrows(TechnicalException.class, () -> {
+					csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login!\nnobody"), true);
+				}).getCause().getMessage());
 	}
 
 	@Test
 	public void toJpaForeignKeyNotExist2() {
-		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n8000"), true);
-		});
-		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = 8000", iau.getCause().getMessage());
+		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = 8000",
+				Assertions.assertThrows(TechnicalException.class, () -> {
+					csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n8000"), true);
+				}).getCause().getMessage());
 	}
 
 	@Test
 	public void toJpaForeignKeyNotExist3() {
-		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n-8000"), true);
-		});
-		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = -8000", iau.getCause().getMessage());
+		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = -8000",
+				Assertions.assertThrows(TechnicalException.class, () -> {
+					csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n-8000"), true);
+				}).getCause().getMessage());
 	}
 
 	@Test
 	public void getJpaHeaders() {
 		final String[] jpaHeaders = csvForJpa.getJpaHeaders(DummyEntity2.class);
-		Assertions.assertArrayEquals(new String[] { "id", "dialChar", "dialBool", "dialShort", "dialLong", "dialDouble", "dialDate",
-				"localDate", "dialEnum", "link", "user" }, jpaHeaders);
+		Assertions.assertArrayEquals(new String[] { "id", "dialChar", "dialBool", "dialShort", "dialLong", "dialDouble",
+				"dialDate", "localDate", "dialEnum", "link", "user" }, jpaHeaders);
 	}
 
 	@Test
@@ -641,5 +643,20 @@ public class CsvForJpaTest {
 		Assertions.assertEquals(newWine.getWnePict(), wine2.getWnePict());
 		Assertions.assertEquals(newWine.getWneRegn(), wine2.getWneRegn());
 		Assertions.assertEquals(newWine.getWneYear(), wine2.getWneYear());
+	}
+
+	@Test
+	public void toJpaForeignKeyInCollection() throws IOException {
+		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, "csv/demo/dummyentity2-collection.csv", true,
+				true);
+		Assertions.assertEquals("A", jpa.get(0).getDialChar());
+		Assertions.assertEquals("B", jpa.get(1).getDialChar());
+		Assertions.assertTrue(jpa.get(1).getChildren().get(0).equals(jpa.get(0)));
+		Assertions.assertTrue(jpa.get(1).getLinkedChildren().contains(jpa.get(0)));
+		Assertions.assertEquals("C", jpa.get(2).getDialChar());
+		Assertions.assertTrue(jpa.get(2).getChildren().get(0).equals(jpa.get(0)));
+		Assertions.assertTrue(jpa.get(2).getChildren().get(1).equals(jpa.get(1)));
+		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(0)));
+		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(1)));
 	}
 }

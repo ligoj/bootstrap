@@ -1,0 +1,4 @@
+dialChar;children.id!;linkedChildren.dialChar
+A
+B;1;A
+C;1,2;A,B
