@@ -19,7 +19,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.ligoj.bootstrap.core.SpringUtils;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.dao.system.SystemConfigurationRepository;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
@@ -41,6 +40,9 @@ public class ConfigurationResource {
 	@Autowired
 	private SystemConfigurationRepository repository;
 
+	@Autowired
+	private ConfigurationResource self;
+
 	/**
 	 * Return the configuration integer value.
 	 * 
@@ -51,7 +53,7 @@ public class ConfigurationResource {
 	 * @return the configuration integer value or the default value.
 	 */
 	public int get(final String key, final int defaultValue) {
-		return NumberUtils.toInt(SpringUtils.getBean(ConfigurationResource.class).get(key), defaultValue);
+		return NumberUtils.toInt(self.get(key), defaultValue);
 	}
 
 	/**
@@ -64,7 +66,7 @@ public class ConfigurationResource {
 	 * @return the configuration integer value or the default value.
 	 */
 	public String get(final String key, final String defaultValue) {
-		return ObjectUtils.defaultIfNull(SpringUtils.getBean(ConfigurationResource.class).get(key), defaultValue);
+		return ObjectUtils.defaultIfNull(self.get(key), defaultValue);
 	}
 
 	/**

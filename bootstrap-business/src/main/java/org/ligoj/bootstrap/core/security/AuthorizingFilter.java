@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ligoj.bootstrap.core.SpringUtils;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
@@ -38,8 +37,12 @@ public class AuthorizingFilter extends GenericFilterBean {
 	@Autowired
 	private AuthorizationResource authorizationResource;
 
+	@Autowired
+	private AccessDeniedExceptionMapper accessDeniedHelper;
+
 	@Override
-	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+			throws IOException, ServletException {
 		final HttpServletRequest httpRequest = (HttpServletRequest) request;
 
 		/**
@@ -49,14 +52,16 @@ public class AuthorizingFilter extends GenericFilterBean {
 		 * need to involve more role checking. We assume there is no way to grant access to ROLE_ANONYMOUS with this
 		 * filter.
 		 */
-		final Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		final Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities();
 		if (!authorities.contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
 			// Not anonymous, so we need to check using RBAC strategy.
 
 			// Build the URL
 			final String fullRequest = getFullRequest(httpRequest);
 			// Check access
-			final HttpMethod method = HttpMethod.valueOf(StringUtils.upperCase(httpRequest.getMethod(), Locale.ENGLISH));
+			final HttpMethod method = HttpMethod
+					.valueOf(StringUtils.upperCase(httpRequest.getMethod(), Locale.ENGLISH));
 			if (!isAuthorized(authorities, fullRequest, method)) {
 				// Forbidden access
 				updateForbiddenAccess((HttpServletResponse) response);
@@ -72,7 +77,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 * Update response for a forbidden access.
 	 */
 	private void updateForbiddenAccess(final HttpServletResponse response) throws IOException {
-		final Response response2 = SpringUtils.getBean(AccessDeniedExceptionMapper.class).toResponse(new AccessDeniedException(""));
+		final Response response2 = accessDeniedHelper.toResponse(new AccessDeniedException(""));
 		response.setStatus(response2.getStatus());
 		response.setContentType(response2.getMediaType().toString());
 		response.getOutputStream().write(((String) response2.getEntity()).getBytes(StandardCharsets.UTF_8));
@@ -83,15 +88,17 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 * starts with '/'.
 	 */
 	private String getFullRequest(final HttpServletRequest httpRequest) {
-		return StringUtils.removeStart(httpRequest.getRequestURI().substring(this.getServletContext().getContextPath().length()), "/");
+		return StringUtils.removeStart(
+				httpRequest.getRequestURI().substring(this.getServletContext().getContextPath().length()), "/");
 	}
 
 	/**
 	 * Check the authorization
 	 */
-	private boolean isAuthorized(final Collection<? extends GrantedAuthority> authorities, final String request, final HttpMethod method) {
-		final Map<String, Map<HttpMethod, List<Pattern>>> authorizationsCache = authorizationResource.getAuthorizations().get(
-				AuthorizationType.API);
+	private boolean isAuthorized(final Collection<? extends GrantedAuthority> authorities, final String request,
+			final HttpMethod method) {
+		final Map<String, Map<HttpMethod, List<Pattern>>> authorizationsCache = authorizationResource
+				.getAuthorizations().get(AuthorizationType.API);
 
 		// Check the authorization
 		if (authorizationsCache != null) {
