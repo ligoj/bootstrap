@@ -1,14 +1,15 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import net.sf.ehcache.CacheManager;
 
 /**
  * Test class of {@link CacheResource}
@@ -22,50 +23,81 @@ public class CacheResourceTest extends AbstractBootTest {
 	@Autowired
 	private DummyCacheBean dummyCacheBean;
 
+	@Autowired
+	private CacheManager cacheManager;
+
 	@BeforeEach
 	public void cleanCache() {
-		CacheManager.getInstance().getCache("test-cache").removeAll();
+		cacheManager.getCache("test-cache").clear();
 	}
 
 	@Test
 	public void invalidate() {
 		DummyCacheBean.hit = 0;
-		Assertions.assertEquals(1, dummyCacheBean.getHit());
-		Assertions.assertEquals(1, DummyCacheBean.hit);
-		Assertions.assertEquals(1, dummyCacheBean.getHit());
-		Assertions.assertEquals(1, DummyCacheBean.hit);
 		cacheResource.invalidate("test-cache");
-		Assertions.assertEquals(2, dummyCacheBean.getHit());
-		Assertions.assertEquals(2, DummyCacheBean.hit);
-		Assertions.assertEquals(2, dummyCacheBean.getHit());
-		Assertions.assertEquals(2, DummyCacheBean.hit);
+		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(1, DummyCacheBean.hit);
+		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(1, DummyCacheBean.hit);
+
+		dummyCacheBean.updateHit("entry-key", 99);
+		Assertions.assertEquals(99, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(99, dummyCacheBean.getHit("entry-key"));
+
+		cacheResource.invalidate("test-cache");
+		Assertions.assertEquals(100, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(100, DummyCacheBean.hit);
+		Assertions.assertEquals(100, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(100, DummyCacheBean.hit);
 	}
 
 	@Test
 	public void getCaches() {
-		dummyCacheBean.getHit();
+		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache");
-		dummyCacheBean.getHit();
-		Assertions.assertTrue(cacheResource.getCaches().size() >= 1);
-		Assertions.assertTrue(cacheResource.getCaches().stream().filter(c -> "test-cache".equals(c.getName())).anyMatch(this::assertCache));
+		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
+		for (int i = 100000; i-- > 0;) {
+			dummyCacheBean.getHit("entry-key" + i);
+		}
+
+		final List<CacheStatistics> caches = cacheResource.getCaches();
+		Assertions.assertEquals(3, caches.size());
+		Assertions.assertTrue(caches.stream().filter(c -> "test-cache".equals(c.getId())).anyMatch(this::assertCache));
 	}
 
 	@Test
 	public void getCache() {
-		dummyCacheBean.getHit();
+		dummyCacheBean.getHit("entry-key");
 		cacheResource.invalidate("test-cache");
-		dummyCacheBean.getHit();
+		dummyCacheBean.getHit("entry-key");
 		assertCache(cacheResource.getCache("test-cache"));
 	}
 
 	private boolean assertCache(final CacheStatistics cache) {
-		Assertions.assertEquals("test-cache", cache.getName());
+		Assertions.assertEquals("test-cache", cache.getId());
 		Assertions.assertNotNull(cache.getId());
-		Assertions.assertTrue(cache.getBytes() > 0);
-		Assertions.assertTrue(cache.getHitCount() >= 1);
-		Assertions.assertTrue(cache.getMissCount() >= 1);
-		Assertions.assertTrue(cache.getOffHeapBytes() == 0);
-		Assertions.assertTrue(cache.getSize() == 1);
+		Assertions.assertTrue(cache.getSize() < 100000);
+		Assertions.assertTrue(cache.getSize() > 100);
+
+		// Node check
+		final CacheNode node = cache.getNode();
+		Assertions.assertNotNull(node.getAddress());
+		Assertions.assertNotNull(node.getCluster());
+		Assertions.assertNotNull(node.getId());
+		Assertions.assertNotNull(node.getVersion());
+
+		// Cluster check
+		final CacheCluster cluster = node.getCluster();
+		Assertions.assertNotNull(cluster.getId());
+		Assertions.assertEquals(1, cluster.getMembers().size());
+		Assertions.assertNull(cluster.getMembers().get(0).getCluster());
+		Assertions.assertNotNull(cluster.getState());
+
+		// Only with enabled statistics
+		Assertions.assertEquals(0, cache.getAverageGetTime());
+		Assertions.assertEquals(0, cache.getHitCount());
+		Assertions.assertEquals(0, cache.getMissCount());
+		Assertions.assertEquals(0, cache.getMissPercentage());
 		return true;
 	}
 }

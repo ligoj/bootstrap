@@ -61,8 +61,8 @@
 		<commons-logging>1.2</commons-logging>
 		<cxf.version>3.2.2</cxf.version>
 		<dbcp.version>2.2.0</dbcp.version>
-		<ehcache.version>2.10.4</ehcache.version>
 		<guava.version>24.1-jre</guava.version>
+		<hazelcast.version>3.9.3</hazelcast.version>
 		<hibernate.version>5.2.14.Final</hibernate.version>
 		<hibernate-validator.version>6.0.8.Final</hibernate-validator.version>
 		<httpclient.version>4.5.5</httpclient.version>
@@ -135,11 +135,16 @@
 				<artifactId>cachefilter</artifactId>
 				<version>${cachefilter.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache</artifactId>
-				<version>${ehcache.version}</version>
-			</dependency>
+       <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+				<version>${hazelcast.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-spring</artifactId>
+				<version>${hazelcast.version}</version>
+        </dependency>
 			<dependency>
 				<groupId>javax.cache</groupId>
 				<artifactId>cache-api</artifactId>
@@ -719,7 +724,8 @@
 								<configuration>
 									<target>
 										<fixcrlf srcdir="${basedir}/src" eol="unix" encoding="UTF-8"
-											includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt" eof="asis" fixlast="false" />
+											includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt"
+											eof="asis" fixlast="false" />
 									</target>
 								</configuration>
 								<goals>

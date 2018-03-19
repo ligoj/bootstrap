@@ -1,4 +1,4 @@
-package org.ligoj.bootstrap.resource.system;
+package org.ligoj.bootstrap.resource.system.configuration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,9 +11,8 @@ import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import net.sf.ehcache.CacheManager;
 
 /**
  * Test class of {@link ConfigurationResource}
@@ -26,6 +25,9 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private CryptoHelper cryptoHelper;
+
+	@Autowired
+	private CacheManager cacheManager;
 
 	@BeforeAll
 	public static void init() {
@@ -61,12 +63,12 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		em.persist(entity5);
 
 		em.flush();
-		CacheManager.getInstance().getCache("configuration").removeAll();
+		cacheManager.getCache("configuration").clear();
 	}
 
 	@AfterEach
 	public void clean() {
-		CacheManager.getInstance().getCache("configuration").removeAll();
+		cacheManager.getCache("configuration").clear();
 	}
 
 	@Test
@@ -79,8 +81,9 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("value-db5", resource.get("test-key5"));
 		Assertions.assertNull(resource.get("test-any"));
 
-		Assertions.assertNotEquals("value-db5", em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
-				.setParameter("name", "test-key5").getSingleResult().getValue());
+		Assertions.assertNotEquals("value-db5",
+				em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+						.setParameter("name", "test-key5").getSingleResult().getValue());
 	}
 
 	@Test
@@ -99,7 +102,8 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 	@Test
 	public void update() {
-		final SystemConfiguration value = em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+		final SystemConfiguration value = em
+				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 		em.clear();
 		Assertions.assertNotEquals("new-value-db5", value.getValue());
@@ -108,7 +112,8 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-db5", resource.get("test-key5"));
-		SystemConfiguration newValue = em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+		SystemConfiguration newValue = em
+				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 
 		// Check data is encrypted
@@ -119,7 +124,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(value.getId(), newValue.getId());
 
 		// Check persistence of data and cache
-		CacheManager.getInstance().getCache("configuration").removeAll();
+		cacheManager.getCache("configuration").clear();
 		Assertions.assertEquals("new-value-db5", resource.get("test-key5"));
 	}
 
@@ -129,7 +134,8 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-db6", resource.get("test-key6"));
-		SystemConfiguration newValue = em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+		SystemConfiguration newValue = em
+				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key6").getSingleResult();
 
 		// Check data is encrypted
@@ -137,7 +143,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("new-value-db6", cryptoHelper.decrypt(newValue.getValue()));
 
 		// Check persistence of data and cache
-		CacheManager.getInstance().getCache("configuration").removeAll();
+		cacheManager.getCache("configuration").clear();
 		Assertions.assertEquals("new-value-db6", resource.get("test-key6"));
 	}
 
@@ -150,10 +156,10 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertNull(resource.get("test-key5"));
 
 		// Check persistence of data and cache
-		CacheManager.getInstance().getCache("configuration").removeAll();
+		cacheManager.getCache("configuration").clear();
 		Assertions.assertNull(resource.get("test-key5"));
-		Assertions.assertTrue(em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class).setParameter("name", "test-key6")
-				.getResultList().isEmpty());
+		Assertions.assertTrue(em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+				.setParameter("name", "test-key6").getResultList().isEmpty());
 	}
 
 }
