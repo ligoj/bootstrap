@@ -13,6 +13,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 
 import com.hazelcast.cache.HazelcastCacheManager;
@@ -26,7 +27,8 @@ import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.NearCacheConfig;
 
 /**
- * New implements extending org.springframework.cache.ehcache.EhCacheManagerFactoryBean
+ * Factory of {@link EhCacheManagerFactoryBean} with modular {@link CacheConfig} creation delegate to
+ * {@link CacheManagerAware} implementors.
  */
 public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {
 
@@ -41,7 +43,7 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 		final HazelcastCacheManager cacheManager = (HazelcastCacheManager) provider
 				.getCacheManager(URI.create("bootstrap-cache-manager"), null);
 
-		context.getBeansOfType(CacheProviderAware.class)
+		context.getBeansOfType(CacheManagerAware.class)
 				.forEach((n, a) -> a.onCreate(cacheManager, this::newCacheConfig));
 
 		final EvictionConfig evictionConfig = new EvictionConfig().setEvictionPolicy(EvictionPolicy.NONE)
@@ -60,6 +62,9 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 		this.cacheManager = cacheManager;
 	}
 
+	/**
+	 * Compete the configuration after its creation and configuration be {@link CacheManagerAware} implementor.
+	 */
 	protected void postConfigure(MapConfig mapConfig) {
 		if (System.getProperty("java.security.policy") != null) {
 			// When a policy is defined, assume JMX is enabled
@@ -67,6 +72,9 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 		}
 	}
 
+	/**
+	 * Create a new {@link CacheConfig} with configured settings before {@link CacheManagerAware} implementor.
+	 */
 	private CacheConfig<?, ?> newCacheConfig(final String name) {
 		final CacheConfig<?, ?> config = new CacheConfig<>(name);
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)

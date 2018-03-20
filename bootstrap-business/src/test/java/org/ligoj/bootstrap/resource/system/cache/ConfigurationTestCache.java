@@ -10,7 +10,7 @@ import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 
 @Component
-public class ConfigurationTestCache implements CacheProviderAware {
+public class ConfigurationTestCache implements CacheManagerAware {
 
 	@Override
 	public void onCreate(HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> configProfider) {

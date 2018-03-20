@@ -17,5 +17,8 @@ public class CacheStatistics {
 	private float missPercentage;
 	private float averageGetTime;
 
+	/**
+	 * The related cache node.
+	 */
 	private CacheNode node;
 }
