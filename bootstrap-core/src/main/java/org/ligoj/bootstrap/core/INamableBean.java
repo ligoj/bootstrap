@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @param <K>
  *            The type of the identifier
  */
-public interface INamableBean<K extends Serializable> extends Comparable<INamableBean<K>> {
+public interface INamableBean<K extends Serializable> extends Comparable<INamableBean<K>>, Serializable {
 
 	/**
 	 * Bean name.
