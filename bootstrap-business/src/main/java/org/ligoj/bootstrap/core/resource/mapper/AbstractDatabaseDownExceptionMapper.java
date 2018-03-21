@@ -1,3 +1,6 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.bootstrap.core.resource.mapper;
 
 import javax.ws.rs.core.Response;

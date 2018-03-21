@@ -1,3 +1,6 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.bootstrap.core.dao;
 
 import org.hibernate.dialect.PostgreSQL95Dialect;
