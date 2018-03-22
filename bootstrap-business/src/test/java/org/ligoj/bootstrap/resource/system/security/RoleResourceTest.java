@@ -47,7 +47,8 @@ public class RoleResourceTest extends AbstractBootTest {
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
 		persistEntities(SystemUser.class, "csv/system-test/user.csv");
 		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
-		final SystemRole role = em.createQuery("FROM SystemRole", SystemRole.class).setMaxResults(1).getResultList().get(0);
+		final SystemRole role = em.createQuery("FROM SystemRole", SystemRole.class).setMaxResults(1).getResultList()
+				.get(0);
 		roleTestId = role.getId();
 		roleTestName = role.getName();
 		em.flush();
@@ -88,9 +89,7 @@ public class RoleResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	public void findByIdNotFound() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			resource.findById(-1);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> resource.findById(-1));
 	}
 
 	/**
@@ -176,7 +175,8 @@ public class RoleResourceTest extends AbstractBootTest {
 	}
 
 	private TypedQuery<SystemAuthorization> retrieveAuthQuery(final SystemRole result) {
-		return em.createQuery("FROM SystemAuthorization sa WHERE sa.role = :role", SystemAuthorization.class).setParameter("role", result);
+		return em.createQuery("FROM SystemAuthorization sa WHERE sa.role = :role", SystemAuthorization.class)
+				.setParameter("role", result);
 	}
 
 	/**

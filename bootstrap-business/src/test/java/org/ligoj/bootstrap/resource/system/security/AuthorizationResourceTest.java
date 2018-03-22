@@ -47,8 +47,8 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		persistEntities(SystemUser.class, "csv/system-test/user.csv");
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
 		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
-		authorizationId = em.createQuery("FROM SystemAuthorization", SystemAuthorization.class).setMaxResults(1).getResultList().get(0)
-				.getId();
+		authorizationId = em.createQuery("FROM SystemAuthorization", SystemAuthorization.class).setMaxResults(1)
+				.getResultList().get(0).getId();
 	}
 
 	/**
@@ -144,7 +144,8 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		final List<SystemAuthorization> result = resource.findAuthorizationsBusiness(getJaxRsSecurityContext(DEFAULT_USER));
+		final List<SystemAuthorization> result = resource
+				.findAuthorizationsBusiness(getJaxRsSecurityContext(DEFAULT_USER));
 
 		// Also check the lazy lading issue
 		em.clear();
@@ -189,9 +190,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
 		authorization.setRole(-1);
 		authorization.setPattern("any");
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			resource.create(authorization);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> resource.create(authorization));
 	}
 
 	/**
@@ -228,9 +227,8 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
 		authorization.setRole(-1);
 		authorization.setPattern("pattern");
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			resource.update(authorizationId, authorization);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class,
+				() -> resource.update(authorizationId, authorization));
 	}
 
 	/**
@@ -238,9 +236,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	public void testUpdateInvalidId() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			resource.update(-1, null);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> resource.update(-1, null));
 	}
 
 	/**
@@ -252,9 +248,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
-		Assertions.assertThrows(PatternSyntaxException.class, () -> {
-			resource.getAuthorizations();
-		});
+		Assertions.assertThrows(PatternSyntaxException.class, () -> resource.getAuthorizations());
 	}
 
 	private void addSystemAuthorization(final HttpMethod method, final String roleName, final String pattern) {

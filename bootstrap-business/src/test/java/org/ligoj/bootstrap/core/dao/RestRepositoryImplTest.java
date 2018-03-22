@@ -108,9 +108,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	@Test
 	public void findOneExpectedError() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			repository.findOneExpected(-1);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.findOneExpected(-1));
 	}
 
 	/**
@@ -361,9 +359,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
 		list.add(-1);
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			repository.deleteAllExpected(list);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.deleteAllExpected(list));
 	}
 
 	@Test
@@ -398,9 +394,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	public void deleteExpectedError() {
-		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
-			repository.deleteById(-1);
-		});
+		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> repository.deleteById(-1));
 	}
 
 	@Test
@@ -417,9 +411,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	public void deleteNoFetchError() {
 		SystemDialect systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			repository.deleteNoFetch(systemDialect.getId());
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class,
+				() -> repository.deleteNoFetch(systemDialect.getId()));
 	}
 
 	@Test
@@ -430,9 +423,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	public void existExpectedFail() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			repository.existExpected(-1);
-		});
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.existExpected(-1));
 	}
 
 }

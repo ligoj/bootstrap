@@ -29,12 +29,10 @@ public class MapperTest extends AbstractMapper {
 			public Response toResponse(final Response.StatusType status, final Object object) {
 				return super.toResponse(Status.FORBIDDEN, new NonSerializableObject());
 			}
-
 		};
 		mapper.jacksonJsonProvider = new JacksonJsonProvider();
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			mapper.toResponse(null, null);
-		});
+		Assertions.assertEquals("Unable to build a JSON string from a server error",
+				Assertions.assertThrows(TechnicalException.class, () -> mapper.toResponse(null, null)).getMessage());
 	}
 
 	@Test

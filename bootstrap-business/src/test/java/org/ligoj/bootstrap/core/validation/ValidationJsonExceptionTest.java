@@ -39,8 +39,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Check some validation serialization features of
- * {@link ValidationJsonException}.
+ * Check some validation serialization features of {@link ValidationJsonException}.
  */
 public class ValidationJsonExceptionTest {
 
@@ -63,13 +62,14 @@ public class ValidationJsonExceptionTest {
 
 	@Test
 	public void testUnrecognizedPropertyException() {
-		final UnrecognizedPropertyException format = new UnrecognizedPropertyException(null, "", null, String.class, "property",
-				Collections.emptyList());
+		final UnrecognizedPropertyException format = new UnrecognizedPropertyException(null, "", null, String.class,
+				"property", Collections.emptyList());
 		format.prependPath(null, "property");
 		format.prependPath("property", "property2");
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assertions.assertEquals("{property2.property=[{rule=Mapping}]}", validationJsonException.getErrors().toString());
+		Assertions.assertEquals("{property2.property=[{rule=Mapping}]}",
+				validationJsonException.getErrors().toString());
 	}
 
 	@Test
@@ -79,7 +79,8 @@ public class ValidationJsonExceptionTest {
 		format.prependPath("property", "property2");
 		final ValidationJsonException validationJsonException = new ValidationJsonException(format);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assertions.assertEquals("{property2.property=[{rule=Integer}]}", validationJsonException.getErrors().toString());
+		Assertions.assertEquals("{property2.property=[{rule=Integer}]}",
+				validationJsonException.getErrors().toString());
 	}
 
 	@Getter
@@ -97,13 +98,11 @@ public class ValidationJsonExceptionTest {
 	@Test
 	public void testValidationJsonExceptionCollection() throws JsonParseException, JsonMappingException, IOException {
 		final ObjectMapperTrim mapper = new ObjectMapperTrim();
-		try {
-			mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class);
-		} catch (final InvalidFormatException e) {
-			final ValidationJsonException validationJsonException = new ValidationJsonException(e);
-			Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
-			Assertions.assertEquals("{items[0].value=[{rule=Integer}]}", validationJsonException.getErrors().toString());
-		}
+		final InvalidFormatException e = Assertions.assertThrows(InvalidFormatException.class,
+				() -> mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class));
+		final ValidationJsonException validationJsonException = new ValidationJsonException(e);
+		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
+		Assertions.assertEquals("{items[0].value=[{rule=Integer}]}", validationJsonException.getErrors().toString());
 	}
 
 	@Test
@@ -141,7 +140,8 @@ public class ValidationJsonExceptionTest {
 
 	@Test
 	public void testSoloErrorParameter() {
-		final ValidationJsonException validationJsonException = new ValidationJsonException("p1", "text", "param1", "param2");
+		final ValidationJsonException validationJsonException = new ValidationJsonException("p1", "text", "param1",
+				"param2");
 		validationJsonException.addError("p1", "text");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
 		Assertions.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
@@ -153,7 +153,8 @@ public class ValidationJsonExceptionTest {
 		final ValidationJsonException validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", "key", 5);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assertions.assertEquals("{p1=[{rule=text, parameters={key=5}}]}", validationJsonException.getErrors().toString());
+		Assertions.assertEquals("{p1=[{rule=text, parameters={key=5}}]}",
+				validationJsonException.getErrors().toString());
 	}
 
 	@Test
@@ -192,8 +193,10 @@ public class ValidationJsonExceptionTest {
 		}).getErrors().toString());
 	}
 
-	private <T extends Annotation> ConstraintAnnotationDescriptor<T> getAnnotation(final String fieldName, final Class<T> annotationClass) {
-		return new ConstraintAnnotationDescriptor<>(FieldUtils.getField(Wine.class, fieldName, true).getAnnotation(annotationClass));
+	private <T extends Annotation> ConstraintAnnotationDescriptor<T> getAnnotation(final String fieldName,
+			final Class<T> annotationClass) {
+		return new ConstraintAnnotationDescriptor<>(
+				FieldUtils.getField(Wine.class, fieldName, true).getAnnotation(annotationClass));
 	}
 
 	@Test
@@ -203,25 +206,29 @@ public class ValidationJsonExceptionTest {
 
 		final ConstraintHelper helper = new ConstraintHelper();
 
-		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
-				getAnnotation("name", NotEmpty.class), ElementType.FIELD);
-		final ConstraintDescriptor<NotEmpty> notEmptyGrapesDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
-				getAnnotation("grapes", NotEmpty.class), ElementType.FIELD);
+		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper,
+				(Member) null, getAnnotation("name", NotEmpty.class), ElementType.FIELD);
+		final ConstraintDescriptor<NotEmpty> notEmptyGrapesDescriptor = new ConstraintDescriptorImpl<>(helper,
+				(Member) null, getAnnotation("grapes", NotEmpty.class), ElementType.FIELD);
 		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
 				getAnnotation("name", Length.class), ElementType.FIELD);
-		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-Empty", null, null, "interpolated", Wine.class, bean,
-				new Object(), "value", PathImpl.createPathFromString("name"), notEmptyNameDescriptor, ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-length", null, null, "interpolated", Wine.class, bean,
-				new Object(), "value", PathImpl.createPathFromString("name"), lengthNameDescriptor, ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("grapes-Empty", null, null, "interpolated", Wine.class, bean,
-				new Object(), "value", PathImpl.createPathFromString("grapes"), notEmptyGrapesDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-Empty", null, null, "interpolated",
+				Wine.class, bean, new Object(), "value", PathImpl.createPathFromString("name"), notEmptyNameDescriptor,
+				ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-length", null, null, "interpolated",
+				Wine.class, bean, new Object(), "value", PathImpl.createPathFromString("name"), lengthNameDescriptor,
+				ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("grapes-Empty", null, null, "interpolated",
+				Wine.class, bean, new Object(), "value", PathImpl.createPathFromString("grapes"),
+				notEmptyGrapesDescriptor, ElementType.FIELD, null));
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
 
 		final ValidationJsonException validationJsonException = new ValidationJsonException(violationException);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
-		Assertions.assertEquals("{name=[{rule=name-Empty}, {rule=name-length, parameters={min=0, max=50}}], grapes=[{rule=grapes-Empty}]}",
+		Assertions.assertEquals(
+				"{name=[{rule=name-Empty}, {rule=name-length, parameters={min=0, max=50}}], grapes=[{rule=grapes-Empty}]}",
 				validationJsonException.getErrors().toString());
 	}
 
@@ -232,11 +239,12 @@ public class ValidationJsonExceptionTest {
 
 		final ConstraintHelper helper = new ConstraintHelper();
 
-		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
-				getAnnotation("name", NotEmpty.class), ElementType.FIELD);
+		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper,
+				(Member) null, getAnnotation("name", NotEmpty.class), ElementType.FIELD);
 		PathImpl path = PathImpl.createPathFromString("name");
-		violations.add(ConstraintViolationImpl.<Wine>forParameterValidation("name-Empty", null, null, "interpolated", Wine.class, bean,
-				new Object(), "value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null, null));
+		violations.add(ConstraintViolationImpl.<Wine>forParameterValidation("name-Empty", null, null, "interpolated",
+				Wine.class, bean, new Object(), "value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null,
+				null));
 		path.addParameterNode("parameter1", 0);
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);

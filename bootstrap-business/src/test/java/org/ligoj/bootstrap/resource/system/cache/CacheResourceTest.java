@@ -59,13 +59,17 @@ public class CacheResourceTest extends AbstractBootTest {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache");
 		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
-		for (int i = 100000; i-- > 0;) {
-			dummyCacheBean.getHit("entry-key" + i);
-		}
+		doManyHits();
 
 		final List<CacheStatistics> caches = cacheResource.getCaches();
 		Assertions.assertEquals(3, caches.size());
 		Assertions.assertTrue(caches.stream().filter(c -> "test-cache".equals(c.getId())).anyMatch(this::assertCache));
+	}
+
+	private void doManyHits() {
+		for (int i = 100000; i-- > 0;) {
+			dummyCacheBean.getHit("entry-key" + i);
+		}
 	}
 
 	@Test
@@ -73,6 +77,7 @@ public class CacheResourceTest extends AbstractBootTest {
 		dummyCacheBean.getHit("entry-key");
 		cacheResource.invalidate("test-cache");
 		dummyCacheBean.getHit("entry-key");
+		doManyHits();
 		assertCache(cacheResource.getCache("test-cache"));
 	}
 

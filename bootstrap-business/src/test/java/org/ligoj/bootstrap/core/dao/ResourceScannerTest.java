@@ -37,9 +37,7 @@ public class ResourceScannerTest {
 			}
 
 		};
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			scanner.scan(newScanEnvironment(), null, null);
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> scanner.scan(newScanEnvironment(), null, null));
 	}
 
 	/**
@@ -54,9 +52,7 @@ public class ResourceScannerTest {
 			}
 
 		};
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			scanner.scan(newScanEnvironment(), null, null);
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> scanner.scan(newScanEnvironment(), null, null));
 	}
 
 	private ScanEnvironment newScanEnvironment() {
@@ -74,13 +70,14 @@ public class ResourceScannerTest {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
-				return Collections.enumeration(
-						Arrays.asList(new URL[] { new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/mycompany/MyClass.class") }));
+				return Collections.enumeration(Arrays.asList(new URL[] {
+						new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/mycompany/MyClass.class") }));
 			}
 
 		};
-		Assertions.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
-				.getLocatedMappingFiles().isEmpty());
+		Assertions.assertTrue(
+				scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
+						.getLocatedMappingFiles().isEmpty());
 	}
 
 	/**
@@ -91,12 +88,14 @@ public class ResourceScannerTest {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
-				return Collections.enumeration(Arrays.asList(new URL[] { new URL("jar:file:/c://my.jar!/com/mycompany/MyClass.class") }));
+				return Collections.enumeration(
+						Arrays.asList(new URL[] { new URL("jar:file:/c://my.jar!/com/mycompany/MyClass.class") }));
 			}
 
 		};
-		Assertions.assertTrue(scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
-				.getLocatedMappingFiles().isEmpty());
+		Assertions.assertTrue(
+				scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
+						.getLocatedMappingFiles().isEmpty());
 	}
 
 	/**

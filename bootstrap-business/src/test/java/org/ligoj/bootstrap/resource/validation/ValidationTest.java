@@ -58,18 +58,14 @@ public class ValidationTest extends AbstractBootTest {
 
 	@Test
 	public void testEmptyBean() {
-		Assertions.assertThrows(ConstraintViolationException.class, () -> {
-			validator.validateCheck(new Wine());
-		});
+		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(new Wine()));
 	}
 
 	@Test
 	public void testHibernateExtension() {
 		final Wine wine = newWine();
 		wine.setYear(1);
-		Assertions.assertThrows(ConstraintViolationException.class, () -> {
-			validator.validateCheck(wine);
-		});
+		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(wine));
 	}
 
 	@Test
@@ -94,8 +90,10 @@ public class ValidationTest extends AbstractBootTest {
 		final ConstraintViolation<?> constraintViolation = validate.iterator().next();
 		Assertions.assertEquals(wine.getName(), constraintViolation.getInvalidValue());
 		Assertions.assertEquals(wine, constraintViolation.getLeafBean());
-		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message", constraintViolation.getMessageTemplate());
-		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message", constraintViolation.getMessage());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message",
+				constraintViolation.getMessageTemplate());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.UpperCase.message",
+				constraintViolation.getMessage());
 	}
 
 	/**
@@ -110,8 +108,10 @@ public class ValidationTest extends AbstractBootTest {
 		final ConstraintViolation<?> constraintViolation = validate.iterator().next();
 		Assertions.assertEquals(wine.getLowerOnly(), constraintViolation.getInvalidValue());
 		Assertions.assertEquals(wine, constraintViolation.getLeafBean());
-		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message", constraintViolation.getMessageTemplate());
-		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message", constraintViolation.getMessage());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message",
+				constraintViolation.getMessageTemplate());
+		Assertions.assertEquals("org.ligoj.bootstrap.core.validation.LowerCase.message",
+				constraintViolation.getMessage());
 	}
 
 	/**

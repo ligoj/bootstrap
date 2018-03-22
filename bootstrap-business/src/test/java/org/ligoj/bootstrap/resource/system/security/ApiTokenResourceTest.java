@@ -114,9 +114,7 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 
 	@Test
 	public void updateNotExist() {
-		Assertions.assertThrows(EntityNotFoundException.class, () -> {
-			resource.update("any");
-		});
+		Assertions.assertThrows(EntityNotFoundException.class, () -> resource.update("any"));
 	}
 
 	@Test
