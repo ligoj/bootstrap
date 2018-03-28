@@ -28,7 +28,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 	/**
 	 * Extend the {@link JacksonAnnotationIntrospector} only for enum value.
 	 */
-	@SuppressWarnings({ "serial", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	protected static class LowerCasingEnumSerializer extends StdSerializer<Enum> {
 
 		public LowerCasingEnumSerializer() {
@@ -53,7 +53,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 		module.addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
 		module.addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
 		module.addSerializer(Enum.class, new LowerCasingEnumSerializer());
-		
+
 		// Case insensitive enumeration
 		enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 		registerModule(module);

@@ -37,6 +37,7 @@ public class TestAbstractBusinessEntityTest {
 		Assertions.assertFalse(entity.isNew());
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		final DummyBusinessEntity entity1 = new DummyBusinessEntity();
