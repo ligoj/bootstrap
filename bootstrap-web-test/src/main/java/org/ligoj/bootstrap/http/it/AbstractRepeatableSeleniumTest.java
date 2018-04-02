@@ -17,6 +17,9 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 
 	/**
 	 * Test name.
+	 * 
+	 * @param testInfo
+	 *            Injected test context.
 	 */
 	@BeforeEach
 	public void initTestName(final TestInfo testInfo) {
@@ -24,8 +27,8 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	}
 
 	// As default, Firefox, IE and Chrome navigators
-	protected static final DesiredCapabilities[] DEFAULT_CAPABILITIES = new DesiredCapabilities[] { DesiredCapabilities.firefox(),
-			DesiredCapabilities.internetExplorer(), DesiredCapabilities.chrome() };
+	protected static final DesiredCapabilities[] DEFAULT_CAPABILITIES = new DesiredCapabilities[] {
+			DesiredCapabilities.firefox(), DesiredCapabilities.internetExplorer(), DesiredCapabilities.chrome() };
 
 	/**
 	 * Repeated capabilities.
@@ -41,9 +44,11 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 *            the driver instance to use for this forked test.
 	 * @param capability
 	 *            the associated capabilities of this forked test.
+	 * @throws Exception
+	 *             When text invoke fails.
 	 */
-	protected void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver, final DesiredCapabilities capability)
-			throws Exception { // NOSONAR -- Have to pause the thread
+	protected void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver,
+			final DesiredCapabilities capability) throws Exception { // NOSONAR -- Have to pause the thread
 		target.gridUrl = gridUrl;
 		target.baseDir = baseDir;
 		target.baseUrl = baseUrl;

@@ -118,13 +118,14 @@ public abstract class AbstractSeleniumLauncherTest {
 	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOSONAR -- too many
 																									// exception
 		log.info("Asking for " + capability + " to " + gridUrl);
-		return new Augmenter()
-				.augment((WebDriver) Class.forName(remoteDriverClass).getConstructor(URL.class, Capabilities.class).newInstance(gridUrl, capability));
+		return new Augmenter().augment((WebDriver) Class.forName(remoteDriverClass)
+				.getConstructor(URL.class, Capabilities.class).newInstance(gridUrl, capability));
 	}
 
 	/**
 	 * Return a new local {@link WebDriver} instance.
 	 * 
+	 * @return A new local {@link WebDriver} instance.
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
@@ -141,12 +142,14 @@ public abstract class AbstractSeleniumLauncherTest {
 	@BeforeEach
 	public void setUpDriver() throws Exception { // NOSONAR -- too many exception
 		gridUrl = new URL(GRID_URL);
-		baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()).getParent();
+		baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI())
+				.getParent();
 		scenario = "undefined";
 		if (isLocalTest()) {
 			this.baseUrl = System.getProperty("test.local.server.url", "http://localhost");
 		} else {
-			this.baseUrl = System.getProperty("test.target.server.url", "http://" + InetAddress.getLocalHost().getHostAddress() + ":80"); // NOPMD
+			this.baseUrl = System.getProperty("test.target.server.url",
+					"http://" + InetAddress.getLocalHost().getHostAddress() + ":80"); // NOPMD
 		}
 		prepareDriver();
 		prepareBrowser();
@@ -224,6 +227,8 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * 
 	 * @param to
 	 *            Simple file name where the screenshot will be saved.
+	 * @throws IOException
+	 *             When screenshot cannot be saved.
 	 */
 	protected void screenshotNow(final String to) throws IOException {
 		final File directory = new File(new File(baseDir, scenario), capability.getBrowserName());
@@ -231,11 +236,13 @@ public abstract class AbstractSeleniumLauncherTest {
 		try {
 			// Copy the received screenshot to the target directory
 			final File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-			final File targetFile = new File(directory, StringUtils.leftPad(String.valueOf(++screenshotCounter), 3, '0') + "-" + to);
+			final File targetFile = new File(directory,
+					StringUtils.leftPad(String.valueOf(++screenshotCounter), 3, '0') + "-" + to);
 			log.info("Screenshot received : '" + scrFile + ", copying to " + targetFile);
 			FileUtils.copyFile(scrFile, targetFile);
 		} catch (final IOException ioe) {
-			log.error("Unable to copy screenshot of URL '" + driver.getCurrentUrl() + "' to given file '" + to + "'", ioe);
+			log.error("Unable to copy screenshot of URL '" + driver.getCurrentUrl() + "' to given file '" + to + "'",
+					ioe);
 		}
 	}
 
@@ -248,6 +255,8 @@ public abstract class AbstractSeleniumLauncherTest {
 
 	/**
 	 * Wait 1s. Useful for waiting for component graphical transition
+	 * @throws InterruptedException
+	 *             From {@link Thread#sleep(long)}
 	 */
 	protected void smallSleep() throws InterruptedException {
 		sleep(1000);
@@ -259,7 +268,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @param milli
 	 *            the length of time to sleep in milliseconds
 	 * @throws InterruptedException
-	 *             from {@link Thread#sleep(long)}
+	 *             From {@link Thread#sleep(long)}
 	 */
 	protected void sleep(final long milli) throws InterruptedException {
 		Thread.sleep(milli); // NOSONAR -- Have to pause the thread
