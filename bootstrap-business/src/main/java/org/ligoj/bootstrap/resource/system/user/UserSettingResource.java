@@ -49,6 +49,8 @@ public class UserSettingResource {
 	/**
 	 * Return a specific setting of current user.
 	 * 
+	 * @param name
+	 *            The setting's name.
 	 * @return a specific user's setting. May be <code>null</code>
 	 */
 	@GET
@@ -62,10 +64,13 @@ public class UserSettingResource {
 	 * 
 	 * @param login
 	 *            the user login owning the setting.
+	 * @param name
+	 *            The setting's name.
 	 * @return a specific user's setting. May be <code>null</code>.
 	 */
 	public String findByName(final String login, final String name) {
-		return Optional.ofNullable(repository.findByLoginAndName(login, name)).map(SystemUserSetting::getValue).orElse(null);
+		return Optional.ofNullable(repository.findByLoginAndName(login, name)).map(SystemUserSetting::getValue)
+				.orElse(null);
 	}
 
 	/**
@@ -76,7 +81,8 @@ public class UserSettingResource {
 	 * @return all user's settings.
 	 */
 	public Map<String, Object> findAll(final String login) {
-		return repository.findByLogin(login).stream().collect(Collectors.toMap(AbstractNamedValue::getName, AbstractNamedValue::getValue));
+		return repository.findByLogin(login).stream()
+				.collect(Collectors.toMap(AbstractNamedValue::getName, AbstractNamedValue::getValue));
 	}
 
 	/**

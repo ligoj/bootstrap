@@ -40,20 +40,16 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * API Token resource. An user can have several tokens, each one associated to
- * an unique name (user 's scope). The general behavior is :
+ * API Token resource. An user can have several tokens, each one associated to an unique name (user 's scope). The
+ * general behavior is :
  * <ul>
- * <li>In the database, are stored user (owner), logical name of the key, hashed
- * key (SHA-512+), crypted key.</li>
- * <li>Cipher key column is used to display the plain token value for the user.
- * One by one.</li>
- * <li>Hashed key column is used to match the key, as we would do it for
- * password.</li>
- * <li>The salt used for hashed value is only user name. SHA-512+ strength and
- * the key length (&gt;128) reduce slightly the issues.</li>
- * <li>Secret key used for ciphering is based on SHA-1 of the key plus key's
- * name, plus user's login, plus a secret key, the whole with 30+ iterations. So
- * SHA-1 is not used there to hash a password, but to build a secret key.</li>
+ * <li>In the database, are stored user (owner), logical name of the key, hashed key (SHA-512+), crypted key.</li>
+ * <li>Cipher key column is used to display the plain token value for the user. One by one.</li>
+ * <li>Hashed key column is used to match the key, as we would do it for password.</li>
+ * <li>The salt used for hashed value is only user name. SHA-512+ strength and the key length (&gt;128) reduce slightly
+ * the issues.</li>
+ * <li>Secret key used for ciphering is based on SHA-1 of the key plus key's name, plus user's login, plus a secret key,
+ * the whole with 30+ iterations. So SHA-1 is not used there to hash a password, but to build a secret key.</li>
  * </ul>
  */
 @Path("/api/token")
@@ -80,8 +76,7 @@ public class ApiTokenResource {
 	private SecurityHelper securityHelper;
 
 	/**
-	 * Amount of digest iterations applied to original message to produce the
-	 * target hash.
+	 * Amount of digest iterations applied to original message to produce the target hash.
 	 */
 	@Value("${api.token.iterations:31}")
 	private int tokenIterations;
@@ -137,11 +132,13 @@ public class ApiTokenResource {
 	}
 
 	/**
-	 * Return raw token value corresponding to the requested name and owned by
-	 * current user.
+	 * Return raw token value corresponding to the requested name and owned by current user.
 	 * 
-	 * @return raw token value corresponding to the requested name and owned by
-	 *         current user.
+	 * @param name
+	 *            The token's name.
+	 * @return raw token value corresponding to the requested name and owned by current user.
+	 * @throws GeneralSecurityException
+	 *             When there is a security issue.
 	 */
 	@GET
 	@Path("{name:\\w+}")
@@ -159,6 +156,8 @@ public class ApiTokenResource {
 	 * @param secretKey
 	 *            The secret key.
 	 * @return the original message.
+	 * @throws GeneralSecurityException
+	 *             When there is a security issue.
 	 */
 	private String decrypt(final String encryptedMessage, final byte[] secretKey) throws GeneralSecurityException {
 		final byte[] message = Base64.decodeBase64(encryptedMessage.getBytes(StandardCharsets.UTF_8));
@@ -180,6 +179,8 @@ public class ApiTokenResource {
 	 * @param secretKey
 	 *            The secret key.
 	 * @return the original message.
+	 * @throws GeneralSecurityException
+	 *             When there is a security issue.
 	 */
 	private String encrypt(final String message, final byte[] secretKey) throws GeneralSecurityException {
 		final MessageDigest digest = MessageDigest.getInstance(tokenDigest);
@@ -209,8 +210,7 @@ public class ApiTokenResource {
 	}
 
 	/**
-	 * From a password, an amount of iterations, returns the corresponding
-	 * digest
+	 * From a password, an amount of iterations, returns the corresponding digest
 	 * 
 	 * @param iterations
 	 *            The amount of iterations of the algorithm.
@@ -221,7 +221,7 @@ public class ApiTokenResource {
 	 *             If the algorithm doesn't exist
 	 */
 	protected byte[] simpleHash(final int iterations, final String password) throws NoSuchAlgorithmException {
-		// This  is not a single hash
+		// This is not a single hash
 		final MessageDigest digest = MessageDigest.getInstance("SHA-1"); // NOSONAR
 		digest.reset();
 		byte[] input = digest.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -243,6 +243,8 @@ public class ApiTokenResource {
 	 * @param name
 	 *            New token name.
 	 * @return the generated token.
+	 * @throws GeneralSecurityException
+	 *             When there is a security issue.
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -279,6 +281,8 @@ public class ApiTokenResource {
 	 * @param name
 	 *            Token to update.
 	 * @return the new generated token.
+	 * @throws GeneralSecurityException
+	 *             When there is a security issue.
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)

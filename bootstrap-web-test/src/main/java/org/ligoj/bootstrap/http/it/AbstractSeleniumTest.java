@@ -42,7 +42,7 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumQueryTest {
 
 	/**
 	 * Assert the given URL equals to the given one.
-	 * @param The URL to check.
+	 * @param url The URL to check.
 	 */
 	protected void asserUrl(final String url) {
 		Assertions.assertEquals(driver.getCurrentUrl(), url);
