@@ -10,6 +10,7 @@
 	<context:spring-configured />
 	<context:annotation-config />
 	<context:component-scan base-package="org.ligoj.bootstrap" />
+	<aop:aspectj-autoproxy />
 
 	<!-- Configuration for encryptor, based on environment variables, system properties or file -->
 	<bean id="environmentVariablesConfiguration" class="org.ligoj.bootstrap.core.crypto.SystemEnvironmentAndFilePBEConfig">
