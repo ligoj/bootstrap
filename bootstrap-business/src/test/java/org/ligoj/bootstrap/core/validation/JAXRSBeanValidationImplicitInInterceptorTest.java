@@ -273,7 +273,6 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		final ConstraintViolationException cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"),
 						Arrays.asList(userDto)));
-		Assertions.fail("Expected validation errors");
 
 		// Check all expected errors are there.
 		final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
