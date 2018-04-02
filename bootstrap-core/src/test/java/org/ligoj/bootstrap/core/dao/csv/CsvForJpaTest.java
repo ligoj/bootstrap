@@ -19,7 +19,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.transaction.Transactional;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.csv.DummyEntity;
 import org.ligoj.bootstrap.core.csv.DummyEntity2;
 import org.ligoj.bootstrap.core.csv.DummyEntity3;
-import org.ligoj.bootstrap.core.csv.DummyEntity4;
 import org.ligoj.bootstrap.core.csv.Wrapper;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -392,23 +390,6 @@ public class CsvForJpaTest {
 
 		// Check there is only data
 		Assertions.assertEquals("4;5;3;1;7;8;6;2\n", result.toString());
-	}
-
-	@Test
-	public void toCsvEntityJodaTime() throws Exception {
-		final List<DummyEntity4> items = new ArrayList<>();
-		final StringWriter result = new StringWriter();
-		final DummyEntity4 entity = new DummyEntity4();
-		entity.setDate(DateTime.parse("2018-01-01"));
-		items.add(entity);
-		csvForJpa.toCsv(items, DummyEntity4.class, result);
-
-		// Check there is only data (2018-01-01T00:00:00.000+01:00)
-		Assertions.assertTrue(result.toString().startsWith("date\n2018-01-01T00:00:00.000"));
-
-		final List<DummyEntity4> bean = csvForJpa.toBean(DummyEntity4.class, new StringReader(result.toString()));
-		Assertions.assertEquals(1, bean.size());
-		Assertions.assertEquals(2018, bean.get(0).getDate().getYear());
 	}
 
 	@Test

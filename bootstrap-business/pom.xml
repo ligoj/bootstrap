@@ -25,11 +25,6 @@
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-spring</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.joda</groupId>
-			<artifactId>joda-convert</artifactId>
-			<scope>provided</scope>
-		</dependency>
 
 		<!-- JSR-907 -->
 		<dependency>

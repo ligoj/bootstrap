@@ -24,7 +24,6 @@ import org.apache.commons.beanutils.converters.DateConverter;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.joda.time.DateTime;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
@@ -132,16 +131,6 @@ public abstract class AbstractCsvReader<T> {
 		dateConverter.setLocale(Locale.FRANCE);
 		dateConverter.setTimeZone(DateUtils.getApplicationTimeZone());
 		ConvertUtils.register(dateConverter, Date.class);
-
-		// Joda DateTime support
-		ConvertUtils.register(new Converter() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public <D> D convert(final Class<D> type, final Object value) {
-				return (D) new DateTime(dateConverter.convert(Date.class, value));
-			}
-		}, DateTime.class);
 
 		// Java 8 LocalDate support
 		ConvertUtils.register(new Converter() {

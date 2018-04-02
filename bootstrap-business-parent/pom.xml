@@ -11,11 +11,6 @@
 	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>org.joda</groupId>
-			<artifactId>joda-convert</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-artifact</artifactId>
 			<exclusions>

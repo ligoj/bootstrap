@@ -17,15 +17,6 @@
 		<property name="serializationInclusion" value="NON_NULL" />
 	</bean>
 
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" ref="objectMapper" />
-		<property name="targetMethod" value="registerModule" />
-		<property name="arguments">
-			<list>
-				<bean class="com.fasterxml.jackson.datatype.joda.JodaModule" />
-			</list>
-		</property>
-	</bean>
 	<bean id="jaxRsParameterNameProvider" class="org.ligoj.bootstrap.core.validation.JaxRsParameterNameProvider"/>
 	<bean id="validationProvider" class="org.apache.cxf.validation.BeanValidationProvider" >
 		<constructor-arg type="javax.validation.ParameterNameProvider" ref="jaxRsParameterNameProvider"/>
