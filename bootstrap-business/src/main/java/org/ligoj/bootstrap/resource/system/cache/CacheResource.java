@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import com.hazelcast.cache.impl.CacheProxy;
 import com.hazelcast.core.Member;
 import com.hazelcast.internal.cluster.ClusterService;
-import com.hazelcast.monitor.LocalMapStats;
 
 /**
  * Cache resource.
@@ -64,23 +63,34 @@ public class CacheResource {
 	public CacheStatistics getCache(@PathParam("name") final String name) {
 		final CacheStatistics result = new CacheStatistics();
 		@SuppressWarnings("unchecked")
-		final CacheProxy<Object, Object> cache = (CacheProxy<Object, Object>) cacheManager.getCache(name).getNativeCache();
-		result.setId(name);
-
+		final CacheProxy<Object, Object> cache = (CacheProxy<Object, Object>) cacheManager.getCache(name)
+				.getNativeCache();
 		final CacheNode node = newCacheNode(cache.getNodeEngine().getLocalMember());
 		node.setCluster(newCacheCluster(cache.getNodeEngine().getClusterService()));
-
-		final LocalMapStats stats = cache.getNodeEngine().getHazelcastInstance().getMap(name).getLocalMapStats();
-		stats.toJson();
-		
-		final com.hazelcast.cache.CacheStatistics statistics = cache.getLocalCacheStatistics();
+		result.setId(name);
 		result.setNode(node);
-		result.setSize(statistics.getOwnedEntryCount());
-		result.setMissPercentage(statistics.getCacheMissPercentage());
-		result.setHitCount(statistics.getCacheHits());
-		result.setMissCount(statistics.getCacheMisses());
-		result.setAverageGetTime(statistics.getAverageGetTime());
+		setStatistics(result, cache.getLocalCacheStatistics());
 		return result;
+	}
+
+	/**
+	 * Update the statistics.
+	 * 
+	 * @param result
+	 *            The target result.
+	 * @param statistics
+	 *            The source statistics.
+	 */
+	protected void setStatistics(final CacheStatistics result, final com.hazelcast.cache.CacheStatistics statistics) {
+		result.setSize(statistics.getOwnedEntryCount());
+		// Only when statistics are enabled
+		if (isStatisticEnabled()) {
+			result.setMissPercentage(statistics.getCacheMissPercentage());
+			result.setMissCount(statistics.getCacheMisses());
+			result.setHitPercentage(statistics.getCacheHitPercentage());
+			result.setHitCount(statistics.getCacheHits());
+			result.setAverageGetTime(statistics.getAverageGetTime());
+		}
 	}
 
 	private CacheNode newCacheNode(Member member) {
@@ -109,5 +119,15 @@ public class CacheResource {
 	@Path("{name:[\\w\\-]+}")
 	public void invalidate(@PathParam("name") final String name) {
 		cacheManager.getCache(name).clear();
+	}
+
+	/**
+	 * Indicates the statistics are enabled or nor.
+	 * 
+	 * @return <code>true</code> when statistics are enabled. Based on <code>java.security.policy</code>.
+	 */
+	public static boolean isStatisticEnabled() {
+		// When a policy is defined, assume JMX is enabled
+		return System.getProperty("java.security.policy") != null;
 	}
 }

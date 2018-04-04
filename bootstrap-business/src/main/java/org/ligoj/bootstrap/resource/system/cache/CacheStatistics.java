@@ -15,10 +15,11 @@ public class CacheStatistics {
 
 	private String id;
 	private long size;
-	private long hitCount;
-	private long missCount;
-	private float missPercentage;
-	private float averageGetTime;
+	private Long hitCount;
+	private Long missCount;
+	private Float hitPercentage;
+	private Float missPercentage;
+	private Float averageGetTime;
 
 	/**
 	 * The related cache node.

@@ -69,7 +69,7 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 	 * Compete the configuration after its creation and configuration be {@link CacheManagerAware} implementor.
 	 */
 	protected void postConfigure(MapConfig mapConfig) {
-		if (System.getProperty("java.security.policy") != null) {
+		if (CacheResource.isStatisticEnabled()) {
 			// When a policy is defined, assume JMX is enabled
 			mapConfig.setStatisticsEnabled(true);
 		}
