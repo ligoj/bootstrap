@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.CacheConfig;
 
 /**
  * Test class of {@link MergedHazelCacheManagerFactoryBean}
@@ -56,7 +56,7 @@ public class MergedHazelCacheManagerFactoryBeanTest {
 
 	@Test
 	public void postConfigureNoPolicy() {
-		final MapConfig mapConfig = Mockito.mock(MapConfig.class);
+		final CacheConfig<?,?> mapConfig = Mockito.mock(CacheConfig.class);
 		try {
 			System.clearProperty("java.security.policy");
 			bean.postConfigure(mapConfig);
@@ -68,7 +68,7 @@ public class MergedHazelCacheManagerFactoryBeanTest {
 
 	@Test
 	public void postConfigurePolicy() {
-		final MapConfig mapConfig = Mockito.mock(MapConfig.class);
+		final CacheConfig<?,?> mapConfig = Mockito.mock(CacheConfig.class);
 		try {
 			System.setProperty("java.security.policy", "some_path_to_policy");
 			bean.postConfigure(mapConfig);

@@ -21,13 +21,8 @@ import org.springframework.context.ApplicationContext;
 
 import com.hazelcast.cache.HazelcastCacheManager;
 import com.hazelcast.config.CacheConfig;
-import com.hazelcast.config.Config;
 import com.hazelcast.config.EvictionConfig;
-import com.hazelcast.config.EvictionConfig.MaxSizePolicy;
 import com.hazelcast.config.EvictionPolicy;
-import com.hazelcast.config.InMemoryFormat;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.config.NearCacheConfig;
 
 /**
  * Factory of {@link EhCacheManagerFactoryBean} with modular {@link CacheConfig} creation delegate to
@@ -45,30 +40,15 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 		final CachingProvider provider = Caching.getCachingProvider();
 		final HazelcastCacheManager cacheManager = (HazelcastCacheManager) provider
 				.getCacheManager(URI.create("bootstrap-cache-manager"), null);
-
 		context.getBeansOfType(CacheManagerAware.class)
 				.forEach((n, a) -> a.onCreate(cacheManager, this::newCacheConfig));
-
-		final EvictionConfig evictionConfig = new EvictionConfig().setEvictionPolicy(EvictionPolicy.NONE)
-				.setMaximumSizePolicy(MaxSizePolicy.ENTRY_COUNT).setSize(5000);
-
-		// Post configuration
-		final NearCacheConfig nearCacheConfig = new NearCacheConfig().setInMemoryFormat(InMemoryFormat.OBJECT)
-				.setInvalidateOnChange(false).setTimeToLiveSeconds(0).setEvictionConfig(evictionConfig);
-		final Config config = cacheManager.getHazelcastInstance().getConfig();
-		cacheManager.getCacheNames().forEach(n -> {
-			final MapConfig mapConfig = config.getMapConfig(n);
-			mapConfig.setNearCacheConfig(nearCacheConfig);
-			postConfigure(mapConfig);
-		});
-
 		this.cacheManager = cacheManager;
 	}
 
 	/**
 	 * Compete the configuration after its creation and configuration be {@link CacheManagerAware} implementor.
 	 */
-	protected void postConfigure(MapConfig mapConfig) {
+	protected void postConfigure(final CacheConfig<?, ?> mapConfig) {
 		if (CacheResource.isStatisticEnabled()) {
 			// When a policy is defined, assume JMX is enabled
 			mapConfig.setStatisticsEnabled(true);
@@ -83,6 +63,8 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)
 				.setMaximumSizePolicy(EvictionConfig.MaxSizePolicy.ENTRY_COUNT));
 		config.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(Duration.ETERNAL));
+		// Post configuration
+		postConfigure(config);
 		return config;
 	}
 
