@@ -29,6 +29,11 @@ public class ToNameSerializerTest {
 	}
 
 	public class BeanA extends NamedBean<Integer> {
+
+		/**
+		 * SID
+		 */
+		private static final long serialVersionUID = 1L;
 		// Nothing to add
 	}
 

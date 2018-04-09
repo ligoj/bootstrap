@@ -31,6 +31,11 @@ import org.ligoj.bootstrap.core.IDescribableBean;
 public abstract class AbstractDescribedAuditedEntity<K extends Serializable> extends AbstractNamedAuditedEntity<K> implements IDescribableBean<K> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Human readable description. Accepting safe HTML content.
 	 */
 	@Length(max = 250)

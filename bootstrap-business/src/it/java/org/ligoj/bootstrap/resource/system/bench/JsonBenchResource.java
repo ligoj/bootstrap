@@ -140,15 +140,6 @@ public class JsonBenchResource {
 	}
 
 	/**
-	 * A {@link DateTime} result.
-	 */
-	@GET
-	@Path("/datetime")
-	public DateTime datetime() {
-		return new DateTime(60);
-	}
-
-	/**
 	 * A {@link GenericEntity} list with string content.
 	 */
 	@GET

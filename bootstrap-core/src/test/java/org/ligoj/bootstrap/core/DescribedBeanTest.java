@@ -39,6 +39,11 @@ public class DescribedBeanTest {
 	@Test
 	public void testCopyEntity() {
 		final IDescribableBean<Integer> from = new AbstractDescribedAuditedEntity<>() {
+
+			/**
+			 * SID
+			 */
+			private static final long serialVersionUID = 1L;
 			// Nothing
 		};
 		from.setDescription("any");
@@ -46,6 +51,11 @@ public class DescribedBeanTest {
 		from.setId(5);
 
 		final IDescribableBean<Integer> to = new AbstractDescribedAuditedEntity<>() {
+
+			/**
+			 * SID
+			 */
+			private static final long serialVersionUID = 1L;
 			// Nothing
 		};
 		DescribedBean.copy(from, to);
@@ -92,6 +102,11 @@ public class DescribedBeanTest {
 	@Test
 	public void testCopyBusiness() {
 		final IDescribableBean<String> from = new AbstractDescribedBusinessEntity<>() {
+
+			/**
+			 * SID
+			 */
+			private static final long serialVersionUID = 1L;
 			// Nothing
 		};
 		from.setName("one");
@@ -124,6 +139,11 @@ public class DescribedBeanTest {
 	@Test
 	public void testCloneEntity() {
 		final IDescribableBean<Integer> from = new AbstractDescribedEntity<>() {
+
+			/**
+			 * SID
+			 */
+			private static final long serialVersionUID = 1L;
 			// Nothing
 		};
 		from.setDescription("any");

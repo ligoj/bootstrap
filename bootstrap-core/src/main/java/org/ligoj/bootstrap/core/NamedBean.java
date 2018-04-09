@@ -28,6 +28,11 @@ import lombok.ToString;
 public class NamedBean<K extends Serializable> implements INamableBean<K> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Identifier of this bean. 
 	 */
 	private K id;

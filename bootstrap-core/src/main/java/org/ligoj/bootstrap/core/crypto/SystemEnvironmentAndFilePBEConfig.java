@@ -50,16 +50,18 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 
 		// Read password from file
 		try {
-			return StringUtils.trimToNull(FileUtils.readFileToString(new File(passwordFilename), StandardCharsets.UTF_8.name()));
+			return StringUtils
+					.trimToNull(FileUtils.readFileToString(new File(passwordFilename), StandardCharsets.UTF_8.name()));
 		} catch (final IOException ioe) { // NOSONAR - Safely ignore this fails, and try the next method
-			log.warn("Unable to read file " + passwordFilename);
+			log.warn("Unable to read file {} : {}", passwordFilename, ioe.getMessage());
 		}
 
 		// Read password from the classpath
 		try {
-			return StringUtils.trimToNull(IOUtils.toString(new ClassPathResource(passwordFilename).getInputStream(), StandardCharsets.UTF_8.name()));
+			return StringUtils.trimToNull(IOUtils.toString(new ClassPathResource(passwordFilename).getInputStream(),
+					StandardCharsets.UTF_8.name()));
 		} catch (final IOException ioe) { // NOSONAR - Safely ignore this fails, and assume there is no password
-			log.warn("Unable to read resource " + passwordFilename);
+			log.warn("Unable to read resource {} : {}", passwordFilename, ioe.getMessage());
 		}
 		return null;
 	}

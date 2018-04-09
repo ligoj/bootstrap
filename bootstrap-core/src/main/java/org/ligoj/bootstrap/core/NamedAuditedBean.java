@@ -25,6 +25,11 @@ import lombok.ToString;
 @ToString(of = "name")
 public class NamedAuditedBean<U extends Serializable, K extends Serializable> extends AuditedBean<U, K> implements INamableBean<K> {
 
+	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@NotBlank
 	@NotNull
 	private String name;

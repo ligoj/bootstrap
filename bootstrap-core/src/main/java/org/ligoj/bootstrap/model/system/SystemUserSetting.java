@@ -22,6 +22,11 @@ import lombok.Setter;
 public class SystemUserSetting extends AbstractNamedValue<Integer> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Corporate user login.
 	 */
 	@NotEmpty

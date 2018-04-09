@@ -22,6 +22,11 @@ public class TestAbstractBusinessEntityTest {
 	@Test
 	public void testNamed() {
 		AbstractNamedBusinessEntity<Integer> entity = new AbstractNamedBusinessEntity<>() {
+
+			/**
+			 * SID
+			 */
+			private static final long serialVersionUID = 1L;
 			// Nothing
 		};
 		entity.setName("Name");

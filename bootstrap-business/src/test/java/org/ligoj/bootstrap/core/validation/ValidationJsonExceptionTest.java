@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Member;
@@ -30,8 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
@@ -96,7 +93,7 @@ public class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	public void testValidationJsonExceptionCollection() throws JsonParseException, JsonMappingException, IOException {
+	public void testValidationJsonExceptionCollection() {
 		final ObjectMapperTrim mapper = new ObjectMapperTrim();
 		final InvalidFormatException e = Assertions.assertThrows(InvalidFormatException.class,
 				() -> mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class));

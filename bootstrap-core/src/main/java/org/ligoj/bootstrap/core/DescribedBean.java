@@ -23,6 +23,11 @@ import lombok.Setter;
 @Setter
 public class DescribedBean<K extends Serializable> extends NamedBean<K> implements IDescribableBean<K> {
 
+	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Length(max = 250)
 	@SafeHtml(additionalTagsWithAttributes = @Tag(name = "a", attributesWithProtocols = @Attribute(name = "href", protocols = "#")))
 	private String description;

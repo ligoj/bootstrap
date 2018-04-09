@@ -26,6 +26,11 @@ public class AuditedBeanTest {
 		final Auditable<String, Integer, Date> from = newAuditable();
 		final AbstractNamedAuditedEntity<Integer> to = new AbstractNamedAuditedEntity<>() {
 
+			/**
+			 * SID
+			 */
+			private static final long serialVersionUID = 1L;
+
 			// Nothing
 		};
 		to.setName("two");

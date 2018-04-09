@@ -30,6 +30,11 @@ import lombok.Setter;
 public abstract class AbstractDescribedEntity<K extends Serializable> extends AbstractNamedEntity<K> implements IDescribableBean<K> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Object description. Accepting safe HTML content.
 	 */
 	@Length(max = 250)

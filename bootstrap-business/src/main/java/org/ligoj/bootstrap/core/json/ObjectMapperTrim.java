@@ -31,6 +31,11 @@ public class ObjectMapperTrim extends ObjectMapper {
 	@SuppressWarnings("rawtypes")
 	protected static class LowerCasingEnumSerializer extends StdSerializer<Enum> {
 
+		/**
+		 * SID
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public LowerCasingEnumSerializer() {
 			super(Enum.class);
 		}

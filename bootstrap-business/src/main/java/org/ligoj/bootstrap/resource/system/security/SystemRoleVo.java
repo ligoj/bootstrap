@@ -21,6 +21,11 @@ import lombok.Setter;
 public class SystemRoleVo extends NamedBean<Integer> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * authorizations.
 	 */
 	@NotEmpty

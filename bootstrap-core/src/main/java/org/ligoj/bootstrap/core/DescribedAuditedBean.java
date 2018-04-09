@@ -22,6 +22,11 @@ import lombok.Setter;
 @Setter
 public class DescribedAuditedBean<U extends Serializable, K extends Serializable> extends NamedAuditedBean<U, K> implements IDescribableBean<K> {
 
+	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Length(max = 250)
 	private String description;
 

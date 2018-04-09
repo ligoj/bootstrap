@@ -24,6 +24,11 @@ import lombok.ToString;
 public class SystemApiToken extends AbstractNamedEntity<Integer> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * User login.
 	 */
 	@NotNull

@@ -31,6 +31,11 @@ import lombok.ToString;
 public abstract class AbstractNamedEntity<K extends Serializable> extends AbstractPersistable<K> implements INamableBean<K> {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Human readable name.
 	 */
 	@NotBlank

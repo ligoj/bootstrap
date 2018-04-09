@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import java.io.IOException;
 import java.net.URI;
 
 import javax.cache.CacheManager;
@@ -36,7 +35,7 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 	protected ApplicationContext context;
 
 	@Override
-	public void afterPropertiesSet() throws IOException {
+	public void afterPropertiesSet() {
 		final CachingProvider provider = Caching.getCachingProvider();
 		final HazelcastCacheManager cacheManager = (HazelcastCacheManager) provider
 				.getCacheManager(URI.create("bootstrap-cache-manager"), null);
