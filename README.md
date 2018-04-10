@@ -12,7 +12,7 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/bootstrap/badge)](https://www.codefactor.io/repository/github/ligoj/bootstrap)
 [![Known Vulnerabilities](https://snyk.io/test/github/ligoj/bootstrap/badge.svg)](https://snyk.io/test/github/ligoj/bootstrap)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f5654026ebe3ab16526c/maintainability)](https://codeclimate.com/github/ligoj/bootstrap/maintainability)
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://gus.mit-license.org/)
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://fabdouglas.mit-license.org/)
 
 Key features:
 - Convention over Code for everything: light webpack, http error code, CDI, Java8 named parameters
