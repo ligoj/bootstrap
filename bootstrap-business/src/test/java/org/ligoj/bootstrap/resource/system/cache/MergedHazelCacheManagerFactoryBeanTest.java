@@ -28,9 +28,9 @@ public class MergedHazelCacheManagerFactoryBeanTest {
 
 	private void clean() {
 		if (oldPolicy == null) {
-			oldPolicy = System.getProperty("java.security.policy");
-		} else {
 			System.clearProperty("java.security.policy");
+		} else {
+			System.setProperty("java.security.policy", oldPolicy);
 		}
 	}
 
