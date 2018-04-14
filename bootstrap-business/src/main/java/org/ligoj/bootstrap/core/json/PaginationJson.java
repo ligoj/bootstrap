@@ -96,7 +96,8 @@ public class PaginationJson {
 		}
 		final UiSort sort = new UiSort();
 		sort.setColumn(sortColumn);
-		sort.setDirection(Optional.ofNullable(sorDirection).map(d -> Direction.valueOf(d.toUpperCase(Locale.ENGLISH))).orElse(Direction.ASC));
+		sort.setDirection(Optional.ofNullable(sorDirection).map(d -> Direction.valueOf(d.toUpperCase(Locale.ENGLISH)))
+				.orElse(Direction.ASC));
 		return sort;
 	}
 
@@ -122,7 +123,8 @@ public class PaginationJson {
 	 */
 	public int getPageLength(final MultivaluedMap<String, String> parameters) {
 		return Optional.ofNullable(parameters.getFirst("rows")).map(Integer::parseInt)
-				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.PAGE_LENGTH)).map(Integer::parseInt).orElse(DEFAULT_PAGE_SIZE));
+				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.PAGE_LENGTH)).map(Integer::parseInt)
+						.orElse(DEFAULT_PAGE_SIZE));
 	}
 
 	/**
@@ -133,7 +135,8 @@ public class PaginationJson {
 	 * @return The page index or <code>null</code>. Starts from 1.
 	 */
 	public Integer getPage(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst("page")).map(Integer::parseInt).map(p -> Math.max(1, p)).orElse(null);
+		return Optional.ofNullable(parameters.getFirst("page")).map(Integer::parseInt).map(p -> Math.max(1, p))
+				.orElse(null);
 	}
 
 	/**
@@ -144,7 +147,8 @@ public class PaginationJson {
 	 * @return The page index or<code>0</code>. Starts from 0.
 	 */
 	private int getStart(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst(DataTableAttributes.START)).map(Integer::parseInt).map(s -> Math.max(0, s)).orElse(0);
+		return Optional.ofNullable(parameters.getFirst(DataTableAttributes.START)).map(Integer::parseInt)
+				.map(s -> Math.max(0, s)).orElse(0);
 	}
 
 	/**
@@ -155,8 +159,9 @@ public class PaginationJson {
 	 * @return the sorted column or <code>null</code>.
 	 */
 	private String getSortColumn(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst("sidx")).orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.SORTED_COLUMN))
-				.map(i -> parameters.getFirst(String.format(DataTableAttributes.DATA_PROP, i))).orElse(null));
+		return Optional.ofNullable(parameters.getFirst("sidx"))
+				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.SORTED_COLUMN))
+						.map(i -> parameters.getFirst(String.format(DataTableAttributes.DATA_PROP, i))).orElse(null));
 	}
 
 	/**
@@ -180,18 +185,19 @@ public class PaginationJson {
 	 *            Optional JSon to ORM property mapping.
 	 * @param caseSensitiveColumns
 	 *            Optional JSon columns name where the case sensitive ordering is requested. The "lower" function will
-	 *            not be
-	 *            used for the "ORDER BY" in this case.
+	 *            not be used for the "ORDER BY" in this case.
 	 * @return a {@link PageRequest} instance containing sort and page sizes.
 	 */
-	public PageRequest getPageRequest(final UriInfo uriInfo, final Map<String, String> ormMapping, final Collection<String> caseSensitiveColumns) {
+	public PageRequest getPageRequest(final UriInfo uriInfo, final Map<String, String> ormMapping,
+			final Collection<String> caseSensitiveColumns) {
 		// Update pagination informations
 		if (uriInfo == null) {
 			return PageRequest.of(0, 10);
 		}
 		final MultivaluedMap<String, String> parameters = uriInfo.getQueryParameters();
 		final int pageLength = getPageLength(parameters);
-		final int firstPage = Optional.ofNullable(getPage(parameters)).map(p -> p - 1).orElse(getStart(parameters) / pageLength);
+		final int firstPage = Optional.ofNullable(getPage(parameters)).map(p -> p - 1)
+				.orElse(getStart(parameters) / pageLength);
 
 		// Update sort informations
 		return buildOrderedPageRequest(ormMapping, parameters, pageLength, firstPage, caseSensitiveColumns);
@@ -200,8 +206,9 @@ public class PaginationJson {
 	/**
 	 * Build the {@link PageRequest} with ordering information.
 	 */
-	private PageRequest buildOrderedPageRequest(final Map<String, String> ormMapping, final MultivaluedMap<String, String> parameters,
-			final int pageLength, final int firstPage, final Collection<String> caseSensitiveColumns) {
+	private PageRequest buildOrderedPageRequest(final Map<String, String> ormMapping,
+			final MultivaluedMap<String, String> parameters, final int pageLength, final int firstPage,
+			final Collection<String> caseSensitiveColumns) {
 		return Optional.ofNullable(getSortColumn(parameters))
 				.map(c -> newSortedPageRequest(ormMapping, parameters, pageLength, firstPage, c, caseSensitiveColumns))
 				.orElse(PageRequest.of(firstPage, pageLength));
@@ -222,13 +229,13 @@ public class PaginationJson {
 	 *            The sorted column name.
 	 * @param caseSensitiveColumns
 	 *            Optional JSon columns name where the case sensitive ordering is requested. The "lower" function will
-	 *            not be
-	 *            used for the "ORDER BY" in this case.
+	 *            not be used for the "ORDER BY" in this case.
 	 * @return The new {@link PageRequest} with pagination and order.
 	 */
 	@NotNull
-	private PageRequest newSortedPageRequest(final Map<String, String> ormMapping, final MultivaluedMap<String, String> parameters,
-			final int pageLength, final int firstPage, final String column, final Collection<String> caseSensitiveColumns) {
+	private PageRequest newSortedPageRequest(final Map<String, String> ormMapping,
+			final MultivaluedMap<String, String> parameters, final int pageLength, final int firstPage,
+			final String column, final Collection<String> caseSensitiveColumns) {
 		final String direction = getSortDirection(parameters);
 		final PageRequest pageRequest;
 		final String ormProperty = getOrmColumn(ormMapping, column);
@@ -238,11 +245,14 @@ public class PaginationJson {
 		} else {
 			// Ordering query can be built
 			final Sort sort;
-			if ((caseSensitiveColumns == null || !caseSensitiveColumns.contains(column)) && ormProperty.indexOf('(') == -1) {
+			if ((caseSensitiveColumns == null || !caseSensitiveColumns.contains(column))
+					&& ormProperty.indexOf('(') == -1) {
 				if (ormProperty.indexOf('.') == -1) {
-					sort = Sort.by(new Sort.Order(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), ormProperty).ignoreCase());
+					sort = Sort.by(new Sort.Order(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), ormProperty)
+							.ignoreCase());
 				} else {
-					sort = JpaSort.unsafe(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), "UPPER(" + ormProperty + ")");
+					sort = JpaSort.unsafe(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)),
+							"UPPER(" + ormProperty + ")");
 				}
 			} else {
 				sort = JpaSort.unsafe(Direction.valueOf(direction.toUpperCase(Locale.ENGLISH)), ormProperty);
@@ -253,7 +263,8 @@ public class PaginationJson {
 	}
 
 	private String getOrmColumn(final Map<String, String> ormMapping, final String key) {
-		return Optional.ofNullable(ormMapping).map(m -> m.getOrDefault(key, m.containsKey("*") ? key : null)).orElse(null);
+		return Optional.ofNullable(ormMapping).map(m -> m.getOrDefault(key, m.containsKey("*") ? key : null))
+				.orElse(null);
 	}
 
 	/**
@@ -271,7 +282,8 @@ public class PaginationJson {
 	 *            E (entity) to T (table item type)
 	 * @return a paginated table instance containing items and page sizes.
 	 */
-	public <T, E> TableItem<T> applyPagination(final UriInfo uriInfo, final Page<E> items, final Function<E, T> converter) {
+	public <T, E> TableItem<T> applyPagination(final UriInfo uriInfo, final Page<E> items,
+			final Function<E, T> converter) {
 		// update JSon component with pagination informations
 		final TableItem<T> result = new TableItem<>();
 

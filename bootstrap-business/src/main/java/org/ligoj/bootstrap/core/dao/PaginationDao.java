@@ -3,8 +3,9 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,8 +17,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections4.MapUtils;
+import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
 import org.ligoj.bootstrap.core.json.jqgrid.UiSort;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +50,30 @@ public class PaginationDao {
 	@Autowired
 	private FetchHelper fetchHelper;
 
+	@Autowired
+	private PaginationJson paginationJson;
+
+	/**
+	 * Get list of JPA entities mapped and paginate
+	 * 
+	 * @param <T>
+	 *            JPA entity type to fetch.
+	 * @param type
+	 *            JPA entity class to fetch.
+	 * @param uriInfo
+	 *            query parameters.
+	 * @param mapping
+	 *            The JSON to JPA mapping using ':' as separator between the JSON property and the JPA path. When the
+	 *            JPA is omitted, it is equals to the JSON property. Property access is allowed using '.' separator.
+	 *            Sample <code>"id", "name:login", "country:country.id"</code>. Using <code>*</code> as mapping implies
+	 *            all JSON properties are authorized and mapped to the identical JPA path.
+	 * @return A list of JPA entities matching the given filter. The result is paginated and filtered.
+	 */
+	public <T> Page<T> findAll(final Class<T> type, final UriInfo uriInfo, final String... mapping) {
+		return findAll(type, uriInfo, Arrays.stream(mapping).map(s -> s.split(":"))
+				.collect(Collectors.toMap(s -> s[0], s -> s[s.length == 2 ? 1 : 0])));
+	}
+
 	/**
 	 * Get list of JPA entities mapped and paginate
 	 * 
@@ -54,14 +81,14 @@ public class PaginationDao {
 	 *            JPA entity type to fetch.
 	 * @param entityType
 	 *            JPA entity class to fetch.
-	 * @param uiPageRequest
-	 *            the page request containing filters, and sorts.
+	 * @param uriInfo
+	 *            query parameters.
 	 * @param mapping
 	 *            the JSON to SQL mapping. Property access is allowed using '.' separator.
 	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
-	public <T> Page<T> findAll(final Class<T> entityType, final UiPageRequest uiPageRequest, final Map<String, String> mapping) {
-		return findAll(entityType, uiPageRequest, mapping, null);
+	public <T> Page<T> findAll(final Class<T> entityType, final UriInfo uriInfo, final Map<String, String> mapping) {
+		return findAll(entityType, uriInfo, mapping, null);
 	}
 
 	/**
@@ -71,19 +98,43 @@ public class PaginationDao {
 	 *            JPA entity type to fetch.
 	 * @param entityType
 	 *            JPA entity class to fetch.
-	 * @param uiPageRequest
-	 *            the page request containing filters, and sorts.
+	 * @param uriInfo
+	 *            query parameters.
 	 * @param mapping
 	 *            the JSON to SQL mapping. Property access is allowed using '.' separator.
-	 * @param fetchedAssociations
+	 * @param fetch
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
 	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
 	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
 	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
-	public <T> Page<T> findAll(final Class<T> entityType, final UiPageRequest uiPageRequest, final Map<String, String> mapping,
-			final Map<String, JoinType> fetchedAssociations) {
-		return findAll(entityType, uiPageRequest, mapping, Collections.emptyMap(), fetchedAssociations);
+	public <T> Page<T> findAll(final Class<T> entityType, final UriInfo uriInfo, final Map<String, String> mapping,
+			final Map<String, JoinType> fetch) {
+		return findAll(entityType, uriInfo, mapping, null, fetch);
+	}
+
+	/**
+	 * Get a list of JPA entities matching the given filter. The result is paginated and filtered.
+	 * 
+	 * @param <T>
+	 *            JPA entity type to fetch.
+	 * @param entityType
+	 *            JPA entity class to fetch.
+	 * @param uriInfo
+	 *            query parameters.
+	 * @param mapping
+	 *            the JSON to SQL mapping. Property access is allowed using '.' separator.
+	 * @param specifications
+	 *            the optional custom specification mapping.
+	 * @param fetch
+	 *            A map of association to fetch. The map keys for composites associations should not have two times the
+	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
+	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
+	 */
+	public <T> Page<T> findAll(final Class<T> entityType, final UriInfo uriInfo, final Map<String, String> mapping,
+			final Map<String, CustomSpecification> specifications, final Map<String, JoinType> fetch) {
+		return findAll(entityType, paginationJson.getUiPageRequest(uriInfo), mapping, specifications, fetch);
 	}
 
 	/**
@@ -99,14 +150,15 @@ public class PaginationDao {
 	 *            the JSON to SQL mapping. Property access is allowed using '.' separator.
 	 * @param specifications
 	 *            the optional custom specification mapping.
-	 * @param fetchedAssociations
+	 * @param fetch
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
 	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
 	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
 	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
-	public <T> Page<T> findAll(final Class<T> entityType, final UiPageRequest uiPageRequest, final Map<String, String> mapping,
-			final Map<String, CustomSpecification> specifications, final Map<String, JoinType> fetchedAssociations) {
+	public <T> Page<T> findAll(final Class<T> entityType, final UiPageRequest uiPageRequest,
+			final Map<String, String> mapping, final Map<String, CustomSpecification> specifications,
+			final Map<String, JoinType> fetch) {
 
 		final CriteriaBuilder builder = em.getCriteriaBuilder();
 		final CriteriaQuery<T> query = builder.createQuery(entityType);
@@ -114,8 +166,8 @@ public class PaginationDao {
 
 		// Apply specification
 		final Root<T> root = query.from(entityType);
-		if (!CollectionUtils.isEmpty(fetchedAssociations)) {
-			fetchHelper.applyFetchedAssociations(fetchedAssociations, root);
+		if (!CollectionUtils.isEmpty(fetch)) {
+			fetchHelper.applyFetchedAssociations(fetch, root);
 		}
 
 		applySpecificationToCriteria(root, spec, query);
@@ -127,8 +179,8 @@ public class PaginationDao {
 	/**
 	 * Apply ordering criteria.
 	 */
-	private <T> void applyOrder(final UiPageRequest uiPageRequest, final Map<String, String> mapping, final CriteriaBuilder builder,
-			final CriteriaQuery<T> query, final Root<T> root) {
+	private <T> void applyOrder(final UiPageRequest uiPageRequest, final Map<String, String> mapping,
+			final CriteriaBuilder builder, final CriteriaQuery<T> query, final Root<T> root) {
 		// Apply the sort
 		if (uiPageRequest.getUiSort() != null) {
 
@@ -147,12 +199,13 @@ public class PaginationDao {
 	/**
 	 * Apply pagination criteria.
 	 */
-	private <T> Page<T> pagedResult(final Class<T> entityType, final UiPageRequest uiPageRequest, final CriteriaQuery<T> query,
-			final Specification<T> spec) {
+	private <T> Page<T> pagedResult(final Class<T> entityType, final UiPageRequest uiPageRequest,
+			final CriteriaQuery<T> query, final Specification<T> spec) {
 		final TypedQuery<T> query2 = em.createQuery(query);
 		if (uiPageRequest.getPage() > 0 && uiPageRequest.getPageSize() > 0 || uiPageRequest.getUiSort() != null) {
 			// Build the main query
-			final Pageable pageable = PageRequest.of(Math.max(0, uiPageRequest.getPage() - 1), Math.max(1, uiPageRequest.getPageSize()));
+			final Pageable pageable = PageRequest.of(Math.max(0, uiPageRequest.getPage() - 1),
+					Math.max(1, uiPageRequest.getPageSize()));
 			return readPage(entityType, query2, pageable, spec);
 		}
 
@@ -189,9 +242,10 @@ public class PaginationDao {
 	 * Reads the given {@link TypedQuery} into a {@link Page} applying the given {@link Pageable} and
 	 * {@link Specification}.
 	 */
-	private <T> Page<T> readPage(final Class<T> entityType, final TypedQuery<T> query, final Pageable pageable, final Specification<T> spec) {
+	private <T> Page<T> readPage(final Class<T> entityType, final TypedQuery<T> query, final Pageable pageable,
+			final Specification<T> spec) {
 
-		query.setFirstResult((int)pageable.getOffset());
+		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
 
 		final Long total = getCountQuery(entityType, spec).getSingleResult();
@@ -217,7 +271,8 @@ public class PaginationDao {
 	/**
 	 * Applies the given {@link Specification} to the given {@link CriteriaQuery}.
 	 */
-	private <S, T> Root<T> applySpecificationToCriteria(final Root<T> root, final Specification<T> spec, final CriteriaQuery<S> query) {
+	private <S, T> Root<T> applySpecificationToCriteria(final Root<T> root, final Specification<T> spec,
+			final CriteriaQuery<S> query) {
 
 		Assert.notNull(query, "Query is requested");
 

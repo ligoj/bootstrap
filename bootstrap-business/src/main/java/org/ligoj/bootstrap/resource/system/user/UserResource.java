@@ -26,7 +26,6 @@ import javax.ws.rs.core.UriInfo;
 import org.ligoj.bootstrap.core.dao.PaginationDao;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
-import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
 import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
@@ -147,8 +146,7 @@ public class UserResource {
 	@GET
 	@Path("roles")
 	public TableItem<SystemUserVo> findAllWithRoles(@Context final UriInfo uriInfo) {
-		final UiPageRequest uiPageRequest = paginationJson.getUiPageRequest(uriInfo);
-		final Page<SystemUser> findAll = pagination.findAll(SystemUser.class, uiPageRequest, ORDERED_COLUMNS, null, FETCHED_ASSOCS);
+		final Page<SystemUser> findAll = pagination.findAll(SystemUser.class, uriInfo, ORDERED_COLUMNS, null, FETCHED_ASSOCS);
 		// apply pagination
 		return paginationJson.applyPagination(uriInfo, findAll, TO_BUSINESS_ROLES);
 	}
