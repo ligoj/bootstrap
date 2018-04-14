@@ -16,12 +16,12 @@ public class UiPageRequest {
 	/**
 	 * Base 1 page number.
 	 */
-	private int page;
+	private int page = 1;
 
 	/**
 	 * Page size.
 	 */
-	private int pageSize;
+	private int pageSize = 10;
 
 	/**
 	 * UI filters.
