@@ -7,7 +7,7 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![Build Status](https://semaphoreci.com/api/v1/ligoj/bootstrap/branches/master/shields_badge.svg)](https://semaphoreci.com/ligoj/bootstrap)
 [![Build Status](https://ci.appveyor.com/api/projects/status/j0949l609j75mif3/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/bootstrap/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/ligoj/bootstrap/badge.svg?branch=master)](https://coveralls.io/github/ligoj/bootstrap?branch=master)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.ligoj.bootstrap:root)](https://sonarcloud.io/dashboard/index/org.ligoj.bootstrap:root)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?metric=alert_status&project=org.ligoj.bootstrap:root)](https://sonarcloud.io/dashboard/index/org.ligoj.bootstrap:root)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e6c472b13c5a49b4882d27632f79b6de)](https://www.codacy.com/app/ligoj/bootstrap?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/bootstrap&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/bootstrap/badge)](https://www.codefactor.io/repository/github/ligoj/bootstrap)
 [![Known Vulnerabilities](https://snyk.io/test/github/ligoj/bootstrap/badge.svg)](https://snyk.io/test/github/ligoj/bootstrap)
