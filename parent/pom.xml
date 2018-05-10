@@ -93,7 +93,6 @@
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<wiremock.version>2.15.0</wiremock.version>
 
-		<jar.selenium>3.11.0</jar.selenium>
 		<cargo.skip>false</cargo.skip>
 		<jetty.skip>false</jetty.skip>
 	</properties>
@@ -110,17 +109,17 @@
 			<dependency>
 				<groupId>javax.xml.bind</groupId>
 				<artifactId>jaxb-api</artifactId>
-				<version>2.3.0</version>
+				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-impl</artifactId>
-				<version>2.3.0</version>
+				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-core</artifactId>
-				<version>2.3.0</version>
+				<version>${jaxb.version}</version>
 			</dependency>
 
 			<dependency>
