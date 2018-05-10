@@ -93,7 +93,6 @@ case "$TARGET" in
 
 BUILD)
 
-  wget https://github.com/sormuras/bach/raw/master/install-jdk.sh && . ./install-jdk.sh -F 10 -L GPL
   installMaven
   fixBuildVersion
 
