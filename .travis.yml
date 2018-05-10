@@ -15,8 +15,8 @@ cache:
     - $HOME/jvm
     - $HOME/maven
 env: 
-  - TARGET=BUILD JDK='OpenJDK 9'
-install: . ./install-jdk.sh -F 9 -L GPL
+  - TARGET=BUILD JDK='OpenJDK 10'
+install: . ./install-jdk.sh -F 10 -L GPL
 branches:
   only:
     - master
