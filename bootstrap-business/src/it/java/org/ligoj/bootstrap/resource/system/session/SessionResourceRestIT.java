@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -104,11 +103,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		final HttpPost message = new HttpPost(BASE_URI + RESOURCE);
 		message.setEntity(new StringEntity("{\"id\":0}", ContentType.APPLICATION_JSON));
 		final HttpResponse response = httpclient.execute(message);
-		try {
-			Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
-		} finally {
-			IOUtils.closeQuietly(response.getEntity().getContent());
-		}
+		Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
 	}
 
 	/**
@@ -121,11 +116,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		message.addHeader("sm_universalid", "any");
 		message.setEntity(new StringEntity("{\"id\":0}", ContentType.APPLICATION_JSON));
 		final HttpResponse response = httpclient.execute(message);
-		try {
-			Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
-		} finally {
-			IOUtils.closeQuietly(response.getEntity().getContent());
-		}
+		Assertions.assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatusLine().getStatusCode());
 	}
 
 	/**
@@ -139,29 +130,25 @@ public class SessionResourceRestIT extends AbstractRestTest {
 		message.addHeader("sm_universalid", DEFAULT_USER);
 		final HttpResponse response = httpclient.execute(message);
 
-		try {
-			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+		Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
 
-			final SessionSettings settings = new ObjectMapperTrim().readValue(response.getEntity().getContent(), SessionSettings.class);
+		final SessionSettings settings = new ObjectMapperTrim().readValue(response.getEntity().getContent(), SessionSettings.class);
 
-			// Check the application settings (session scope)
-			Assertions.assertNotNull(settings);
-			Assertions.assertNotNull(settings.getRoles());
-			Assertions.assertEquals(2, settings.getRoles().size());
-			Assertions.assertTrue(settings.getRoles().contains("USER"));
-			Assertions.assertTrue(settings.getRoles().contains("test"));
-			Assertions.assertNotNull(settings.getAuthorizations());
-			Assertions.assertNotNull(settings.getBusinessAuthorizations());
-			Assertions.assertEquals(DEFAULT_USER, settings.getUserName());
+		// Check the application settings (session scope)
+		Assertions.assertNotNull(settings);
+		Assertions.assertNotNull(settings.getRoles());
+		Assertions.assertEquals(2, settings.getRoles().size());
+		Assertions.assertTrue(settings.getRoles().contains("USER"));
+		Assertions.assertTrue(settings.getRoles().contains("test"));
+		Assertions.assertNotNull(settings.getAuthorizations());
+		Assertions.assertNotNull(settings.getBusinessAuthorizations());
+		Assertions.assertEquals(DEFAULT_USER, settings.getUserName());
 
-			// Check the application settings (singleton)
-			Assertions.assertNotNull(settings.getApplicationSettings());
-			Assertions.assertNotNull(settings.getApplicationSettings().getBuildNumber());
-			Assertions.assertNotNull(settings.getApplicationSettings().getBuildTimestamp());
-			Assertions.assertNotNull(settings.getApplicationSettings().getBuildVersion());
-		} finally {
-			IOUtils.closeQuietly(response.getEntity().getContent());
-		}
+		// Check the application settings (singleton)
+		Assertions.assertNotNull(settings.getApplicationSettings());
+		Assertions.assertNotNull(settings.getApplicationSettings().getBuildNumber());
+		Assertions.assertNotNull(settings.getApplicationSettings().getBuildTimestamp());
+		Assertions.assertNotNull(settings.getApplicationSettings().getBuildVersion());
 	}
 
 	/**

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
@@ -62,16 +61,12 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 		// Cleanup resources to avoid useless WAR
 		final List<Resource> newLocations = new ArrayList<>(locations.length);
 		for (final Resource location : locations) {
-			InputStream inputStream = null;
-			try {
-				inputStream = location.getInputStream();
+			try (InputStream inputStream = location.getInputStream()) {
 				if (inputStream != null) {
 					newLocations.add(location);
 				}
 			} catch (final IOException ioe) { // NOSONAR - Check error, no pollution required
 				logger.warn(String.format("Ignoring location %s since is not found : %s", location, ioe.getMessage()));
-			} finally {
-				IOUtils.closeQuietly(inputStream);
 			}
 		}
 		final Resource[] newLocationsArray;
@@ -90,7 +85,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 
 	/**
 	 * Set the global locations.
-	 * 
+	 *
 	 * @param locations
 	 *            The global resources.
 	 */
@@ -100,7 +95,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 
 	/**
 	 * Set the global properties.
-	 * 
+	 *
 	 * @param props
 	 *            The global properties.
 	 */
@@ -110,7 +105,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 
 	/**
 	 * Return a property loaded by the place holder.
-	 * 
+	 *
 	 * @param name
 	 *            the property name.
 	 * @return the property value.

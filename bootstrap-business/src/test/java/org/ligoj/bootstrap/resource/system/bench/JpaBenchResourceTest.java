@@ -10,7 +10,6 @@ import java.net.URL;
 
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,43 +50,32 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 	@Test
 	public void testPrepareDataBlob() throws Exception {
 		final URL jarLocation = getBlobFile();
-		InputStream openStream = null;
-		try {
-			// Get the JAR input
-			openStream = jarLocation.openStream();
-
+		// Get the JAR input
+		try (InputStream openStream = jarLocation.openStream()) {
 			// Proceed to the test
 			final int nbEntries = 10;
 			resource.prepareData(openStream, nbEntries);
 			testCrud(nbEntries);
-		} finally {
-			IOUtils.closeQuietly(openStream);
 		}
 	}
 
 	@Test
 	public void testDownloadDataBlobEmpty() throws Exception {
 		final URL jarLocation = getBlobFile();
-		InputStream openStream = null;
-		try {
-			// Get the JAR input
-			openStream = jarLocation.openStream();
+		// Get the JAR input
+		try (InputStream openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 0);
 			Assertions.assertNull(resource.downloadLobFile());
-		} finally {
-			IOUtils.closeQuietly(openStream);
 		}
 	}
 
 	@Test
 	public void testDownloadDataBlobError() throws Exception {
 		final URL jarLocation = getBlobFile();
-		InputStream openStream = null;
-		try {
-			// Get the JAR input
-			openStream = jarLocation.openStream();
+		// Get the JAR input
+		try (InputStream openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 1);
@@ -98,18 +86,14 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 			Assertions.assertThrows(IllegalStateException.class, () -> {
 				downloadLobFile.write(output);
 			});
-		} finally {
-			IOUtils.closeQuietly(openStream);
 		}
 	}
 
 	@Test
 	public void testDownloadDataBlob() throws Exception {
 		final URL jarLocation = getBlobFile();
-		InputStream openStream = null;
-		try {
-			// Get the JAR input
-			openStream = jarLocation.openStream();
+		// Get the JAR input
+		try (InputStream openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 1);
@@ -117,8 +101,6 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 			final ByteArrayOutputStream output = new ByteArrayOutputStream();
 			downloadLobFile.write(output);
 			Assertions.assertTrue(output.toByteArray().length > 3000000);
-		} finally {
-			IOUtils.closeQuietly(openStream);
 		}
 	}
 

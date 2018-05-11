@@ -40,16 +40,12 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 	@Test
 	public void testJpaBlob() throws Exception {
 		final URL jarLocation = getBlobFile();
-		InputStream openStream = null;
-		try {
-			// Get the JAR input
-			openStream = jarLocation.openStream();
+		// Get the JAR input
+		try (InputStream openStream = jarLocation.openStream()) {
 			final byte[] byteArray = IOUtils.toByteArray(openStream);
 
 			// Proceed to the test
 			jpaDao.initialize(10, byteArray);
-		} finally {
-			IOUtils.closeQuietly(openStream);
 		}
 	}
 
@@ -60,10 +56,8 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 	public void testJpaBlobRead() throws Exception {
 		// Create blob
 		final URL jarLocation = getBlobFile();
-		InputStream openStream = null;
-		try {
-			// Get the JAR input
-			openStream = jarLocation.openStream();
+		// Get the JAR input
+		try (InputStream openStream = jarLocation.openStream()) {
 			final byte[] byteArray = IOUtils.toByteArray(openStream);
 
 			// Push one entity with our blob
@@ -73,8 +67,6 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 			final byte[] firstAvailableLob = jpaDao.getLastAvailableLob();
 			Assertions.assertNotNull(firstAvailableLob);
 			Assertions.assertEquals(byteArray.length, firstAvailableLob.length);
-		} finally {
-			IOUtils.closeQuietly(openStream);
 		}
 	}
 

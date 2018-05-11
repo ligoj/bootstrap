@@ -16,7 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Multiple classpath resource locator using calmle cases, lower cas combinaisons.
+ * Multiple classpath resource locator using CameL cases, lower case combinations.
  */
 @Slf4j
 public class ClassPathResourceMultiple {
@@ -33,7 +33,7 @@ public class ClassPathResourceMultiple {
 
 	/**
 	 * Initialize the classpath resources.
-	 * 
+	 *
 	 * @param csvRoot
 	 *            the root path of CSV resources.
 	 * @param clazz
@@ -63,7 +63,7 @@ public class ClassPathResourceMultiple {
 
 	/**
 	 * Return the first available input stream.
-	 * 
+	 *
 	 * @return the first available input stream.
 	 * @throws IOException
 	 *             No resource has been found.

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
@@ -31,25 +30,22 @@ public final class Main {
 
 	/**
 	 * Constructor : load property and XmlConfiguration
-	 * 
+	 *
 	 * @throws Exception
 	 *             server start error.
 	 */
 	public Main() throws Exception {
 		server = new Server();
-		final String jettyPropertiesFile = System.getProperty("jetty.properties", "META-INF/jetty/jetty-dev.properties");
-		InputStream propertiesInput = null;
-		try {
+		final String jettyPropertiesFile = System.getProperty("jetty.properties",
+				"META-INF/jetty/jetty-dev.properties");
+		try (InputStream propertiesInput = configure(jettyPropertiesFile)) {
 			// Load the properties file
-			propertiesInput = configure(jettyPropertiesFile);
-		} finally {
-			IOUtils.closeQuietly(propertiesInput);
 		}
 	}
 
 	/**
 	 * Return attached server.
-	 * 
+	 *
 	 * @return attached server.
 	 */
 	public Server getServer() {
@@ -58,7 +54,7 @@ public final class Main {
 
 	/**
 	 * Return the last started server instance. Take care of thread safe issues. This enables server shutdown.
-	 * 
+	 *
 	 * @return the last started server instance. Take care of thread safe issues. This enables server shutdown.
 	 */
 	public static Server getLastStartedServer() {
@@ -69,7 +65,8 @@ public final class Main {
 	 * Configure the server from properties and XML.
 	 */
 	private InputStream configure(final String jettyPropertiesFile) throws Exception {
-		final InputStream propertiesInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(jettyPropertiesFile);
+		final InputStream propertiesInput = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(jettyPropertiesFile);
 		if (propertiesInput == null) {
 			log.error("Unable to find jetty properties file : " + jettyPropertiesFile);
 		} else {
@@ -78,9 +75,8 @@ public final class Main {
 			copyProperties(propertiesInput);
 
 			// Configure the server
-			new XmlConfiguration(
-					Thread.currentThread().getContextClassLoader().getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml")))
-							.configure(server);
+			new XmlConfiguration(Thread.currentThread().getContextClassLoader()
+					.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml"))).configure(server);
 		}
 		return propertiesInput;
 	}
@@ -98,7 +94,7 @@ public final class Main {
 	// CHECKSTYLE:OFF This is a real application entry
 	/**
 	 * Main launcher. Equals to <tt>mvn jetty:start</tt> command.
-	 * 
+	 *
 	 * @param args
 	 *            by design arguments, but not used.
 	 * @throws Exception

@@ -72,7 +72,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a salt from a string.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string.
 	 * @return a salt from a string.
@@ -83,7 +83,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a date from a salt.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string.
 	 * @return a date from a salt.
@@ -94,7 +94,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Get a date
-	 * 
+	 *
 	 * @param year
 	 *            year
 	 * @param month
@@ -119,7 +119,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Get a date
-	 * 
+	 *
 	 * @param year
 	 *            year
 	 * @param month
@@ -134,7 +134,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return current date, from UTC time-zone.
-	 * 
+	 *
 	 * @return current date, from UTC time-zone.
 	 */
 	protected Date now() {
@@ -143,7 +143,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a date from a salt.
-	 * 
+	 *
 	 * @param salt
 	 *            Any integer.
 	 * @return a date from a salt.
@@ -170,7 +170,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a salt from a string.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string.
 	 * @param lower
@@ -186,7 +186,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a salt from a string.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string.
 	 * @param lower
@@ -201,7 +201,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return one of given items.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param items
@@ -216,7 +216,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return one of given items.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param items
@@ -235,24 +235,20 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Read and return lines of given text file.
-	 * 
+	 *
 	 * @param textFileName
 	 *            the file to read.
 	 * @return lines read from the given text file.
 	 */
 	protected List<String> readList(final String textFileName) throws IOException {
-		InputStream input = null;
-		try {
-			input = new ClassPathResource(textFileName).getInputStream();
+		try (InputStream input = new ClassPathResource(textFileName).getInputStream()) {
 			return new ArrayList<>(new HashSet<>(IOUtils.readLines(input, StandardCharsets.UTF_8)));
-		} finally {
-			IOUtils.closeQuietly(input);
 		}
 	}
 
 	/**
 	 * Return one of given items.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param items
@@ -267,7 +263,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return one of given items.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param items
@@ -283,7 +279,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return one of given items.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param items
@@ -302,7 +298,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return one of given items.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param items
@@ -322,7 +318,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a enumeration literal from a salt.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string used as salt.
 	 * @param enumClass
@@ -337,7 +333,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a salt from a integer.
-	 * 
+	 *
 	 * @param salt
 	 *            Any integer.
 	 * @param lower
@@ -355,7 +351,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a subset of items.
-	 * 
+	 *
 	 * @param salt
 	 *            any string used as salt.
 	 * @param items
@@ -386,7 +382,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a boolean from a string.
-	 * 
+	 *
 	 * @param salt
 	 *            Any string.
 	 * @return a boolean from a string.
@@ -397,7 +393,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a boolean from a number.
-	 * 
+	 *
 	 * @param salt
 	 *            Any integer.
 	 * @return a boolean from a number.
@@ -408,7 +404,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a new mocked {@link UriInfo} instance.
-	 * 
+	 *
 	 * @return a new mocked {@link UriInfo} instance.
 	 */
 	protected UriInfo newUriInfo() {
@@ -419,7 +415,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Return a new mocked {@link UriInfo} instance.
-	 * 
+	 *
 	 * @param search
 	 *            The search value as query parameter.
 	 * @return a new mocked {@link UriInfo} instance.
@@ -432,7 +428,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 
 	/**
 	 * Check and execute coverage test on an utility class.
-	 * 
+	 *
 	 * @param singletonClass
 	 *            The utility class
 	 */

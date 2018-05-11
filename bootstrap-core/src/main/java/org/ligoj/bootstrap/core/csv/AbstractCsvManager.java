@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -29,7 +28,7 @@ public abstract class AbstractCsvManager {
 
 	/**
 	 * Return a list of JPA bean read from the given CSV file. Headers are expected.
-	 * 
+	 *
 	 * @param <T>
 	 *            Bean type.
 	 * @param beanType
@@ -41,18 +40,14 @@ public abstract class AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	public <T> List<T> toBean(final Class<T> beanType, final String resource) throws IOException {
-		Reader input = null;
-		try {
-			input = new InputStreamReader(new ClassPathResource(resource).getInputStream(), DEFAULT_ENCODING);
+		try (Reader input = new InputStreamReader(new ClassPathResource(resource).getInputStream(), DEFAULT_ENCODING)) {
 			return toBean(beanType, input);
-		} finally {
-			IOUtils.closeQuietly(input);
 		}
 	}
 
 	/**
 	 * Return a list of JPA bean re ad from the given CSV input. Headers are expected.
-	 * 
+	 *
 	 * @param <T>
 	 *            Bean type.
 	 * @param beanType
@@ -68,7 +63,7 @@ public abstract class AbstractCsvManager {
 	/**
 	 * Writes to the given writer the given items in CSV format with a header. The generator use Java Bean properties
 	 * having a writable method. If managed JPA properties are expected, see {@link #toCsv(List, Class, Writer)}.
-	 * 
+	 *
 	 * @param <T>
 	 *            Bean type.
 	 * @param items
@@ -83,7 +78,8 @@ public abstract class AbstractCsvManager {
 	public <T> void toCsv(final List<T> items, final Class<T> beanType, final Writer result) throws IOException {
 		// Build descriptor list respecting the declaration order
 		final List<String> descriptorsOrdered = Arrays.stream(BeanUtils.getPropertyDescriptors(beanType))
-				.filter(property -> property.getWriteMethod() != null).map(PropertyDescriptor::getName).collect(Collectors.toList());
+				.filter(property -> property.getWriteMethod() != null).map(PropertyDescriptor::getName)
+				.collect(Collectors.toList());
 		String[] headers = new String[descriptorsOrdered.size()];
 		headers = descriptorsOrdered.toArray(headers);
 

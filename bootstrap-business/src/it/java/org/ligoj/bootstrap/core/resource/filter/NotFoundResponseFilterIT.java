@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.resource.filter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
@@ -59,14 +60,10 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	public void testReturnNull404() throws IOException {
 		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404");
 		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
-			Assertions.assertEquals("{\"code\":\"data\"}", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
-		} finally {
-			if (response != null && response.getEntity() != null) {
-				response.getEntity().getContent().close();
-			}
+		response = httpclient.execute(httpGet);
+		Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+		try (InputStream content = response.getEntity().getContent()) {
+			Assertions.assertEquals("{\"code\":\"data\"}", IOUtils.toString(content, StandardCharsets.UTF_8));
 		}
 	}
 
@@ -90,15 +87,11 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	public void testReturnNotNull() throws IOException {
 		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/not-null");
 		HttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-			Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		response = httpclient.execute(httpGet);
+		Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+		try (InputStream input = response.getEntity().getContent()) {
+			final String content = IOUtils.toString(input, StandardCharsets.UTF_8);
 			Assertions.assertEquals("string", content);
-		} finally {
-			if (response != null) {
-				response.getEntity().getContent().close();
-			}
 		}
 	}
 
