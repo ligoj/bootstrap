@@ -46,6 +46,9 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 
 	/**
 	 * Compete the configuration after its creation and configuration be {@link CacheManagerAware} implementor.
+	 *
+	 * @param mapConfig
+	 *            The target {@link CacheConfig} to configure.
 	 */
 	protected void postConfigure(final CacheConfig<?, ?> mapConfig) {
 		if (CacheResource.isStatisticEnabled()) {

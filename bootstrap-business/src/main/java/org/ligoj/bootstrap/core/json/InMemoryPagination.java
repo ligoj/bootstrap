@@ -33,7 +33,15 @@ public class InMemoryPagination {
 	protected PaginationJson paginationJson;
 
 	/**
-	 * Create a page from the pagination and the total result
+	 * Create a page from the pagination and the total result.
+	 *
+	 * @param result
+	 *            The raw collection item to paginate.
+	 * @param pageable
+	 *            The page request.
+	 * @param <T>
+	 *            The collection item type.
+	 * @return The selected page.
 	 */
 	public <T> Page<T> newPage(final Collection<T> result, final Pageable pageable) {
 		// Check bounds
@@ -58,6 +66,8 @@ public class InMemoryPagination {
 	}
 
 	/**
+	 * Return a {@link TableItem} instance containing the given items and the pagination information.
+	 *
 	 * @param uriInfo
 	 *            filter data.
 	 * @param items
@@ -65,8 +75,13 @@ public class InMemoryPagination {
 	 * @param transformer
 	 *            the paginated item transformer.
 	 * @return the paginated items with pagination information.
+	 * @param <T>
+	 *            The collection target item type.
+	 * @param <E>
+	 *            The collection source item type.
 	 */
-	public <E, T> TableItem<T> applyPagination(final UriInfo uriInfo, final Collection<E> items, final Function<E, T> transformer) {
+	public <E, T> TableItem<T> applyPagination(final UriInfo uriInfo, final Collection<E> items,
+			final Function<E, T> transformer) {
 		final UiPageRequest uiPageRequest = paginationJson.getUiPageRequest(uriInfo);
 		final PageRequest pageRequest = PageRequest.of(uiPageRequest.getPage() - 1, uiPageRequest.getPageSize());
 		return paginationJson.applyPagination(uriInfo, newPage(items, pageRequest), transformer);
@@ -74,7 +89,7 @@ public class InMemoryPagination {
 
 	/**
 	 * Return a filtered sublist where item match the criteria (query parameter "q")
-	 * 
+	 *
 	 * @param uriInfo
 	 *            filter data.
 	 * @param items
@@ -90,7 +105,7 @@ public class InMemoryPagination {
 
 	/**
 	 * Return a filtered sublist where item match the criteria (query parameter "q")
-	 * 
+	 *
 	 * @param uriInfo
 	 *            filter data.
 	 * @param items

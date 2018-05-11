@@ -100,9 +100,7 @@ public class ConfigurationResource {
 	/**
 	 * Return a merged list of properties from the system properties and entity {@link SystemConfiguration}.
 	 *
-	 * @param name
-	 *            The requested configuration name.
-	 * @return A specific configuration. May be <code>null</code> when undefined.
+	 * @return All defined configurations, either from {@link System} either from {@link SystemConfiguration}.
 	 */
 	@GET
 	public List<ConfigurationVo> findAll() {

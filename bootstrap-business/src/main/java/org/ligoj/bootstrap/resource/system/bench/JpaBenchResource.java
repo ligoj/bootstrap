@@ -44,17 +44,20 @@ public class JpaBenchResource {
 
 	/**
 	 * Initialize data for next bench tests.
-	 * 
+	 *
 	 * @param blob
 	 *            the BLOB file to attach.
 	 * @param nb
 	 *            the amount of data to persist.
 	 * @return the the bench result. The return type is text/html for IE7 support.
+	 * @throws IOException
+	 *             When the blob cannot be read.
 	 */
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA })
-	public String prepareData(@Multipart(value = "blob", required = false) final InputStream blob, @Multipart("nb") final int nb) throws IOException {
+	public String prepareData(@Multipart(value = "blob", required = false) final InputStream blob,
+			@Multipart("nb") final int nb) throws IOException {
 		final long start = System.currentTimeMillis();
 		final byte[] lobData = blob == null ? new byte[0] : IOUtils.toByteArray(blob);
 		log.info("Content size :" + lobData.length);
@@ -65,7 +68,7 @@ public class JpaBenchResource {
 
 	/**
 	 * Bench the read operations.
-	 * 
+	 *
 	 * @return The bench result data.
 	 */
 	@GET
@@ -78,7 +81,7 @@ public class JpaBenchResource {
 
 	/**
 	 * Bench the read operations.
-	 * 
+	 *
 	 * @return The bench result data.
 	 */
 	@GET
@@ -92,7 +95,7 @@ public class JpaBenchResource {
 
 	/**
 	 * Bench the update operations.
-	 * 
+	 *
 	 * @return The bench result data.
 	 */
 	@PUT
@@ -105,7 +108,7 @@ public class JpaBenchResource {
 
 	/**
 	 * Bench the delete operations.
-	 * 
+	 *
 	 * @return The bench result data.
 	 */
 	@DELETE
@@ -118,7 +121,7 @@ public class JpaBenchResource {
 
 	/**
 	 * Bench the get picture file.
-	 * 
+	 *
 	 * @return the JAX-RS stream.
 	 */
 	@GET
