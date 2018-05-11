@@ -5,7 +5,6 @@ package org.ligoj.bootstrap;
 
 import java.io.IOException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
@@ -54,7 +53,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 	 */
 	@AfterEach
 	public void closeCient() {
-		IOUtils.closeQuietly(httpclient);
+		closeQuietly(httpclient);
 	}
 
 	protected void initProperties(final String webDescriptor) {
@@ -66,7 +65,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 
 	/**
 	 * URI used to check the server is UP.
-	 * 
+	 *
 	 * @return URI used to check the server is UP.
 	 */
 	protected String getPingUri() {
@@ -75,7 +74,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 
 	/**
 	 * Create a new server and return it. A HTTP access is done to WADL to check the server is started.
-	 * 
+	 *
 	 * @param webDescriptor
 	 *            location of Jetty Web descriptor file
 	 * @return Jetty server object built from the web descriptor.
