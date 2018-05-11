@@ -3,6 +3,9 @@
  */
 package org.ligoj.bootstrap.resource.system.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
-import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -90,6 +92,28 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	public void findAll() {
+		final Map<String, ConfigurationVo> result = new HashMap<>();
+		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
+		Assertions.assertNull(result.get("test-key0").getValue());
+		Assertions.assertTrue(result.get("test-key0").isSecured());
+		Assertions.assertFalse(result.get("test-key0").isPersisted());
+		Assertions.assertTrue(result.get("test-key0").isOverride());
+		Assertions.assertNull(result.get("test-key1").getValue());
+		Assertions.assertFalse(result.get("test-key1").isOverride());
+		Assertions.assertEquals("value2", result.get("test-key2").getValue());
+		Assertions.assertFalse(result.get("test-key2").isPersisted());
+		Assertions.assertFalse(result.get("test-key2").isSecured());
+		Assertions.assertEquals("value3", result.get("test-key3").getValue());
+		Assertions.assertEquals("value-db4", result.get("test-key4").getValue());
+		Assertions.assertTrue(result.get("test-key4").isPersisted());
+		Assertions.assertFalse(result.get("test-key4").isSecured());
+		Assertions.assertNull(result.get("test-key5").getValue());
+		Assertions.assertTrue(result.get("test-key5").isPersisted());
+		Assertions.assertNull(resource.get("test-any"));
+	}
+
+	@Test
 	public void getInt() {
 		Assertions.assertEquals(99, resource.get("test-key-any", 99));
 		Assertions.assertEquals(54, resource.get("test-key-int", 77));
@@ -111,7 +135,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		em.clear();
 		Assertions.assertNotEquals("new-value-db5", value.getValue());
 		Assertions.assertEquals("value-db5", resource.get("test-key5"));
-		resource.saveOrUpdate("test-key5", "new-value-db5");
+		resource.put("test-key5", "new-value-db5");
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-db5", resource.get("test-key5"));
@@ -133,7 +157,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 	@Test
 	public void create() {
-		resource.saveOrUpdate("test-key6", "new-value-db6");
+		resource.put("test-key6", "new-value-db6");
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-db6", resource.get("test-key6"));

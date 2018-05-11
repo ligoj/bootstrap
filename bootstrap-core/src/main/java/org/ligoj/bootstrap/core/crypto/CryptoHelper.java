@@ -20,7 +20,7 @@ public final class CryptoHelper {
 
 	/**
 	 * Decrypt a potentially encrypted value.
-	 * 
+	 *
 	 * @param value
 	 *            The encrypted value to decrypt if not <code>null</code>.
 	 * @return the decrypted value.
@@ -31,7 +31,7 @@ public final class CryptoHelper {
 
 	/**
 	 * Decrypt a potentially encrypted value.
-	 * 
+	 *
 	 * @param value
 	 *            The encrypted value to decrypt if not <code>null</code>.
 	 * @return the decrypted value.
@@ -48,7 +48,7 @@ public final class CryptoHelper {
 
 	/**
 	 * Encrypt a clear value.
-	 * 
+	 *
 	 * @param value
 	 *            A raw value to encrypt.
 	 * @return The encrypted value.
@@ -60,7 +60,7 @@ public final class CryptoHelper {
 	/**
 	 * Encrypt a clear value. Try to decrypt the value, and if succeed, return the formal parameter without encrypting
 	 * again the value.
-	 * 
+	 *
 	 * @param value
 	 *            A potentially raw value to encrypt.
 	 * @return The encrypted value, or formal parameter if was already encrypted.

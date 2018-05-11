@@ -44,7 +44,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 
 	/**
 	 * Return the installed caches.
-	 * 
+	 *
 	 * @return the installed caches
 	 */
 	@GET
@@ -58,10 +58,10 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 
 	/**
 	 * Return the information of given cache.
-	 * 
+	 *
 	 * @param name
 	 *            the cache's name to display.
-	 * 
+	 *
 	 * @return the cache's configuration.
 	 */
 	@GET
@@ -81,7 +81,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 
 	/**
 	 * Update the statistics.
-	 * 
+	 *
 	 * @param result
 	 *            The target result.
 	 * @param statistics
@@ -117,7 +117,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 
 	/**
 	 * Invalidate a specific cache.
-	 * 
+	 *
 	 * @param name
 	 *            the cache's anme to invalidate.
 	 */
@@ -129,7 +129,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 
 	/**
 	 * Indicates the statistics are enabled or nor.
-	 * 
+	 *
 	 * @return <code>true</code> when statistics are enabled. Based on <code>java.security.policy</code>.
 	 */
 	public static boolean isStatisticEnabled() {
@@ -143,6 +143,8 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 		// Get any cache to retrieve the Hazelcast instance
 		final String name = cacheManager.getCacheNames().iterator().next();
 		final AbstractDistributedObject<?> cache = (AbstractDistributedObject<?>) cacheManager.getCache(name).getNativeCache();
-		cache.getNodeEngine().getHazelcastInstance().getLifecycleService().terminate();
+		if (cache.getNodeEngine().getHazelcastInstance().getLifecycleService().isRunning()) {
+			cache.getNodeEngine().getHazelcastInstance().getLifecycleService().terminate();
+		}
 	}
 }
