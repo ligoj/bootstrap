@@ -79,7 +79,7 @@ public class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(1, dummyCacheBean.getHit1("entry-key"));
 		Assertions.assertEquals(1, DummyCacheBean.hit);
 		Thread.sleep(800);
-		
+
 		// Last update was 1.6s ago
 		Assertions.assertEquals(2, dummyCacheBean.getHit1("entry-key"));
 		Assertions.assertEquals(2, DummyCacheBean.hit);
@@ -108,7 +108,7 @@ public class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(1, dummyCacheBean.getHit2("entry-key"));
 		Assertions.assertEquals(1, DummyCacheBean.hit);
 		Thread.sleep(800);
-		
+
 		// Last access was 800ms ago
 		Assertions.assertEquals(1, dummyCacheBean.getHit2("entry-key"));
 		Assertions.assertEquals(1, DummyCacheBean.hit);
@@ -218,9 +218,8 @@ public class CacheResourceTest extends AbstractBootTest {
 		return true;
 	}
 
-
 	@Test
-	public void onApplicationEvent() {
+	public void onApplicationEventNotRunning() {
 		final ContextClosedEvent event = Mockito.mock(ContextClosedEvent.class);
 		final CacheResource resource = new CacheResource();
 		resource.cacheManager = Mockito.mock(CacheManager.class);
@@ -247,6 +246,40 @@ public class CacheResourceTest extends AbstractBootTest {
 		final HazelcastInstance instance = Mockito.mock(HazelcastInstance.class);
 		Mockito.when(node.getHazelcastInstance()).thenReturn(instance);
 		final LifecycleService service = Mockito.mock(LifecycleService.class);
+		Mockito.when(instance.getLifecycleService()).thenReturn(service);
+		resource.onApplicationEvent(event);
+		Mockito.verify(service, Mockito.never()).terminate();
+	}
+
+	@Test
+	public void onApplicationEventRunning() {
+		final ContextClosedEvent event = Mockito.mock(ContextClosedEvent.class);
+		final CacheResource resource = new CacheResource();
+		resource.cacheManager = Mockito.mock(CacheManager.class);
+
+		Mockito.when(resource.cacheManager.getCacheNames()).thenReturn(Collections.singletonList("my-cache"));
+		final Cache cache = Mockito.mock(Cache.class);
+		Mockito.when(resource.cacheManager.getCache("my-cache")).thenReturn(cache);
+		final NodeEngine node = Mockito.mock(NodeEngine.class);
+		final RemoteService rservice = Mockito.mock(RemoteService.class);
+		Mockito.when(node.isRunning()).thenReturn(true);
+		final AbstractDistributedObject<RemoteService> cacheProxy = new AbstractDistributedObject<>(node, rservice) {
+
+			@Override
+			public String getName() {
+				return null;
+			}
+
+			@Override
+			public String getServiceName() {
+				return null;
+			}
+		};
+		Mockito.when(cache.getNativeCache()).thenReturn(cacheProxy);
+		final HazelcastInstance instance = Mockito.mock(HazelcastInstance.class);
+		Mockito.when(node.getHazelcastInstance()).thenReturn(instance);
+		final LifecycleService service = Mockito.mock(LifecycleService.class);
+		Mockito.when(service.isRunning()).thenReturn(true);
 		Mockito.when(instance.getLifecycleService()).thenReturn(service);
 		resource.onApplicationEvent(event);
 		Mockito.verify(service).terminate();
