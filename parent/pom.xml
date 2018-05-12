@@ -43,6 +43,7 @@
 	</licenses>
 	<properties>
 		<bootstrap.version>2.3.2-SNAPSHOT</bootstrap.version>
+		<plugin.jacoco.listeners>5.3.0.13828</plugin.jacoco.listeners>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 		<jdk.version>9</jdk.version>
 		<jdk.release>9</jdk.release>
