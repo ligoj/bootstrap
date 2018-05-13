@@ -19,6 +19,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.LifecycleService;
 import com.hazelcast.spi.AbstractDistributedObject;
 import com.hazelcast.spi.NodeEngine;
@@ -243,12 +244,8 @@ public class CacheResourceTest extends AbstractBootTest {
 			}
 		};
 		Mockito.when(cache.getNativeCache()).thenReturn(cacheProxy);
-		final HazelcastInstance instance = Mockito.mock(HazelcastInstance.class);
-		Mockito.when(node.getHazelcastInstance()).thenReturn(instance);
-		final LifecycleService service = Mockito.mock(LifecycleService.class);
-		Mockito.when(instance.getLifecycleService()).thenReturn(service);
+		Mockito.doThrow(new HazelcastInstanceNotActiveException()).when(node).getHazelcastInstance();
 		resource.onApplicationEvent(event);
-		Mockito.verify(service, Mockito.never()).terminate();
 	}
 
 	@Test

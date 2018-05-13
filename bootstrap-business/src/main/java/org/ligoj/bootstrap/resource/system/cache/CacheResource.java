@@ -23,6 +23,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Service;
 
 import com.hazelcast.cache.impl.CacheProxy;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.Member;
 import com.hazelcast.internal.cluster.ClusterService;
 import com.hazelcast.spi.AbstractDistributedObject;
@@ -142,9 +143,12 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 		log.info("Stopping context detected, shutdown the Hazelcast instance");
 		// Get any cache to retrieve the Hazelcast instance
 		final String name = cacheManager.getCacheNames().iterator().next();
-		final AbstractDistributedObject<?> cache = (AbstractDistributedObject<?>) cacheManager.getCache(name).getNativeCache();
-		if (cache.getNodeEngine().getHazelcastInstance().getLifecycleService().isRunning()) {
+		final AbstractDistributedObject<?> cache = (AbstractDistributedObject<?>) cacheManager.getCache(name)
+				.getNativeCache();
+		try {
 			cache.getNodeEngine().getHazelcastInstance().getLifecycleService().terminate();
+		} catch (HazelcastInstanceNotActiveException he) {
+			log.info("Hazelcast node was already terminated");
 		}
 	}
 }
