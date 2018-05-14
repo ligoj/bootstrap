@@ -37,11 +37,10 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 	@Override
 	public void afterPropertiesSet() {
 		final CachingProvider provider = Caching.getCachingProvider();
-		final HazelcastCacheManager cacheManager = (HazelcastCacheManager) provider
+		final HazelcastCacheManager manager = (HazelcastCacheManager) provider
 				.getCacheManager(URI.create("bootstrap-cache-manager"), null);
-		context.getBeansOfType(CacheManagerAware.class)
-				.forEach((n, a) -> a.onCreate(cacheManager, this::newCacheConfig));
-		this.cacheManager = cacheManager;
+		context.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this::newCacheConfig));
+		this.cacheManager = manager;
 	}
 
 	/**
