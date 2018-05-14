@@ -106,7 +106,7 @@ public class CsvForJpaTest {
 		items.add(newWine);
 		csvForJpa.toCsv(items, DummyEntity.class, result);
 
-		// Check there is the header and one data line
+		// Check there is the header and one data line with the empty property
 		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;;2;3;6;7;8\n",
 				result.toString());
 	}
@@ -644,5 +644,16 @@ public class CsvForJpaTest {
 		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(1)));
 		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.get(0)));
 		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.get(1)));
+	}
+
+	@Test
+	public void toJpaNullForeignKey() throws Exception {
+		// Add 2 records having foreign keys 'dialChar' : "A" and null
+		csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialChar;children.dialChar\nA\n;A"), true, true);
+
+		// Add a reference to previous records
+		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class,
+				new StringReader("dialChar;children.dialChar\nB;A\nC;"), true, true);
+		Assertions.assertEquals(2, jpa.size());
 	}
 }

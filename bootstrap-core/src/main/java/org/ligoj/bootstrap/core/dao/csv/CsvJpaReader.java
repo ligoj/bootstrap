@@ -23,7 +23,7 @@ import org.ligoj.bootstrap.core.csv.AbstractCsvReader;
 
 /**
  * CSV reader implementation based on Camel implementation (see BindyCsvDataFormat) where some issues have been fixed.
- * 
+ *
  * @param <T>
  *            Bean type.
  */
@@ -46,7 +46,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 
 	/**
 	 * Simple override.
-	 * 
+	 *
 	 * @param reader
 	 *            Input reader.
 	 * @param clazz
@@ -82,11 +82,11 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 		String propertyName = property.substring(fkeyIndex + 1);
 
 		// Collection management
-		if (Set.class.isAssignableFrom(jpaField.getType())) {
+		if (jpaField.getType().isAssignableFrom(Set.class)) {
 			// Set support
 			beanUtilsBean.setProperty(bean, masterPropertyName,
 					newCollection(rawValue, masterPropertyName, jpaField, propertyName, new HashSet<>()));
-		} else if (List.class.isAssignableFrom(jpaField.getType()) || Collection.class.equals(jpaField.getType())) {
+		} else if (jpaField.getType().isAssignableFrom(List.class)) {
 			// List support
 			beanUtilsBean.setProperty(bean, masterPropertyName,
 					newCollection(rawValue, masterPropertyName, jpaField, propertyName, new ArrayList<>()));
