@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.csv;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -46,4 +47,6 @@ public class DummyEntity2 {
 	private List<DummyEntity2> children;
 	@OneToMany(mappedBy = "link")
 	private Set<DummyEntity2> linkedChildren;
+	@OneToMany
+	private Collection<DummyEntity2> linkedChildrenCollection;
 }

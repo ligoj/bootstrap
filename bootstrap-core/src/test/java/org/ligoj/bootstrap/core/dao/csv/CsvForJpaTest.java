@@ -630,7 +630,7 @@ public class CsvForJpaTest {
 	}
 
 	@Test
-	public void toJpaForeignKeyInCollection() throws IOException {
+	public void toJpaForeignKeyInSet() throws IOException {
 		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class, "csv/demo/dummyentity2-collection.csv", true,
 				true);
 		Assertions.assertEquals("A", jpa.get(0).getDialChar());
@@ -642,5 +642,7 @@ public class CsvForJpaTest {
 		Assertions.assertTrue(jpa.get(2).getChildren().get(1).equals(jpa.get(1)));
 		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(0)));
 		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(1)));
+		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.get(0)));
+		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.get(1)));
 	}
 }

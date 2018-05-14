@@ -3,12 +3,36 @@
  */
 package org.ligoj.bootstrap;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Test of {@link AbstractTest}
  */
 public class TestAbstractTest extends AbstractTest {
+
+	@Test
+	public void testCloseQuietly() throws IOException {
+		final Closeable mock = Mockito.mock(Closeable.class);
+		super.closeQuietly(mock);
+		Mockito.verify(mock, Mockito.atLeastOnce()).close();
+	}
+
+	@Test
+	public void testCloseQuietlyClosed() throws IOException {
+		final Closeable mock = Mockito.mock(Closeable.class);
+		Mockito.doThrow(new IOException()).when(mock).close();
+		super.closeQuietly(mock);
+		Mockito.verify(mock, Mockito.atLeastOnce()).close();
+	}
+
+	@Test
+	public void testCloseNull() {
+		super.closeQuietly(null);
+	}
 
 	@Test
 	public void testCheckPermission() {

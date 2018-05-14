@@ -44,7 +44,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 		public void serialize(Enum value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 			jgen.writeString(value.name().toLowerCase());
 		}
-	};
+	}
 
 	/**
 	 * Default constructor overriding the default annotation introspector.

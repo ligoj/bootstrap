@@ -3,6 +3,8 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -15,13 +17,18 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AuthorizationEditionVo {
+public class AuthorizationEditionVo implements Serializable{
+
+	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * technical id
 	 */
 	private Integer id;
-	
+
 	/**
 	 * Identifier of authorized role.
 	 */

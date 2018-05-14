@@ -1,4 +1,4 @@
-dialChar;children.id!;linkedChildren.dialChar
+dialChar;children.id!;linkedChildren.dialChar;linkedChildrenCollection.dialChar
 A
-B;1;A
-C;1,2;A,B
+B;1;A;A
+C;1,2;A,B;A,B
