@@ -655,5 +655,8 @@ public class CsvForJpaTest {
 		final List<DummyEntity2> jpa = csvForJpa.toJpa(DummyEntity2.class,
 				new StringReader("dialChar;children.dialChar\nB;A\nC;"), true, true);
 		Assertions.assertEquals(2, jpa.size());
+		Assertions.assertEquals("B", jpa.get(0).getDialChar());
+		Assertions.assertEquals("C", jpa.get(1).getDialChar());
+		Assertions.assertNull( jpa.get(1).getChildren());
 	}
 }

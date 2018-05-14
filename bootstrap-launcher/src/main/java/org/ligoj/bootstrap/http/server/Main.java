@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class Main {
 
+	private static final String SETTINGS = "META-INF/jetty/jetty-dev.properties";
+
 	/**
 	 * Attached server instance.
 	 */
@@ -36,10 +38,10 @@ public final class Main {
 	 */
 	public Main() throws Exception {
 		server = new Server();
-		final String jettyPropertiesFile = System.getProperty("jetty.properties",
-				"META-INF/jetty/jetty-dev.properties");
+		final String jettyPropertiesFile = System.getProperty("jetty.properties", SETTINGS);
 		try (InputStream propertiesInput = configure(jettyPropertiesFile)) {
 			// Load the properties file
+			log.debug("Loading Jetty Settings from {}", SETTINGS);
 		}
 	}
 
