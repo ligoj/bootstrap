@@ -15,6 +15,8 @@ import javax.cache.annotation.CacheRemove;
 import javax.cache.annotation.CacheResult;
 import javax.cache.annotation.CacheValue;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.ligoj.bootstrap.core.AuditedBean;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
@@ -90,9 +93,10 @@ public class ConfigurationResource {
 	@CacheResult(cacheName = "configuration")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String get(@CacheKey @PathParam("name") final String name) {
-		String value = System.getProperty(name);
+		String value = StringUtils.trimToNull(System.getProperty(name));
 		if (value == null) {
-			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue).orElse(null);
+			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue)
+					.map(StringUtils::trimToNull).orElse(null);
 		}
 		return Optional.ofNullable(value).map(cryptoHelper::decryptAsNeeded).orElse(null);
 	}
@@ -154,7 +158,7 @@ public class ConfigurationResource {
 	@PUT
 	@Path("{name}")
 	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue final String value) {
+	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value) {
 		final SystemConfiguration setting = repository.findByName(name);
 		if (setting == null) {
 			final SystemConfiguration entity = new SystemConfiguration();

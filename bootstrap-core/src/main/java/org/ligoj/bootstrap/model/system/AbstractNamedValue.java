@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.model.system;
 import java.io.Serializable;
 
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -19,7 +19,7 @@ import lombok.Setter;
 
 /**
  * An audited, named and valued entity
- * 
+ *
  * @param <K>
  *            Identifier type.
  */
@@ -37,9 +37,9 @@ public abstract class AbstractNamedValue<K extends Serializable> extends Abstrac
 	/**
 	 * Value as string.
 	 */
-	@NotEmpty
+	@NotBlank
 	@NotNull
-	@Size(max = 1023)
+	@Size(max = 1024)
 	private String value;
 
 }
