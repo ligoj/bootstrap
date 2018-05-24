@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -182,7 +183,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 */
 	public <T> List<T> toJpa(final Class<T> beanType, final Reader input, final boolean hasHeader,
 			final boolean persist) throws IOException {
-		return toJpa(beanType, input, hasHeader, persist, null);
+		return toJpa(beanType, input, hasHeader, persist, (Consumer<T>) null);
 	}
 
 	/**
@@ -206,6 +207,35 @@ public class CsvForJpa extends AbstractCsvManager {
 	 */
 	public <T> List<T> toJpa(final Class<T> beanType, final Reader input, final boolean hasHeader,
 			final boolean persist, final Consumer<T> consumer) throws IOException {
+		return toJpa(beanType, input, hasHeader, persist, consumer == null ? null : e -> {
+			// Consumer to Function (true)
+			consumer.accept(e);
+			return true;
+		});
+	}
+
+	/**
+	 * Return a list of JPA bean re ad from the given CSV input.
+	 *
+	 * @param <T>
+	 *            Bean type.
+	 * @param beanType
+	 *            the JPA bean class.
+	 * @param input
+	 *            the CSV input.
+	 * @param hasHeader
+	 *            when <tt>true</tt> the first row contains bean property names.
+	 * @param persist
+	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
+	 * @param filter
+	 *            Optional Function for each entity determining the entity can be persisted or not. Invoked event if
+	 *            <code>persist</code> is not enabled.
+	 * @return the JPA beans built from CSV input.
+	 * @throws IOException
+	 *             Read issue occurred.
+	 */
+	public <T> List<T> toJpa(final Class<T> beanType, final Reader input, final boolean hasHeader,
+			final boolean persist, final Function<T, Boolean> filter) throws IOException {
 		final List<T> result = new ArrayList<>();
 		final String[] headers;
 		final Reader inputProxy;
@@ -231,10 +261,7 @@ public class CsvForJpa extends AbstractCsvManager {
 		T order = reader.read();
 		while (order != null) {
 			result.add(order);
-			if (consumer != null) {
-				consumer.accept(order);
-			}
-			if (persist) {
+			if ((filter == null || filter.apply(order)) && persist) {
 				em.persist(order);
 			}
 			order = reader.read();

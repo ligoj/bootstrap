@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Assertions;
@@ -155,6 +156,20 @@ public class CsvForJpaTest {
 				new StringReader("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n"), true);
 		Assertions.assertEquals(1, jpa.size());
 		assertEquals(newWine(), jpa.get(0));
+	}
+
+	@Test
+	public void toJpaFiltered() throws Exception {
+		Assertions.assertEquals(1,
+				csvForJpa.toJpa(DummyEntity3.class, new StringReader("login\nA"), true, true, e -> true).size());
+		em.flush();
+		em.clear();
+		csvForJpa.toJpa(DummyEntity3.class, new StringReader("login\nA"), true, true, e -> true);
+		Assertions.assertThrows(PersistenceException.class, () -> em.flush());
+
+		// Try again, but filter the entries
+		Assertions.assertEquals(1,
+				csvForJpa.toJpa(DummyEntity3.class, new StringReader("login\nA"), true, true, e -> false).size());
 	}
 
 	@Test
@@ -657,6 +672,6 @@ public class CsvForJpaTest {
 		Assertions.assertEquals(2, jpa.size());
 		Assertions.assertEquals("B", jpa.get(0).getDialChar());
 		Assertions.assertEquals("C", jpa.get(1).getDialChar());
-		Assertions.assertNull( jpa.get(1).getChildren());
+		Assertions.assertNull(jpa.get(1).getChildren());
 	}
 }
