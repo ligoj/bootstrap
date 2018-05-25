@@ -10,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.model.AbstractAudited;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -27,7 +28,7 @@ import lombok.ToString;
 @Setter
 @Table(name = "S_ROLE", uniqueConstraints = @UniqueConstraint(columnNames = { "name" }))
 @ToString(of = "name")
-public class SystemRole extends AbstractAudited<Integer> implements GrantedAuthority {
+public class SystemRole extends AbstractAudited<Integer> implements GrantedAuthority, INamableBean<Integer> {
 
 	/**
 	 * The default role, all authenticated users get it.
