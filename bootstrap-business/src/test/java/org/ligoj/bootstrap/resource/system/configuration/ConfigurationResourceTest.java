@@ -15,8 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
@@ -135,7 +139,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void update() {
+	public void put() {
 		final SystemConfiguration value = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
@@ -160,6 +164,24 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		// Check persistence of data and cache
 		cacheManager.getCache("configuration").clear();
 		Assertions.assertEquals("new-value-db5", resource.get("test-key5"));
+	}
+
+	@Test
+	public void putOverrideSystem() {
+		// Initial value
+		Assertions.assertNull(resource.get("test-key44"));
+		Assertions.assertNull(System.getProperty("test-key44"));
+
+		try {
+			// Change the value
+			resource.put("test-key44", "new-value-db4");
+
+			// Check the data from the cache
+			Assertions.assertEquals("new-value-db4", resource.get("test-key44"));
+			Assertions.assertEquals("new-value-db4", System.getProperty("test-key44"));
+		} finally {
+			System.clearProperty("test-key44");
+		}
 	}
 
 	@Test
@@ -194,6 +216,27 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertNull(resource.get("test-key5"));
 		Assertions.assertTrue(em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getResultList().isEmpty());
+	}
+
+	/**
+	 * Not enumerable test
+	 */
+	@Test
+	public void findAllNotEnumerable() {
+		final ConfigurationResource resource = new ConfigurationResource();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
+		resource.env = Mockito.mock(ConfigurableEnvironment.class);
+		final MutablePropertySources mutablePropertySources = new MutablePropertySources();
+		mutablePropertySources.addFirst(Mockito.mock(PropertySource.class));
+		Mockito.when(resource.env.getPropertySources()).thenReturn(mutablePropertySources);
+		final Map<String, ConfigurationVo> result = new HashMap<>();
+		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
+		Assertions.assertEquals("value-db0", result.get("test-key0").getValue());
+		Assertions.assertEquals("value-db2", result.get("test-key2").getValue());
+		Assertions.assertEquals("value-db4", result.get("test-key4").getValue());
+		Assertions.assertNull(result.get("test-key5").getValue());
+		Assertions.assertEquals("value-db6", result.get("test-key6").getValue());
+		Assertions.assertEquals(5, result.size());
 	}
 
 }

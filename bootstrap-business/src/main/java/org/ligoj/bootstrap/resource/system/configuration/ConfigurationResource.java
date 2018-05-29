@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.configuration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,10 +35,17 @@ import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.dao.system.SystemConfigurationRepository;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.stereotype.Service;
 
 /**
- * Manage {@link SystemConfiguration}. Should be protected with ORBAC rules.
+ * Manage {@link SystemConfiguration}. Should be protected with ORBAC rules. Order rules:
+ * <ul>
+ * <li>System properties</li>
+ * <li>Environment properties</li>
+ * <li>Database properties</li>
+ * </ul>
  */
 @Service
 @Path("/system/configuration")
@@ -53,6 +61,9 @@ public class ConfigurationResource {
 
 	@Autowired
 	private ConfigurationResource self;
+
+	@Autowired
+	protected ConfigurableEnvironment env;
 
 	/**
 	 * Return the configuration integer value.
@@ -93,7 +104,7 @@ public class ConfigurationResource {
 	@CacheResult(cacheName = "configuration")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String get(@CacheKey @PathParam("name") final String name) {
-		String value = StringUtils.trimToNull(System.getProperty(name));
+		String value = StringUtils.trimToNull(env.getProperty(name));
 		if (value == null) {
 			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue)
 					.map(StringUtils::trimToNull).orElse(null);
@@ -111,12 +122,18 @@ public class ConfigurationResource {
 		final Map<String, ConfigurationVo> result = new TreeMap<>();
 
 		// First add the system properties
-		System.getProperties().entrySet().stream().map(e -> {
-			final ConfigurationVo vo = new ConfigurationVo();
-			vo.setName((String) e.getKey());
-			updateVo(String.valueOf(e.getValue()), vo);
-			return vo;
-		}).forEach(vo -> result.put(vo.getName(), vo));
+		env.getPropertySources().forEach(source -> {
+			if (source instanceof EnumerablePropertySource) {
+				final EnumerablePropertySource<?> eSource = (EnumerablePropertySource<?>) source;
+				Arrays.stream(eSource.getPropertyNames()).map(v -> {
+					final ConfigurationVo vo = new ConfigurationVo();
+					vo.setName(v);
+					vo.setSource(eSource.getName());
+					updateVo(String.valueOf(eSource.getProperty(v)), vo);
+					return vo;
+				}).forEach(vo -> result.put(vo.getName(), vo));
+			}
+		});
 
 		// Add the JPA not yet managed
 		repository.findAll().forEach(c -> {
@@ -127,6 +144,7 @@ public class ConfigurationResource {
 				AuditedBean.copyAuditData(c, vo);
 				vo.setPersisted(true);
 				vo.setName(c.getName());
+				vo.setSource("database");
 				updateVo(c.getValue(), vo);
 				result.put(c.getName(), vo);
 			}
@@ -168,6 +186,9 @@ public class ConfigurationResource {
 		} else {
 			setting.setValue(cryptoHelper.encrypt(value));
 		}
+
+		// Also set the value in the system
+		System.setProperty(name, value);
 	}
 
 	/**

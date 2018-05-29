@@ -30,4 +30,9 @@ public class ConfigurationVo extends SystemConfiguration {
 	 */
 	private boolean override;
 
+	/**
+	 * The property source.
+	 */
+	private String source;
+
 }
