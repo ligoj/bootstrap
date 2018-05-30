@@ -3,9 +3,6 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -147,18 +144,6 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void testReadList() {
-		Assertions.assertThrows(FileNotFoundException.class, () -> {
-			readList("none");
-		});
-	}
-
-	@Test
-	public void testReadList2() throws IOException {
-		readList("log4j2.json");
-	}
-
-	@Test
 	public void testGetItems() {
 		Assertions.assertEquals(new ArrayList<String>(), getItems("", new ArrayList<String>(), 0, 0));
 	}
@@ -197,8 +182,7 @@ public class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void testCoverageSingleton()
-			throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public void testCoverageSingleton() throws ReflectiveOperationException {
 		coverageSingleton(Singleton.class);
 	}
 

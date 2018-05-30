@@ -35,14 +35,16 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 
 	/**
 	 * Persist all elements from the given CSV resource.
-	 * 
+	 *
 	 * @param clazz
-	 *            the JPA entity class.
+	 *            The JPA entity class.
 	 * @param resource
-	 *            the CSV resource path.
+	 *            The CSV resource path.
 	 * @return persisted entities.
 	 * @throws IOException
 	 *             from {@link ClassPathResource#getInputStream()}
+	 * @param <T>
+	 *            The entity type.
 	 */
 	protected <T> List<T> persistEntities(final Class<T> clazz, final String resource) throws IOException {
 		return persistEntities(clazz, resource, AbstractCsvManager.DEFAULT_ENCODING);
@@ -50,18 +52,24 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 
 	/**
 	 * Persist all elements from the given CSV resource.
-	 * 
+	 *
 	 * @param clazz
 	 *            the JPA entity class.
 	 * @param resource
 	 *            the CSV resource path.
 	 * @return persisted entities.
+	 * @param encoding
+	 *            The name of a supported {@link java.nio.charset.Charset charset}
 	 * @throws IOException
 	 *             from {@link ClassPathResource#getInputStream()}
+	 * @param <T>
+	 *            The entity type.
 	 */
-	protected <T> List<T> persistEntities(final Class<T> clazz, final String resource, final String encoding) throws IOException {
+	protected <T> List<T> persistEntities(final Class<T> clazz, final String resource, final String encoding)
+			throws IOException {
 		// Persist entities from CSV
-		final List<T> list = csvForJpa.toJpa(clazz, new InputStreamReader(new ClassPathResource(resource).getInputStream(), encoding), true, true);
+		final List<T> list = csvForJpa.toJpa(clazz,
+				new InputStreamReader(new ClassPathResource(resource).getInputStream(), encoding), true, true);
 		em.flush();
 		em.clear();
 		return list;
@@ -69,11 +77,13 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 
 	/**
 	 * Persist the managed entities using CSV file corresponding to the entity name, inside the given root path.
-	 * 
+	 *
 	 * @param csvRoot
 	 *            the root path of CSV resources. Lower case file name will be used.
 	 * @param entityModel
 	 *            the ordered set to clean, and also to refill from CSV files.
+	 * @throws IOException
+	 *             Read issue occurred.
 	 * @return the pagination object.
 	 */
 	protected UriInfo persistEntities(final String csvRoot, final Class<?>... entityModel) throws IOException {
@@ -82,23 +92,27 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 
 	/**
 	 * Persist the managed entities using CSV file corresponding to the entity name, inside the given root path.
-	 * 
+	 *
 	 * @param csvRoot
 	 *            the root path of CSV resources. Lower case file name will be used.
 	 * @param entityModel
 	 *            the ordered set to clean, and also to refill from CSV files.
 	 * @param encoding
-	 *            the encoding used to read the CSV resources.
+	 *            the encoding used to read the CSV resources. The name of a supported {@link java.nio.charset.Charset
+	 *            charset}
 	 * @return the pagination object.
+	 * @throws IOException
+	 *             Read issue occurred.
 	 */
-	protected UriInfo persistEntities(final String csvRoot, final Class<?>[] entityModel, final String encoding) throws IOException {
+	protected UriInfo persistEntities(final String csvRoot, final Class<?>[] entityModel, final String encoding)
+			throws IOException {
 		csvForJpa.reset(csvRoot, entityModel, encoding);
 		return newUriInfo();
 	}
 
 	/**
 	 * Test a collection is a {@link PersistentBag} and is initialized.
-	 * 
+	 *
 	 * @param bag
 	 *            the JPA bag to test.
 	 * @return <code>true</code> if the given collection is a {@link PersistentBag} and is initialized.

@@ -32,15 +32,11 @@ public abstract class AbstractBusinessEntityTest {
 
 	/**
 	 * Test equals and hash code operation with all possible combinations
-	 * 
+	 *
 	 * @param modelClass
 	 *            the entity to test.
-	 * @throws InstantiationException
-	 *             due to reflection.
-	 * @throws IllegalAccessException
-	 *             due to reflection.
-	 * @throws InvocationTargetException
-	 *             due to reflection.
+	 * @throws ReflectiveOperationException
+	 *             Due to reflection.
 	 * @param <T>
 	 *            The type of the entity to test.
 	 */
@@ -50,7 +46,7 @@ public abstract class AbstractBusinessEntityTest {
 
 	/**
 	 * Test equals and hash code operation with all possible combinations
-	 * 
+	 *
 	 * @param modelClass
 	 *            the entity to test.
 	 * @param idProperties
@@ -65,7 +61,8 @@ public abstract class AbstractBusinessEntityTest {
 	 *            The type of the entity to test.
 	 * @throws ReflectiveOperationException
 	 */
-	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties) throws ReflectiveOperationException {
+	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties)
+			throws ReflectiveOperationException {
 		final T systemUser = modelClass.getDeclaredConstructor().newInstance();
 		final T systemUser2 = modelClass.getDeclaredConstructor().newInstance();
 		Assertions.assertFalse(systemUser.equals(null)); // NOPMD NOSONAR -- for
@@ -106,8 +103,8 @@ public abstract class AbstractBusinessEntityTest {
 	/**
 	 * Test the given combinations.
 	 */
-	private <T> void testCombinations(final Class<T> modelClass, final List<List<String>> combinations, final List<String> combination,
-			final T beanValued) throws ReflectiveOperationException {
+	private <T> void testCombinations(final Class<T> modelClass, final List<List<String>> combinations,
+			final List<String> combination, final T beanValued) throws ReflectiveOperationException {
 		for (final List<String> properties : combinations) {
 			testCombination(modelClass, combination, beanValued, properties);
 		}

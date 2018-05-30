@@ -15,7 +15,6 @@
 		<dependency>
 			<groupId>org.ligoj.bootstrap</groupId>
 			<artifactId>bootstrap-core</artifactId>
-			<version>${bootstrap.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -52,7 +51,6 @@
 		<dependency>
 			<groupId>com.googlecode.gentyref</groupId>
 			<artifactId>gentyref</artifactId>
-			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ligoj.bootstrap</groupId>

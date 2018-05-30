@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.core.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
@@ -29,7 +28,7 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
  * CSV reader implementation based on Camel implementation (see "BindyCsvDataFormat") where some issues have been fixed.
- * 
+ *
  * @param <T>
  *            Bean type.
  */
@@ -80,7 +79,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * ISO8601 format with milliseconds - 2018-01-01T00:00:00.000+01:00
-	 * 
+	 *
 	 * @see <a href="https://docs.oracle.com/javase/9/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</a>
 	 */
 	public static final String DATE_PATTERN_ISO2 = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
@@ -111,7 +110,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * All fields constructor.
-	 * 
+	 *
 	 * @param reader
 	 *            Input reader.
 	 * @param beanType
@@ -148,7 +147,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Return a bean read from the reader.
-	 * 
+	 *
 	 * @return the read bean.
 	 * @throws IOException
 	 *             Read issue occurred.
@@ -159,7 +158,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Return a bean read from the reader.
-	 * 
+	 *
 	 * @param values
 	 *            the property values.
 	 * @return the bean built with values.
@@ -189,14 +188,15 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Fill the given bean.
-	 * 
+	 *
 	 * @param bean
 	 *            The target bean.
 	 * @param values
 	 *            The raw {@link String} values to set to the bean.
+	 * @throws ReflectiveOperationException
+	 *             When bean cannot be built with reflection.
 	 */
-	protected void fillInstance(final T bean, final List<String> values)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	protected void fillInstance(final T bean, final List<String> values) throws ReflectiveOperationException {
 		int index = 0;
 		for (final String property : headers) {
 			if (index >= values.size()) {
@@ -219,20 +219,21 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Set the property to the given bean.
-	 * 
+	 *
 	 * @param bean
 	 *            the target bean.
 	 * @param property
 	 *            the bean property to set.
 	 * @param rawValue
 	 *            the raw value to set.
+	 * @throws ReflectiveOperationException
+	 *             When bean cannot be built with reflection.
 	 */
-	protected abstract void setProperty(T bean, String property, String rawValue)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException;
+	protected abstract void setProperty(T bean, String property, String rawValue) throws ReflectiveOperationException;
 
 	/**
 	 * Return the field from the given class.
-	 * 
+	 *
 	 * @param beanType
 	 *            Class of bean to build.
 	 * @param property
@@ -249,7 +250,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Add a value to a map.
-	 * 
+	 *
 	 * @param bean
 	 *            the target bean.
 	 * @param property
@@ -280,16 +281,18 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Manage simple value with map management.
-	 * 
+	 *
 	 * @param bean
 	 *            the target bean.
 	 * @param property
 	 *            the bean property to set.
 	 * @param rawValue
 	 *            the raw value to set.
+	 * @throws ReflectiveOperationException
+	 *             When bean cannot be built with reflection.
 	 */
 	protected void setSimpleProperty(final T bean, final String property, final String rawValue)
-			throws IllegalAccessException, InvocationTargetException {
+			throws ReflectiveOperationException {
 		final int mapIndex = property.indexOf('$');
 		if (mapIndex == -1) {
 			setSimpleRawProperty(bean, property, rawValue);
@@ -300,7 +303,7 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Manage simple value.
-	 * 
+	 *
 	 * @param bean
 	 *            the target bean.
 	 * @param property
@@ -309,10 +312,12 @@ public abstract class AbstractCsvReader<T> {
 	 *            the raw value to set.
 	 * @param <E>
 	 *            Enumeration type.
+	 * @throws ReflectiveOperationException
+	 *             When bean cannot be built with reflection.
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue)
-			throws IllegalAccessException, InvocationTargetException {
+			throws ReflectiveOperationException {
 		final Field field = getField(clazz, property);
 
 		// Update the property

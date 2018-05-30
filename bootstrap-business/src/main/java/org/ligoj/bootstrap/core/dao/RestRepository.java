@@ -49,7 +49,6 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	 * @return the entity with the given id or {@literal Optional#empty()} if none found
 	 * @throws IllegalArgumentException
 	 *             if {@code id} is {@literal null}.
-	 * @see #findOne(K)
 	 */
 	default T findOne(final K id) {
 		return findById(id).orElse(null);

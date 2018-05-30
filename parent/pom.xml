@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.ligoj.parent</groupId>
 		<artifactId>project</artifactId>
-		<version>10.0.3</version>
+		<version>10.0.4</version>
 		<relativePath />
 	</parent>
 
@@ -33,18 +34,20 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
+			<url>https://fabdouglas.mit-license.org/</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
 	<properties>
 		<bootstrap.version>2.3.3-SNAPSHOT</bootstrap.version>
+		<revision>2.3.3-SNAPSHOT</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 		<jdk.version>9</jdk.version>
 		<jdk.release>9</jdk.release>
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.8.13</aspectj.version>
+		<byte-buddy.version>1.8.11</byte-buddy.version>
 		<cache.version>1.1.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
 		<commons-beanutils>1.9.3</commons-beanutils>
@@ -58,6 +61,7 @@
 		<cxf.version>3.2.4</cxf.version>
 		<dbcp.version>2.2.0</dbcp.version>
 		<guava.version>24.1-jre</guava.version>
+		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.10</hazelcast.version>
 		<hibernate.version>5.2.17.Final</hibernate.version>
 		<hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
@@ -66,6 +70,7 @@
 		<hsqldb.version>2.4.0</hsqldb.version>
 		<jackson.version>2.9.5</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
+		<javax.interceptor-api>1.2-b06</javax.interceptor-api>
 		<jaxb.version>2.3.0</jaxb.version>
 		<jetty.version>9.4.10.v20180503</jetty.version>
 		<junit.platform.version>1.2.0</junit.platform.version>
@@ -96,14 +101,29 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-			    <groupId>net.bytebuddy</groupId>
-			    <artifactId>byte-buddy</artifactId>
-			    <version>1.8.11</version>
+				<groupId>javax.interceptor</groupId>
+				<artifactId>javax.interceptor-api</artifactId>
+				<version>1.2-b06</version>
 			</dependency>
 			<dependency>
-			    <groupId>net.bytebuddy</groupId>
-			    <artifactId>byte-buddy-agent</artifactId>
-			    <version>1.8.11</version>
+				<groupId>org.ligoj.bootstrap</groupId>
+				<artifactId>bootstrap-core</artifactId>
+				<version>${bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.googlecode.gentyref</groupId>
+				<artifactId>gentyref</artifactId>
+				<version>${gentyref.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${byte-buddy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy-agent</artifactId>
+				<version>${byte-buddy.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jsoup</groupId>
@@ -543,13 +563,13 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business</artifactId>
-				<version>${bootstrap.version}</version>
+				<version>${revision}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business-test</artifactId>
-				<version>${bootstrap.version}</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.quartz-scheduler</groupId>
@@ -628,12 +648,12 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-http</artifactId>
-				<version>${bootstrap.version}</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-http-test</artifactId>
-				<version>${bootstrap.version}</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -669,7 +689,7 @@
 				<dependency>
 					<groupId>org.ligoj.bootstrap</groupId>
 					<artifactId>bootstrap-launcher</artifactId>
-					<version>${bootstrap.version}</version>
+					<version>${revision}</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -686,7 +706,8 @@
 								<phase>generate-sources</phase>
 								<configuration>
 									<target>
-										<fixcrlf srcdir="${basedir}/src" eol="unix" encoding="UTF-8"
+										<fixcrlf srcdir="${basedir}/src" eol="unix"
+											encoding="UTF-8"
 											includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt"
 											eof="asis" fixlast="false" />
 									</target>

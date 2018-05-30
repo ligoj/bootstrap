@@ -42,10 +42,14 @@ public class CsvForBean extends AbstractCsvManager {
 
 	/**
 	 * Read the next bean from the given reader.
-	 * 
+	 *
+	 * @param <T>
+	 *            Target bean type.
 	 * @param reader
 	 *            The CSV reader.
 	 * @return The instance. May be <code>null</code> with EOF.
+	 * @throws IOException
+	 *             Read issue occurred.
 	 */
 	public <T> T toBean(final CsvBeanReader<T> reader) throws IOException {
 		return reader.read();

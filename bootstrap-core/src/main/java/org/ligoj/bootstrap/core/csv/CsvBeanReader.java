@@ -4,13 +4,12 @@
 package org.ligoj.bootstrap.core.csv;
 
 import java.io.Reader;
-import java.lang.reflect.InvocationTargetException;
 
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
  * CSV reader implementation based on Camel implementation (see BindyCsvDataFormat) where some issues have been fixed.
- * 
+ *
  * @param <T>
  *            Bean type.
  */
@@ -18,7 +17,7 @@ public class CsvBeanReader<T> extends AbstractCsvReader<T> {
 
 	/**
 	 * Simple override.
-	 * 
+	 *
 	 * @param reader
 	 *            Input reader.
 	 * @param beanType
@@ -32,7 +31,7 @@ public class CsvBeanReader<T> extends AbstractCsvReader<T> {
 	}
 
 	@Override
-	protected void setProperty(final T bean, final String property, final String rawValue) throws IllegalAccessException, InvocationTargetException {
+	protected void setProperty(final T bean, final String property, final String rawValue) throws ReflectiveOperationException {
 		final int fkeyIndex = property.indexOf('.');
 		if (fkeyIndex == -1) {
 			setSimpleProperty(bean, property, rawValue);

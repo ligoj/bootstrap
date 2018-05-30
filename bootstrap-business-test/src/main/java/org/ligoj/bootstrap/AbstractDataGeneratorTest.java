@@ -3,12 +3,8 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,7 +16,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +25,6 @@ import org.ligoj.bootstrap.core.SpringUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * Provides convenient methods to generate pseudo-generated data. Assuming a given salt, generated data will be always
@@ -109,7 +103,8 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            second
 	 * @return Date
 	 */
-	protected Date getDate(final int year, final int month, final int day, final int hour, final int minute, final int second) {
+	protected Date getDate(final int year, final int month, final int day, final int hour, final int minute,
+			final int second) {
 		final Calendar calendar = DateUtils.newCalendar();
 		calendar.clear();
 		calendar.set(year, month - 1, day, hour, minute, second);
@@ -231,19 +226,6 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 			return null;
 		}
 		return items.get(index);
-	}
-
-	/**
-	 * Read and return lines of given text file.
-	 *
-	 * @param textFileName
-	 *            the file to read.
-	 * @return lines read from the given text file.
-	 */
-	protected List<String> readList(final String textFileName) throws IOException {
-		try (InputStream input = new ClassPathResource(textFileName).getInputStream()) {
-			return new ArrayList<>(new HashSet<>(IOUtils.readLines(input, StandardCharsets.UTF_8)));
-		}
 	}
 
 	/**
@@ -430,11 +412,14 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * Check and execute coverage test on an utility class.
 	 *
 	 * @param singletonClass
-	 *            The utility class
+	 *            The utility class.
+	 * @param <T>
+	 *            The singleton class type.
+	 * @param ReflectiveOperationException
+	 *            When singleton operations cannot be performed.
 	 */
-	protected <S> void coverageSingleton(final Class<S> singletonClass)
-			throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		final Constructor<S> constructor = singletonClass.getDeclaredConstructor();
+	protected <T> void coverageSingleton(final Class<T> singletonClass) throws ReflectiveOperationException {
+		final Constructor<T> constructor = singletonClass.getDeclaredConstructor();
 		Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 		constructor.setAccessible(true);
 		constructor.newInstance();

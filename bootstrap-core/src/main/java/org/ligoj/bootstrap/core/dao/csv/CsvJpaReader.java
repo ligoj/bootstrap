@@ -63,7 +63,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 
 	@Override
 	protected void setProperty(final T bean, final String property, final String rawValue)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			throws ReflectiveOperationException {
 		final int fkeyIndex = property.indexOf('.');
 		if (fkeyIndex == -1) {
 			setSimpleProperty(bean, property, rawValue);
@@ -76,7 +76,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Manage foreign key.
 	 */
 	private void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			throws ReflectiveOperationException {
 		final String masterPropertyName = property.substring(0, fkeyIndex);
 		final Field jpaField = getField(clazz, masterPropertyName);
 		String propertyName = property.substring(fkeyIndex + 1);
