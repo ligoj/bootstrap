@@ -22,10 +22,6 @@
 		<url>https://github.com/ligoj/bootstrap</url>
 	</scm>
 	<packaging>pom</packaging>
-	<organization>
-		<name>Gfi Informatique</name>
-		<url>http://www.gfi.fr</url>
-	</organization>
 	<issueManagement>
 		<system>GitHub Issues</system>
 		<url>https://github.com/ligoj/bootstrap/issues</url>
