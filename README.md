@@ -13,7 +13,7 @@ REST+Front-End template with a ton of integrated component with many enterprise 
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://fabdouglas.mit-license.org/)
 
 Key features:
-- Convention over Code for everything: light webpack, http error code, CDI, Java8 named parameters
+- Convention over Code for everything: light webpack, http error code, CDI, Java9 named parameters
 - RBAC with URL based authorization and dynamic roles
 - Exception to REST/HTTP code mapping
 - Advanced JAX-RS validation
