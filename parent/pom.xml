@@ -92,7 +92,7 @@
 		<spring.version>5.0.6.RELEASE</spring.version>
 		<spring-security.version>5.0.5.RELEASE</spring-security.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
-		<wiremock.version>2.15.0</wiremock.version>
+		<wiremock.version>2.18.0</wiremock.version>
 
 		<cargo.skip>false</cargo.skip>
 		<jetty.skip>false</jetty.skip>
