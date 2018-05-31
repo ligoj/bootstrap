@@ -21,7 +21,8 @@ import org.hibernate.type.Type;
  * configuration of {@link SequenceStyleGenerator} behavior such as
  * {@link SequenceStyleGenerator#CONFIG_PREFER_SEQUENCE_PER_ENTITY} and {@link SequenceStyleGenerator#INCREMENT_PARAM}
  */
-public class SequenceIdentifierGeneratorStrategyProvider implements org.hibernate.jpa.spi.IdentifierGeneratorStrategyProvider {
+public class SequenceIdentifierGeneratorStrategyProvider
+		implements org.hibernate.jpa.spi.IdentifierGeneratorStrategyProvider {
 
 	private final Map<String, Class<?>> strategies = new HashMap<>();
 
@@ -40,8 +41,7 @@ public class SequenceIdentifierGeneratorStrategyProvider implements org.hibernat
 
 	/**
 	 * A simple proxy of {@link SequenceStyleGenerator#configure(Type, Properties, ServiceRegistry)} where our global
-	 * sequence
-	 * settings are placed.
+	 * sequence settings are placed.
 	 */
 	public static class OptimizedSequenceStyleGenerator extends SequenceStyleGenerator {
 
@@ -55,11 +55,12 @@ public class SequenceIdentifierGeneratorStrategyProvider implements org.hibernat
 		}
 
 		@Override
-		protected QualifiedName determineSequenceName(final Properties params, final Dialect dialect, final JdbcEnvironment jdbcEnv) {
+		protected QualifiedName determineSequenceName(final Properties params, final Dialect dialect,
+				final JdbcEnvironment jdbcEnv, final ServiceRegistry serviceRegistry) {
 			// Make sure sequence are lower case and corresponds to table name
 			params.put(SEQUENCE_PARAM, StringHelper.unquote(params.getProperty("identity_tables"))
 					+ ConfigurationHelper.getString(CONFIG_SEQUENCE_PER_ENTITY_SUFFIX, params, DEF_SEQUENCE_SUFFIX));
-			return super.determineSequenceName(params, dialect, jdbcEnv);
+			return super.determineSequenceName(params, dialect, jdbcEnv, serviceRegistry);
 		}
 	}
 

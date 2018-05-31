@@ -3,14 +3,16 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.ObjectNameNormalizer;
 import org.hibernate.boot.model.relational.QualifiedName;
 import org.hibernate.boot.spi.MetadataBuildingContext;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.MySQL55Dialect;
+import org.hibernate.engine.config.spi.ConfigurationService;
+import org.hibernate.engine.config.spi.StandardConverters;
 import org.hibernate.engine.jdbc.env.spi.IdentifierHelper;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.id.PersistentIdentifierGenerator;
@@ -33,16 +35,13 @@ import org.mockito.stubbing.Answer;
  */
 public class SequenceIdentifierGeneratorStrategyProviderTest {
 	/**
-	 * Check strategy configuration.
-	 * @throws SecurityException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvocationTargetException 
-	 * @throws  
+	 * Check strategy configuration. @throws SecurityException @throws NoSuchMethodException @throws
+	 * InvocationTargetException @throws
 	 */
 	@Test
 	public void testFactoryConfiguration() throws ReflectiveOperationException {
-		Assertions.assertEquals(OptimizedSequenceStyleGenerator.class,
-				SequenceIdentifierGeneratorStrategyProvider.class.getDeclaredConstructor().newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
+		Assertions.assertEquals(OptimizedSequenceStyleGenerator.class, SequenceIdentifierGeneratorStrategyProvider.class
+				.getDeclaredConstructor().newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
 	}
 
 	/**
@@ -67,12 +66,22 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	private OptimizedSequenceStyleGenerator newStyleGenerator() {
 		return new OptimizedSequenceStyleGenerator() {
 			@Override
-			protected DatabaseStructure buildDatabaseStructure(Type type, Properties params, JdbcEnvironment jdbcEnvironment, boolean forceTableUse,
-					QualifiedName sequenceName, int initialValue, int incrementSize) {
+			protected DatabaseStructure buildDatabaseStructure(Type type, Properties params,
+					JdbcEnvironment jdbcEnvironment, boolean forceTableUse, QualifiedName sequenceName,
+					int initialValue, int incrementSize) {
 				return Mockito.mock(DatabaseStructure.class);
 			}
 
 		};
+	}
+
+	private ServiceRegistry newConfigurationService() {
+		ConfigurationService mock = Mockito.mock(ConfigurationService.class);
+		Mockito.doReturn(true).when(mock).getSetting(AvailableSettings.PREFER_GENERATOR_NAME_AS_DEFAULT_SEQUENCE_NAME,
+				StandardConverters.BOOLEAN, true);
+		ServiceRegistry registry = Mockito.mock(ServiceRegistry.class);
+		Mockito.doReturn(mock).when(registry).getService(ConfigurationService.class);
+		return registry;
 	}
 
 	private JdbcEnvironment newJdbcEnvironment() {
@@ -108,8 +117,9 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		final Properties params = new Properties();
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
-		Assertions.assertEquals("my_table_SEQ",
-				newStyleGenerator().determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment()).getObjectName().getText());
+		Assertions.assertEquals("my_table_SEQ", newStyleGenerator()
+				.determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment(), newConfigurationService())
+				.getObjectName().getText());
 	}
 
 	/**
@@ -120,8 +130,9 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		final Properties params = new Properties();
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
-		Assertions.assertEquals("my_table_SEQ",
-				newStyleGenerator().determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment()).getObjectName().getText());
+		Assertions.assertEquals("my_table_SEQ", newStyleGenerator()
+				.determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment(), newConfigurationService())
+				.getObjectName().getText());
 	}
 
 	@AfterEach
