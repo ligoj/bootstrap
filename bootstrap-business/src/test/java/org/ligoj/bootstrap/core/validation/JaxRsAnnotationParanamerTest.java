@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.core.validation;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
+import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -25,7 +26,7 @@ public class JaxRsAnnotationParanamerTest {
 	public static class TestClass {
 
 		/**
-		 * 
+		 *
 		 * @param p1 A path parameter.
 		 * @param h1 A header parameter.
 		 * @param f1 A form parameter.
@@ -34,7 +35,7 @@ public class JaxRsAnnotationParanamerTest {
 		 * @param n A JSR-303 contraint parameter.
 		 */
 		public void test(final @PathParam("p") String p1, final @HeaderParam("h") String h1, final @FormParam("f") String f1,
-				final @CookieParam("c") String c1, @QueryParam("q") String q1, @NotNull String n) {
+				final @CookieParam("c") String c1, @QueryParam("q") String q1, @NotNull String n, @Named("i") String i1) {
 			//
 		}
 
@@ -76,6 +77,11 @@ public class JaxRsAnnotationParanamerTest {
 	}
 
 	@Test
+	public void isNamedInject() {
+		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(Named.class)));
+	}
+
+	@Test
 	public void getNamedValuePathParam() {
 		Assertions.assertEquals("p", new JaxRsAnnotationParanamer().getNamedValue(fromClass(PathParam.class)));
 	}
@@ -88,6 +94,11 @@ public class JaxRsAnnotationParanamerTest {
 	@Test
 	public void getNamedValueFormParam() {
 		Assertions.assertEquals("f", new JaxRsAnnotationParanamer().getNamedValue(fromClass(FormParam.class)));
+	}
+
+	@Test
+	public void getNamedValueInject() {
+		Assertions.assertEquals("i", new JaxRsAnnotationParanamer().getNamedValue(fromClass(Named.class)));
 	}
 
 	@Test

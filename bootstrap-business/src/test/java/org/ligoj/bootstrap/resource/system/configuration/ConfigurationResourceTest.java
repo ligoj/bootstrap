@@ -110,6 +110,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertTrue(result.get("test-key0").isSecured());
 		Assertions.assertFalse(result.get("test-key0").isPersisted());
 		Assertions.assertTrue(result.get("test-key0").isOverride());
+		Assertions.assertEquals("systemProperties", result.get("test-key0").getSource());
 		Assertions.assertNull(result.get("test-key1").getValue());
 		Assertions.assertFalse(result.get("test-key1").isOverride());
 		Assertions.assertEquals("value2", result.get("test-key2").getValue());
@@ -117,10 +118,12 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertFalse(result.get("test-key2").isSecured());
 		Assertions.assertEquals("value3", result.get("test-key3").getValue());
 		Assertions.assertEquals("value-db4", result.get("test-key4").getValue());
+		Assertions.assertEquals("database", result.get("test-key4").getSource());
 		Assertions.assertTrue(result.get("test-key4").isPersisted());
 		Assertions.assertFalse(result.get("test-key4").isSecured());
 		Assertions.assertNull(result.get("test-key5").getValue());
 		Assertions.assertTrue(result.get("test-key5").isPersisted());
+		Assertions.assertEquals("database", result.get("test-key5").getSource());
 		Assertions.assertNull(resource.get("test-any"));
 	}
 
