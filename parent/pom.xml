@@ -69,7 +69,6 @@
 		<hsqldb.version>2.4.0</hsqldb.version>
 		<jackson.version>2.9.5</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
-		<javax.interceptor-api>1.2-b06</javax.interceptor-api>
 		<jaxb.version>2.3.0</jaxb.version>
 		<jetty.version>9.4.10.v20180503</jetty.version>
 		<junit.platform.version>1.2.0</junit.platform.version>
@@ -99,11 +98,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>javax.interceptor</groupId>
-				<artifactId>javax.interceptor-api</artifactId>
-				<version>1.2-b06</version>
-			</dependency>
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-core</artifactId>
