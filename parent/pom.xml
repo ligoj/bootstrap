@@ -63,7 +63,7 @@
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.10.1</hazelcast.version>
 		<hibernate.version>5.3.1.Final</hibernate.version>
-		<hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
+		<hibernate-validator.version>6.0.10.Final</hibernate-validator.version>
 		<httpclient.version>4.5.5</httpclient.version>
 		<httpcore.version>4.4.9</httpcore.version>
 		<hsqldb.version>2.4.1</hsqldb.version>
@@ -73,8 +73,7 @@
 		<jetty.version>9.4.10.v20180503</jetty.version>
 		<junit.platform.version>1.2.0</junit.platform.version>
 		<junit.jupiter.version>5.2.0</junit.jupiter.version>
-		<junit.version>4.12</junit.version>
-		<jsoup.version>1.11.2</jsoup.version>
+		<jsoup.version>1.11.3</jsoup.version>
 		<log4j.version>2.10.0</log4j.version>
 		<lombok.version>1.16.22</lombok.version>
 		<mail.version>1.6.1</mail.version>
