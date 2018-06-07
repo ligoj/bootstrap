@@ -75,15 +75,6 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		};
 	}
 
-	private ServiceRegistry newConfigurationService() {
-		ConfigurationService mock = Mockito.mock(ConfigurationService.class);
-		Mockito.doReturn(true).when(mock).getSetting(AvailableSettings.PREFER_GENERATOR_NAME_AS_DEFAULT_SEQUENCE_NAME,
-				StandardConverters.BOOLEAN, true);
-		ServiceRegistry registry = Mockito.mock(ServiceRegistry.class);
-		Mockito.doReturn(mock).when(registry).getService(ConfigurationService.class);
-		return registry;
-	}
-
 	private JdbcEnvironment newJdbcEnvironment() {
 
 		JdbcEnvironment jdbcEnvironment = Mockito.mock(JdbcEnvironment.class);
@@ -102,10 +93,14 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	}
 
 	private ServiceRegistry newServiceRegistry() {
+		ConfigurationService mock = Mockito.mock(ConfigurationService.class);
+		Mockito.doReturn(true).when(mock).getSetting(AvailableSettings.PREFER_GENERATOR_NAME_AS_DEFAULT_SEQUENCE_NAME,
+				StandardConverters.BOOLEAN, true);
 		JdbcEnvironment jdbcEnvironment = newJdbcEnvironment();
 		ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
 		Mockito.when(serviceRegistry.getService(JdbcEnvironment.class)).thenReturn(jdbcEnvironment);
 		Mockito.when(jdbcEnvironment.getDialect()).thenReturn(new MySQL55Dialect());
+		Mockito.doReturn(mock).when(serviceRegistry).getService(ConfigurationService.class);
 		return serviceRegistry;
 	}
 
@@ -118,7 +113,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
 		Assertions.assertEquals("my_table_SEQ", newStyleGenerator()
-				.determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment(), newConfigurationService())
+				.determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment(), newServiceRegistry())
 				.getObjectName().getText());
 	}
 
@@ -131,7 +126,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
 		Assertions.assertEquals("my_table_SEQ", newStyleGenerator()
-				.determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment(), newConfigurationService())
+				.determineSequenceName(params, new MySQL55Dialect(), newJdbcEnvironment(), newServiceRegistry())
 				.getObjectName().getText());
 	}
 
