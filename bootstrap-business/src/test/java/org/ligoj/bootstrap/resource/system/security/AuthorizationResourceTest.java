@@ -111,7 +111,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	}
 
 	/**
-	 * test find by user for business authorization.
+	 * test find by user for API authorization.
 	 */
 	@Test
 	public void testFindByUserLoginBusiness() {
@@ -144,8 +144,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		final List<SystemAuthorization> result = resource
-				.findAuthorizationsBusiness(getJaxRsSecurityContext(DEFAULT_USER));
+		final List<SystemAuthorization> result = resource.findAuthorizationsApi(getJaxRsSecurityContext(DEFAULT_USER));
 
 		// Also check the lazy lading issue
 		em.clear();

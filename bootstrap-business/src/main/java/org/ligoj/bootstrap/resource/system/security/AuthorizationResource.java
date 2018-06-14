@@ -54,7 +54,7 @@ public class AuthorizationResource {
 
 	/**
 	 * Retrieve an authorization from its identifier.
-	 * 
+	 *
 	 * @param id
 	 *            Element's identifier.
 	 * @return Found element. May be <tt>null</tt>.
@@ -68,7 +68,7 @@ public class AuthorizationResource {
 
 	/**
 	 * Retrieve all UI authorizations of current user.
-	 * 
+	 *
 	 * @param context
 	 *            security context.
 	 * @return all UI authorizations of current user.
@@ -81,22 +81,22 @@ public class AuthorizationResource {
 	}
 
 	/**
-	 * Retrieve all business authorizations of current user.
-	 * 
+	 * Retrieve all API authorizations of current user.
+	 *
 	 * @param context
 	 *            Security context.
-	 * @return all business authorizations of current user.
+	 * @return All API authorizations of current user.
 	 */
 	@GET
-	@Path("user/business")
+	@Path("user/api")
 	@org.springframework.transaction.annotation.Transactional(readOnly = true)
-	public List<SystemAuthorization> findAuthorizationsBusiness(@Context final SecurityContext context) {
+	public List<SystemAuthorization> findAuthorizationsApi(@Context final SecurityContext context) {
 		return repository.findAllByLogin(context.getUserPrincipal().getName(), SystemAuthorization.AuthorizationType.API);
 	}
 
 	/**
 	 * Create a new authorization.
-	 * 
+	 *
 	 * @param entity
 	 *            New object to persist.
 	 * @return identifier of created object.
@@ -112,7 +112,7 @@ public class AuthorizationResource {
 
 	/**
 	 * Update element from its identifier.
-	 * 
+	 *
 	 * @param entity
 	 *            Element to update.
 	 * @param id
@@ -127,7 +127,7 @@ public class AuthorizationResource {
 
 	/**
 	 * Prepare for create a new element.
-	 * 
+	 *
 	 * @param authorization
 	 *            Target new object to persist.
 	 * @param entity
@@ -143,7 +143,7 @@ public class AuthorizationResource {
 
 	/**
 	 * Prepare for update element from its identifier.
-	 * 
+	 *
 	 * @param entity
 	 *            Element to update.
 	 * @param id
@@ -156,7 +156,7 @@ public class AuthorizationResource {
 
 	/**
 	 * Delete Role from its ID
-	 * 
+	 *
 	 * @param id
 	 *            Identifier of element to delete.
 	 */
@@ -173,7 +173,7 @@ public class AuthorizationResource {
 	 * Value : another map, where Key is authority (role) name.<br>
 	 * Value : another map, where Key is the granted HTTP method. <br>
 	 * Value : another map, where Value is the granted HTTP pattern.
-	 * 
+	 *
 	 * @return The authorizations of each role.
 	 */
 	@CacheResult(cacheName = "authorizations")

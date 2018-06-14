@@ -40,13 +40,13 @@ public class SessionSettings {
 	 * UI Authorizations.
 	 */
 	@Setter
-	private Set<String> authorizations;
+	private Set<String> uiAuthorizations;
 
 	/**
 	 * Business authorizations.
 	 */
 	@Setter
-	private List<SystemAuthorization> businessAuthorizations;
+	private List<SystemAuthorization> apiAuthorizations;
 
 	/**
 	 * Roles.

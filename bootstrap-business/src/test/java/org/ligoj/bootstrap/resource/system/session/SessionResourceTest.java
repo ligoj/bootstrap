@@ -106,13 +106,13 @@ public class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings.getRoles());
 		Assertions.assertEquals(1, settings.getRoles().size());
 		Assertions.assertEquals(DEFAULT_ROLE, settings.getRoles().get(0));
-		Assertions.assertNotNull(settings.getAuthorizations());
-		Assertions.assertEquals(1, settings.getAuthorizations().size());
-		Assertions.assertEquals("^myurl2", settings.getAuthorizations().iterator().next());
-		Assertions.assertNotNull(settings.getBusinessAuthorizations());
-		Assertions.assertEquals(1, settings.getBusinessAuthorizations().size());
-		Assertions.assertEquals("^myurl1", settings.getBusinessAuthorizations().get(0).getPattern());
-		Assertions.assertEquals("GET", settings.getBusinessAuthorizations().get(0).getMethod().toString());
+		Assertions.assertNotNull(settings.getUiAuthorizations());
+		Assertions.assertEquals(1, settings.getUiAuthorizations().size());
+		Assertions.assertEquals("^myurl2", settings.getUiAuthorizations().iterator().next());
+		Assertions.assertNotNull(settings.getApiAuthorizations());
+		Assertions.assertEquals(1, settings.getApiAuthorizations().size());
+		Assertions.assertEquals("^myurl1", settings.getApiAuthorizations().get(0).getPattern());
+		Assertions.assertEquals("GET", settings.getApiAuthorizations().get(0).getMethod().toString());
 		Assertions.assertNotNull(settings.getUserSettings());
 		Assertions.assertFalse(settings.getUserSettings().isEmpty());
 		Assertions.assertEquals("v", settings.getUserSettings().get("k"));
@@ -150,10 +150,10 @@ public class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings.getRoles());
 		Assertions.assertEquals(1, settings.getRoles().size());
 		Assertions.assertEquals("SOLO", settings.getRoles().get(0));
-		Assertions.assertNotNull(settings.getAuthorizations());
-		Assertions.assertEquals(0, settings.getAuthorizations().size());
-		Assertions.assertNotNull(settings.getBusinessAuthorizations());
-		Assertions.assertEquals(0, settings.getBusinessAuthorizations().size());
+		Assertions.assertNotNull(settings.getUiAuthorizations());
+		Assertions.assertEquals(0, settings.getUiAuthorizations().size());
+		Assertions.assertNotNull(settings.getApiAuthorizations());
+		Assertions.assertEquals(0, settings.getApiAuthorizations().size());
 	}
 
 	/**
@@ -179,10 +179,10 @@ public class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings);
 		Assertions.assertNotNull(settings.getRoles());
 		Assertions.assertEquals(0, settings.getRoles().size());
-		Assertions.assertNotNull(settings.getAuthorizations());
-		Assertions.assertEquals(0, settings.getAuthorizations().size());
-		Assertions.assertNotNull(settings.getBusinessAuthorizations());
-		Assertions.assertEquals(0, settings.getBusinessAuthorizations().size());
+		Assertions.assertNotNull(settings.getUiAuthorizations());
+		Assertions.assertEquals(0, settings.getUiAuthorizations().size());
+		Assertions.assertNotNull(settings.getApiAuthorizations());
+		Assertions.assertEquals(0, settings.getApiAuthorizations().size());
 	}
 
 	/**
@@ -219,9 +219,9 @@ public class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings);
 		Assertions.assertNotNull(settings.getRoles());
 		Assertions.assertEquals(2, settings.getRoles().size());
-		Assertions.assertNotNull(settings.getAuthorizations());
-		Assertions.assertEquals(1, settings.getAuthorizations().size());
-		Assertions.assertEquals("^myurl2", settings.getAuthorizations().iterator().next());
+		Assertions.assertNotNull(settings.getUiAuthorizations());
+		Assertions.assertEquals(1, settings.getUiAuthorizations().size());
+		Assertions.assertEquals("^myurl2", settings.getUiAuthorizations().iterator().next());
 	}
 
 	private void addSystemAuthorization(final HttpMethod method, SystemRole role, final String pattern, final AuthorizationType type) {

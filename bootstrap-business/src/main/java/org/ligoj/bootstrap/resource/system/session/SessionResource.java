@@ -57,7 +57,7 @@ public class SessionResource {
 
 	/**
 	 * Current session settings.
-	 * 
+	 *
 	 * @return The current session settings with authorizations and roles.
 	 */
 	@GET
@@ -87,8 +87,8 @@ public class SessionResource {
 
 		// Add authorizations
 		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> cache = authorizationResource.getAuthorizations();
-		settings.setAuthorizations(toPatterns(filterRoles(cache.get(AuthorizationType.UI), rolesAsString)));
-		settings.setBusinessAuthorizations(getBusinessAuthorizations(filterRoles(cache.get(AuthorizationType.API), rolesAsString)));
+		settings.setUiAuthorizations(toPatterns(filterRoles(cache.get(AuthorizationType.UI), rolesAsString)));
+		settings.setApiAuthorizations(getApiAuthorizations(filterRoles(cache.get(AuthorizationType.API), rolesAsString)));
 	}
 
 	/**
@@ -120,14 +120,14 @@ public class SessionResource {
 	}
 
 	/**
-	 * Build and return the list of business authorizations.
+	 * Build and return the list of API authorizations.
 	 */
-	private List<SystemAuthorization> getBusinessAuthorizations(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
+	private List<SystemAuthorization> getApiAuthorizations(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
 		return authorizations.stream().map(Map::entrySet).flatMap(Collection::stream).flatMap(entry -> entry.getValue().stream().map(pattern -> {
-			final SystemAuthorization businessAuthorization = new SystemAuthorization();
-			businessAuthorization.setMethod(entry.getKey());
-			businessAuthorization.setPattern(pattern.pattern());
-			return businessAuthorization;
+			final SystemAuthorization apiAuthorization = new SystemAuthorization();
+			apiAuthorization.setMethod(entry.getKey());
+			apiAuthorization.setPattern(pattern.pattern());
+			return apiAuthorization;
 		})).collect(Collectors.toList());
 	}
 }
