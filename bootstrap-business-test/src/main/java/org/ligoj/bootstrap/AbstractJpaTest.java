@@ -14,9 +14,12 @@ import javax.persistence.PersistenceContextType;
 import javax.ws.rs.core.UriInfo;
 
 import org.hibernate.collection.internal.PersistentBag;
+import org.junit.jupiter.api.BeforeAll;
+import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -26,6 +29,17 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 
 	@Autowired
 	protected CsvForJpa csvForJpa;
+
+	@Autowired
+	protected CryptoHelper cryptoHelper;
+
+	@Autowired
+	protected CacheManager cacheManager;
+
+	@BeforeAll
+	public static void init() {
+		System.setProperty("app.crypto.file", "src/test/resources/security.key");
+	}
 
 	/**
 	 * Entity manager.

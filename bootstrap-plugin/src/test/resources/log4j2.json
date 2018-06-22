@@ -1,0 +1,104 @@
+{
+	"configuration": {
+		"status": "warn",
+		"name": "Main",
+		"properties": {
+			"property": {
+				"name": "filename",
+				"value": "target/rolling.log"
+			}
+		},
+		"ThresholdFilter": {
+			"level": "debug"
+		},
+		"appenders": {
+			"appender": [
+				{
+					"type": "Console",
+					"name": "STDOUT",
+					"PatternLayout": {
+						"pattern": "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+					}
+				}, {
+					"type": "RollingFile",
+					"name": "RollingFile",
+					"fileName": "${filename}",
+					"filePattern": "target/rolling-${sd:type}.%i.log.gz",
+					"PatternLayout": {
+						"pattern": "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+					},
+					"SizeBasedTriggeringPolicy": {
+						"size": "500"
+					}
+				}
+			]
+		},
+		"loggers": {
+			"logger": [
+				{
+					"name": "org.springframework.security.web.FilterChainProxy",
+					"level": "info",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.hibernate.SQL",
+					"level": "debug",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.apache.cxf.phase.PhaseInterceptorChain",
+					"level": "error",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.hibernate.ejb.HibernatePersistence",
+					"level": "error",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.apache.directory.server.schema.registries.DefaultAttributeTypeRegistry",
+					"level": "fatal",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.apache.directory.server.core.DefaultDirectoryService",
+					"level": "error",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.apache.directory.server.protocol.shared.store.LdifFileLoader",
+					"level": "warn",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}, {
+					"name": "org.springframework.security.web.FilterChainProxy",
+					"level": "info",
+					"additivity": "true",
+					"AppenderRef": {
+						"ref": "STDOUT"
+					}
+				}
+			],
+			"root": {
+				"level": "info",
+				"AppenderRef": {
+					"ref": "STDOUT"
+				}
+			}
+		}
+	}
+}

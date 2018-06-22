@@ -26,9 +26,9 @@ import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptor
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
@@ -94,7 +94,7 @@ public class ValidationJsonExceptionTest {
 
 	@Test
 	public void testValidationJsonExceptionCollection() {
-		final ObjectMapperTrim mapper = new ObjectMapperTrim();
+		final ObjectMapper mapper = new ObjectMapper();
 		final InvalidFormatException e = Assertions.assertThrows(InvalidFormatException.class,
 				() -> mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class));
 		final ValidationJsonException validationJsonException = new ValidationJsonException(e);
@@ -193,12 +193,12 @@ public class ValidationJsonExceptionTest {
 	private <T extends Annotation> ConstraintAnnotationDescriptor<T> getAnnotation(final String fieldName,
 			final Class<T> annotationClass) {
 		return new ConstraintAnnotationDescriptor<>(
-				FieldUtils.getField(Wine.class, fieldName, true).getAnnotation(annotationClass));
+				FieldUtils.getField(SampleEntity.class, fieldName, true).getAnnotation(annotationClass));
 	}
 
 	@Test
 	public void testConstraintViolationException() {
-		final Wine bean = new Wine();
+		final SampleEntity bean = new SampleEntity();
 		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
 
 		final ConstraintHelper helper = new ConstraintHelper();
@@ -209,15 +209,15 @@ public class ValidationJsonExceptionTest {
 				(Member) null, getAnnotation("grapes", NotEmpty.class), ElementType.FIELD);
 		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
 				getAnnotation("name", Length.class), ElementType.FIELD);
-		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-Empty", null, null, "interpolated",
-				Wine.class, bean, new Object(), "value", PathImpl.createPathFromString("name"), notEmptyNameDescriptor,
-				ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("name-length", null, null, "interpolated",
-				Wine.class, bean, new Object(), "value", PathImpl.createPathFromString("name"), lengthNameDescriptor,
-				ElementType.FIELD, null));
-		violations.add(ConstraintViolationImpl.<Wine>forBeanValidation("grapes-Empty", null, null, "interpolated",
-				Wine.class, bean, new Object(), "value", PathImpl.createPathFromString("grapes"),
-				notEmptyGrapesDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<SampleEntity>forBeanValidation("name-Empty", null, null, "interpolated",
+				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("name"),
+				notEmptyNameDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<SampleEntity>forBeanValidation("name-length", null, null,
+				"interpolated", SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("name"),
+				lengthNameDescriptor, ElementType.FIELD, null));
+		violations.add(ConstraintViolationImpl.<SampleEntity>forBeanValidation("grapes-Empty", null, null,
+				"interpolated", SampleEntity.class, bean, new Object(), "value",
+				PathImpl.createPathFromString("grapes"), notEmptyGrapesDescriptor, ElementType.FIELD, null));
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
@@ -231,7 +231,7 @@ public class ValidationJsonExceptionTest {
 
 	@Test
 	public void testConstraintViolationExceptionParameter() {
-		final Wine bean = new Wine();
+		final SampleEntity bean = new SampleEntity();
 		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
 
 		final ConstraintHelper helper = new ConstraintHelper();
@@ -239,9 +239,9 @@ public class ValidationJsonExceptionTest {
 		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper,
 				(Member) null, getAnnotation("name", NotEmpty.class), ElementType.FIELD);
 		PathImpl path = PathImpl.createPathFromString("name");
-		violations.add(ConstraintViolationImpl.<Wine>forParameterValidation("name-Empty", null, null, "interpolated",
-				Wine.class, bean, new Object(), "value", path, notEmptyNameDescriptor, ElementType.PARAMETER, null,
-				null));
+		violations.add(ConstraintViolationImpl.<SampleEntity>forParameterValidation("name-Empty", null, null,
+				"interpolated", SampleEntity.class, bean, new Object(), "value", path, notEmptyNameDescriptor,
+				ElementType.PARAMETER, null, null));
 		path.addParameterNode("parameter1", 0);
 
 		final ConstraintViolationException violationException = Mockito.mock(ConstraintViolationException.class);

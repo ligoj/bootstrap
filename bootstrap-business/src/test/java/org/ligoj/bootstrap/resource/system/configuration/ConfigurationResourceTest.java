@@ -8,16 +8,13 @@ import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -31,17 +28,6 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private ConfigurationResource resource;
-
-	@Autowired
-	private CryptoHelper cryptoHelper;
-
-	@Autowired
-	private CacheManager cacheManager;
-
-	@BeforeAll
-	public static void init() {
-		System.setProperty("app.crypto.file", "src/test/resources/security.key");
-	}
 
 	@BeforeEach
 	public void prepare() {
