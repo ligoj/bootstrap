@@ -70,7 +70,7 @@
 		<jackson.version>2.9.6</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
 		<jaxb.version>2.3.0</jaxb.version>
-		<jetty.version>9.4.10.v20180503</jetty.version>
+		<jetty.version>9.4.11.v20180605</jetty.version>
 		<junit.platform.version>1.2.0</junit.platform.version>
 		<junit.jupiter.version>5.2.0</junit.jupiter.version>
 		<jsoup.version>1.11.3</jsoup.version>
