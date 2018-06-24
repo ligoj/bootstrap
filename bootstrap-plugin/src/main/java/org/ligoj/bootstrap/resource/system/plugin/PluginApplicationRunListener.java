@@ -14,14 +14,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Application listener able to alter the class loader to the plugin class-loader.
+ * Application listener able to alter the class loader to the plug-in class-loader.
  */
 @Slf4j
 public class PluginApplicationRunListener implements SpringApplicationRunListener, Ordered {
 
 	/**
 	 * Required Spring-Boot constructor to be compliant to {@link SpringApplicationRunListener}
-	 * 
+	 *
 	 * @param application
 	 *            The current application.
 	 * @param args
@@ -33,8 +33,18 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 		if (PluginsClassLoader.getInstance() == null) {
 			// Replace the main class loader
 			log.info("Install the plugin classloader for application {}({})", application, args);
-			Thread.currentThread().setContextClassLoader(new PluginsClassLoader());
+			replaceClassLoader();
 		}
+	}
+
+	/**
+	 * Replace the current classloader by a {@link PluginsClassLoader} instance.
+	 *
+	 * @throws IOException
+	 *             When the stup failed.
+	 */
+	protected void replaceClassLoader() throws IOException {
+		Thread.currentThread().setContextClassLoader(new PluginsClassLoader());
 	}
 
 	@Override
