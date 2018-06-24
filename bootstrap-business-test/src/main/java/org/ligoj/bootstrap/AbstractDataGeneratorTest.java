@@ -415,7 +415,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            The utility class.
 	 * @param <T>
 	 *            The singleton class type.
-	 * @param ReflectiveOperationException
+	 * @throws ReflectiveOperationException
 	 *            When singleton operations cannot be performed.
 	 */
 	protected <T> void coverageSingleton(final Class<T> singletonClass) throws ReflectiveOperationException {

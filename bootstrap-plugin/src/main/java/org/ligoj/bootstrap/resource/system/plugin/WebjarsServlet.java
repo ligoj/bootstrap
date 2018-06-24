@@ -57,8 +57,10 @@ public class WebjarsServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		final String webjarsResourceURI = "META-INF/resources" + request.getRequestURI().replaceFirst(request.getContextPath(), "");
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+			throws ServletException, IOException {
+		final String webjarsResourceURI = "META-INF/resources"
+				+ request.getRequestURI().replaceFirst(request.getContextPath(), "");
 		log.debug("Webjars resource requested: {}", webjarsResourceURI);
 
 		if (isDirectoryRequest(webjarsResourceURI)) {
@@ -68,7 +70,8 @@ public class WebjarsServlet extends HttpServlet {
 		}
 
 		// Regular file, use the last resource instead of the first found
-		final Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(webjarsResourceURI);
+		final Enumeration<URL> resources = Thread.currentThread().getContextClassLoader()
+				.getResources(webjarsResourceURI);
 		URL webjarsResourceURL = null;
 		while (resources.hasMoreElements()) {
 			webjarsResourceURL = resources.nextElement();
@@ -83,15 +86,18 @@ public class WebjarsServlet extends HttpServlet {
 
 	/**
 	 * Copy the file stream to the response using the right mime type.
-	 * 
+	 *
 	 * @param response
 	 *            Target response.
 	 * @param webjarsResourceURI
 	 *            Source URI used to determine the MIME type.
 	 * @param inputStream
 	 *            The source input stream.
+	 * @throws IOException
+	 *             When related resource cannot be read.
 	 */
-	protected void serveFile(final HttpServletResponse response, final String webjarsResourceURI, final InputStream inputStream) throws IOException {
+	protected void serveFile(final HttpServletResponse response, final String webjarsResourceURI,
+			final InputStream inputStream) throws IOException {
 		try {
 			final String filename = getFileName(webjarsResourceURI);
 			response.setContentType(guessMimeType(filename));
@@ -104,7 +110,7 @@ public class WebjarsServlet extends HttpServlet {
 
 	/**
 	 * Guess the MIME type from the file name.
-	 * 
+	 *
 	 * @param filename
 	 *            The requested file name.
 	 * @return The resolved MIME type. May be <code>null</code>.
@@ -125,7 +131,7 @@ public class WebjarsServlet extends HttpServlet {
 
 	/**
 	 * Is it a directory request ?
-	 * 
+	 *
 	 * @param uri
 	 *            Requested resource's URI.
 	 * @return <code>true</code> when URI is a directory request
@@ -136,7 +142,7 @@ public class WebjarsServlet extends HttpServlet {
 
 	/**
 	 * Retrieve file name from given URI.
-	 * 
+	 *
 	 * @param webjarsResourceURI
 	 *            Requested resource's URI.
 	 * @return The resolved file name.

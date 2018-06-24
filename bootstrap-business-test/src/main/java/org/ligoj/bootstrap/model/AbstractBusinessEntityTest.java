@@ -51,11 +51,7 @@ public abstract class AbstractBusinessEntityTest {
 	 *            the entity to test.
 	 * @param idProperties
 	 *            the list of business key parts.
-	 * @throws InstantiationException
-	 *             due to reflection.
-	 * @throws IllegalAccessException
-	 *             due to reflection.
-	 * @throws InvocationTargetException
+	 * @throws ReflectiveOperationException
 	 *             due to reflection.
 	 * @param <T>
 	 *            The type of the entity to test.

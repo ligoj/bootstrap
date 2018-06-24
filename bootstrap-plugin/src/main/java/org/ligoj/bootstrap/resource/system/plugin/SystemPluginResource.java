@@ -183,7 +183,8 @@ public class SystemPluginResource {
 	 * Indicate the plug-in is deleted or not.
 	 *
 	 * @param plugin
-	 * @return <true> when the plug-in is deleted locally from the FS.
+	 *            The plug-in to check.
+	 * @return <code>true</code> when the plug-in is deleted locally from the FS.
 	 */
 	protected boolean isDeleted(final PluginVo plugin) {
 		return !new File(plugin.getLocation()).exists();
@@ -438,16 +439,15 @@ public class SystemPluginResource {
 	}
 
 	/**
-	 * Handle the newly installed plug-ins implementing {@link FeaturePlugin}, and that's includes
-	 * {@link ServicePlugin}. Note the plug-ins are installed in a natural order based on their key's name to ensure the
-	 * parents plug-ins are configured first. <br>
+	 * Handle the newly installed plug-ins implementing {@link FeaturePlugin}. Note the plug-ins are installed in a
+	 * natural order based on their key's name to ensure the parents plug-ins are configured first. <br>
 	 * Note the transactional behavior of this process : if one plug-in failed to be configured, then the entire process
 	 * is cancelled. The previously and the not processed discovered plug-ins are not configured.
 	 *
 	 * @param event
 	 *            The Spring event.
 	 * @throws Exception
-	 *             When the context can not be refreshed because of plugin updates or configurations..
+	 *             When the context can not be refreshed because of plug-in updates or configurations..
 	 */
 	@EventListener
 	public void refreshPlugins(final ContextRefreshedEvent event) throws Exception {
