@@ -42,6 +42,7 @@ import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 import org.ligoj.bootstrap.core.plugin.PluginListener;
 import org.ligoj.bootstrap.core.plugin.PluginVo;
+import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;

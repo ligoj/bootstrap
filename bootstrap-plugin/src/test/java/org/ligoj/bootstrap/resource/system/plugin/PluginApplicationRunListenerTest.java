@@ -10,6 +10,7 @@ import java.net.URLClassLoader;
 import org.eclipse.jetty.util.thread.ThreadClassLoaderScope;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 

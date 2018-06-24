@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.bootstrap.resource.system.plugin;
+package org.ligoj.bootstrap.core.plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.util.thread.ThreadClassLoaderScope;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.plugin.PluginException;
 import org.mockito.Mockito;
 
 /**
@@ -107,9 +105,13 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void getInstance() {
-		try (ThreadClassLoaderScope scope = new ThreadClassLoaderScope(
-				new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class)))) {
+		ClassLoader old = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread()
+					.setContextClassLoader(new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class)));
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
+		} finally {
+			Thread.currentThread().setContextClassLoader(old);
 		}
 	}
 

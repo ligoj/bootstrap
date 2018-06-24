@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.resource.system.plugin;
 
 import java.io.IOException;
 
+import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;

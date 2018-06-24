@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.bootstrap.resource.system.plugin;
+package org.ligoj.bootstrap.core.plugin;
 
 import java.io.IOException;
 import java.net.URI;
