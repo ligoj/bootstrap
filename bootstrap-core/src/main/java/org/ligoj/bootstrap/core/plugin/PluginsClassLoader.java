@@ -191,7 +191,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static PluginsClassLoader getInstance(final ClassLoader cl) {
 		if (cl == null) {
 			// A separate class loader ?
-			log.warn("PluginsClassLoader requested but not found in the current classloader hierarchy {}",
+			log.info("PluginsClassLoader requested but not found in the current classloader hierarchy {}",
 					Thread.currentThread().getContextClassLoader().toString());
 			return null;
 		}
