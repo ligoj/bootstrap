@@ -347,7 +347,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @throws IOException
 	 *             When the parent directories creation failed.
 	 */
-	private Path toPath(final Path parent, final String... fragments) throws IOException {
+	protected Path toPath(final Path parent, final String... fragments) throws IOException {
 		Path parentR = parent;
 		for (int i = 0; i < fragments.length; i++) {
 			parentR = parentR.resolve(fragments[i]);
