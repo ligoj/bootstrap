@@ -337,9 +337,10 @@ public class SystemPluginResource {
 	}
 
 	private void removeFilter(final String artifact, final String filter) throws IOException {
-		Files.list(getPluginClassLoader().getPluginDirectory())
-				.filter(p -> p.getFileName().toString().matches("^" + artifact + filter + "\\.jar$"))
-				.forEach(p -> p.toFile().delete());
+		try (Stream<java.nio.file.Path> list = Files.list(getPluginClassLoader().getPluginDirectory())) {
+			list.filter(p -> p.getFileName().toString().matches("^" + artifact + filter + "\\.jar$"))
+					.forEach(p -> p.toFile().delete());
+		}
 	}
 
 	/**
@@ -395,7 +396,7 @@ public class SystemPluginResource {
 		} catch (final Exception ioe) {
 			// Installation failed, either download, either FS error
 			log.info("Unable to install plugin {} v{} from {}", artifact, version, repository, ioe);
-			throw new ValidationJsonException("artifact", String.format("Cannot be installed"));
+			throw new ValidationJsonException("artifact", String.format("Cannot be installed"), "id", artifact);
 		}
 	}
 
@@ -690,6 +691,7 @@ public class SystemPluginResource {
 
 			// Build and save the entities managed by this plug-in
 			csvForJpa.toJpa(entityClass, input, true, false, e -> {
+				// Need brace because of ambiguous signature consumer/Function
 				persistAsNeeded(entityClass, e);
 			});
 			em.flush();

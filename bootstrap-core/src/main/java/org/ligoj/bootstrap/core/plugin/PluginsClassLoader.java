@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -40,7 +41,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Safe mode property flag.
 	 */
-	private static final String ENABLED = "ligoj.plugin.enabled";
+	private static final String ENABLED_PROPERTY = "ligoj.plugin.enabled";
 
 	/**
 	 * System property name pointing to the home directory. When undefined, system user home directory will be used
@@ -90,7 +91,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	public PluginsClassLoader() throws IOException {
 		super(new URL[0], Thread.currentThread().getContextClassLoader());
-		this.enabled = Boolean.valueOf(System.getProperty(ENABLED, "true"));
+		this.enabled = Boolean.valueOf(System.getProperty(ENABLED_PROPERTY, "true"));
 		this.homeDirectory = computeHome();
 		this.pluginDirectory = this.homeDirectory.resolve(PLUGINS_DIR);
 
@@ -147,8 +148,10 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	private Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath) throws IOException {
 		final Map<String, String> versionFiles = new TreeMap<>();
-		Files.list(this.pluginDirectory).filter(p -> p.toString().endsWith(".jar"))
-				.forEach(path -> addVersionFile(versionFileToPath, versionFiles, path));
+		try (Stream<Path> list = Files.list(this.pluginDirectory)) {
+			list.filter(p -> p.toString().endsWith(".jar"))
+					.forEach(path -> addVersionFile(versionFileToPath, versionFiles, path));
+		}
 		final Map<String, String> enabledPlugins = new TreeMap<>(Comparator.reverseOrder());
 
 		// Remove old plug-in from the list
@@ -219,7 +222,9 @@ public class PluginsClassLoader extends URLClassLoader {
 			final Path export = fileSystem.getPath("/" + EXPORT_DIR);
 			if (Files.exists(export)) {
 				final Path targetExport = getHomeDirectory().resolve(EXPORT_DIR);
-				Files.walk(export).forEach(from -> copyExportedResource(plugin, targetExport, export, from));
+				try (Stream<Path> walk = Files.walk(export)) {
+					walk.forEach(from -> copyExportedResource(plugin, targetExport, export, from));
+				}
 			}
 		}
 	}

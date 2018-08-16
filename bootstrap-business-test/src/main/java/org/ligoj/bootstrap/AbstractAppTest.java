@@ -4,25 +4,20 @@
 package org.ligoj.bootstrap;
 
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
+import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
-import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Basic Appication test support.
  */
 public abstract class AbstractAppTest extends AbstractJpaTest {
-
-	@Autowired
-	protected CacheManager cacheManager;
 
 	/**
 	 * Clear all caches.
