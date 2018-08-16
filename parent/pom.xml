@@ -42,8 +42,6 @@
 		<bootstrap.version>2.4.2-SNAPSHOT</bootstrap.version>
 		<revision>2.4.2-SNAPSHOT</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
-		<jdk.version>9</jdk.version>
-		<jdk.release>9</jdk.release>
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.8.13</aspectj.version>
