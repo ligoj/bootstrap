@@ -396,7 +396,7 @@ public class SystemPluginResource {
 		} catch (final Exception ioe) {
 			// Installation failed, either download, either FS error
 			log.info("Unable to install plugin {} v{} from {}", artifact, version, repository, ioe);
-			throw new ValidationJsonException("artifact", "Cannot be installed", "id", artifact);
+			throw new ValidationJsonException("artifact", "cannot-be-installed", "id", artifact);
 		}
 	}
 
