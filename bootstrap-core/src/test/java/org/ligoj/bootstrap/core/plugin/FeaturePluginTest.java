@@ -11,22 +11,17 @@ import org.junit.jupiter.api.Test;
  */
 public class FeaturePluginTest {
 
-	private final FeaturePlugin plugin = new FeaturePlugin() {
+	private final org.ligoj.bootstrap.core.plugin.FeaturePlugin plugin = new FeaturePlugin() {
 
 		@Override
 		public String getKey() {
-			return "key";
+			return "service:s1:t2";
 		}
 	};
 
 	@Test
-	public void getInstalledEntities() {
-		Assertions.assertTrue(plugin.getInstalledEntities().isEmpty());
-	}
-
-	@Test
 	public void getName() {
-		Assertions.assertEquals("Key", plugin.getName());
+		Assertions.assertEquals("T2", plugin.getName());
 	}
 
 	@Test
@@ -37,6 +32,28 @@ public class FeaturePluginTest {
 	@Test
 	public void getVersion() {
 		Assertions.assertNull(plugin.getVersion());
+	}
+
+	@Test
+	public void getInstalledEntities() {
+		Assertions.assertTrue(plugin.getInstalledEntities().isEmpty());
+	}
+
+	@Test
+	public void install() throws Exception {
+		// Nothing done there
+		plugin.install();
+	}
+
+	@Test
+	public void update() throws Exception {
+		// Nothing done there
+		plugin.update("any");
+	}
+
+	@Test
+	public void compareTo() {
+		Assertions.assertEquals(0, plugin.compareTo(plugin));
 	}
 
 }

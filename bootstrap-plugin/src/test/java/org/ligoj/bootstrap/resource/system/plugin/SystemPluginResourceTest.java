@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -464,6 +465,32 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 	}
 
 	@Test
+	public void configurePluginEntities() throws IOException {
+		// The class-loader of this mock corresponds to the one related to SampleService
+		// So corresponds to API jar and not this project
+		final SampleService service1 = new SampleService();
+		resource.configurePluginInstall(service1);
+		registerSingleton("mockPluginListener", new MockPluginListener());
+		try {
+			Assertions.assertEquals("FEATURE", repository.findByExpected("key", "service:sample").getType());
+			Assertions.assertNotNull(repository.findByExpected("key", "service:sample").getVersion());
+
+			final SampleTool1 service2 = new SampleTool1();
+			resource.configurePluginInstall(service2);
+
+			// Uninstall the plug-in from the plug-in registry
+			repository.deleteAllBy("key", "service:sample:tool1");
+
+			// reinstall
+			resource.configurePluginEntities(service2, Collections.singletonList(SystemBench.class));
+		} finally {
+			destroySingleton("mockPluginListener");
+		}
+	}
+
+
+
+	@Test
 	public void configurePluginInstallManagedEntitiesNotSameClassloader() {
 		final FeaturePlugin service1 = Mockito.mock(FeaturePlugin.class);
 		Mockito.when(service1.getKey()).thenReturn("service:sample");
@@ -684,7 +711,7 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 	public void installNotExistsVersion() {
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			newPluginResourceInstall().install("any", "dummy", "central");
-		}), "artifact", "Cannot be installed");
+		}), "artifact", "cannot-be-installed");
 	}
 
 	@Test
