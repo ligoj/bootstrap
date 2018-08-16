@@ -107,6 +107,8 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 		persistEntities("csv-test", SystemConfiguration.class);
 		clearAllCache();
 		resource = mockCentral("search.json");
+		System.clearProperty("plugins.repository-manager.nexus.artifact.url");
+		System.clearProperty("plugins.repository-manager.nexus.search.url");
 	}
 
 	@AfterEach
