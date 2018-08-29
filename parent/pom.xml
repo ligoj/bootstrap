@@ -91,6 +91,8 @@
 		<wiremock.version>2.18.0</wiremock.version>
 		
 		<plugin.jacoco>0.8.2</plugin.jacoco>
+		<plugin.jacoco.listeners>5.7.0.15470</plugin.jacoco.listeners>
+		<plugin.sonar>3.4.1.1170</plugin.sonar>
 	</properties>
 
 	<dependencyManagement>
