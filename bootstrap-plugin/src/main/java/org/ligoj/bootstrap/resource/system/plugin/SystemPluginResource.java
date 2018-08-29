@@ -42,6 +42,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.ligoj.bootstrap.core.INamableBean;
@@ -210,7 +211,7 @@ public class SystemPluginResource {
 	 */
 	protected String toTrimmedVersion(final String extendedVersion) {
 		String trim = Arrays.stream(StringUtils.split(extendedVersion, "-Z.")).dropWhile(s -> !s.matches("^(Z?\\d+.*)"))
-				.map(s -> StringUtils.defaultIfBlank(StringUtils.replaceFirst(s, "^0+", ""), "0"))
+				.map(s -> StringUtils.defaultIfBlank(RegExUtils.replaceFirst(s, "^0+", ""), "0"))
 				.collect(Collectors.joining(".")).replace(".SNAPSHOT", "-SNAPSHOT")
 				.replaceFirst("([^-])SNAPSHOT", "$1-SNAPSHOT");
 		if (trim.endsWith(".0") && StringUtils.countMatches(trim, '.') > 2) {
