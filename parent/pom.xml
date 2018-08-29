@@ -89,6 +89,8 @@
 		<spring-security-rsa>1.0.5.RELEASE</spring-security-rsa>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<wiremock.version>2.18.0</wiremock.version>
+		
+		<plugin.jacoco>0.8.2</plugin.jacoco>
 	</properties>
 
 	<dependencyManagement>
