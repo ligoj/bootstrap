@@ -155,8 +155,7 @@ public class ConfigurationResource {
 	}
 
 	private void updateVo(final String value, final ConfigurationVo vo) {
-		final String clearValue = cryptoHelper.decryptAsNeeded(value);
-		if (value.equals(clearValue)) {
+		if (value.equals(cryptoHelper.decryptAsNeeded(value))) {
 			vo.setValue(value);
 		} else {
 			// Do not expose secured value, even hashed data
@@ -165,7 +164,7 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Save or update a setting and return the corresponding identifier.
+	 * Save or update a setting and return the corresponding identifier. The system variable is not updated.
 	 *
 	 * @param name
 	 *            The configuration name.
@@ -177,6 +176,25 @@ public class ConfigurationResource {
 	@Path("{name}")
 	@CachePut(cacheName = "configuration")
 	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value) {
+		put(name, value, false);
+	}
+
+	/**
+	 * Save or update a setting and return the corresponding identifier.
+	 *
+	 * @param name
+	 *            The configuration name.
+	 * @param value
+	 *            The new value.
+	 * @param system
+	 *            When <code>true</code>, the system variable is also updated.
+	 */
+	@POST
+	@PUT
+	@Path("{name}/{system}")
+	@CachePut(cacheName = "configuration")
+	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value,
+			@PathParam("system") final boolean system) {
 		final SystemConfiguration setting = repository.findByName(name);
 		if (setting == null) {
 			final SystemConfiguration entity = new SystemConfiguration();
@@ -187,12 +205,15 @@ public class ConfigurationResource {
 			setting.setValue(cryptoHelper.encrypt(value));
 		}
 
-		// Also set the value in the system
-		System.setProperty(name, value);
+		if (system) {
+			// Also set the value in the system, not hashed form
+			System.setProperty(name, value);
+		}
 	}
 
 	/**
-	 * Delete a {@link SystemConfiguration}
+	 * Delete a {@link SystemConfiguration} and also delete the related system property. The system variable is not
+	 * updated.
 	 *
 	 * @param name
 	 *            The configuration name to delete.
@@ -201,7 +222,25 @@ public class ConfigurationResource {
 	@Path("{name}")
 	@CacheRemove(cacheName = "configuration")
 	public void delete(@CacheKey @PathParam("name") final String name) {
+		delete(name, false);
+	}
+
+	/**
+	 * Delete a {@link SystemConfiguration}
+	 *
+	 * @param name
+	 *            The configuration name to delete.
+	 * @param system
+	 *            When <code>true</code>, the system variable is also deleted.
+	 */
+	@DELETE
+	@Path("{name}/{system}")
+	@CacheRemove(cacheName = "configuration")
+	public void delete(@CacheKey @PathParam("name") final String name, @PathParam("system") final boolean system) {
 		repository.deleteAllBy("name", name);
+		if (system) {
+			System.clearProperty(name);
+		}
 	}
 
 }

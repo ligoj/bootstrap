@@ -163,7 +163,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 		try {
 			// Change the value
-			resource.put("test-key44", "new-value-db4");
+			resource.put("test-key44", "new-value-db4", true);
 
 			// Check the data from the cache
 			Assertions.assertEquals("new-value-db4", resource.get("test-key44"));
@@ -205,6 +205,17 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertNull(resource.get("test-key5"));
 		Assertions.assertTrue(em.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getResultList().isEmpty());
+	}
+
+	@Test
+	public void deleteWithEnvironment() {
+		resource.put("test-key00", "value-db-env", true);
+		resource.put("test-key00", "value-db-jpa", false);
+		Assertions.assertEquals("value-db-jpa", resource.get("test-key00"));
+		resource.delete("test-key00");
+		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
+		resource.delete("test-key00", true);
+		Assertions.assertNull(resource.get("test-key00"));
 	}
 
 	/**
