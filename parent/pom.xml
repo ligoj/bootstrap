@@ -72,7 +72,7 @@
 		<junit.platform.version>1.2.0</junit.platform.version>
 		<junit.jupiter.version>5.2.0</junit.jupiter.version>
 		<jsoup.version>1.11.3</jsoup.version>
-		<log4j.version>2.11.0</log4j.version>
+		<log4j.version>2.11.1</log4j.version>
 		<lombok.version>1.18.2</lombok.version>
 		<mail.version>1.6.1</mail.version>
 		<mockito.version>2.19.0</mockito.version>
