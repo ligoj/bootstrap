@@ -15,13 +15,11 @@ public interface SystemUserRepository extends RestRepository<SystemUser, String>
 	/**
 	 * Administrator role implicit criteria.
 	 */
-	String IS_ADMIN = "(EXISTS(SELECT 1 FROM SystemRoleAssignment ra INNER JOIN ra.role r WHERE ra.user.id = :user"
-			+ "     AND EXISTS(SELECT 1 FROM SystemAuthorization a WHERE a.role = r AND a.pattern = '.*'"
-			+ "          AND a.type = org.ligoj.bootstrap.model.system.SystemAuthorization$AuthorizationType.API)))";
+	String IS_ADMIN = "(EXISTS(SELECT 1 FROM SystemRoleAssignment ra INNER JOIN ra.role r WHERE ra.user.id = :user AND EXISTS(SELECT 1 FROM SystemAuthorization a WHERE a.role = r AND a.pattern = '.*' AND a.type = org.ligoj.bootstrap.model.system.SystemAuthorization$AuthorizationType.API)))";
 
 	/**
 	 * Return user and his/her roles.
-	 * 
+	 *
 	 * @param login
 	 *            user login.
 	 * @return {@link SystemUser} with roles.
@@ -33,7 +31,7 @@ public interface SystemUserRepository extends RestRepository<SystemUser, String>
 	 * Return <code>true</code> when given user is an administrator. Is
 	 * considered administrators, user having all API authorization (.*)
 	 * pattern.
-	 * 
+	 *
 	 * @param user
 	 *            The user name requesting the operation.
 	 * @return <code>true</code> when the current user is an administrator.
