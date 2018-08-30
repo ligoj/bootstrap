@@ -8,7 +8,7 @@ before_cache:
 before_install:
   - "chmod +x ./travis.sh"
 cache: false
-jdk: openjdk10
+jdk: openjdk11
 env: 
   - TARGET=BUILD
 branches:
