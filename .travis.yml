@@ -7,12 +7,7 @@ before_cache:
   - "find $HOME/.m2 -name resolver-status.properties -exec rm {} \\;"
 before_install:
   - "chmod +x ./travis.sh"
-cache: 
-  directories: 
-    - $HOME/.m2/repository
-    - $HOME/.sonar/cache
-    - $HOME/jvm
-    - $HOME/maven
+cache: false
 jdk: openjdk10
 env: 
   - TARGET=BUILD
