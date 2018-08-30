@@ -86,11 +86,8 @@ function fixBuildVersion {
 # Configure Maven settings and install some script utilities
 #
 function configureTravis {
-  ls -al "${JAVA_HOME}/lib/security/cacerts"
   rm "${JAVA_HOME}/lib/security/cacerts"
   ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
-  ls -al "${JAVA_HOME}/lib/security/cacerts"
-  ls -al /etc/ssl/certs/java/cacerts
   mkdir -p ~/.local
   curl -sSL https://github.com/SonarSource/travis-utils/tarball/v50 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
