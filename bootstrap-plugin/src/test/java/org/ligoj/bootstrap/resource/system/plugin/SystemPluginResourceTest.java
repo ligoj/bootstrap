@@ -103,10 +103,10 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 	@BeforeEach
 	public void prepareData() throws IOException {
 		FileUtils.deleteQuietly(TEMP_FILE);
-		configuration.put("ligoj.plugin.ignore", " plugin-sample-ignore , any");
 		persistEntities("csv-test", SystemConfiguration.class);
 		clearAllCache();
 		resource = mockCentral("search.json");
+		configuration.put("ligoj.plugin.ignore", " plugin-sample-ignore , any");
 		System.clearProperty("plugins.repository-manager.nexus.artifact.url");
 		System.clearProperty("plugins.repository-manager.nexus.search.url");
 	}
