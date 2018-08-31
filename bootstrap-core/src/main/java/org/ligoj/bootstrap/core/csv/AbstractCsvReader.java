@@ -259,6 +259,9 @@ public abstract class AbstractCsvReader<T> {
 	 *            the key of the {@link Map} property
 	 * @param rawValue
 	 *            the raw value to put in the {@link Map}.
+	 * @exception IllegalAccessException
+	 *                if this {@code Field} object is enforcing Java language access control and the underlying field is
+	 *                inaccessible.
 	 */
 	protected void setMapProperty(final T bean, final String property, final String key, final String rawValue)
 			throws IllegalAccessException {

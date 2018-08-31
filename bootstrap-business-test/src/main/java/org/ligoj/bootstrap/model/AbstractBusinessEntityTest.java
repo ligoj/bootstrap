@@ -51,11 +51,10 @@ public abstract class AbstractBusinessEntityTest {
 	 *            the entity to test.
 	 * @param idProperties
 	 *            the list of business key parts.
-	 * @throws ReflectiveOperationException
-	 *             due to reflection.
 	 * @param <T>
 	 *            The type of the entity to test.
 	 * @throws ReflectiveOperationException
+	 *             due to reflection.
 	 */
 	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties)
 			throws ReflectiveOperationException {
