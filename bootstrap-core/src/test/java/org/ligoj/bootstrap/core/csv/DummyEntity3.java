@@ -4,8 +4,11 @@
 package org.ligoj.bootstrap.core.csv;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
@@ -32,4 +35,10 @@ public class DummyEntity3 {
 
 	@Transient
 	private Map<String, String> map;
+
+	@Transient
+	private List<String> list;
+
+	@Transient
+	private Set<CascadeType> setEnum;
 }

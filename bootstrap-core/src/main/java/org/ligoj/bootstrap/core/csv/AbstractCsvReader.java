@@ -6,13 +6,18 @@ package org.ligoj.bootstrap.core.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.GeneratedValue;
 
@@ -229,7 +234,23 @@ public abstract class AbstractCsvReader<T> {
 	 * @throws ReflectiveOperationException
 	 *             When bean cannot be built with reflection.
 	 */
-	protected abstract void setProperty(T bean, String property, String rawValue) throws ReflectiveOperationException;
+	protected void setProperty(final T bean, final String property, final String rawValue)
+			throws ReflectiveOperationException {
+		final int fkeyIndex = property.indexOf('.');
+		if (fkeyIndex == -1) {
+			setSimpleProperty(bean, property, rawValue);
+		} else {
+			setForeignProperty(bean, property, rawValue, fkeyIndex);
+		}
+	}
+
+	/**
+	 * Manage foreign key.
+	 */
+	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex)
+			throws ReflectiveOperationException {
+		throw new ReflectiveOperationException("Foreign key management is not supported in bean mode");
+	}
 
 	/**
 	 * Return the field from the given class.
@@ -294,7 +315,7 @@ public abstract class AbstractCsvReader<T> {
 	 * @throws ReflectiveOperationException
 	 *             When bean cannot be built with reflection.
 	 */
-	protected void setSimpleProperty(final T bean, final String property, final String rawValue)
+	private void setSimpleProperty(final T bean, final String property, final String rawValue)
 			throws ReflectiveOperationException {
 		final int mapIndex = property.indexOf('$');
 		if (mapIndex == -1) {
@@ -330,10 +351,33 @@ public abstract class AbstractCsvReader<T> {
 				final Class<E> enumClass = (Class<E>) field.getType();
 				beanUtilsBean.setProperty(bean, property, Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass)
 						.keySet().stream().filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
+			} else if (field.getType().isAssignableFrom(Set.class)) {
+				// Set support
+				beanUtilsBean.setProperty(bean, property, newCollection(rawValue, field, new HashSet<>()));
+			} else if (field.getType().isAssignableFrom(List.class)) {
+				// List support
+				beanUtilsBean.setProperty(bean, property, newCollection(rawValue, field, new ArrayList<>()));
 			} else {
+				// Simple property
 				beanUtilsBean.setProperty(bean, property, rawValue);
 			}
 		}
+	}
 
+	@SuppressWarnings("unchecked")
+	private <E extends Enum<E>> Collection<Object> newCollection(final String rawValue, final Field field,
+			final Collection<Object> result) {
+		final Class<?> generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+		for (final String item : rawValue.split(",")) {
+			if (generic.isEnum()) {
+				// Ignore case of Enum name
+				final Class<E> enumClass = (Class<E>) generic;
+				result.add(Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass).keySet().stream()
+						.filter(rawValue::equalsIgnoreCase).findFirst().orElse(item)));
+			} else {
+				result.add(beanUtilsBean.getConvertUtils().convert(item, generic));
+			}
+		}
+		return result;
 	}
 }

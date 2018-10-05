@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.persistence.CascadeType;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -66,7 +68,8 @@ public class CsvForBeanTest {
 		csvForBean.toCsv(items, DummyEntity.class, result);
 
 		// Check there is the header and one data line
-		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;;2;3;6;7;8\n", result.toString());
+		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;;2;3;6;7;8\n",
+				result.toString());
 	}
 
 	@Test
@@ -93,7 +96,8 @@ public class CsvForBeanTest {
 		csvForBean.toCsv(items, DummyEntity.class, result);
 
 		// Check there is the header and one data line
-		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n", result.toString());
+		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n",
+				result.toString());
 	}
 
 	@Test
@@ -106,7 +110,8 @@ public class CsvForBeanTest {
 
 	@Test
 	public void toBeanNullHeader() throws Exception {
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader("name;;;   ;;;;wneYear\n4;1;2;3;5;6;7;'8'"));
+		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class,
+				new StringReader("name;;;   ;;;;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
 		DummyEntity wine2 = items.get(0);
 		Assertions.assertEquals("4", wine2.getName());
@@ -193,18 +198,32 @@ public class CsvForBeanTest {
 	}
 
 	@Test
+	public void toBeanList() throws Exception {
+		final List<DummyEntity3> items = csvForBean.toBean(DummyEntity3.class,
+				new StringReader("login;list;setEnum\nfdaugan;value1,value2;PERSIST,MERGE"));
+		Assertions.assertEquals(1, items.size());
+		Assertions.assertEquals(2, items.get(0).getList().size());
+		Assertions.assertEquals("value1", items.get(0).getList().get(0));
+		Assertions.assertEquals("value2", items.get(0).getList().get(1));
+		Assertions.assertEquals(2, items.get(0).getSetEnum().size());
+		Assertions.assertTrue(items.get(0).getSetEnum().contains(CascadeType.PERSIST));
+		Assertions.assertTrue(items.get(0).getSetEnum().contains(CascadeType.MERGE));
+	}
+
+	@Test
 	public void toBeanMapDuplicateKey() {
 		final TechnicalException e = Assertions.assertThrows(TechnicalException.class, () -> {
 			csvForBean.toBean(DummyEntity3.class, new StringReader("login;map$key1;map$key1\nfdaugan;value1;value2"));
 		}, "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
-		Assertions.assertTrue(e.getCause().getMessage()
-				.contains("Duplicate map entry key='key1' for map property map in class org.ligoj.bootstrap.core.csv.DummyEntity3"));
+		Assertions.assertTrue(e.getCause().getMessage().contains(
+				"Duplicate map entry key='key1' for map property map in class org.ligoj.bootstrap.core.csv.DummyEntity3"));
 	}
 
 	@Test
 	public void toBeanMapNotMapDuplicateKey() {
 		final TechnicalException e = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForBean.toBean(DummyEntity3.class, new StringReader("login;lastConnection$key1;lastConnection$key1\nfdaugan;value1;value2"));
+			csvForBean.toBean(DummyEntity3.class,
+					new StringReader("login;lastConnection$key1;lastConnection$key1\nfdaugan;value1;value2"));
 		}, "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
 		Assertions.assertTrue(e.getCause().getMessage().contains(
 				"Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection to java.util.LinkedHashMap"));

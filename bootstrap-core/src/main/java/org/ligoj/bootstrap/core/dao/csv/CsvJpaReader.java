@@ -5,7 +5,6 @@ package org.ligoj.bootstrap.core.dao.csv;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,64 +61,45 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	@Override
-	protected void setProperty(final T bean, final String property, final String rawValue)
+	protected void setForeignProperty(final T bean, final String fqname, final String rawValue, final int fkeyIndex)
 			throws ReflectiveOperationException {
-		final int fkeyIndex = property.indexOf('.');
-		if (fkeyIndex == -1) {
-			setSimpleProperty(bean, property, rawValue);
-		} else {
-			setForeignProperty(bean, property, rawValue, fkeyIndex);
-		}
-	}
-
-	/**
-	 * Manage foreign key.
-	 */
-	private void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex)
-			throws ReflectiveOperationException {
-		final String masterPropertyName = property.substring(0, fkeyIndex);
-		final Field jpaField = getField(clazz, masterPropertyName);
-		String propertyName = property.substring(fkeyIndex + 1);
+		final String name = fqname.substring(0, fkeyIndex);
+		final Field field = getField(clazz, name);
+		final String fkeyName = fqname.substring(fkeyIndex + 1);
 
 		// Collection management
-		if (jpaField.getType().isAssignableFrom(Set.class)) {
+		if (field.getType().isAssignableFrom(Set.class)) {
 			// Set support
-			beanUtilsBean.setProperty(bean, masterPropertyName,
-					newCollection(rawValue, masterPropertyName, jpaField, propertyName, new HashSet<>()));
-		} else if (jpaField.getType().isAssignableFrom(List.class)) {
+			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, fkeyName, new HashSet<>()));
+		} else if (field.getType().isAssignableFrom(List.class)) {
 			// List support
-			beanUtilsBean.setProperty(bean, masterPropertyName,
-					newCollection(rawValue, masterPropertyName, jpaField, propertyName, new ArrayList<>()));
+			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, fkeyName, new ArrayList<>()));
 		} else {
 			// Simple property
-			beanUtilsBean.setProperty(bean, masterPropertyName,
-					getForeignProperty(rawValue, masterPropertyName, jpaField, jpaField.getType(), propertyName));
+			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field, field.getType(), fkeyName));
 		}
 	}
 
-	private Object getForeignProperty(final String rawValue, final String masterPropertyName, final Field jpaField,
-			final Class<?> type, final String propertyName)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private Object getForeignProperty(final String rawValue, final String name, final Field field, final Class<?> type,
+			final String fkName) throws ReflectiveOperationException {
 		final Object foreignEntity;
-		if (propertyName.charAt(propertyName.length() - 1) == '!') {
-			foreignEntity = readFromEm(rawValue, type, propertyName.substring(0, propertyName.length() - 1));
+		if (fkName.charAt(fkName.length() - 1) == '!') {
+			foreignEntity = readFromEm(rawValue, type, fkName.substring(0, fkName.length() - 1));
 		} else {
-			foreignEntity = readFromCache(rawValue, type, propertyName);
+			foreignEntity = readFromCache(rawValue, type, fkName);
 		}
 		if (foreignEntity == null) {
-			throw new IllegalArgumentException("Missing foreign key " + jpaField.getDeclaringClass().getSimpleName()
-					+ "#" + masterPropertyName + "." + StringUtils.removeEnd(propertyName, "!") + " = " + rawValue);
+			throw new IllegalArgumentException("Missing foreign key " + field.getDeclaringClass().getSimpleName() + "#"
+					+ name + "." + StringUtils.removeEnd(fkName, "!") + " = " + rawValue);
 		}
 		return foreignEntity;
 	}
 
-	private Collection<Object> newCollection(final String rawValue, final String masterPropertyName,
-			final Field jpaField, String propertyName, final Collection<Object> arrayList)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		final Class<?> genericType = (Class<?>) ((ParameterizedType) jpaField.getGenericType())
-				.getActualTypeArguments()[0];
+	private Collection<Object> newCollection(final String rawValue, final String masterPropertyName, final Field field,
+			String propertyName, final Collection<Object> arrayList) throws ReflectiveOperationException {
+		final Class<?> generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 		for (final String item : rawValue.split(",")) {
-			arrayList.add(getForeignProperty(item, masterPropertyName, jpaField, genericType, propertyName));
+			arrayList.add(getForeignProperty(item, masterPropertyName, field, generic, propertyName));
 		}
 		return arrayList;
 	}
@@ -156,7 +136,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Read from already read entities.
 	 */
 	private Object readFromCache(final String rawValue, final Class<?> type, final String propertyName)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			throws ReflectiveOperationException {
 		// Special fetching mode
 		if (isRowNumber(type, propertyName)) {
 			// search referenced entity with a filter on row number
@@ -171,7 +151,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Read from already read row index
 	 */
 	private Object readFromJoinCache(final String rawValue, final Class<?> type, final String propertyName)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			throws ReflectiveOperationException {
 		ensureCache(type, propertyName);
 		return foreignCache.get(type).get(rawValue);
 	}
@@ -194,8 +174,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Initialize or update cache.
 	 */
-	private void ensureCache(final Class<?> type, final String propertyName)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private void ensureCache(final Class<?> type, final String propertyName) throws ReflectiveOperationException {
 		if (!foreignCache.containsKey(type) || type == clazz) {
 			foreignCache.put(type, buildMap(readAll(type), propertyName));
 		}
@@ -216,7 +195,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Return a map where key is the foreign key and value is the entity.
 	 */
 	private Map<String, Object> buildMap(final List<?> list, final String property)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			throws ReflectiveOperationException {
 		final Map<String, Object> result = new HashMap<>();
 		for (final Object item : list) {
 			final Object value = beanUtilsBean.getProperty(item, property);
