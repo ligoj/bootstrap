@@ -166,6 +166,21 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
+	public void findByNull() {
+		final SystemDialect dial1 = new SystemDialect();
+		dial1.setDialLong(1L);
+		em.persist(dial1);
+		final SystemDialect dial2 = new SystemDialect();
+		dial2.setDialLong(2L);
+		dial2.setDialDate(new Date(System.currentTimeMillis()));
+		em.persist(dial2);
+		Assertions.assertEquals(1L, repository.findBy("dialDate", null).getDialLong().longValue());
+		Assertions.assertEquals(1, repository.findAllBy("dialDate", null).size());
+		Assertions.assertEquals(1, repository.deleteAllBy("dialDate", null));
+		Assertions.assertEquals(0, repository.findAllBy("dialDate", null).size());
+	}
+
+	@Test
 	public void findByDeepPathMoreProperties() {
 		SystemRole role = new SystemRole();
 		role.setName("role");

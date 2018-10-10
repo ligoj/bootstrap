@@ -19,6 +19,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.SpringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -28,7 +29,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Implementation of {@link RestRepository}.
- * 
+ *
  * @param <T>
  *            Entity type.
  * @param <K>
@@ -42,16 +43,15 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 */
 	private final EntityManager em;
 	private final JpaEntityInformation<T, ?> ei;
-	private static final String EQ = "%s=:%s";
-	private static final String SELECT_BY = "FROM %s WHERE " + EQ;
+	private static final String SELECT_BY = "FROM %s WHERE ";
 	private static final String DELETE_ALL = "DELETE %s";
-	private static final String DELETE_BY = DELETE_ALL + " WHERE " + EQ;
+	private static final String DELETE_BY = DELETE_ALL + " WHERE ";
 	private static final String DELETE_ALL_IN = DELETE_ALL + " WHERE %s IN (:%s)";
 	private static final String PARAM_VALUE = "value";
 
 	/**
 	 * Creates a new {@link RestRepositoryImpl} to manage objects of the given {@link JpaEntityInformation}.
-	 * 
+	 *
 	 * @param entityInformation
 	 *            must not be {@literal null}.
 	 * @param entityManager
@@ -196,18 +196,8 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 */
 	private TypedQuery<T> newQuery(final String patternQuery, final String property, final Object value,
 			final String[] properties, final Object... values) {
-		final StringBuilder baseQuery = new StringBuilder(
-				String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE));
-		for (int index = 0; index < values.length; index++) {
-			baseQuery.append(" AND ");
-			baseQuery.append(String.format(EQ, properties[index], PARAM_VALUE + index));
-		}
-		final TypedQuery<T> query = em.createQuery(baseQuery.toString(), ei.getJavaType());
-		query.setParameter(PARAM_VALUE, value);
-		for (int index = 0; index < values.length; index++) {
-			query.setParameter(PARAM_VALUE + index, values[index]);
-		}
-		return query;
+		final StringBuilder baseQuery = newQueryString(patternQuery, property, value, properties, values);
+		return addParameters(em.createQuery(baseQuery.toString(), ei.getJavaType()), value, values);
 	}
 
 	/**
@@ -216,18 +206,8 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 */
 	private int update(final String patternQuery, final String property, final Object value, final String[] properties,
 			final Object... values) {
-		final StringBuilder baseQuery = new StringBuilder(
-				String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE));
-		for (int index = 0; index < values.length; index++) {
-			baseQuery.append(" AND ");
-			baseQuery.append(String.format(EQ, properties[index], PARAM_VALUE + index));
-		}
-		final Query query = em.createQuery(baseQuery.toString());
-		query.setParameter(PARAM_VALUE, value);
-		for (int index = 0; index < values.length; index++) {
-			query.setParameter(PARAM_VALUE + index, values[index]);
-		}
-		return query.executeUpdate();
+		final StringBuilder baseQuery = newQueryString(patternQuery, property, value, properties, values);
+		return addParameters(em.createQuery(baseQuery.toString()), value, values).executeUpdate();
 	}
 
 	@Override
@@ -236,4 +216,59 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 				Long.class).setParameter(PARAM_VALUE, value).getSingleResult();
 	}
 
+	/**
+	 * Create a new query buffer from a "... FROM %s WHERE " or "FROM %s WHERE %s .. %s" alike template string and add
+	 * this filters (<code>AND</code>).
+	 */
+	private StringBuilder newQueryString(final String patternQuery, final String property, final Object value,
+			final String[] properties, final Object... values) {
+		final StringBuilder baseQuery;
+		if (StringUtils.countMatches(patternQuery, "%s") == 1) {
+			// Only "FROM"
+			baseQuery = new StringBuilder(String.format(patternQuery, ei.getEntityName()));
+			addFilter(baseQuery, property, value, 0);
+		} else {
+			// "FROM WHERE property ... value
+			baseQuery = new StringBuilder(String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE + 0));
+		}
+		for (int index = 0; index < values.length; index++) {
+			baseQuery.append(" AND ");
+			addFilter(baseQuery, properties[index], values[index], index + 1);
+		}
+		return baseQuery;
+	}
+
+	/**
+	 * Add a query filter to the buffer. Handle the <code>null</code> value case with a <code>IS NULL</code>
+	 */
+	private void addFilter(final StringBuilder baseQuery, final String property, final Object value, final int index) {
+		baseQuery.append(property);
+		if (value == null) {
+			baseQuery.append(" IS NULL");
+		} else {
+			baseQuery.append("=:");
+			baseQuery.append(PARAM_VALUE);
+			baseQuery.append(String.valueOf(index));
+		}
+	}
+
+	/**
+	 * Add query parameters, handling the <code>null</code> value case.
+	 */
+	private <Q extends Query> Q addParameters(final Q query, final Object value, final Object... values) {
+		addParameter(query, value, 0);
+		for (int index = 0; index < values.length; index++) {
+			addParameter(query, values[index], index + 1);
+		}
+		return query;
+	}
+
+	/**
+	 * Add a query parameter, handling the <code>null</code> value case.
+	 */
+	private void addParameter(final Query query, final Object value, final int index) {
+		if (value != null) {
+			query.setParameter(PARAM_VALUE + index, value);
+		}
+	}
 }
