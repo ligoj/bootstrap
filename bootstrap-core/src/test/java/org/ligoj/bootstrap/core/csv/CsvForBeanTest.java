@@ -135,6 +135,17 @@ public class CsvForBeanTest {
 	}
 
 	@Test
+	public void toBeanDouble() throws Exception {
+		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class,
+				new StringReader("dialDouble\n1\n1.1\n1,2\n1 000.3"));
+		Assertions.assertEquals(4, items.size());
+		Assertions.assertEquals(1d, items.get(0).getDialDouble());
+		Assertions.assertEquals(1.1d, items.get(1).getDialDouble());
+		Assertions.assertEquals(1.2d, items.get(2).getDialDouble());
+		Assertions.assertEquals(1000.3d, items.get(3).getDialDouble());
+	}
+
+	@Test
 	public void toBeanDate() throws Exception {
 		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class, new StringReader(
 				"dialDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));

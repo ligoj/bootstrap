@@ -357,6 +357,10 @@ public abstract class AbstractCsvReader<T> {
 			} else if (field.getType().isAssignableFrom(List.class)) {
 				// List support
 				beanUtilsBean.setProperty(bean, property, newCollection(rawValue, field, new ArrayList<>()));
+			} else if (Number.class
+					.isAssignableFrom(org.apache.commons.lang3.ClassUtils.primitiveToWrapper(field.getType()))) {
+				// Simple numeric property
+				beanUtilsBean.setProperty(bean, property, StringUtils.replace(rawValue, " ", "").replace(',', '.'));
 			} else {
 				// Simple property
 				beanUtilsBean.setProperty(bean, property, rawValue);
