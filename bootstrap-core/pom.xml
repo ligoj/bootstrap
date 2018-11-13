@@ -203,10 +203,6 @@
 					<artifactId>cdi-api</artifactId>
 				</exclusion>
 				<exclusion>
-					<artifactId>hibernate-jpa-2.1-api</artifactId>
-					<groupId>org.hibernate.javax.persistence</groupId>
-				</exclusion>
-				<exclusion>
 					<artifactId>xml-apis</artifactId>
 					<groupId>xml-apis</groupId>
 				</exclusion>
@@ -310,8 +306,8 @@
 
 		<!-- JSR-317, JSR 338 -->
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
