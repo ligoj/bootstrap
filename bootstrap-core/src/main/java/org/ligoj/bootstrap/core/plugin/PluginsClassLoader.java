@@ -26,7 +26,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ligoj.bootstrap.core.plugin.PluginException;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

@@ -6,15 +6,15 @@ package org.ligoj.bootstrap.core.crypto;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jasypt.encryption.pbe.config.SimplePBEConfig;
+import org.ligoj.bootstrap.core.GlobalPropertyUtils;
 import org.springframework.core.io.ClassPathResource;
 
-import org.ligoj.bootstrap.core.GlobalPropertyUtils;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +41,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	/**
 	 * Set the configuration object to use the specified file name to load the value for the password. The password is
 	 * trimmed to <code>null</code>.
-	 * 
+	 *
 	 * @param passwordFilename
 	 *            the name of the file name to load.
 	 * @return The resolved password from given file or <code>null</code> if failed.
@@ -68,16 +68,16 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 
 	/**
 	 * Read a password value from the piped readers.
-	 * 
+	 *
 	 * @param property
 	 *            Initial property to read.
 	 * @param pipedReaders
 	 *            The ordered readers. Stopped when <code>null</code> is returned.
 	 */
 	@SafeVarargs
-	private final String pipe(final String property, final Function<String, String>... pipedReaders) {
+	private final String pipe(final String property, final UnaryOperator<String>... pipedReaders) {
 		String value = property;
-		for (final Function<String, String> reader : pipedReaders) {
+		for (final UnaryOperator<String> reader : pipedReaders) {
 			if (StringUtils.isNotBlank(value)) {
 				value = reader.apply(value);
 			}

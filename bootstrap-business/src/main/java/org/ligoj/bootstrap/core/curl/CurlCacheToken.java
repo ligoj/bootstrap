@@ -24,13 +24,13 @@ public class CurlCacheToken {
 
 	@Autowired
 	protected ApplicationContext applicationContext;
-	
+
 	@Autowired
 	private CurlCacheToken self = this;
 
 	/**
 	 * Return a cache token.
-	 * 
+	 *
 	 * @param key
 	 *            The cache key.
 	 * @param function
@@ -50,7 +50,7 @@ public class CurlCacheToken {
 
 	/**
 	 * Return a synchronized cache token.
-	 * 
+	 *
 	 * @param synchronizeObject
 	 *            The object used to synchronize the access to the cache.
 	 * @param key

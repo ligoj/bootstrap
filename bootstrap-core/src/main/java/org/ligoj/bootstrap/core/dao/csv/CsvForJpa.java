@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -235,7 +235,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	public <T> List<T> toJpa(final Class<T> beanType, final Reader input, final boolean hasHeader,
-			final boolean persist, final Function<T, Boolean> filter) throws IOException {
+			final boolean persist, final Predicate<T> filter) throws IOException {
 		final List<T> result = new ArrayList<>();
 		final String[] headers;
 		final Reader inputProxy;
@@ -261,7 +261,7 @@ public class CsvForJpa extends AbstractCsvManager {
 		T order = reader.read();
 		while (order != null) {
 			result.add(order);
-			if ((filter == null || filter.apply(order)) && persist) {
+			if ((filter == null || filter.test(order)) && persist) {
 				em.persist(order);
 			}
 			order = reader.read();
