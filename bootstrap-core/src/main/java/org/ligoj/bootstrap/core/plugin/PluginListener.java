@@ -22,10 +22,33 @@ public interface PluginListener {
 		return true;
 	}
 
+	/**
+	 * Configure the given plug-in.
+	 *
+	 * @param plugin
+	 *            The plug-in to configure.
+	 * @param entity
+	 *            The entity.
+	 */
 	void configure(FeaturePlugin plugin, SystemPlugin entity);
 
+	/**
+	 * VO transformer.
+	 *
+	 * @return VO transformer function.
+	 */
 	Supplier<PluginVo> toVo();
 
-	void fillVo(SystemPlugin p, FeaturePlugin feature, PluginVo vo);
+	/**
+	 * Entity to VO function.
+	 *
+	 * @param plugin
+	 *            Plug-in source
+	 * @param feature
+	 *            Related plug-in entity.
+	 * @param vo
+	 *            The target VO to fill.
+	 */
+	void fillVo(SystemPlugin plugin, FeaturePlugin feature, PluginVo vo);
 
 }

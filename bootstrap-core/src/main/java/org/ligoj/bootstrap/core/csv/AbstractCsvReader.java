@@ -246,6 +246,15 @@ public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Manage foreign key.
+	 *
+	 * @param bean
+	 *            Target bean.
+	 * @param property
+	 *            Targt property.
+	 * @param rawValue
+	 *            Source value.
+	 * @param fkeyIndex
+	 *            Foreign key index.
 	 */
 	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex)
 			throws ReflectiveOperationException {
