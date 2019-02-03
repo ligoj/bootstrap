@@ -27,6 +27,7 @@
 
 	<bean id="jsr303ExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.Jsr303ExceptionMapper" />
 	<bean id="invalidFormatExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.InvalidFormatExceptionMapper" />
+	<bean id="mismatchedInputExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.MismatchedInputExceptionMapper" />
 	<bean id="cannotCreateTransactionExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.CannotCreateTransactionExceptionMapper" />
 	<bean id="dataAccessResourceFailureExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.DataAccessResourceFailureExceptionMapper" />
 	<bean id="technicalExceptionMapper" class="org.ligoj.bootstrap.core.resource.mapper.TechnicalExceptionMapper" />

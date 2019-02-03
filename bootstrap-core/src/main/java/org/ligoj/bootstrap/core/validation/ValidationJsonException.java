@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import lombok.Getter;
@@ -76,7 +77,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Constructor with message context.
-	 * 
+	 *
 	 * @param message
 	 *            the raw validation error message.
 	 */
@@ -86,7 +87,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Constructor from mapping exception : invalid types.
-	 * 
+	 *
 	 * @param mappingException
 	 *            validation exception containing errors.
 	 */
@@ -95,8 +96,18 @@ public class ValidationJsonException extends RuntimeException {
 	}
 
 	/**
+	 * Constructor from mapping exception : invalid type conversion.
+	 *
+	 * @param mappingException
+	 *            validation exception containing errors.
+	 */
+	public ValidationJsonException(final MismatchedInputException mappingException) {
+		this(mappingException, String.valueOf(mappingException.getMessage()), parseRule(mappingException));
+	}
+
+	/**
 	 * Constructor from errors.
-	 * 
+	 *
 	 * @param validation
 	 *            validation exception containing errors.
 	 */
@@ -108,7 +119,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Constructor from mapping exception : invalid property.
-	 * 
+	 *
 	 * @param mappingException
 	 *            validation exception containing errors.
 	 */
@@ -130,7 +141,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Constructor for a single error.
-	 * 
+	 *
 	 * @param propertyName
 	 *            Name of the JSon property
 	 * @param errorText
@@ -145,7 +156,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Helper method to add an error on property with a single message error
-	 * 
+	 *
 	 * @param propertyName
 	 *            Name of the JSon property
 	 * @param errorText
@@ -217,7 +228,7 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Parse the rule name from the Jackson mapping exception message in the given violation.
 	 */
-	private static String parseRule(final InvalidFormatException mappingException) {
+	private static String parseRule(final MismatchedInputException mappingException) {
 		final String rule = StringUtils.capitalize(mappingException.getTargetType().getSimpleName());
 
 		// Manage the primitive type "int" due to Jackson 2.x new features
@@ -238,7 +249,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * serialize a violation from Hibernate validation
-	 * 
+	 *
 	 * @param error
 	 *            validation error
 	 * @return serialized error
@@ -260,7 +271,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Check the value is null for given fields.
-	 * 
+	 *
 	 * @param value
 	 *            Is the nullable value to check.
 	 * @param fields
@@ -274,7 +285,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Check the value is not null for given fields.
-	 * 
+	 *
 	 * @param value
 	 *            Is the nullable value to check.
 	 * @param fields
@@ -288,7 +299,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Build a validation exception.
-	 * 
+	 *
 	 * @param error
 	 *            the error code to throw.
 	 * @param fields
@@ -309,7 +320,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	/**
 	 * Throw a validation error when the given value is false.
-	 * 
+	 *
 	 * @param assertTrue
 	 *            the boolean to check.
 	 * @param error
