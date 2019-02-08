@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.persistence.GeneratedValue;
 
@@ -28,6 +29,7 @@ import org.apache.commons.beanutils.converters.DateConverter;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
@@ -158,17 +160,32 @@ public abstract class AbstractCsvReader<T> {
 	 *             Read issue occurred.
 	 */
 	public T read() throws IOException {
-		return build(csvReader.read());
+		return read(null);
 	}
 
 	/**
 	 * Return a bean read from the reader.
 	 *
+	 * @param setter
+	 *            Optional setter for raw properties.
+	 * @return the read bean.
+	 * @throws IOException
+	 *             Read issue occurred.
+	 */
+	public T read(final TriConsumer<T, String, String> setter) throws IOException {
+		return build(csvReader.read(), setter);
+	}
+
+	/**
+	 * Return a bean read from the reader.
+	 *
+	 * @param setter
+	 *            Optional setter for raw properties.
 	 * @param values
 	 *            the property values.
 	 * @return the bean built with values.
 	 */
-	protected T build(final List<String> values) {
+	protected T build(final List<String> values, final TriConsumer<T, String, String> setter) {
 		if (values.isEmpty()) {
 			return null;
 		}
@@ -182,7 +199,7 @@ public abstract class AbstractCsvReader<T> {
 			final T bean = clazz.getDeclaredConstructor().newInstance();
 
 			// Fill the instance
-			fillInstance(bean, values);
+			fillInstance(bean, values, setter);
 
 			// Bean is completed
 			return bean;
@@ -198,10 +215,13 @@ public abstract class AbstractCsvReader<T> {
 	 *            The target bean.
 	 * @param values
 	 *            The raw {@link String} values to set to the bean.
+	 * @param setter
+	 *            Optional setter for raw properties.
 	 * @throws ReflectiveOperationException
 	 *             When bean cannot be built with reflection.
 	 */
-	protected void fillInstance(final T bean, final List<String> values) throws ReflectiveOperationException {
+	protected void fillInstance(final T bean, final List<String> values, final TriConsumer<T, String, String> setter)
+			throws ReflectiveOperationException {
 		int index = 0;
 		for (final String property : headers) {
 			if (index >= values.size()) {
@@ -215,7 +235,7 @@ public abstract class AbstractCsvReader<T> {
 				// Read the mapped column value
 				final String rawValue = values.get(index);
 				if (rawValue.length() > 0) {
-					setProperty(bean, property, rawValue);
+					setProperty(bean, property, rawValue, setter);
 				}
 			}
 			index++;
@@ -231,16 +251,22 @@ public abstract class AbstractCsvReader<T> {
 	 *            the bean property to set.
 	 * @param rawValue
 	 *            the raw value to set.
+	 * @param setter
+	 *            Optional setter for raw properties.
 	 * @throws ReflectiveOperationException
 	 *             When bean cannot be built with reflection.
 	 */
-	protected void setProperty(final T bean, final String property, final String rawValue)
-			throws ReflectiveOperationException {
-		final int fkeyIndex = property.indexOf('.');
-		if (fkeyIndex == -1) {
-			setSimpleProperty(bean, property, rawValue);
+	protected void setProperty(final T bean, final String property, final String rawValue,
+			final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
+		if (setter == null) {
+			final int fkeyIndex = property.indexOf('.');
+			if (fkeyIndex == -1) {
+				setSimpleProperty(bean, property, rawValue);
+			} else {
+				setForeignProperty(bean, property, rawValue, fkeyIndex);
+			}
 		} else {
-			setForeignProperty(bean, property, rawValue, fkeyIndex);
+			setter.accept(bean, property, rawValue);
 		}
 	}
 
@@ -260,6 +286,8 @@ public abstract class AbstractCsvReader<T> {
 			throws ReflectiveOperationException {
 		throw new ReflectiveOperationException("Foreign key management is not supported in bean mode");
 	}
+
+	Map<Class<?>, Map<String, Field>> fields = new WeakHashMap<>();
 
 	/**
 	 * Return the field from the given class.

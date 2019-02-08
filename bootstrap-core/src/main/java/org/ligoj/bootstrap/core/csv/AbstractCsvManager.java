@@ -9,9 +9,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 
@@ -58,7 +60,29 @@ public abstract class AbstractCsvManager {
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
-	public abstract <T> List<T> toBean(Class<T> beanType, Reader input) throws IOException;
+	public <T> List<T> toBean(Class<T> beanType, Reader input) throws IOException {
+		return toBean(beanType, input, null);
+	}
+
+	/**
+	 * Return a list of JPA bean re ad from the given CSV input. Headers are expected.
+	 *
+	 * @param <T>
+	 *            Bean type.
+	 * @param beanType
+	 *            the JPA bean class.
+	 * @param input
+	 *            the CSV input.
+	 * @param setter
+	 *            Optional setter for raw properties.
+	 * @return A new bean instance of type T.
+	 * @throws IOException
+	 *             Read issue occurred.
+	 */
+	public <T> List<T> toBean(Class<T> beanType, Reader input, final TriConsumer<T, String, String> setter)
+			throws IOException {
+		return Collections.emptyList();
+	}
 
 	/**
 	 * Writes to the given writer the given items in CSV format with a header. The generator use Java Bean properties

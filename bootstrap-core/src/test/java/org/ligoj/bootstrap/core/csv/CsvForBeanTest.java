@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class CsvForBeanTest {
 	private CsvForBean csvForBean;
 
 	@Test
-	public void toCsvEmpty() throws Exception {
+	public void toCsvEmpty() throws IOException {
 		final StringWriter result = new StringWriter();
 		csvForBean.toCsv(new ArrayList<DummyEntity>(), DummyEntity.class, result);
 
@@ -59,7 +60,7 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toCsvNullProperty() throws Exception {
+	public void toCsvNullProperty() throws IOException {
 		final List<DummyEntity> items = new ArrayList<>();
 		final StringWriter result = new StringWriter();
 		final DummyEntity newWine = newWine();
@@ -73,7 +74,7 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toCsvSpecialChars() throws Exception {
+	public void toCsvSpecialChars() throws IOException {
 		final List<DummyEntity> items = new ArrayList<>();
 		final StringWriter result = new StringWriter();
 		final DummyEntity newWine = newWine();
@@ -89,7 +90,7 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toCsv() throws Exception {
+	public void toCsv() throws IOException {
 		final List<DummyEntity> items = new ArrayList<>();
 		items.add(newWine());
 		final StringWriter result = new StringWriter();
@@ -101,11 +102,50 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBean() throws Exception {
+	public void toBean() throws IOException {
 		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class,
 				new StringReader("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
 		assertEquals(newWine(), items.get(0));
+	}
+
+	@Test
+	public void toBeanPerformance() throws IOException {
+		final int count = 100;
+		for (int i = count; i-- > 0;) {
+			toBeanPerformanceP();
+		}
+	}
+
+	public void toBeanPerformanceP() throws IOException {
+		final StringBuilder buffer = new StringBuilder("name;name;name;name;name;name\n");
+		final int count = 1000;
+		for (int i = count; i-- > 0;) {
+			buffer.append("name;name;name;name;name;name\n");
+		}
+		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()));
+		Assertions.assertEquals(count, items.size());
+		Assertions.assertNotNull(items.get(0).getName());
+	}
+
+	@Test
+	public void toBeanPerformance2() throws IOException {
+		final int count = 100;
+		for (int i = count; i-- > 0;) {
+			toBeanPerformanceP2();
+		}
+	}
+
+	public void toBeanPerformanceP2() throws IOException {
+		final StringBuilder buffer = new StringBuilder("name;name;name;name;name;name\n");
+		final int count = 1000;
+		for (int i = count; i-- > 0;) {
+			buffer.append("name;name;name;name;name;name\n");
+		}
+		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()),
+				(item, p, v) -> item.setName(v));
+		Assertions.assertEquals(count, items.size());
+		Assertions.assertNotNull(items.get(0).getName());
 	}
 
 	@Test
