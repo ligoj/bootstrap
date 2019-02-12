@@ -28,7 +28,7 @@ public final class Main {
 	/**
 	 * Attached the last started server instance. Take care of thread safe issues. This enables server shutdown.
 	 */
-	private static volatile Server lastStartedServer;
+	private static Server lastStartedServer;
 
 	/**
 	 * Constructor : load property and XmlConfiguration
