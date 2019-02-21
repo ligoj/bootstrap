@@ -43,6 +43,7 @@
 		<revision>2.4.6-SNAPSHOT</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 		<plugin.jacoco>0.8.3</plugin.jacoco>
+		<plugin.sonar>3.6.0.1398</plugin.sonar>
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.9.2</aspectj.version>
