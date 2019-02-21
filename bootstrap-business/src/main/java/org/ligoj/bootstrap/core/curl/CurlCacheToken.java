@@ -48,8 +48,7 @@ public class CurlCacheToken {
 	public String getTokenCache(@CacheKey @NotNull final String key, final Function<String, String> function,
 			final int retries, final Supplier<? extends RuntimeException> exceptionSupplier) {
 		// First access to this function
-		return IntStream.range(0, retries).mapToObj(i -> function.apply(key)).filter(Objects::nonNull).findFirst()
-				.orElseThrow(exceptionSupplier);
+		return getTokenCache(key, function::apply, retries, exceptionSupplier);
 	}
 
 	/**
@@ -69,7 +68,8 @@ public class CurlCacheToken {
 	public String getTokenCache(@CacheKey @NotNull final String key, final UnaryOperator<String> function,
 			final int retries, final Supplier<? extends RuntimeException> exceptionSupplier) {
 		// First access to this function
-		return getTokenCache(key, (Function<String, String>) function, retries, exceptionSupplier);
+		return IntStream.range(0, retries).mapToObj(i -> function.apply(key)).filter(Objects::nonNull).findFirst()
+				.orElseThrow(exceptionSupplier);
 	}
 
 	/**
@@ -92,10 +92,7 @@ public class CurlCacheToken {
 	public String getTokenCache(@NotNull final Object synchronizeObject, @NotNull final String key,
 			final Function<String, String> function, final int retries,
 			final Supplier<? extends RuntimeException> exceptionSupplier) {
-		synchronized (synchronizeObject) {
-			// Use the jcache API to get the token
-			return self.getTokenCache(key, function, retries, exceptionSupplier);
-		}
+		return getTokenCache(synchronizeObject, key, function::apply, retries, exceptionSupplier);
 	}
 
 	/**
@@ -116,7 +113,10 @@ public class CurlCacheToken {
 	public String getTokenCache(@NotNull final Object synchronizeObject, @NotNull final String key,
 			final UnaryOperator<String> function, final int retries,
 			final Supplier<? extends RuntimeException> exceptionSupplier) {
-		return getTokenCache(synchronizeObject, key, (Function<String, String>) function, retries, exceptionSupplier);
+		synchronized (synchronizeObject) {
+			// Use the jcache API to get the token
+			return self.getTokenCache(key, function, retries, exceptionSupplier);
+		}
 	}
 
 }
