@@ -61,7 +61,7 @@
 		<guava.version>26.0-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.11.2</hazelcast.version>
-		<hibernate.version>5.3.7.Final</hibernate.version>
+		<hibernate.version>5.4.1.Final</hibernate.version>
 		<hibernate-validator.version>6.0.14.Final</hibernate-validator.version>
 		<httpclient.version>4.5.6</httpclient.version>
 		<httpcore.version>4.4.10</httpcore.version>
