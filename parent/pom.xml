@@ -42,6 +42,7 @@
 		<bootstrap.version>2.4.6-SNAPSHOT</bootstrap.version>
 		<revision>2.4.6-SNAPSHOT</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
+		<plugin.jacoco>0.8.3</plugin.jacoco>
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.9.2</aspectj.version>
