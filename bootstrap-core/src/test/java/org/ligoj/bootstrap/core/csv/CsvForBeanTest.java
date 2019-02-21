@@ -110,6 +110,12 @@ public class CsvForBeanTest {
 	}
 
 	@Test
+	public void toBeanNull() throws IOException {
+		final DummyEntity item = csvForBean.toBean(new CsvBeanReader<>(new StringReader(""), DummyEntity.class));
+		Assertions.assertNull(item);
+	}
+
+	@Test
 	public void toBeanPerformance() throws IOException {
 		final int count = 100;
 		for (int i = count; i-- > 0;) {

@@ -49,11 +49,14 @@ public class PluginListenerTest {
 		pluginVo.setId("I");
 		SystemPlugin plugin = new SystemPlugin();
 		plugin.setKey("K");
+		plugin.setArtifact("A");
+		plugin.setType("T");
+		plugin.setVersion("V");
 		pluginVo.setPlugin(plugin);
 		pluginVo.setVendor("V");
 		Assertions.assertEquals("{\"id\":\"I\",\"name\":\"N\",\"plugin\":{\"id\":null,"
 				+ "\"createdBy\":null,\"createdDate\":null,\"lastModifiedBy\":null,\"lastModifiedDate\":null,"
-				+ "\"version\":null,\"key\":\"K\",\"artifact\":null,\"type\":null},"
+				+ "\"version\":\"V\",\"key\":\"K\",\"artifact\":\"A\",\"type\":\"T\"},"
 				+ "\"vendor\":\"V\",\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false}",
 				new ObjectMapper().writeValueAsString(pluginVo));
 	}

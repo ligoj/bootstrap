@@ -86,16 +86,6 @@ public class ValidationJsonException extends RuntimeException {
 	}
 
 	/**
-	 * Constructor from mapping exception : invalid types.
-	 *
-	 * @param mappingException
-	 *            validation exception containing errors.
-	 */
-	public ValidationJsonException(final InvalidFormatException mappingException) {
-		this(mappingException, String.valueOf(mappingException.getValue()), parseRule(mappingException));
-	}
-
-	/**
 	 * Constructor from mapping exception : invalid type conversion.
 	 *
 	 * @param mappingException

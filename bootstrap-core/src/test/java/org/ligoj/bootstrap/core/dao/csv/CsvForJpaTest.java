@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.core.dao.csv;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +31,7 @@ import org.ligoj.bootstrap.core.csv.DummyEntity3;
 import org.ligoj.bootstrap.core.csv.Wrapper;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -57,7 +59,14 @@ public class CsvForJpaTest {
 	@Autowired
 	private CsvForJpa csvForJpa;
 
+
 	@Test
+	public void toBeanEmpty() throws IOException {
+		final List<DummyEntity> jpa = csvForJpa.toBean(DummyEntity.class,
+				new InputStreamReader(new ClassPathResource("csv/demo/dummyentity.csv").getInputStream()), null);
+		Assertions.assertTrue(jpa.isEmpty());
+	}
+@Test
 	public void toCsvList() throws IOException {
 		final List<DummyEntity> jpa = csvForJpa.toBean(DummyEntity.class, "csv/demo/dummyentity.csv");
 		Assertions.assertFalse(jpa.isEmpty());
@@ -65,9 +74,7 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toCsvListLocation() {
-		Assertions.assertThrows(IOException.class, () -> {
-			csvForJpa.toJpa(DummyEntity.class, "csv/__.csv", true);
-		});
+		Assertions.assertThrows(IOException.class, () -> csvForJpa.toJpa(DummyEntity.class, "csv/__.csv", true));
 	}
 
 	@Test
@@ -174,23 +181,20 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaUnknownProperty() {
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity.class, new StringReader("blah\n4\n"), true);
-		});
+		Assertions.assertThrows(TechnicalException.class,
+				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("blah\n4\n"), true));
 	}
 
 	@Test
 	public void toJpaInvalidTrailing() {
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity.class, new StringReader("'8' \t7\n"), false);
-		});
+		Assertions.assertThrows(TechnicalException.class,
+				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("'8' \t7\n"), false));
 	}
 
 	@Test
 	public void toJpaTooMuchValues() {
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity.class, new StringReader("id\n4;1\n"), true);
-		});
+		Assertions.assertThrows(TechnicalException.class,
+				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("id\n4;1\n"), true));
 	}
 
 	@Test
@@ -339,9 +343,8 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaUnknownClass() {
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(Integer.class, new StringReader("n\n1\n"), true);
-		});
+		Assertions.assertThrows(TechnicalException.class,
+				() -> csvForJpa.toJpa(Integer.class, new StringReader("n\n1\n"), true));
 	}
 
 	@Test
@@ -370,20 +373,15 @@ public class CsvForJpaTest {
 		for (int i = 10000; i-- > 0;) {
 			stringBuilder.append("1;4;5;3;7;8;6;2\n");
 		}
-		Assertions.assertTimeout(Duration.ofSeconds(2), () -> {
-			final List<DummyEntity> jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(stringBuilder.toString()),
-					false);
-			Assertions.assertEquals(10000, jpa.size());
-		});
+		Assertions.assertTimeout(Duration.ofSeconds(2), () -> Assertions.assertEquals(10000,
+				csvForJpa.toJpa(DummyEntity.class, new StringReader(stringBuilder.toString()), false).size()));
 	}
 
 	@Test
 	public void toCsvPerformance() {
 		final List<DummyEntity> items = newWines();
 		final StringWriter result = new StringWriter();
-		Assertions.assertTimeout(Duration.ofSeconds(2), () -> {
-			csvForJpa.toCsv(items, DummyEntity.class, result);
-		});
+		Assertions.assertTimeout(Duration.ofSeconds(2), () -> csvForJpa.toCsv(items, DummyEntity.class, result));
 
 		// 160 per lines + 56 for header
 		Assertions.assertEquals(160000 + 56, result.getBuffer().length());
@@ -391,9 +389,8 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaMissingValues() {
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity.class, new StringReader("4;3.5;5;5;5;5;5;5;5;5;5;5\n"), false);
-		});
+		Assertions.assertThrows(TechnicalException.class,
+				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("4;3.5;5;5;5;5;5;5;5;5;5;5\n"), false));
 	}
 
 	@Test
@@ -411,9 +408,7 @@ public class CsvForJpaTest {
 	public void toCsvEntityPerformance() {
 		final List<DummyEntity> items = newWines();
 		final StringWriter result = new StringWriter();
-		Assertions.assertTimeout(Duration.ofSeconds(1), () -> {
-			csvForJpa.toCsvEntity(items, DummyEntity.class, result);
-		});
+		Assertions.assertTimeout(Duration.ofSeconds(1), () -> csvForJpa.toCsvEntity(items, DummyEntity.class, result));
 	}
 
 	@Test
@@ -452,9 +447,8 @@ public class CsvForJpaTest {
 
 	@Test
 	public void toJpaForeignKeyNotExist1() {
-		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id!\n8000"), true);
-		});
+		final TechnicalException iau = Assertions.assertThrows(TechnicalException.class,
+				() -> csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id!\n8000"), true));
 		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = 8000", iau.getCause().getMessage());
 	}
 
@@ -597,9 +591,7 @@ public class CsvForJpaTest {
 
 	@Test
 	public void resetInvalidPath() {
-		Assertions.assertThrows(FileNotFoundException.class, () -> {
-			csvForJpa.reset("csv/__", DummyEntity.class);
-		});
+		Assertions.assertThrows(FileNotFoundException.class, () -> csvForJpa.reset("csv/__", DummyEntity.class));
 	}
 
 	/**
