@@ -13,11 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface SystemUserRepository extends RestRepository<SystemUser, String> {
 
 	/**
-	 * Administrator role implicit criteria.
-	 */
-	String IS_ADMIN = "(EXISTS(SELECT 1 FROM SystemRoleAssignment ra INNER JOIN ra.role r WHERE ra.user.id = :user AND EXISTS(SELECT 1 FROM SystemAuthorization a WHERE a.role = r AND a.pattern = '.*' AND a.type = org.ligoj.bootstrap.model.system.SystemAuthorization$AuthorizationType.API)))";
-
-	/**
 	 * Return user and his/her roles.
 	 *
 	 * @param login
@@ -36,6 +31,6 @@ public interface SystemUserRepository extends RestRepository<SystemUser, String>
 	 *            The user name requesting the operation.
 	 * @return <code>true</code> when the current user is an administrator.
 	 */
-	@Query("SELECT COUNT(s)>0 FROM SystemUser s WHERE " + IS_ADMIN)
+	@Query("SELECT COUNT(s)>0 FROM SystemUser s WHERE " + SystemUser.IS_ADMIN)
 	boolean isAdmin(String user);
 }
