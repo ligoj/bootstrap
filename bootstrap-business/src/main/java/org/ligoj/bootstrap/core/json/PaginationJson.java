@@ -51,7 +51,7 @@ public class PaginationJson {
 
 	/**
 	 * Get JQGrid pagination information from query parameters.
-	 * 
+	 *
 	 * @param uriInfo
 	 *            query parameters.
 	 * @return a page request build with sort and filter.
@@ -62,7 +62,7 @@ public class PaginationJson {
 
 	/**
 	 * Get JQGrid pagination information from query parameters.
-	 * 
+	 *
 	 * @param uriInfo
 	 *            query parameters.
 	 * @param ormMapping
@@ -83,7 +83,7 @@ public class PaginationJson {
 
 	/**
 	 * Return the sort object.
-	 * 
+	 *
 	 * @param sortColumn
 	 *            the optional ordered column.
 	 * @param sorDirection
@@ -103,7 +103,7 @@ public class PaginationJson {
 
 	/**
 	 * Get DataTable pagination information from query parameters
-	 * 
+	 *
 	 * @param uriInfo
 	 *            query parameters.
 	 * @param ormMapping
@@ -115,70 +115,8 @@ public class PaginationJson {
 	}
 
 	/**
-	 * Return the zero index page.
-	 * 
-	 * @param parameters
-	 *            The available query parameters.
-	 * @return The page index or default length 10.
-	 */
-	public int getPageLength(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst("rows")).map(Integer::parseInt)
-				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.PAGE_LENGTH)).map(Integer::parseInt)
-						.orElse(DEFAULT_PAGE_SIZE));
-	}
-
-	/**
-	 * Return the 1 based index page.
-	 * 
-	 * @param parameters
-	 *            The available query parameters.
-	 * @return The page index or <code>null</code>. Starts from 1.
-	 */
-	public Integer getPage(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst("page")).map(Integer::parseInt).map(p -> Math.max(1, p))
-				.orElse(null);
-	}
-
-	/**
-	 * Return the zero based start.
-	 * 
-	 * @param parameters
-	 *            The available query parameters.
-	 * @return The page index or<code>0</code>. Starts from 0.
-	 */
-	private int getStart(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst(DataTableAttributes.START)).map(Integer::parseInt)
-				.map(s -> Math.max(0, s)).orElse(0);
-	}
-
-	/**
-	 * Return the sorted column.
-	 * 
-	 * @param parameters
-	 *            The available query parameters.
-	 * @return the sorted column or <code>null</code>.
-	 */
-	private String getSortColumn(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst("sidx"))
-				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.SORTED_COLUMN))
-						.map(i -> parameters.getFirst(String.format(DataTableAttributes.DATA_PROP, i))).orElse(null));
-	}
-
-	/**
-	 * Return the sorted direction.
-	 * 
-	 * @param parameters
-	 *            The available query parameters.
-	 * @return the sorted column or <code>ASC</code>.
-	 */
-	private String getSortDirection(final MultivaluedMap<String, String> parameters) {
-		return Optional.ofNullable(parameters.getFirst("sord"))
-				.orElse(ObjectUtils.defaultIfNull(parameters.getFirst(DataTableAttributes.SORT_DIRECTION), "ASC"));
-	}
-
-	/**
 	 * Get DataTable pagination information from query parameters.
-	 * 
+	 *
 	 * @param uriInfo
 	 *            Query parameters.
 	 * @param ormMapping
@@ -204,6 +142,68 @@ public class PaginationJson {
 	}
 
 	/**
+	 * Return the zero index page.
+	 *
+	 * @param parameters
+	 *            The available query parameters.
+	 * @return The page index or default length 10.
+	 */
+	public int getPageLength(final MultivaluedMap<String, String> parameters) {
+		return Optional.ofNullable(parameters.getFirst("rows")).map(Integer::parseInt)
+				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.PAGE_LENGTH)).map(Integer::parseInt)
+						.orElse(DEFAULT_PAGE_SIZE));
+	}
+
+	/**
+	 * Return the 1 based index page.
+	 *
+	 * @param parameters
+	 *            The available query parameters.
+	 * @return The page index or <code>null</code>. Starts from 1.
+	 */
+	public Integer getPage(final MultivaluedMap<String, String> parameters) {
+		return Optional.ofNullable(parameters.getFirst("page")).map(Integer::parseInt).map(p -> Math.max(1, p))
+				.orElse(null);
+	}
+
+	/**
+	 * Return the zero based start.
+	 *
+	 * @param parameters
+	 *            The available query parameters.
+	 * @return The page index or<code>0</code>. Starts from 0.
+	 */
+	private int getStart(final MultivaluedMap<String, String> parameters) {
+		return Optional.ofNullable(parameters.getFirst(DataTableAttributes.START)).map(Integer::parseInt)
+				.map(s -> Math.max(0, s)).orElse(0);
+	}
+
+	/**
+	 * Return the sorted column.
+	 *
+	 * @param parameters
+	 *            The available query parameters.
+	 * @return the sorted column or <code>null</code>.
+	 */
+	private String getSortColumn(final MultivaluedMap<String, String> parameters) {
+		return Optional.ofNullable(parameters.getFirst("sidx"))
+				.orElse(Optional.ofNullable(parameters.getFirst(DataTableAttributes.SORTED_COLUMN))
+						.map(i -> parameters.getFirst(String.format(DataTableAttributes.DATA_PROP, i))).orElse(null));
+	}
+
+	/**
+	 * Return the sorted direction.
+	 *
+	 * @param parameters
+	 *            The available query parameters.
+	 * @return the sorted column or <code>ASC</code>.
+	 */
+	private String getSortDirection(final MultivaluedMap<String, String> parameters) {
+		return Optional.ofNullable(parameters.getFirst("sord"))
+				.orElse(ObjectUtils.defaultIfNull(parameters.getFirst(DataTableAttributes.SORT_DIRECTION), "ASC"));
+	}
+
+	/**
 	 * Build the {@link PageRequest} with ordering information.
 	 */
 	private PageRequest buildOrderedPageRequest(final Map<String, String> ormMapping,
@@ -216,7 +216,7 @@ public class PaginationJson {
 
 	/**
 	 * Build and return a new {@link PageRequest} from the page information and ordering.
-	 * 
+	 *
 	 * @param ormMapping
 	 *            The mapping from JSon name to ORM property or function.
 	 * @param parameters
@@ -269,7 +269,7 @@ public class PaginationJson {
 
 	/**
 	 * Apply pagination for DataTable component.
-	 * 
+	 *
 	 * @param <T>
 	 *            Entity type.
 	 * @param <E>
@@ -301,7 +301,7 @@ public class PaginationJson {
 
 	/**
 	 * Return a filter structure from the JSon string.
-	 * 
+	 *
 	 * @param jsonString
 	 *            the JSon string generated by JQGrid component.
 	 * @return a filter structure.

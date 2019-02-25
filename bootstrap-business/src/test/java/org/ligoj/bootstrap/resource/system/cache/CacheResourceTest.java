@@ -167,11 +167,11 @@ public class CacheResourceTest extends AbstractBootTest {
 			final CacheStatistics result = new CacheStatistics();
 			final com.hazelcast.cache.CacheStatistics statistics = Mockito
 					.mock(com.hazelcast.cache.CacheStatistics.class);
-			Mockito.doReturn(1.1f).when(statistics).getCacheMissPercentage();
-			Mockito.doReturn(2.2f).when(statistics).getCacheHitPercentage();
-			Mockito.doReturn(3l).when(statistics).getCacheHits();
-			Mockito.doReturn(4l).when(statistics).getCacheMisses();
-			Mockito.doReturn(5f).when(statistics).getAverageGetTime();
+			Mockito.doReturn(1.1F).when(statistics).getCacheMissPercentage();
+			Mockito.doReturn(2.2F).when(statistics).getCacheHitPercentage();
+			Mockito.doReturn(3L).when(statistics).getCacheHits();
+			Mockito.doReturn(4L).when(statistics).getCacheMisses();
+			Mockito.doReturn(5F).when(statistics).getAverageGetTime();
 			cacheResource.setStatistics(result, statistics);
 
 			// Check results

@@ -59,15 +59,95 @@ import lombok.extern.slf4j.Slf4j;
 public class CurlProcessor implements AutoCloseable {
 
 	/**
+	 * Dummy SSL manager.
+	 */
+	public static class TrustedX509TrustManager implements javax.net.ssl.X509TrustManager {
+		@Override
+		public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
+			// Ignore this, it's OK
+		}
+
+		@Override
+		public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
+			// Yes we trust
+		}
+
+		@Override
+		public X509Certificate[] getAcceptedIssuers() {
+			return new X509Certificate[0];
+		}
+	}
+	/**
 	 * Proxy configuration constants
 	 */
 	private static final String HTTPS_PROXY_PORT = "https.proxyPort";
+
 	private static final String HTTPS_PROXY_HOST = "https.proxyHost";
 
 	/**
 	 * Default callback.
 	 */
 	private static final DefaultHttpResponseCallback DEFAULT_CALLBACK = new DefaultHttpResponseCallback();
+
+	/**
+	 * Support HTTP methods.
+	 */
+	private static final Map<String, Class<?>> SUPPORTED_METHOD = new HashMap<>();
+
+	static {
+		SUPPORTED_METHOD.put(HttpMethod.GET, HttpGet.class);
+		SUPPORTED_METHOD.put(HttpMethod.POST, HttpPost.class);
+		SUPPORTED_METHOD.put(HttpMethod.PUT, HttpPut.class);
+		SUPPORTED_METHOD.put(HttpMethod.DELETE, HttpDelete.class);
+	}
+
+	/**
+	 * Return a trusted TLS registry.
+	 *
+	 * @return a trusted TLS registry.
+	 */
+	public static Registry<ConnectionSocketFactory> newSslContext() {
+		return newSslContext("TLS");
+	}
+
+	/**
+	 * Return a trusted SSL registry using the given protocol.
+	 *
+	 * @param protocol
+	 *            The SSL protocol.
+	 * @return A new trusted SSL registry using the given protocol.
+	 */
+	protected static Registry<ConnectionSocketFactory> newSslContext(final String protocol) {
+		// Initialize HTTPS scheme
+		final TrustManager[] allCerts = new TrustManager[] { new TrustedX509TrustManager() };
+		try {
+			final SSLContext sslContext = SSLContext.getInstance(protocol);
+			sslContext.init(null, allCerts, new SecureRandom());
+			final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
+					NoopHostnameVerifier.INSTANCE);
+			return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslSocketFactory)
+					.register("http", PlainConnectionSocketFactory.getSocketFactory()).build();
+		} catch (final GeneralSecurityException e) {
+			// Wrap the exception
+			throw new IllegalStateException("Unable to build a secured " + protocol + " registry", e);
+		}
+	}
+
+	/**
+	 * Create a new processor, check the URL, and if failed, throw a {@link ValidationJsonException}
+	 *
+	 * @param url
+	 *            The URL to check.
+	 * @param propertyName
+	 *            Name of the validation JSon property
+	 * @param errorText
+	 *            I18N key of the validation message.
+	 */
+	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
+		try (final CurlProcessor curlProcessor = new CurlProcessor()) {
+			curlProcessor.validate(url, propertyName, errorText);
+		}
+	}
 
 	@Getter
 	protected final CloseableHttpClient httpClient;
@@ -84,15 +164,10 @@ public class CurlProcessor implements AutoCloseable {
 	protected Function<CurlRequest, Boolean> replay;
 
 	/**
-	 * Support HTTP methods.
+	 * Prepare a processor without callback on response.
 	 */
-	private static final Map<String, Class<?>> SUPPORTED_METHOD = new HashMap<>();
-
-	static {
-		SUPPORTED_METHOD.put(HttpMethod.GET, HttpGet.class);
-		SUPPORTED_METHOD.put(HttpMethod.POST, HttpPost.class);
-		SUPPORTED_METHOD.put(HttpMethod.PUT, HttpPut.class);
-		SUPPORTED_METHOD.put(HttpMethod.DELETE, HttpDelete.class);
+	public CurlProcessor() {
+		this(DEFAULT_CALLBACK);
 	}
 
 	/**
@@ -129,10 +204,84 @@ public class CurlProcessor implements AutoCloseable {
 	}
 
 	/**
-	 * Prepare a processor without callback on response.
+	 * Add headers to HTTP request depending on the content-type and content.
 	 */
-	public CurlProcessor() {
-		this(DEFAULT_CALLBACK);
+	private void addHeaders(final CurlRequest request, final String content, final HttpRequestBase httpRequest) {
+		if (StringUtils.isNotEmpty(content)) {
+			// Add the content
+			((HttpEntityEnclosingRequest) httpRequest).setEntity(new StringEntity(content, StandardCharsets.UTF_8));
+
+			// Add content-type header if not provided
+			addSingleValuedHeader(request, httpRequest, "Content-Type", "application/x-www-form-urlencoded");
+		}
+
+		// Add charset if not provided
+		addSingleValuedHeader(request, httpRequest, "Accept-Charset", "utf-8");
+
+		// Add headers
+		for (final Entry<String, String> header : request.getHeaders().entrySet()) {
+			httpRequest.addHeader(header.getKey(), header.getValue());
+		}
+	}
+
+	/**
+	 * Add a header if not defined in <param>request</param>.
+	 *
+	 * @param request
+	 *            The user defined request.
+	 * @param httpRequest
+	 *            The target HTTP request.
+	 * @param header
+	 *            The single valued header to add.
+	 * @param defaultHeader
+	 *            The default value of header to add.
+	 */
+	private void addSingleValuedHeader(final CurlRequest request, final HttpRequestBase httpRequest,
+			final String header, final String defaultHeader) {
+		// Look the headers, ignoring case for the header to add
+		if (request.getHeaders().keySet().stream().noneMatch(header::equalsIgnoreCase)) {
+			// Default header
+			httpRequest.addHeader(header, defaultHeader);
+		}
+	}
+
+	/**
+	 * Call the HTTP method.
+	 *
+	 * @param request
+	 *            The request to process.
+	 * @param url
+	 *            The URL to call.
+	 * @return <code>true</code> when the call succeed.
+	 * @throws Exception
+	 *             When process failed at protocol level or timeout.
+	 */
+	protected boolean call(final CurlRequest request, final String url) throws Exception { // NOSONAR - Many Exception
+		final HttpRequestBase httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod())
+				.getConstructor(String.class).newInstance(url);
+		addHeaders(request, request.getContent(), httpRequest);
+
+		// Timeout management
+		if (request.getTimeout() != null) {
+			// Hard timeout has been set
+			final TimerTask task = new TimerTask() {
+				@Override
+				public void run() {
+					// Abort the query if not yet completed...
+					httpRequest.abort();
+				}
+			};
+			new Timer(true).schedule(task, request.getTimeout());
+		}
+
+		// Execute the request
+		try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
+			// Save the status
+			request.setStatus(response.getStatusLine().getStatusCode());
+
+			// Ask for the callback a flow control
+			return ObjectUtils.defaultIfNull(request.getCallback(), callback).onResponse(request, response);
+		}
 	}
 
 	/**
@@ -187,63 +336,6 @@ public class CurlProcessor implements AutoCloseable {
 	}
 
 	/**
-	 * Create a new processor, check the URL, and if failed, throw a {@link ValidationJsonException}
-	 *
-	 * @param url
-	 *            The URL to check.
-	 * @param propertyName
-	 *            Name of the validation JSon property
-	 * @param errorText
-	 *            I18N key of the validation message.
-	 */
-	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
-		try (final CurlProcessor curlProcessor = new CurlProcessor()) {
-			curlProcessor.validate(url, propertyName, errorText);
-		}
-	}
-
-	/**
-	 * Check the URL, and if failed, throw a {@link ValidationJsonException}
-	 *
-	 * @param url
-	 *            The URL to check.
-	 * @param propertyName
-	 *            Name of the validation JSon property name for {@link ValidationJsonException} when the check fails.
-	 * @param errorText
-	 *            I18N key of the validation message when the check fails.
-	 */
-	public void validate(final String url, final String propertyName, final String errorText) {
-		validate(new CurlRequest(HttpMethod.GET, url, null), propertyName, errorText);
-	}
-
-	/**
-	 * Check the request, and if failed, throw a {@link ValidationJsonException}
-	 *
-	 * @param request
-	 *            The request to check.
-	 * @param propertyName
-	 *            Name of the validation JSon property
-	 * @param errorText
-	 *            I18N key of the validation message.
-	 */
-	public void validate(final CurlRequest request, final String propertyName, final String errorText) {
-		if (!process(request)) {
-			throw new ValidationJsonException(propertyName, errorText);
-		}
-	}
-
-	/**
-	 * Execute the given requests. Cookies are kept along this execution and the next ones associated to this processor.
-	 *
-	 * @param requests
-	 *            the request to proceed.
-	 * @return <code>true</code> if the process succeed.
-	 */
-	public boolean process(final List<CurlRequest> requests) {
-		return process(requests.toArray(new CurlRequest[0]));
-	}
-
-	/**
 	 * Process the given request.
 	 *
 	 * @param request
@@ -270,135 +362,43 @@ public class CurlProcessor implements AutoCloseable {
 	}
 
 	/**
-	 * Call the HTTP method.
+	 * Execute the given requests. Cookies are kept along this execution and the next ones associated to this processor.
+	 *
+	 * @param requests
+	 *            the request to proceed.
+	 * @return <code>true</code> if the process succeed.
+	 */
+	public boolean process(final List<CurlRequest> requests) {
+		return process(requests.toArray(new CurlRequest[0]));
+	}
+
+	/**
+	 * Check the request, and if failed, throw a {@link ValidationJsonException}
 	 *
 	 * @param request
-	 *            The request to process.
+	 *            The request to check.
+	 * @param propertyName
+	 *            Name of the validation JSon property
+	 * @param errorText
+	 *            I18N key of the validation message.
+	 */
+	public void validate(final CurlRequest request, final String propertyName, final String errorText) {
+		if (!process(request)) {
+			throw new ValidationJsonException(propertyName, errorText);
+		}
+	}
+
+	/**
+	 * Check the URL, and if failed, throw a {@link ValidationJsonException}
+	 *
 	 * @param url
-	 *            The URL to call.
-	 * @return <code>true</code> when the call succeed.
-	 * @throws Exception
-	 *             When process failed at protocol level or timeout.
+	 *            The URL to check.
+	 * @param propertyName
+	 *            Name of the validation JSon property name for {@link ValidationJsonException} when the check fails.
+	 * @param errorText
+	 *            I18N key of the validation message when the check fails.
 	 */
-	protected boolean call(final CurlRequest request, final String url) throws Exception { // NOSONAR - Many Exception
-		final HttpRequestBase httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod())
-				.getConstructor(String.class).newInstance(url);
-		addHeaders(request, request.getContent(), httpRequest);
-
-		// Timeout management
-		if (request.getTimeout() != null) {
-			// Hard timeout has been set
-			final TimerTask task = new TimerTask() {
-				@Override
-				public void run() {
-					// Abort the query if not yet completed...
-					httpRequest.abort();
-				}
-			};
-			new Timer(true).schedule(task, request.getTimeout());
-		}
-
-		// Execute the request
-		try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
-			// Save the status
-			request.setStatus(response.getStatusLine().getStatusCode());
-
-			// Ask for the callback a flow control
-			return ObjectUtils.defaultIfNull(request.getCallback(), callback).onResponse(request, response);
-		}
-	}
-
-	/**
-	 * Add headers to HTTP request depending on the content-type and content.
-	 */
-	private void addHeaders(final CurlRequest request, final String content, final HttpRequestBase httpRequest) {
-		if (StringUtils.isNotEmpty(content)) {
-			// Add the content
-			((HttpEntityEnclosingRequest) httpRequest).setEntity(new StringEntity(content, StandardCharsets.UTF_8));
-
-			// Add content-type header if not provided
-			addSingleValuedHeader(request, httpRequest, "Content-Type", "application/x-www-form-urlencoded");
-		}
-
-		// Add charset if not provided
-		addSingleValuedHeader(request, httpRequest, "Accept-Charset", "utf-8");
-
-		// Add headers
-		for (final Entry<String, String> header : request.getHeaders().entrySet()) {
-			httpRequest.addHeader(header.getKey(), header.getValue());
-		}
-	}
-
-	/**
-	 * Add a header if not defined in <param>request</param>.
-	 *
-	 * @param request
-	 *            The user defined request.
-	 * @param httpRequest
-	 *            The target HTTP request.
-	 * @param header
-	 *            The single valued header to add.
-	 * @param defaultHeader
-	 *            The default value of header to add.
-	 */
-	private void addSingleValuedHeader(final CurlRequest request, final HttpRequestBase httpRequest,
-			final String header, final String defaultHeader) {
-		// Look the headers, ignoring case for the header to add
-		if (request.getHeaders().keySet().stream().noneMatch(header::equalsIgnoreCase)) {
-			// Default header
-			httpRequest.addHeader(header, defaultHeader);
-		}
-	}
-
-	/**
-	 * Dummy SSL manager.
-	 */
-	public static class TrustedX509TrustManager implements javax.net.ssl.X509TrustManager {
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			return new X509Certificate[0];
-		}
-
-		@Override
-		public void checkClientTrusted(final X509Certificate[] certs, final String authType) {
-			// Ignore this, it's OK
-		}
-
-		@Override
-		public void checkServerTrusted(final X509Certificate[] certs, final String authType) {
-			// Yes we trust
-		}
-	}
-
-	/**
-	 * Return a trusted TLS registry.
-	 *
-	 * @return a trusted TLS registry.
-	 */
-	public static Registry<ConnectionSocketFactory> newSslContext() {
-		return newSslContext("TLS");
-	}
-
-	/**
-	 * Return a trusted SSL registry using the given protocol.
-	 *
-	 * @param protocol
-	 *            The SSL protocol.
-	 * @return A new trusted SSL registry using the given protocol.
-	 */
-	protected static Registry<ConnectionSocketFactory> newSslContext(final String protocol) {
-		// Initialize HTTPS scheme
-		final TrustManager[] allCerts = new TrustManager[] { new TrustedX509TrustManager() };
-		try {
-			final SSLContext sslContext = SSLContext.getInstance(protocol);
-			sslContext.init(null, allCerts, new SecureRandom());
-			final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-					NoopHostnameVerifier.INSTANCE);
-			return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslSocketFactory)
-					.register("http", PlainConnectionSocketFactory.getSocketFactory()).build();
-		} catch (final GeneralSecurityException e) {
-			// Wrap the exception
-			throw new IllegalStateException("Unable to build a secured " + protocol + " registry", e);
-		}
+	public void validate(final String url, final String propertyName, final String errorText) {
+		validate(new CurlRequest(HttpMethod.GET, url, null), propertyName, errorText);
 	}
 }

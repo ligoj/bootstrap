@@ -76,6 +76,39 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
+	 * Return a salt from a integer.
+	 *
+	 * @param salt
+	 *            Any integer.
+	 * @param lower
+	 *            lower value.
+	 * @param upper
+	 *            upper value. Excluded value.
+	 * @return a salt from a integer.
+	 */
+	protected int getInt(final int salt, final int lower, final int upper) {
+		if (lower >= upper) {
+			return lower;
+		}
+		return Math.abs(salt) % (upper - lower) + lower;
+	}
+
+	/**
+	 * Return a salt from a string.
+	 *
+	 * @param salt
+	 *            Any string.
+	 * @param lower
+	 *            lower value.
+	 * @param upper
+	 *            upper value. Excluded value.
+	 * @return a salt from a string.
+	 */
+	protected int getInt(final String salt, final int lower, final int upper) {
+		return getInt(getInt(salt), lower, upper);
+	}
+
+	/**
 	 * Return a date from a salt.
 	 *
 	 * @param salt
@@ -128,15 +161,6 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
-	 * Return current date, from UTC time-zone.
-	 *
-	 * @return current date, from UTC time-zone.
-	 */
-	protected Date now() {
-		return DateUtils.newCalendar().getTime();
-	}
-
-	/**
 	 * Return a date from a salt.
 	 *
 	 * @param salt
@@ -153,6 +177,15 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 		manufacturingDate.set(Calendar.SECOND, 0);
 		manufacturingDate.set(Calendar.MILLISECOND, 0);
 		return manufacturingDate.getTime();
+	}
+
+	/**
+	 * Return current date, from UTC time-zone.
+	 *
+	 * @return current date, from UTC time-zone.
+	 */
+	protected Date now() {
+		return DateUtils.newCalendar().getTime();
 	}
 
 	protected char getChar(final int anyInt) {
@@ -180,21 +213,6 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
-	 * Return a salt from a string.
-	 *
-	 * @param salt
-	 *            Any string.
-	 * @param lower
-	 *            lower value.
-	 * @param upper
-	 *            upper value. Excluded value.
-	 * @return a salt from a string.
-	 */
-	protected int getInt(final String salt, final int lower, final int upper) {
-		return getInt(getInt(salt), lower, upper);
-	}
-
-	/**
 	 * Return one of given items.
 	 *
 	 * @param salt
@@ -207,25 +225,6 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 */
 	protected <T> T getItem(final String salt, final List<T> items) {
 		return items.get(getInt(salt, 0, items.size()));
-	}
-
-	/**
-	 * Return one of given items.
-	 *
-	 * @param salt
-	 *            Any string used as salt.
-	 * @param items
-	 *            source items.
-	 * @return one of given items or <tt>null</tt>.
-	 * @param <T>
-	 *            the type of the items.
-	 */
-	protected <T> T getItemOrNull(final String salt, final List<T> items) {
-		final int index = getInt(salt, 0, items.size() + 1) - 1;
-		if (index == -1) {
-			return null;
-		}
-		return items.get(index);
 	}
 
 	/**
@@ -257,6 +256,25 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	@SafeVarargs
 	protected final <T> T getItem(final String salt, final T... items) {
 		return items[getInt(salt, 0, items.length)];
+	}
+
+	/**
+	 * Return one of given items.
+	 *
+	 * @param salt
+	 *            Any string used as salt.
+	 * @param items
+	 *            source items.
+	 * @return one of given items or <tt>null</tt>.
+	 * @param <T>
+	 *            the type of the items.
+	 */
+	protected <T> T getItemOrNull(final String salt, final List<T> items) {
+		final int index = getInt(salt, 0, items.size() + 1) - 1;
+		if (index == -1) {
+			return null;
+		}
+		return items.get(index);
 	}
 
 	/**
@@ -311,24 +329,6 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 */
 	protected <T> T getEnum(final String salt, final Class<T> enumClass) {
 		return getItem(salt, enumClass.getEnumConstants());
-	}
-
-	/**
-	 * Return a salt from a integer.
-	 *
-	 * @param salt
-	 *            Any integer.
-	 * @param lower
-	 *            lower value.
-	 * @param upper
-	 *            upper value. Excluded value.
-	 * @return a salt from a integer.
-	 */
-	protected int getInt(final int salt, final int lower, final int upper) {
-		if (lower >= upper) {
-			return lower;
-		}
-		return Math.abs(salt) % (upper - lower) + lower;
 	}
 
 	/**
@@ -416,7 +416,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * @param <T>
 	 *            The singleton class type.
 	 * @throws ReflectiveOperationException
-	 *            When singleton operations cannot be performed.
+	 *             When singleton operations cannot be performed.
 	 */
 	protected <T> void coverageSingleton(final Class<T> singletonClass) throws ReflectiveOperationException {
 		final Constructor<T> constructor = singletonClass.getDeclaredConstructor();

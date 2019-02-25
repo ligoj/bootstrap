@@ -345,24 +345,6 @@ public class SystemPluginResource {
 	}
 
 	/**
-	 * Install the specific version of given plug-in from the remote server. The previous version is not deleted. The
-	 * downloaded version will be used only if it is a most recent version than the locally ones.
-	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @param version
-	 *            The version to install.
-	 * @param repository
-	 *            The repository identifier to query.
-	 */
-	@POST
-	@Path("{artifact:[\\w-]+}/{version:[\\w-]+}")
-	public void install(@PathParam("artifact") final String artifact, @PathParam("version") final String version,
-			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) {
-		install(null, artifact, version, repository);
-	}
-
-	/**
 	 * Upload a file of entries to create or update users. The whole entry is replaced.
 	 *
 	 * @param input
@@ -379,26 +361,6 @@ public class SystemPluginResource {
 			@Multipart(required = true, value = "plugin-id") final String pluginId,
 			@Multipart(required = true, value = "plugin-version") final String version) {
 		install(input, pluginId, version, "(local)");
-	}
-
-	private void install(final InputStream input, final String artifact, final String version,
-			final String repository) {
-		final PluginsClassLoader classLoader = getPluginClassLoader();
-		final java.nio.file.Path target = classLoader.getPluginDirectory().resolve(artifact + "-" + version + ".jar");
-		log.info("Download plug-in {} v{} from {}", artifact, version, repository);
-		try {
-			// Get the right input
-			final InputStream input2 = input == null
-					? getRepositoryManager(repository).getArtifactInputStream(artifact, version)
-					: input;
-			// Download and copy the file, note the previous version is not removed
-			Files.copy(input2, target, StandardCopyOption.REPLACE_EXISTING);
-			log.info("Plugin {} v{} has been installed, restart is required", artifact, version);
-		} catch (final Exception ioe) {
-			// Installation failed, either download, either FS error
-			log.info("Unable to install plugin {} v{} from {}", artifact, version, repository, ioe);
-			throw new ValidationJsonException("artifact", "cannot-be-installed", "id", artifact);
-		}
 	}
 
 	/**
@@ -422,6 +384,44 @@ public class SystemPluginResource {
 					String.format("No latest version on repository %s", repository));
 		}
 		install(artifact, resultItem.getVersion(), repository);
+	}
+
+	/**
+	 * Install the specific version of given plug-in from the remote server. The previous version is not deleted. The
+	 * downloaded version will be used only if it is a most recent version than the locally ones.
+	 *
+	 * @param artifact
+	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @param version
+	 *            The version to install.
+	 * @param repository
+	 *            The repository identifier to query.
+	 */
+	@POST
+	@Path("{artifact:[\\w-]+}/{version:[\\w-]+}")
+	public void install(@PathParam("artifact") final String artifact, @PathParam("version") final String version,
+			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) {
+		install(null, artifact, version, repository);
+	}
+
+	private void install(final InputStream input, final String artifact, final String version,
+			final String repository) {
+		final PluginsClassLoader classLoader = getPluginClassLoader();
+		final java.nio.file.Path target = classLoader.getPluginDirectory().resolve(artifact + "-" + version + ".jar");
+		log.info("Download plug-in {} v{} from {}", artifact, version, repository);
+		try {
+			// Get the right input
+			final InputStream input2 = input == null
+					? getRepositoryManager(repository).getArtifactInputStream(artifact, version)
+					: input;
+			// Download and copy the file, note the previous version is not removed
+			Files.copy(input2, target, StandardCopyOption.REPLACE_EXISTING);
+			log.info("Plugin {} v{} has been installed, restart is required", artifact, version);
+		} catch (final Exception ioe) {
+			// Installation failed, either download, either FS error
+			log.info("Unable to install plugin {} v{} from {}", artifact, version, repository, ioe);
+			throw new ValidationJsonException("artifact", "cannot-be-installed", "id", artifact);
+		}
 	}
 
 	private Map<String, Artifact> getLastPluginVersions(final String repository) throws IOException {
@@ -469,28 +469,6 @@ public class SystemPluginResource {
 		refreshPlugins(event.getApplicationContext());
 	}
 
-	/**
-	 * Auto update the installed plug-ins.
-	 *
-	 * @return The amount of updated plug-ins.
-	 * @throws IOException
-	 *             When plug-ins cannot be updated.
-	 */
-	public int autoUpdate() throws IOException {
-		final Map<String, String> plugins = getPluginClassLoader().getInstalledPlugins();
-		final String repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
-		int counter = 0;
-		for (final Artifact artifact : getLastPluginVersions(repositoryName).values().stream()
-				.filter(a -> plugins.containsKey(a.getArtifact()))
-				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
-						.compareTo(StringUtils.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
-				.collect(Collectors.toList())) {
-			install(artifact.getArtifact(), repositoryName);
-			counter++;
-		}
-		return counter;
-	}
-
 	private void refreshPlugins(final ApplicationContext context) throws Exception {
 		// Get the existing plug-in features
 		final Map<String, SystemPlugin> plugins = repository.findAll().stream()
@@ -531,6 +509,28 @@ public class SystemPluginResource {
 
 		// And remove the old plug-in no more installed
 		repository.deleteAll(removedPlugins.stream().map(Persistable::getId).collect(Collectors.toList()));
+	}
+
+	/**
+	 * Auto update the installed plug-ins.
+	 *
+	 * @return The amount of updated plug-ins.
+	 * @throws IOException
+	 *             When plug-ins cannot be updated.
+	 */
+	public int autoUpdate() throws IOException {
+		final Map<String, String> plugins = getPluginClassLoader().getInstalledPlugins();
+		final String repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
+		int counter = 0;
+		for (final Artifact artifact : getLastPluginVersions(repositoryName).values().stream()
+				.filter(a -> plugins.containsKey(a.getArtifact()))
+				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
+						.compareTo(StringUtils.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
+				.collect(Collectors.toList())) {
+			install(artifact.getArtifact(), repositoryName);
+			counter++;
+		}
+		return counter;
 	}
 
 	/**

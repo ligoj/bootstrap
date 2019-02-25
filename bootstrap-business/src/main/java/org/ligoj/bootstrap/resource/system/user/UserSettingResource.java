@@ -37,6 +37,18 @@ public class UserSettingResource {
 	private SystemUserSettingRepository repository;
 
 	/**
+	 * Delete a {@link SystemUserSetting}
+	 * 
+	 * @param name
+	 *            the user setting name to delete.
+	 */
+	@DELETE
+	@Path("{name}")
+	public void delete(@PathParam("name") final String name) {
+		repository.delete(SecurityContextHolder.getContext().getAuthentication().getName(), name);
+	}
+
+	/**
 	 * Return all user's settings.
 	 * 
 	 * @return all user's settings.
@@ -44,6 +56,18 @@ public class UserSettingResource {
 	@GET
 	public Map<String, Object> findAll() {
 		return findAll(SecurityContextHolder.getContext().getAuthentication().getName());
+	}
+
+	/**
+	 * Return all settings of given user.
+	 * 
+	 * @param login
+	 *            USer login to check.
+	 * @return all user's settings.
+	 */
+	public Map<String, Object> findAll(final String login) {
+		return repository.findByLogin(login).stream()
+				.collect(Collectors.toMap(AbstractNamedValue::getName, AbstractNamedValue::getValue));
 	}
 
 	/**
@@ -74,18 +98,6 @@ public class UserSettingResource {
 	}
 
 	/**
-	 * Return all settings of given user.
-	 * 
-	 * @param login
-	 *            USer login to check.
-	 * @return all user's settings.
-	 */
-	public Map<String, Object> findAll(final String login) {
-		return repository.findByLogin(login).stream()
-				.collect(Collectors.toMap(AbstractNamedValue::getName, AbstractNamedValue::getValue));
-	}
-
-	/**
 	 * Save or update a setting and return the corresponding identifier.
 	 * 
 	 * @param name
@@ -108,18 +120,6 @@ public class UserSettingResource {
 		} else {
 			setting.setValue(value);
 		}
-	}
-
-	/**
-	 * Delete a {@link SystemUserSetting}
-	 * 
-	 * @param name
-	 *            the user setting name to delete.
-	 */
-	@DELETE
-	@Path("{name}")
-	public void delete(@PathParam("name") final String name) {
-		repository.delete(SecurityContextHolder.getContext().getAuthentication().getName(), name);
 	}
 
 }

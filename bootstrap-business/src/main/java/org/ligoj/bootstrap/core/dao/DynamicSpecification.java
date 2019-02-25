@@ -96,9 +96,18 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 		this.specifications = MapUtils.emptyIfNull(specifications);
 	}
 
-	@Override
-	public Predicate toPredicate(final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
-		return getGroupPredicate(filter, root, query, cb);
+	/**
+	 * Return a custom predicate.
+	 */
+	private Predicate getCustomPredicate(final Root<U> root, final CriteriaBuilder cb, final BasicRule rule, final CriteriaQuery<?> query) {
+		final CustomSpecification specification = specifications.get(rule.getField());
+		if (specification == null) {
+			// Invalid path
+			log.error("A CustomSpecification must be defined when custom operator type ('ct') is used");
+			// no specification, ignore it...
+			return null;
+		}
+		return specification.toPredicate(root, query, cb, rule);
 	}
 
 	/**
@@ -120,31 +129,23 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	}
 
 	/**
-	 * Return the predicates list.
+	 * Return the ORM path from the given rule.
 	 */
-	private java.util.List<Predicate> getPredicates(final UiFilter group, final Root<U> root, final CriteriaQuery<?> query,
-			final CriteriaBuilder cb) {
-		final java.util.List<Predicate> predicates = new ArrayList<>(filter.getRules().size());
-		for (final UIRule rule : group.getRules()) {
-			final Predicate predicate = getPredicate(root, query, cb, rule);
-			if (predicate != null) {
-				predicates.add(predicate);
-			}
+	private <T> Path<T> getOrmPath(final Root<U> root, final BasicRule rule) {
+		final String path = mapping.getOrDefault(rule.getField(), mapping.containsKey("*") ? rule.getField() : null);
+		if (path == null) {
+			// Invalid path, coding issue or SQL injection attempt
+			log.error(String.format("Non mapped property '%s' found for entity class '%s'", rule.getField(), root.getJavaType().getName()));
+			return null;
 		}
-		return predicates;
+		return getOrmPath(root, path);
 	}
 
 	/**
-	 * Return the predicate corresponding the given rule.
+	 * Return the predicate corresponding to the given rule.
 	 */
-	private Predicate getPredicate(final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb, final UIRule rule) {
-		final Predicate predicate;
-		if (rule instanceof BasicRule) {
-			predicate = getPredicate(root, cb, (BasicRule) rule, query);
-		} else {
-			predicate = getGroupPredicate((UiFilter) rule, root, query, cb);
-		}
-		return predicate;
+	private <X extends Comparable<Object>> Predicate getPredicate(final CriteriaBuilder cb, final BasicRule rule, final Expression<X> expression) {
+		return PREDIACATE_MAPPER.get(rule.getOp()).toPredicate(cb, rule.getData(), expression);
 	}
 
 	/**
@@ -165,36 +166,35 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	}
 
 	/**
-	 * Return a custom predicate.
+	 * Return the predicate corresponding the given rule.
 	 */
-	private Predicate getCustomPredicate(final Root<U> root, final CriteriaBuilder cb, final BasicRule rule, final CriteriaQuery<?> query) {
-		final CustomSpecification specification = specifications.get(rule.getField());
-		if (specification == null) {
-			// Invalid path
-			log.error("A CustomSpecification must be defined when custom operator type ('ct') is used");
-			// no specification, ignore it...
-			return null;
+	private Predicate getPredicate(final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb, final UIRule rule) {
+		final Predicate predicate;
+		if (rule instanceof BasicRule) {
+			predicate = getPredicate(root, cb, (BasicRule) rule, query);
+		} else {
+			predicate = getGroupPredicate((UiFilter) rule, root, query, cb);
 		}
-		return specification.toPredicate(root, query, cb, rule);
+		return predicate;
 	}
 
 	/**
-	 * Return the ORM path from the given rule.
+	 * Return the predicates list.
 	 */
-	private <T> Path<T> getOrmPath(final Root<U> root, final BasicRule rule) {
-		final String path = mapping.getOrDefault(rule.getField(), mapping.containsKey("*") ? rule.getField() : null);
-		if (path == null) {
-			// Invalid path, coding issue or SQL injection attempt
-			log.error(String.format("Non mapped property '%s' found for entity class '%s'", rule.getField(), root.getJavaType().getName()));
-			return null;
+	private java.util.List<Predicate> getPredicates(final UiFilter group, final Root<U> root, final CriteriaQuery<?> query,
+			final CriteriaBuilder cb) {
+		final java.util.List<Predicate> predicates = new ArrayList<>(filter.getRules().size());
+		for (final UIRule rule : group.getRules()) {
+			final Predicate predicate = getPredicate(root, query, cb, rule);
+			if (predicate != null) {
+				predicates.add(predicate);
+			}
 		}
-		return getOrmPath(root, path);
+		return predicates;
 	}
 
-	/**
-	 * Return the predicate corresponding to the given rule.
-	 */
-	private <X extends Comparable<Object>> Predicate getPredicate(final CriteriaBuilder cb, final BasicRule rule, final Expression<X> expression) {
-		return PREDIACATE_MAPPER.get(rule.getOp()).toPredicate(cb, rule.getData(), expression);
+	@Override
+	public Predicate toPredicate(final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
+		return getGroupPredicate(filter, root, query, cb);
 	}
 }

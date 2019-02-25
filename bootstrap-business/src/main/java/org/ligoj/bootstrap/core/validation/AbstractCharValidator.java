@@ -11,10 +11,7 @@ import javax.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Char based validator .
- * 
- * @author Fabrice Daugan
- * 
+ * Char based validator.
  */
 public abstract class AbstractCharValidator<A extends Annotation> implements ConstraintValidator<A, String> {
 
@@ -28,15 +25,6 @@ public abstract class AbstractCharValidator<A extends Annotation> implements Con
 		return StringUtils.isEmpty(value) || isValid(value);
 	}
 
-	/**
-	 * Indicates the specified char is valid or not.
-	 * 
-	 * @param c
-	 *            The char to validate.
-	 * @return <code>true</code> when the specified char is valid.
-	 */
-	protected abstract boolean isValidChar(char c);
-
 	private boolean isValid(final String value) {
 		for (int i = 0; i < value.length(); i++) {
 			if (!isValidChar(value.charAt(i))) {
@@ -47,4 +35,13 @@ public abstract class AbstractCharValidator<A extends Annotation> implements Con
 		// No char with upper case
 		return true;
 	}
+
+	/**
+	 * Indicates the specified char is valid or not.
+	 *
+	 * @param c
+	 *            The char to validate.
+	 * @return <code>true</code> when the specified char is valid.
+	 */
+	protected abstract boolean isValidChar(char c);
 }

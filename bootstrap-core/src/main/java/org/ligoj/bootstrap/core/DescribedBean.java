@@ -5,6 +5,9 @@ package org.ligoj.bootstrap.core;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.SafeHtml.Attribute;
@@ -15,7 +18,7 @@ import lombok.Setter;
 
 /**
  * A described bean
- * 
+ *
  * @param <K>
  *            The type of the identifier
  */
@@ -28,13 +31,22 @@ public class DescribedBean<K extends Serializable> extends NamedBean<K> implemen
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Identifier of this bean.
+	 */
+	private K id;
+
+	@NotBlank
+	@NotNull
+	private String name;
+
 	@Length(max = 250)
 	@SafeHtml(additionalTagsWithAttributes = @Tag(name = "a", attributesWithProtocols = @Attribute(name = "href", protocols = "#")))
 	private String description;
 
 	/**
 	 * From a {@link IDescribableBean} to another {@link IDescribableBean} bean copy.
-	 * 
+	 *
 	 * @param <T>
 	 *            Bean type.
 	 * @param from
@@ -49,7 +61,7 @@ public class DescribedBean<K extends Serializable> extends NamedBean<K> implemen
 
 	/**
 	 * From a {@link IDescribableBean} to a new {@link DescribedBean} bean clone.
-	 * 
+	 *
 	 * @param <T>
 	 *            Bean type.
 	 * @param from

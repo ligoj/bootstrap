@@ -78,6 +78,13 @@ public abstract class AbstractBusinessEntityTest {
 		systemUser.equals(mockCanEqual);
 	}
 
+	private <T> void setValues(final T beanValued, final List<String> combination)
+			throws IllegalAccessException, InvocationTargetException {
+		for (final String propertyString : combination) {
+			beanUtilsBean.setProperty(beanValued, propertyString, 1);
+		}
+	}
+
 	private <T> void testCombinations(final Class<T> modelClass, final List<List<String>> combinations)
 			throws ReflectiveOperationException {
 		for (final List<String> combination : combinations) {
@@ -85,13 +92,6 @@ public abstract class AbstractBusinessEntityTest {
 			setValues(beanValued, combination);
 			testCombinations(modelClass, combinations, combination, beanValued);
 			Assertions.assertNotSame(0, beanValued.hashCode());
-		}
-	}
-
-	private <T> void setValues(final T beanValued, final List<String> combination)
-			throws IllegalAccessException, InvocationTargetException {
-		for (final String propertyString : combination) {
-			beanUtilsBean.setProperty(beanValued, propertyString, 1);
 		}
 	}
 
