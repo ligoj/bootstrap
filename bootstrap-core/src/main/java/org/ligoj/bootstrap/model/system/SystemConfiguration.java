@@ -6,6 +6,11 @@ package org.ligoj.bootstrap.model.system;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,13 +22,19 @@ import lombok.Setter;
 @Table(name = "S_CONFIGURATION", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 @Getter
 @Setter
-public class SystemConfiguration extends AbstractNamedValue<Integer> {
+public class SystemConfiguration extends AbstractNamedAuditedEntity<Integer> {
 
 	/**
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
 
-	// Nothing
+	/**
+	 * Value as string.
+	 */
+	@NotBlank
+	@NotNull
+	@Size(max = 8192)
+	private String value;
 
 }
