@@ -57,7 +57,7 @@ public class AuthorizationResource {
 	 *
 	 * @param id
 	 *            Element's identifier.
-	 * @return Found element. May be <tt>null</tt>.
+	 * @return Found element. May be <code>null</code>.
 	 */
 	@GET
 	@Path("{id:\\d+}")

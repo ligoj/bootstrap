@@ -12,7 +12,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
- * Basic writer extension supporting <tt>null</tt> values.
+ * Basic writer extension supporting <code>null</code> values.
  */
 public class CsvBeanWriter {
 
@@ -20,7 +20,7 @@ public class CsvBeanWriter {
 
 	/**
 	 * Simple writer wrapper constructor.
-	 * 
+	 *
 	 * @param writer
 	 *            the target writer.
 	 */
@@ -30,7 +30,7 @@ public class CsvBeanWriter {
 
 	/**
 	 * Write all
-	 * 
+	 *
 	 * @param headers
 	 *            headers corresponding to java bean properties.
 	 * @param content
@@ -84,7 +84,7 @@ public class CsvBeanWriter {
 
 	/**
 	 * Write some values to the current writer.
-	 * 
+	 *
 	 * @param values
 	 *            Strong values to write.
 	 * @throws IOException

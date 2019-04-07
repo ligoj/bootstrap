@@ -88,7 +88,7 @@ public class PaginationJson {
 	 *            the optional ordered column.
 	 * @param sorDirection
 	 *            the optional sort order. Default is {@link Direction#ASC}.
-	 * @return <tt>null</tt> or sort object.
+	 * @return <code>null</code> or sort object.
 	 */
 	private UiSort buildSort(final String sortColumn, final String sorDirection) {
 		if (sortColumn == null) {

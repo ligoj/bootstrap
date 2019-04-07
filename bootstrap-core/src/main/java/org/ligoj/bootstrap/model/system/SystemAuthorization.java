@@ -58,7 +58,7 @@ public class SystemAuthorization extends AbstractAudited<Integer> {
 	private String pattern;
 
 	/**
-	 * Authorized URL method. Can be <tt>null</tt> for all methods.
+	 * Authorized URL method. Can be <code>null</code> for all methods.
 	 */
 	@Enumerated(EnumType.STRING)
 	private HttpMethod method;

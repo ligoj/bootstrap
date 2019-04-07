@@ -76,7 +76,7 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	/**
 	 * Indicates if the current thread is running in forked test.
 	 * 
-	 * @return <tt>true</tt> when the current thread is running in forked test.
+	 * @return <code>true</code> when the current thread is running in forked test.
 	 */
 	protected boolean isRepeatMode() {
 		return testName == null || !testName.getTestMethod().isPresent();

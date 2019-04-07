@@ -100,7 +100,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	protected int screenshotCounter = 0;
 
 	/**
-	 * @return <tt>true</tt> for local test. <tt>false</tt> other wise : Grid test
+	 * @return <code>true</code> for local test. <code>false</code> other wise : Grid test
 	 */
 	protected boolean isLocalTest() {
 		return System.getProperty("test.selenium.remote") == null;

@@ -265,7 +265,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            Any string used as salt.
 	 * @param items
 	 *            source items.
-	 * @return one of given items or <tt>null</tt>.
+	 * @return one of given items or <code>null</code>.
 	 * @param <T>
 	 *            the type of the items.
 	 */
@@ -284,7 +284,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            Any string used as salt.
 	 * @param items
 	 *            source items.
-	 * @return one of given items or <tt>null</tt>.
+	 * @return one of given items or <code>null</code>.
 	 * @param <T>
 	 *            the type of the items.
 	 */
@@ -303,7 +303,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            Any string used as salt.
 	 * @param items
 	 *            source items.
-	 * @return one of given items or <tt>null</tt>.
+	 * @return one of given items or <code>null</code>.
 	 * @param <T>
 	 *            the type of the items.
 	 */

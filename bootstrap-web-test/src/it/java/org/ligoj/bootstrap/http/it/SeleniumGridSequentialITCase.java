@@ -26,7 +26,7 @@ public class SeleniumGridSequentialITCase extends AbstractSequentialSeleniumTest
 	}
 
 	/**
-	 * @return <tt>true</tt> for local test. <tt>false</tt> other wise : Grid test
+	 * @return <code>true</code> for local test. <code>false</code> other wise : Grid test
 	 */
 	@Override
 	protected boolean isLocalTest() {

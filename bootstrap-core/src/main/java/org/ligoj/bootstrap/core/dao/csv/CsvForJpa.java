@@ -61,7 +61,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param input
 	 *            the CSV input.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @return the JPA beans built from CSV input.
 	 * @throws IOException
 	 *             Read issue occurred.
@@ -80,7 +80,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param resource
 	 *            the CSV input resource readable from current class loader.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @return the JPA beans built from CSV input.
 	 * @throws IOException
 	 *             Read issue occurred.
@@ -100,7 +100,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param resource
 	 *            the CSV input resource readable from current class loader.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @param persist
 	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
 	 * @return the JPA beans built from CSV input.
@@ -122,7 +122,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param resource
 	 *            the CSV input resource readable from current class loader.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @param persist
 	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
 	 * @param encoding
@@ -146,7 +146,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param resource
 	 *            the CSV input resource readable from current class loader.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @param persist
 	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
 	 * @param encoding
@@ -174,7 +174,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param input
 	 *            the CSV input.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @param persist
 	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
 	 * @return the JPA beans built from CSV input.
@@ -196,7 +196,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param input
 	 *            the CSV input.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @param persist
 	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
 	 * @param consumer
@@ -224,7 +224,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @param input
 	 *            the CSV input.
 	 * @param hasHeader
-	 *            when <tt>true</tt> the first row contains bean property names.
+	 *            when <code>true</code> the first row contains bean property names.
 	 * @param persist
 	 *            When <code>true</code> entities are create one by one. Useful to the dependencies.
 	 * @param filter

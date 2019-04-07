@@ -95,7 +95,7 @@ public final class Main {
 
 	// CHECKSTYLE:OFF This is a real application entry
 	/**
-	 * Main launcher. Equals to <tt>mvn jetty:start</tt> command.
+	 * Main launcher. Equals to <code>mvn jetty:start</code> command.
 	 *
 	 * @param args
 	 *            by design arguments, but not used.

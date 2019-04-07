@@ -197,7 +197,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	}
 
 	/**
-	 * Check <tt>null</tt> parameter operation passes.
+	 * Check <code>null</code> parameter operation passes.
 	 */
 	@Test
 	public void queryObject() {
@@ -206,7 +206,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	}
 
 	/**
-	 * Check <tt>null</tt> parameter operation passes.
+	 * Check <code>null</code> parameter operation passes.
 	 */
 	@Test
 	public void multipart() {
@@ -215,7 +215,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	}
 
 	/**
-	 * Check <tt>null</tt> parameter operation passes.
+	 * Check <code>null</code> parameter operation passes.
 	 */
 	@Test
 	public void simple() {
