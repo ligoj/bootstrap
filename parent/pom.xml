@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.ligoj.parent</groupId>
 		<artifactId>project</artifactId>
-		<version>10.0.5</version>
+		<version>11.0.1</version>
 		<relativePath />
 	</parent>
 
@@ -42,16 +42,14 @@
 		<bootstrap.version>2.5.0-SNAPSHOT</bootstrap.version>
 		<revision>2.5.0-SNAPSHOT</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
-		<plugin.jacoco>0.8.3</plugin.jacoco>
-		<plugin.sonar>3.6.0.1398</plugin.sonar>
 
 		<apacheds.version>1.5.5</apacheds.version>
-		<aspectj.version>1.9.2</aspectj.version>
+		<aspectj.version>1.9.3</aspectj.version>
 		<byte-buddy.version>1.9.10</byte-buddy.version>
 		<cache.version>1.1.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
 		<commons-beanutils>1.9.3</commons-beanutils>
-		<commons-codec>1.11</commons-codec>
+		<commons-codec>1.12</commons-codec>
 		<commons-collections4.version>4.2</commons-collections4.version>
 		<commons-collection.version>3.2.2</commons-collection.version>
 		<commons-io.version>2.6</commons-io.version>
@@ -70,11 +68,9 @@
 		<jackson.version>2.9.8</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
 		<jaxb.version>2.3.0</jaxb.version>
-		<jetty.version>9.4.14.v20181114</jetty.version>
-		<junit.platform.version>1.2.0</junit.platform.version>
-		<junit.jupiter.version>5.2.0</junit.jupiter.version>
+		<jetty.version>9.4.15.v20190215</jetty.version>
 		<jsoup.version>1.11.3</jsoup.version>
-		<log4j.version>2.11.1</log4j.version>
+		<log4j.version>2.11.2</log4j.version>
 		<lombok.version>1.18.6</lombok.version>
 		<mail.version>1.6.1</mail.version>
 		<mockito.version>2.26.0</mockito.version>
@@ -83,7 +79,7 @@
 		<paranamer.version>2.8</paranamer.version>
 		<quartz.version>2.3.0</quartz.version>
 		<selenium.version>3.14.0</selenium.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<spring-boot.version>2.1.4.RELEASE</spring-boot.version>
 		<spring-cloud.version>2.1.1.RELEASE</spring-cloud.version>
 		<spring-data.version>2.1.6.RELEASE</spring-data.version>
