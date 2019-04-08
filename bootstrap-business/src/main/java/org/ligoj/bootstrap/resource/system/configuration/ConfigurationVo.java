@@ -16,6 +16,11 @@ import lombok.Setter;
 public class ConfigurationVo extends SystemConfiguration {
 
 	/**
+	 * SID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * When <code>true</code> is backed by an entity.
 	 */
 	private boolean persisted;
