@@ -55,7 +55,7 @@ public abstract class AbstractAppTest extends AbstractJpaTest {
 	 * instead of propagated to the caller of this method.
 	 *
 	 * @param beanName
-	 *            the name of the bean definition
+	 *            The name of the bean definition
 	 */
 	protected void destroySingleton(final String beanName) {
 		try {
