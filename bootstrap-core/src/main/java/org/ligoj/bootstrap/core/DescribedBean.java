@@ -5,9 +5,6 @@ package org.ligoj.bootstrap.core;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.SafeHtml.Attribute;
@@ -30,15 +27,6 @@ public class DescribedBean<K extends Serializable> extends NamedBean<K> implemen
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Identifier of this bean.
-	 */
-	private K id;
-
-	@NotBlank
-	@NotNull
-	private String name;
 
 	@Length(max = 250)
 	@SafeHtml(additionalTagsWithAttributes = @Tag(name = "a", attributesWithProtocols = @Attribute(name = "href", protocols = "#")))
