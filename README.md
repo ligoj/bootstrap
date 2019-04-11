@@ -32,8 +32,8 @@ A Spring based front/back architecture
 - JUnit 5
 
 Requirements
-- Java-10 (Java-9 compliant for now...)
-- Maven 3.5
+- Java-11
+- Maven 3.6
 
 TODO :
 - Documentation, 
