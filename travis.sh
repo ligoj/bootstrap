@@ -117,10 +117,6 @@ BUILD)
           -Dmaven.ut.reuseForks=true -Dmaven.it.reuseForks=false \
           -Djava.awt.headless=true
 
-	MAVEN_OPTS="$MAVEN_OPTS -noverify --add-modules java.xml.bind"
-    mvn coveralls:report \
-          $MAVEN_ARGS
-
   elif [[ "$TRAVIS_BRANCH" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     echo 'Build release branch'
 
