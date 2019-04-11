@@ -90,7 +90,7 @@ function configureTravis {
   curl -sSL https://github.com/SonarSource/travis-utils/tarball/v56 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
-#configureTravis
+configureTravis
 
 case "$TARGET" in
 
