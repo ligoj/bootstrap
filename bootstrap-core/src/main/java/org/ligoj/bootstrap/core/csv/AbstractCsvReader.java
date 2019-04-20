@@ -7,25 +7,24 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.persistence.GeneratedValue;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.DateConverter;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -33,18 +32,23 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
+import jodd.bean.BeanUtil;
+import jodd.typeconverter.TypeConversionException;
+import jodd.typeconverter.TypeConverter;
+import jodd.typeconverter.TypeConverterManager;
+import jodd.typeconverter.impl.DateConverter;
+
 /**
  * CSV reader implementation based on Camel implementation (see "BindyCsvDataFormat") where some issues have been fixed.
  *
- * @param <T>
- *            Bean type.
+ * @param <T> Bean type.
  */
 public abstract class AbstractCsvReader<T> {
 
 	/**
 	 * Bean utility.
 	 */
-	protected final BeanUtilsBean beanUtilsBean;
+	protected final BeanUtil beanUtilsBean = BeanUtil.declaredSilent;
 
 	/**
 	 * Accepted date patterns, see orders.
@@ -118,13 +122,10 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * All fields constructor.
 	 *
-	 * @param reader
-	 *            Input reader.
-	 * @param beanType
-	 *            Class of bean to build.
-	 * @param headers
-	 *            Headers, an ordered property list. Header with <code>null</code> or empty name will skip the
-	 *            corresponding column. Column values are also trimmed.
+	 * @param reader   Input reader.
+	 * @param beanType Class of bean to build.
+	 * @param headers  Headers, an ordered property list. Header with <code>null</code> or empty name will skip the
+	 *                 corresponding column. Column values are also trimmed.
 	 */
 	public AbstractCsvReader(final Reader reader, final Class<T> beanType, final String... headers) {
 		this.csvReader = new CsvReader(reader);
@@ -132,32 +133,47 @@ public abstract class AbstractCsvReader<T> {
 		this.clazz = beanType;
 
 		// Put default date patterns
+
 		final DateConverter dateConverter = new DateConverter();
-		dateConverter.setPatterns(DATE_PATTERNS);
-		dateConverter.setLocale(Locale.FRANCE);
-		dateConverter.setTimeZone(DateUtils.getApplicationTimeZone());
-		ConvertUtils.register(dateConverter, Date.class);
+		final TypeConverter<Date> dateJConverter = new TypeConverter<>() {
+
+			@Override
+			public Date convert(final Object value) {
+				try {
+					return dateConverter.convert(value);
+				} catch (DateTimeParseException|TypeConversionException tce) {
+					for (final String pattern : DATE_PATTERNS) {
+						final DateFormat format = new SimpleDateFormat(pattern);
+						format.setTimeZone(DateUtils.getApplicationTimeZone());
+						format.setLenient(false);
+						try {
+							return format.parse((String) value);
+						} catch (ParseException dfe) {
+							// Ignore
+						}
+					}
+					return null;
+				}
+			}
+		};
+		TypeConverterManager.get().register(Date.class, dateJConverter);
 
 		// Java 8 LocalDate support
-		ConvertUtils.register(new Converter() {
+		TypeConverterManager.get().register(LocalDate.class, new TypeConverter<>() {
 
-			@SuppressWarnings("unchecked")
 			@Override
-			public <D> D convert(final Class<D> type, final Object value) {
-				return (D) Instant.ofEpochMilli(dateConverter.convert(Date.class, value).getTime())
+			public LocalDate convert(final Object value) {
+				return Instant.ofEpochMilli(dateJConverter.convert(value).getTime())
 						.atZone(DateUtils.getApplicationTimeZone().toZoneId()).toLocalDate();
 			}
-		}, LocalDate.class);
-
-		this.beanUtilsBean = BeanUtilsBean.getInstance();
+		});
 	}
 
 	/**
 	 * Return a bean read from the reader.
 	 *
 	 * @return the read bean.
-	 * @throws IOException
-	 *             Read issue occurred.
+	 * @throws IOException Read issue occurred.
 	 */
 	public T read() throws IOException {
 		return read(null);
@@ -166,11 +182,9 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Return a bean read from the reader.
 	 *
-	 * @param setter
-	 *            Optional setter for raw properties.
+	 * @param setter Optional setter for raw properties.
 	 * @return the read bean.
-	 * @throws IOException
-	 *             Read issue occurred.
+	 * @throws IOException Read issue occurred.
 	 */
 	public T read(final TriConsumer<T, String, String> setter) throws IOException {
 		return build(csvReader.read(), setter);
@@ -179,10 +193,8 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Return a bean read from the reader.
 	 *
-	 * @param setter
-	 *            Optional setter for raw properties.
-	 * @param values
-	 *            the property values.
+	 * @param setter Optional setter for raw properties.
+	 * @param values the property values.
 	 * @return the bean built with values.
 	 */
 	protected T build(final List<String> values, final TriConsumer<T, String, String> setter) {
@@ -211,14 +223,10 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Fill the given bean.
 	 *
-	 * @param bean
-	 *            The target bean.
-	 * @param values
-	 *            The raw {@link String} values to set to the bean.
-	 * @param setter
-	 *            Optional setter for raw properties.
-	 * @throws ReflectiveOperationException
-	 *             When bean cannot be built with reflection.
+	 * @param bean   The target bean.
+	 * @param values The raw {@link String} values to set to the bean.
+	 * @param setter Optional setter for raw properties.
+	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	protected void fillInstance(final T bean, final List<String> values, final TriConsumer<T, String, String> setter)
 			throws ReflectiveOperationException {
@@ -245,16 +253,11 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Set the property to the given bean.
 	 *
-	 * @param bean
-	 *            the target bean.
-	 * @param property
-	 *            the bean property to set.
-	 * @param rawValue
-	 *            the raw value to set.
-	 * @param setter
-	 *            Optional setter for raw properties.
-	 * @throws ReflectiveOperationException
-	 *             When bean cannot be built with reflection.
+	 * @param bean     the target bean.
+	 * @param property the bean property to set.
+	 * @param rawValue the raw value to set.
+	 * @param setter   Optional setter for raw properties.
+	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	protected void setProperty(final T bean, final String property, final String rawValue,
 			final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
@@ -273,14 +276,10 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Manage foreign key.
 	 *
-	 * @param bean
-	 *            Target bean.
-	 * @param property
-	 *            Target property.
-	 * @param rawValue
-	 *            Source value.
-	 * @param fkeyIndex
-	 *            Foreign key index.
+	 * @param bean      Target bean.
+	 * @param property  Target property.
+	 * @param rawValue  Source value.
+	 * @param fkeyIndex Foreign key index.
 	 * @throws ReflectiveOperationException When bean reflection failed.
 	 */
 	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex)
@@ -293,10 +292,8 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Return the field from the given class.
 	 *
-	 * @param beanType
-	 *            Class of bean to build.
-	 * @param property
-	 *            the bean property to get.
+	 * @param beanType Class of bean to build.
+	 * @param property the bean property to get.
 	 * @return the {@link Field} of this property.
 	 */
 	protected Field getField(final Class<?> beanType, final String property) {
@@ -310,17 +307,12 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Add a value to a map.
 	 *
-	 * @param bean
-	 *            the target bean.
-	 * @param property
-	 *            the bean property to set. Must be a {@link Map}
-	 * @param key
-	 *            the key of the {@link Map} property
-	 * @param rawValue
-	 *            the raw value to put in the {@link Map}.
-	 * @exception IllegalAccessException
-	 *                if this {@code Field} object is enforcing Java language access control and the underlying field is
-	 *                inaccessible.
+	 * @param bean     the target bean.
+	 * @param property the bean property to set. Must be a {@link Map}
+	 * @param key      the key of the {@link Map} property
+	 * @param rawValue the raw value to put in the {@link Map}.
+	 * @exception IllegalAccessException if this {@code Field} object is enforcing Java language access control and the
+	 *                                   underlying field is inaccessible.
 	 */
 	protected void setMapProperty(final T bean, final String property, final String key, final String rawValue)
 			throws IllegalAccessException {
@@ -344,14 +336,10 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Manage simple value with map management.
 	 *
-	 * @param bean
-	 *            the target bean.
-	 * @param property
-	 *            the bean property to set.
-	 * @param rawValue
-	 *            the raw value to set.
-	 * @throws ReflectiveOperationException
-	 *             When bean cannot be built with reflection.
+	 * @param bean     the target bean.
+	 * @param property the bean property to set.
+	 * @param rawValue the raw value to set.
+	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	private void setSimpleProperty(final T bean, final String property, final String rawValue)
 			throws ReflectiveOperationException {
@@ -366,16 +354,11 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Manage simple value.
 	 *
-	 * @param bean
-	 *            the target bean.
-	 * @param property
-	 *            the bean property to set.
-	 * @param rawValue
-	 *            the raw value to set.
-	 * @param <E>
-	 *            Enumeration type.
-	 * @throws ReflectiveOperationException
-	 *             When bean cannot be built with reflection.
+	 * @param bean     the target bean.
+	 * @param property the bean property to set.
+	 * @param rawValue the raw value to set.
+	 * @param <E>      Enumeration type.
+	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue)
@@ -417,7 +400,7 @@ public abstract class AbstractCsvReader<T> {
 				result.add(Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass).keySet().stream()
 						.filter(rawValue::equalsIgnoreCase).findFirst().orElse(item)));
 			} else {
-				result.add(beanUtilsBean.getConvertUtils().convert(item, generic));
+				result.add(TypeConverterManager.get().convertType(item, generic));
 			}
 		}
 		return result;

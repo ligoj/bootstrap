@@ -19,7 +19,6 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.IdentifiableType;
 
-import org.apache.commons.beanutils.ConvertUtilsBean2;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.criteria.internal.PathImplementor;
@@ -27,6 +26,8 @@ import org.hibernate.query.criteria.internal.path.SingularAttributeJoin;
 import org.hibernate.query.criteria.internal.path.SingularAttributePath;
 
 import com.googlecode.gentyref.GenericTypeReflector;
+
+import jodd.typeconverter.TypeConverterManager;
 
 /**
  * Common JPA tools to manipulate specification path.
@@ -36,7 +37,7 @@ public abstract class AbstractSpecification {
 	/**
 	 * String source converter.
 	 */
-	private static final ConvertUtilsBean2 CONVERTER = new ConvertUtilsBean2();
+	private static final TypeConverterManager CONVERTER = TypeConverterManager.get();
 
 	/**
 	 * Spring data delimiters expressions.
@@ -150,7 +151,7 @@ public abstract class AbstractSpecification {
 			result = (Y) toEnum(data, (Expression<Enum>) expression);
 		} else {
 			// Involve bean utils to convert the data
-			result = (Y) CONVERTER.convert(data, expressionType);
+			result = (Y) CONVERTER.convertType(data, expressionType);
 		}
 
 		return result;

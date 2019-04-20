@@ -7,10 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
+
+import jodd.bean.BeanUtil;
 
 /**
  * Test business keyed entities basic ORM operations : hash code and equals.
@@ -20,15 +20,7 @@ public abstract class AbstractBusinessEntityTest {
 	/**
 	 * Bean utility.
 	 */
-	private BeanUtilsBean beanUtilsBean;
-
-	/**
-	 * Prepare {@link BeanUtilsBean}
-	 */
-	@BeforeEach
-	public void setup() {
-		this.beanUtilsBean = BeanUtilsBean.getInstance();
-	}
+	private final BeanUtil beanUtilsBean = BeanUtil.declaredSilent;
 
 	/**
 	 * Test equals and hash code operation with all possible combinations

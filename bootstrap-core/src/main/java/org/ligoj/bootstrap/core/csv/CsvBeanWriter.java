@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.text.StringEscapeUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
+
+import jodd.bean.BeanUtil;
 
 /**
  * Basic writer extension supporting <code>null</code> values.
@@ -67,9 +68,9 @@ public class CsvBeanWriter {
 	 */
 	private void writeField(final Object o, final String header)
 			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {
-		final String value = BeanUtilsBean.getInstance().getProperty(o, header);
+		final Object value = BeanUtil.declaredSilent.getProperty(o, header);
 		if (value != null) {
-			writer.write(StringEscapeUtils.escapeCsv(value));
+			writer.write(StringEscapeUtils.escapeCsv(value.toString()));
 		}
 	}
 

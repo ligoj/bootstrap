@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.core.model;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
@@ -19,6 +18,7 @@ import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
 
+import jodd.bean.BeanCopy;
 import lombok.EqualsAndHashCode;
 
 /**
@@ -93,7 +93,8 @@ public class SystemEntitiesTest {
 			auditable.setLastModifiedDate(new Date());
 			auditable.setCreatedDate(new Date());
 		}
-		BeanUtilsBean.getInstance().cloneBean(entity).toString();
+		final Object clone = entity.getClass().getDeclaredConstructor().newInstance();
+		BeanCopy.fromBean(entity).toBean(clone);
 	}
 
 }
