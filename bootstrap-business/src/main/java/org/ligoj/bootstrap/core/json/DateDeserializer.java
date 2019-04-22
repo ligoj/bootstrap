@@ -31,9 +31,17 @@ public class DateDeserializer extends StdDeserializer<Date> {
 
 	@Override
 	public Date deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
+		// Timestamp epoch milliseconds long support
 		if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
 			final Calendar newCalendar = DateUtils.newCalendar();
 			newCalendar.setTimeInMillis(parser.getLongValue());
+			return newCalendar.getTime();
+		}
+		
+		// Timestamp epoch milliseconds "double" type support
+		if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
+			final Calendar newCalendar = DateUtils.newCalendar();
+			newCalendar.setTimeInMillis((long)parser.getDoubleValue());
 			return newCalendar.getTime();
 		}
 		return _parseDate(parser, context);
