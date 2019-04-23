@@ -15,7 +15,7 @@ public interface PluginListener {
 
 	/**
 	 * Inform the plug-in is being installed.
-	 *
+	 * @param feature The feature to install.
 	 * @return <code>false</code> only to veto this installation.
 	 */
 	default boolean install(FeaturePlugin feature) {
