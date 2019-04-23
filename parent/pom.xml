@@ -13,7 +13,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.6.0</version>
+	<version>2.6.1-SNAPSHOT</version>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Ligoj Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
@@ -39,8 +39,8 @@
 		</license>
 	</licenses>
 	<properties>
-		<bootstrap.version>2.6.0</bootstrap.version>
-		<revision>2.6.0</revision>
+		<bootstrap.version>2.6.1-SNAPSHOT</bootstrap.version>
+		<revision>2.6.1-SNAPSHOT</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
@@ -54,7 +54,7 @@
 		<commons-lang3.version>3.9</commons-lang3.version>
 		<commons-text.version>1.4</commons-text.version>
 		<cxf.version>3.3.1</cxf.version>
-		<dbcp.version>2.6.0</dbcp.version>
+		<dbcp.version>2.6.1-SNAPSHOT</dbcp.version>
 		<guava.version>26.0-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.11.2</hazelcast.version>
