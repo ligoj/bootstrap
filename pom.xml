@@ -12,7 +12,9 @@
 	<artifactId>root</artifactId>
 	<name>Ligoj - Bootstrap</name>
 	<description>Ligoj Bootstrap JAX-RS architecture template</description>
+	<url>https://github.com/ligoj/bootstrap</url>
 	<packaging>pom</packaging>
+
 	<modules>
 		<module>parent</module>
 		<module>bootstrap-core</module>
