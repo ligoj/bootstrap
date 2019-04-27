@@ -20,13 +20,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- JSR-925 -->
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<scope>compile</scope>
-		</dependency>
-
 		<!-- JSR-154 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
