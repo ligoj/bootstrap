@@ -66,6 +66,7 @@
 		<jackson.version>2.9.8</jackson.version>
 		<jasypt.version>1.9.2</jasypt.version>
 		<jaxb.version>2.3.0</jaxb.version>
+		<jaxb-core.version>2.3.0.1</jaxb-core.version>
 		<jetty.version>9.4.17.v20190418</jetty.version>
 		<jodd-bean.version>5.0.12</jodd-bean.version>
 		<jsoup.version>1.11.3</jsoup.version>
@@ -136,7 +137,7 @@
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-core</artifactId>
-				<version>${jaxb.version}</version>
+				<version>${jaxb-core.version}</version>
 			</dependency>
 
 			<dependency>
