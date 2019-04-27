@@ -19,6 +19,7 @@ import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.io.ClassPathResource;
 
@@ -46,6 +47,13 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	 */
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = "pu")
 	protected EntityManager em;
+
+	/**
+	 * Clear all caches.
+	 */
+	protected void clearAllCache() {
+		cacheManager.getCacheNames().stream().map(cacheManager::getCache).forEach(Cache::clear);
+	}
 
 	/**
 	 * Persist all elements from the given CSV resource.

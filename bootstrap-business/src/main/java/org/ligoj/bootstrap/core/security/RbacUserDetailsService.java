@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
@@ -34,7 +37,8 @@ public class RbacUserDetailsService implements UserDetailsService {
 	private SystemUserRepository userRepository;
 
 	@Override
-	public UserDetails loadUserByUsername(final String username) {
+	@CacheResult(cacheName = "user-details")
+	public UserDetails loadUserByUsername(@CacheKey final String username) {
 		final Object[][] userAndRoles = userRepository.findByLoginFetchRoles(username);
 		final SystemUser user;
 		final Collection<GrantedAuthority> authorities;

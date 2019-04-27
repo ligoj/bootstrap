@@ -135,7 +135,7 @@ public class CacheResourceTest extends AbstractBootTest {
 		doManyHits();
 
 		final List<CacheStatistics> caches = cacheResource.getCaches();
-		Assertions.assertEquals(5, caches.size());
+		Assertions.assertEquals(6, caches.size());
 		Assertions.assertTrue(caches.stream().filter(c -> "test-cache".equals(c.getId())).anyMatch(this::assertCache));
 	}
 

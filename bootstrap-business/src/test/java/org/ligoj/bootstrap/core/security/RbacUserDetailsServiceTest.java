@@ -31,6 +31,7 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@BeforeEach
 	public void setup() {
+		clearAllCache();
 		final SystemUser user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
@@ -50,7 +51,8 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 		em.flush();
 		final SystemUser user = em.find(SystemUser.class, "none");
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertTrue(
+				Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -64,7 +66,8 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		final SystemUser user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertTrue(
+				Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -83,7 +86,8 @@ public class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertTrue(Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertTrue(
+				Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**

@@ -31,6 +31,7 @@ import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,9 @@ public class AuthorizationResource {
 
 	@Autowired
 	private RoleResource resource;
+
+	@Autowired
+	protected CacheManager cacheManager;
 
 	@Value("${security.filter.methods:GET,POST,DELETE,PUT}")
 	private HttpMethod[] methods;
@@ -121,6 +125,7 @@ public class AuthorizationResource {
 	@PUT
 	@Path("{id:\\d+}")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@CacheRemoveAll(cacheName = "authorizations")
 	public void update(@PathParam("id") final int id, final AuthorizationEditionVo entity) {
 		prepareUpdate(id, entity);
 	}
@@ -139,6 +144,7 @@ public class AuthorizationResource {
 		authorization.setPattern(entity.getPattern());
 		authorization.setType(entity.getType());
 		repository.save(authorization);
+		cacheManager.getCache("user-details").clear();
 	}
 
 	/**

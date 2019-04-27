@@ -11,20 +11,12 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
-import org.springframework.cache.Cache;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Basic Appication test support.
  */
 public abstract class AbstractAppTest extends AbstractJpaTest {
-
-	/**
-	 * Clear all caches.
-	 */
-	protected void clearAllCache() {
-		cacheManager.getCacheNames().stream().map(cacheManager::getCache).forEach(Cache::clear);
-	}
 
 	/**
 	 * Persist system user, role and assignment for user DEFAULT_USER.
