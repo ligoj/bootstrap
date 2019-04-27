@@ -13,7 +13,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.6.1-SNAPSHOT</version>
+	<version>2.7.0</version>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Ligoj Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
@@ -39,8 +39,8 @@
 		</license>
 	</licenses>
 	<properties>
-		<bootstrap.version>2.6.1-SNAPSHOT</bootstrap.version>
-		<revision>2.6.1-SNAPSHOT</revision>
+		<bootstrap.version>2.7.0</bootstrap.version>
+		<revision>2.7.0</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
@@ -702,10 +702,6 @@
 					<exclusion>
 						<groupId>com.fasterxml.jackson.core</groupId>
 						<artifactId>jackson-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.google.guava</groupId>
-						<artifactId>guava</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>com.fasterxml.jackson.core</groupId>
