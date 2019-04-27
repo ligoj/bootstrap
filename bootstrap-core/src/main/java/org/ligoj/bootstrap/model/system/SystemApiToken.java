@@ -9,6 +9,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.core.model.AbstractNamedEntity;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

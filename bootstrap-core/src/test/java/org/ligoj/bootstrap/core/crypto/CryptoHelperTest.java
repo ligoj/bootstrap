@@ -52,6 +52,39 @@ public class CryptoHelperTest {
 	}
 
 	/**
+	 * Test decrypt.
+	 */
+	@Test
+	public void decryptedOnlyWasNotSecured() {
+		final StringEncryptor stringEncryptor = Mockito.mock(StringEncryptor.class);
+		Mockito.when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
+		final CryptoHelper securityHelper = new CryptoHelper();
+		securityHelper.setEncryptor(stringEncryptor);
+		Assertions.assertEquals("value", securityHelper.decryptedOnly("value"));
+	}
+
+	/**
+	 * Test decrypt forbidden.
+	 */
+	@Test
+	public void decryptedOnlyWasSecured() {
+		final StringEncryptor stringEncryptor = Mockito.mock(StringEncryptor.class);
+		Mockito.when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
+		final CryptoHelper securityHelper = new CryptoHelper();
+		securityHelper.setEncryptor(stringEncryptor);
+		Assertions.assertNull(securityHelper.decryptedOnly("encrypted"));
+	}
+
+	/**
+	 * Test decrypt forbidden.
+	 */
+	@Test
+	public void decryptedOnlyNull() {
+		final CryptoHelper securityHelper = new CryptoHelper();
+		Assertions.assertEquals("  ", securityHelper.decryptedOnly("  "));
+	}
+
+	/**
 	 * Test decrypt a raw value.
 	 */
 	@Test

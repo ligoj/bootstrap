@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import org.ligoj.bootstrap.core.model.AbstractPersistable;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
+
 import lombok.Getter;
 import lombok.Setter;
 

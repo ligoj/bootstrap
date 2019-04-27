@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.SafeHtml.Attribute;
 import org.hibernate.validator.constraints.SafeHtml.Tag;
 import org.ligoj.bootstrap.core.IDescribableBean;
+
 import lombok.Getter;
 import lombok.Setter;
 

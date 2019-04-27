@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.core.model.AbstractAudited;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

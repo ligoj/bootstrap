@@ -7,16 +7,16 @@ import java.io.Serializable;
 
 import javax.persistence.MappedSuperclass;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.SafeHtml.Attribute;
 import org.hibernate.validator.constraints.SafeHtml.Tag;
 import org.ligoj.bootstrap.core.IDescribableBean;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Named, described and audited entity.

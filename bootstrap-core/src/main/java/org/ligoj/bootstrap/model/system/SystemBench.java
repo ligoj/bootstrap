@@ -11,6 +11,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.ligoj.bootstrap.core.model.AbstractAudited;
+
 import lombok.Getter;
 import lombok.Setter;
 

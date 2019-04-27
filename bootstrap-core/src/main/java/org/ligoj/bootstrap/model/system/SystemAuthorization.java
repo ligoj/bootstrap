@@ -10,9 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.ligoj.bootstrap.core.model.AbstractAudited;
 import org.springframework.http.HttpMethod;
 
-import org.ligoj.bootstrap.core.model.AbstractAudited;
 import lombok.Getter;
 import lombok.Setter;
 

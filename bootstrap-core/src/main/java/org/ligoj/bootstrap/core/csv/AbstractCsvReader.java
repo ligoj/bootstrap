@@ -135,38 +135,29 @@ public abstract class AbstractCsvReader<T> {
 		// Put default date patterns
 
 		final DateConverter dateConverter = new DateConverter();
-		final TypeConverter<Date> dateJConverter = new TypeConverter<>() {
-
-			@Override
-			public Date convert(final Object value) {
-				try {
-					return dateConverter.convert(value);
-				} catch (DateTimeParseException|TypeConversionException tce) {
-					for (final String pattern : DATE_PATTERNS) {
-						final DateFormat format = new SimpleDateFormat(pattern);
-						format.setTimeZone(DateUtils.getApplicationTimeZone());
-						format.setLenient(false);
-						try {
-							return format.parse((String) value);
-						} catch (ParseException dfe) {
-							// Ignore
-						}
+		final TypeConverter<Date> dateJConverter = value -> {
+			try {
+				return dateConverter.convert(value);
+			} catch (DateTimeParseException | TypeConversionException tce) {
+				for (final String pattern : DATE_PATTERNS) {
+					final DateFormat format = new SimpleDateFormat(pattern);
+					format.setTimeZone(DateUtils.getApplicationTimeZone());
+					format.setLenient(false);
+					try {
+						return format.parse((String) value);
+					} catch (ParseException dfe) {
+						// Ignore
 					}
-					return null;
 				}
+				return null;
 			}
 		};
 		TypeConverterManager.get().register(Date.class, dateJConverter);
 
 		// Java 8 LocalDate support
-		TypeConverterManager.get().register(LocalDate.class, new TypeConverter<>() {
-
-			@Override
-			public LocalDate convert(final Object value) {
-				return Instant.ofEpochMilli(dateJConverter.convert(value).getTime())
-						.atZone(DateUtils.getApplicationTimeZone().toZoneId()).toLocalDate();
-			}
-		});
+		TypeConverterManager.get().register(LocalDate.class,
+				value -> Instant.ofEpochMilli(dateJConverter.convert(value).getTime())
+						.atZone(DateUtils.getApplicationTimeZone().toZoneId()).toLocalDate());
 	}
 
 	/**
