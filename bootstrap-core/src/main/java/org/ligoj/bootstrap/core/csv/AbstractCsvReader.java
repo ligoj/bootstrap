@@ -48,7 +48,7 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Bean utility.
 	 */
-	protected final BeanUtil beanUtilsBean = BeanUtil.declaredSilent;
+	protected final BeanUtil beanUtilsBean = BeanUtil.declared;
 
 	/**
 	 * Accepted date patterns, see orders.
