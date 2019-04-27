@@ -143,9 +143,10 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 
-		// Check data is encrypted
-		Assertions.assertNotEquals("new-value-db5", newValue.getValue());
-		Assertions.assertEquals("new-value-db5", cryptoHelper.decrypt(newValue.getValue()));
+		// Check data is not encrypted
+		Assertions.assertEquals("new-value-db5", newValue.getValue());
+		Assertions.assertEquals("new-value-db5", cryptoHelper.decryptAsNeeded(newValue.getValue()));
+		Assertions.assertEquals("new-value-db5", cryptoHelper.decryptedOnly(newValue.getValue()));
 
 		// Check previous id is kept
 		Assertions.assertEquals(value.getId(), newValue.getId());
@@ -156,20 +157,35 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void putOverrideSystem() {
+	public void putSecuredOverrideSystem() {
+		final ConfigurationEditionVo vo = new ConfigurationEditionVo();
+		vo.setName("test-key44");
+		vo.setValue("new-value-db4");
+		vo.setSystem(true);
+		vo.setSecured(true);
+
 		// Initial value
 		Assertions.assertNull(resource.get("test-key44"));
 		Assertions.assertNull(System.getProperty("test-key44"));
 
 		try {
 			// Change the value
-			resource.put("test-key44", "new-value-db4", true);
+			resource.put(vo);
 
 			// Check the data from the cache
-			Assertions.assertEquals("new-value-db4", resource.get("test-key44"));
-			Assertions.assertEquals("new-value-db4", System.getProperty("test-key44"));
+			Assertions.assertEquals("new-value-db4", resource.get(vo.getName()));
+			Assertions.assertEquals("new-value-db4", System.getProperty(vo.getName()));
+
+			// Check the data from the database
+			SystemConfiguration newValue = em
+					.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+					.setParameter("name", vo.getName()).getSingleResult();
+
+			Assertions.assertNull(resource.getUnSecuredOnly(newValue.getValue()));
+			Assertions.assertEquals("new-value-db4", cryptoHelper.decryptAsNeeded(newValue.getValue()));
+			Assertions.assertNull(cryptoHelper.decryptedOnly(newValue.getValue()));
 		} finally {
-			System.clearProperty("test-key44");
+			System.clearProperty(vo.getName());
 		}
 	}
 
@@ -183,9 +199,30 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getSingleResult();
 
+		// Check data is not encrypted
+		Assertions.assertEquals("new-value-dbX", newValue.getValue());
+		Assertions.assertEquals("new-value-dbX", cryptoHelper.decryptAsNeeded(newValue.getValue()));
+		Assertions.assertEquals("new-value-dbX", cryptoHelper.decryptedOnly(newValue.getValue()));
+
+		// Check persistence of data and cache
+		cacheManager.getCache("configuration").clear();
+		Assertions.assertEquals("new-value-dbX", resource.get("test-keyX"));
+	}
+
+	@Test
+	public void createSecured() {
+		resource.put("test-keyX", "new-value-dbX", false, true);
+
+		// Check the data from the cache
+		Assertions.assertEquals("new-value-dbX", resource.get("test-keyX"));
+		SystemConfiguration newValue = em
+				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
+				.setParameter("name", "test-keyX").getSingleResult();
+
 		// Check data is encrypted
 		Assertions.assertNotEquals("new-value-dbX", newValue.getValue());
 		Assertions.assertEquals("new-value-dbX", cryptoHelper.decrypt(newValue.getValue()));
+		Assertions.assertNull(cryptoHelper.decryptedOnly(newValue.getValue()));
 
 		// Check persistence of data and cache
 		cacheManager.getCache("configuration").clear();

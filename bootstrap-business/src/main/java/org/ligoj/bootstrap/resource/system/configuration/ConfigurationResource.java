@@ -68,10 +68,8 @@ public class ConfigurationResource {
 	/**
 	 * Return the configuration integer value.
 	 *
-	 * @param key
-	 *            The configuration key name.
-	 * @param defaultValue
-	 *            The default integer value when <code>null</code>
+	 * @param key          The configuration key name.
+	 * @param defaultValue The default integer value when <code>null</code>
 	 * @return the configuration integer value or the default value.
 	 */
 	public int get(final String key, final int defaultValue) {
@@ -81,10 +79,8 @@ public class ConfigurationResource {
 	/**
 	 * Return the configuration integer value.
 	 *
-	 * @param key
-	 *            The configuration key name.
-	 * @param defaultValue
-	 *            The default integer value when <code>null</code>
+	 * @param key          The configuration key name.
+	 * @param defaultValue The default integer value when <code>null</code>
 	 * @return the configuration integer value or the default value.
 	 */
 	public String get(final String key, final String defaultValue) {
@@ -92,24 +88,39 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Return a specific configuration. System properties overrides the value from the database. Configuration values
-	 * are always encrypted.
+	 * Return a specific configuration. System properties overrides the value from the database. Value is decrypted as
+	 * needed.
 	 *
-	 * @param name
-	 *            The requested configuration name.
+	 * @param name The requested configuration name.
+	 * @return A specific configuration. May be <code>null</code> when undefined.
+	 */
+	@CacheResult(cacheName = "configuration")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String get(@CacheKey @PathParam("name") final String name) {
+		return Optional.ofNullable(getRaw(name)).map(cryptoHelper::decryptAsNeeded).orElse(null);
+	}
+
+	/**
+	 * Return a specific configuration. System properties overrides the value from the database. Configuration values
+	 * are never returned.
+	 *
+	 * @param name The requested configuration name.
 	 * @return A specific configuration. May be <code>null</code> when undefined.
 	 */
 	@GET
 	@Path("{name}")
-	@CacheResult(cacheName = "configuration")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String get(@CacheKey @PathParam("name") final String name) {
+	public String getUnSecuredOnly(@CacheKey @PathParam("name") final String name) {
+		return cryptoHelper.decryptedOnly(getRaw(name));
+	}
+
+	private String getRaw(final String name) {
 		String value = StringUtils.trimToNull(env.getProperty(name));
 		if (value == null) {
 			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue)
 					.map(StringUtils::trimToNull).orElse(null);
 		}
-		return Optional.ofNullable(value).map(cryptoHelper::decryptAsNeeded).orElse(null);
+		return value;
 	}
 
 	/**
@@ -164,12 +175,11 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Save or update a setting and return the corresponding identifier. The system variable is not updated.
+	 * Save or update a configuration. The system variable is not updated. The stored value will not be secured in
+	 * database.
 	 *
-	 * @param name
-	 *            The configuration name.
-	 * @param value
-	 *            The new value.
+	 * @param name  The configuration name.
+	 * @param value The new value.
 	 */
 	@POST
 	@PUT
@@ -180,14 +190,12 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Save or update a setting and return the corresponding identifier.
+	 * Save or update a setting and return the corresponding identifier. The stored value will not be secured in
+	 * database.
 	 *
-	 * @param name
-	 *            The configuration name.
-	 * @param value
-	 *            The new value.
-	 * @param system
-	 *            When <code>true</code>, the system variable is also updated.
+	 * @param name   The configuration name.
+	 * @param value  The new value.
+	 * @param system When <code>true</code>, the system variable is also updated.
 	 */
 	@POST
 	@PUT
@@ -195,14 +203,33 @@ public class ConfigurationResource {
 	@CachePut(cacheName = "configuration")
 	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value,
 			@PathParam("system") final boolean system) {
+		put(name, value, system, false);
+	}
+
+	/**
+	 * Save or update a configuration.
+	 *
+	 * @param name   The configuration name.
+	 * @param value  The new value.
+	 * @param system When <code>true</code>, the system variable is also updated.
+	 * @param system When <code>true</code>, the stored value will be secured. For <code>system</code> variable, a clear
+	 *               value will be used.
+	 */
+	@POST
+	@PUT
+	@Path("{name}/{system}/{secured}")
+	@CachePut(cacheName = "configuration")
+	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value,
+			@PathParam("system") final boolean system, @PathParam("secured") final boolean secured) {
 		final SystemConfiguration setting = repository.findByName(name);
+		final String storedValue = secured ? cryptoHelper.encrypt(value) : value;
 		if (setting == null) {
 			final SystemConfiguration entity = new SystemConfiguration();
 			entity.setName(name);
-			entity.setValue(cryptoHelper.encrypt(value));
+			entity.setValue(storedValue);
 			repository.saveAndFlush(entity);
 		} else {
-			setting.setValue(cryptoHelper.encrypt(value));
+			setting.setValue(storedValue);
 		}
 
 		if (system) {
@@ -212,11 +239,21 @@ public class ConfigurationResource {
 	}
 
 	/**
+	 * Save or update a configuration.
+	 *
+	 * @param conf The new configuration.
+	 */
+	@POST
+	@PUT
+	public void put(final ConfigurationEditionVo conf) {
+		self.put(conf.getName(), conf.getValue(), conf.isSystem(), conf.isSecured());
+	}
+
+	/**
 	 * Delete a {@link SystemConfiguration} and also delete the related system property. The system variable is not
 	 * updated.
 	 *
-	 * @param name
-	 *            The configuration name to delete.
+	 * @param name The configuration name to delete.
 	 */
 	@DELETE
 	@Path("{name}")
@@ -228,10 +265,8 @@ public class ConfigurationResource {
 	/**
 	 * Delete a {@link SystemConfiguration}
 	 *
-	 * @param name
-	 *            The configuration name to delete.
-	 * @param system
-	 *            When <code>true</code>, the system variable is also deleted.
+	 * @param name   The configuration name to delete.
+	 * @param system When <code>true</code>, the system variable is also deleted.
 	 */
 	@DELETE
 	@Path("{name}/{system}")
