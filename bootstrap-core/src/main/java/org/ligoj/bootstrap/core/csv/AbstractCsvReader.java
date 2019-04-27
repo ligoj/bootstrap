@@ -149,7 +149,7 @@ public abstract class AbstractCsvReader<T> {
 						// Ignore
 					}
 				}
-				return null;
+				throw new DateTimeParseException("No date format found", String.valueOf(value), 0);
 			}
 		};
 		TypeConverterManager.get().register(Date.class, dateJConverter);

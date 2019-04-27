@@ -194,14 +194,16 @@ public class CsvForBeanTest {
 	@Test
 	public void toBeanDate() throws Exception {
 		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class, new StringReader(
-				"dialDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
-		Assertions.assertEquals(6, items.size());
-		Assertions.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(0).getDialDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(1).getDialDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(2).getDialDate().toString());
-		Assertions.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(3).getDialDate().toString());
+				"dialDate\n1556387665000\n2019-02-25T10:15:30\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
+		Assertions.assertEquals(8, items.size());
+		Assertions.assertEquals("Sat Apr 27 17:54:25 UTC 2019", items.get(0).getDialDate().toString());
+		Assertions.assertEquals("Mon Feb 25 10:15:30 UTC 2019", items.get(1).getDialDate().toString());
+		Assertions.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(2).getDialDate().toString());
+		Assertions.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(3).getDialDate().toString());
 		Assertions.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(4).getDialDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(5).getDialDate().toString());
+		Assertions.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(5).getDialDate().toString());
+		Assertions.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(6).getDialDate().toString());
+		Assertions.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(7).getDialDate().toString());
 	}
 
 	@Test
@@ -215,6 +217,12 @@ public class CsvForBeanTest {
 		Assertions.assertEquals("2016-05-04", items.get(3).getLocalDate().toString());
 		Assertions.assertEquals("2016-05-04", items.get(4).getLocalDate().toString());
 		Assertions.assertEquals("2016-05-04", items.get(5).getLocalDate().toString());
+	}
+
+	@Test
+	public void toBeanUnhandledDate() throws Exception {
+		Assertions.assertThrows(TechnicalException.class,
+				() -> csvForBean.toBean(DummyEntity2.class, new StringReader("dialDate\nNOT_DATE")));
 	}
 
 	@Test
