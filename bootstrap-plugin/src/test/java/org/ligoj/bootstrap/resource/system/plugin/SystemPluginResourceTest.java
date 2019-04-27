@@ -67,8 +67,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.io.Files;
-
 /**
  * Test class of {@link SystemPluginResource}
  */
@@ -870,7 +868,7 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 	@Test
 	public void removeWidest() throws IOException {
 		Assertions.assertFalse(TEMP_FILE.exists());
-		Files.touch(TEMP_FILE);
+		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
 		newPluginResourceDelete("plugin-iam");
 		Assertions.assertFalse(TEMP_FILE.exists());
@@ -882,7 +880,7 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 	@Test
 	public void removeExact() throws IOException {
 		Assertions.assertFalse(TEMP_FILE.exists());
-		Files.touch(TEMP_FILE);
+		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
 		newPluginResourceDelete("plugin-iam");
 		Assertions.assertFalse(TEMP_FILE.exists());
@@ -894,7 +892,7 @@ public class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServer
 	@Test
 	public void removeExactVersion() throws IOException {
 		Assertions.assertFalse(TEMP_FILE.exists());
-		Files.touch(TEMP_FILE);
+		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
 		newPluginResourceDelete("plugin-iam-node", "test");
 		Assertions.assertFalse(TEMP_FILE.exists());
