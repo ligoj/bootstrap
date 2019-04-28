@@ -209,11 +209,11 @@ public class ConfigurationResource {
 	/**
 	 * Save or update a configuration.
 	 *
-	 * @param name   The configuration name.
-	 * @param value  The new value.
-	 * @param system When <code>true</code>, the system variable is also updated.
-	 * @param system When <code>true</code>, the stored value will be secured. For <code>system</code> variable, a clear
-	 *               value will be used.
+	 * @param name    The configuration name.
+	 * @param value   The new value.
+	 * @param system  When <code>true</code>, the system variable is also updated.
+	 * @param secured When <code>true</code>, the stored value will be secured: never returned to the end user. For
+	 *                <code>system</code> variable, a clear value will be used.
 	 */
 	@POST
 	@PUT
