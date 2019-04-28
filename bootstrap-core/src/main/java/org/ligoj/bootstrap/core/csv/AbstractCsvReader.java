@@ -46,11 +46,6 @@ import jodd.typeconverter.impl.DateConverter;
 public abstract class AbstractCsvReader<T> {
 
 	/**
-	 * Bean utility.
-	 */
-	protected final BeanUtil beanUtilsBean = BeanUtil.declared;
-
-	/**
 	 * Accepted date patterns, see orders.
 	 */
 	public static final String HH_MM = " HH:mm";
@@ -118,6 +113,11 @@ public abstract class AbstractCsvReader<T> {
 	 * CSV raw data reader.
 	 */
 	protected final CsvReader csvReader;
+
+	/**
+	 * Bean utility.
+	 */
+	protected BeanUtil beanUtilsBean = BeanUtil.declared;
 
 	/**
 	 * All fields constructor.
