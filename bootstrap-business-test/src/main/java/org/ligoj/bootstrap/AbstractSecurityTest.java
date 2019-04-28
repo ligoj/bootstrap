@@ -54,7 +54,7 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * @return The configured {@link SecurityContext}.
 	 */
 	@SuppressWarnings("unchecked")
-    private SecurityContext initSpringSecurityContext(final String user, final GrantedAuthority... authorities) {
+	protected SecurityContext initSpringSecurityContext(final String user, final GrantedAuthority... authorities) {
 		SecurityContextHolder.clearContext();
 		final var context = Mockito.mock(SecurityContext.class);
 		final var authentication = Mockito.mock(Authentication.class);
@@ -81,7 +81,7 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * 
 	 * @return the user name used for Spring Security mocking.
 	 */
-    String getAuthenticationName() {
+    protected String getAuthenticationName() {
 		return DEFAULT_USER;
 	}
 

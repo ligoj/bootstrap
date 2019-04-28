@@ -21,7 +21,7 @@ public abstract class AbstractAppTest extends AbstractJpaTest {
 	/**
 	 * Persist system user, role and assignment for user DEFAULT_USER.
 	 */
-	void persistSystemEntities() {
+	protected void persistSystemEntities() {
 		final var role = new SystemRole();
 		role.setName("some");
 		em.persist(role);
