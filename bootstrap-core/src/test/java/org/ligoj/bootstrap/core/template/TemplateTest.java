@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,7 +130,7 @@ public class TemplateTest {
 	@Test
 	public void testWriteTooLongTag() {
 		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{" + StringUtils.repeat('z', 101) + "}}..").write(writer, new HashMap<String, Processor<?>>(), null);
+			new Template<>("{{" + "z".repeat(101) + "}}..").write(writer, new HashMap<String, Processor<?>>(), null);
 		}, "Too long (max is 100 tag zzzzzzzzzzzzzzzzzzzzzzzzzzzz...}} found at position 0");
 	}
 

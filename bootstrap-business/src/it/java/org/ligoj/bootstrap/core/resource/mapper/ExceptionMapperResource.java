@@ -68,7 +68,7 @@ public class ExceptionMapperResource {
 		final SystemRole entity = new SystemRole();
 
 		// Name over 200 char --> BVAL exception
-		entity.setName(org.apache.commons.lang3.StringUtils.repeat("-", 210));
+		entity.setName("-".repeat(210));
 		repository.save(entity);
 	}
 
