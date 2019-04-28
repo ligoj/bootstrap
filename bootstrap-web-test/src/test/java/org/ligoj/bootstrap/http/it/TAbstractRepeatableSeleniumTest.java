@@ -28,7 +28,7 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 
 	private WebDriverMock mockDriver;
 
-	public class Test extends AbstractRepeatableSeleniumTest {
+	protected class Test extends AbstractRepeatableSeleniumTest {
 
 		/**
 		 * Run test.
@@ -45,21 +45,21 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 	}
 
 	@org.junit.jupiter.api.Test
-	public void testCloneAndRun() throws Exception {
+    void testCloneAndRun() throws Exception {
 		testName = Mockito.mock(TestInfo.class);
 		Mockito.when(testName.getTestMethod()).thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(Test.class, "mockTest")));
 		cloneAndRun(new Test(), null, null);
 	}
 
 	@org.junit.jupiter.api.Test
-	public void testPrepareBrowser() {
+    void testPrepareBrowser() {
 		new TAbstractRepeatableSeleniumTest().prepareBrowser();
 	}
 
 	@org.junit.jupiter.api.Test
-	public void testRepeatMode() throws Exception {
+    void testRepeatMode() throws Exception {
 		Assertions.assertFalse(isRepeatMode());
-		final TAbstractRepeatableSeleniumTest instance = this.getClass().getDeclaredConstructor().newInstance();
+		final var instance = this.getClass().getDeclaredConstructor().newInstance();
 		Assertions.assertTrue(instance.isRepeatMode());
 		instance.testName = Mockito.mock(TestInfo.class);
 		Mockito.when(instance.testName.getTestMethod()).thenReturn(Optional.ofNullable(null));
@@ -74,14 +74,14 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 	 */
 	@Override
 	@BeforeEach
-	public void setUpDriver() throws Exception {
+    void setUpDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		super.setUpDriver();
 	}
 
 	@AfterEach
-	public void restoreProperties() {
+    void restoreProperties() {
 		if (ORIGINAL_ENV == null) {
 			System.clearProperty("test.selenium.remote");
 		} else {
@@ -91,7 +91,7 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void prepareDriver() throws Exception {
+    void prepareDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		remoteDriverClass = WebDriverMock.class.getName();
@@ -100,10 +100,10 @@ public class TAbstractRepeatableSeleniumTest extends AbstractRepeatableSeleniumT
 		mockDriver = Mockito.mock(WebDriverMock.class);
 		Mockito.when(mockDriver.getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
 				.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
-		final Options options = Mockito.mock(Options.class);
+		final var options = Mockito.mock(Options.class);
 		Mockito.when(options.window()).thenReturn(Mockito.mock(Window.class));
 		Mockito.when(mockDriver.manage()).thenReturn(options);
-		final WebElement webElement = Mockito.mock(WebElement.class);
+		final var webElement = Mockito.mock(WebElement.class);
 		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
 		Mockito.when(webElement.isDisplayed()).thenReturn(true);
 		this.driver = mockDriver;

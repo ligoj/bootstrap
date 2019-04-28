@@ -39,8 +39,8 @@ public class DataIntegrityViolationExceptionMapper extends AbstractMapper implem
 	@Override
 	public Response toResponse(final DataIntegrityViolationException exception) {
 		log.error("DataIntegrityViolationException exception", exception);
-		final Throwable root = ExceptionUtils.getRootCause(exception);
-		Matcher matcher = PATTERN_FOREIGN_KEY.matcher(StringUtils.trimToEmpty(root.getMessage()));
+		final var root = ExceptionUtils.getRootCause(exception);
+        var matcher = PATTERN_FOREIGN_KEY.matcher(StringUtils.trimToEmpty(root.getMessage()));
 		final String code;
 		if (matcher.find()) {
 			// Foreign key
@@ -64,7 +64,7 @@ public class DataIntegrityViolationExceptionMapper extends AbstractMapper implem
 	 * Build the server error instance.
 	 */
 	private ServerError newServerError(final Throwable exception, final Matcher matcher, final String code) {
-		final ServerError serverError = new ServerError();
+		final var serverError = new ServerError();
 		serverError.setCode("integrity-" + code);
 		serverError.setThrowable(exception.getCause());
 		if (matcher != null) {

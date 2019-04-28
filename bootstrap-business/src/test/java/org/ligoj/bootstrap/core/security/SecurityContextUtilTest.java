@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * Class to test the securityContexUtilClass
  */
-public class SecurityContextUtilTest {
+class SecurityContextUtilTest {
 
 	private final SecurityHelper securityHelper = new SecurityHelper();
 
@@ -23,13 +23,13 @@ public class SecurityContextUtilTest {
 	 * Method to test the mock authentication test
 	 */
 	@Test
-	public void testSetUserNameNoName() {
+	void testSetUserNameNoName() {
 		// call to the method
 		securityHelper.setUserName(USER_NAME);
 		securityHelper.setUserName(null);
 
 		// make the assertion of untouched user name
-		final String nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+		final var nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
 		Assertions.assertEquals(USER_NAME, nameAuthenticated);
 	}
 
@@ -37,12 +37,12 @@ public class SecurityContextUtilTest {
 	 * Method to test the mock authentication test
 	 */
 	@Test
-	public void testSetUserName() {
+	void testSetUserName() {
 		// call to the method
 		securityHelper.setUserName(USER_NAME);
 
 		// make the assertion
-		final String nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
+		final var nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
 		Assertions.assertEquals(USER_NAME, nameAuthenticated);
 	}
 

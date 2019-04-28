@@ -33,7 +33,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link AuthorizingFilter}
  */
 @ExtendWith(SpringExtension.class)
-public class AuthorizingFilterTest extends AbstractBootTest {
+class AuthorizingFilterTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemRoleRepository systemRoleRepository;
@@ -48,15 +48,15 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	 * No authority
 	 */
 	@Test
-	public void doFilterNoAuthority() throws Exception {
-		final FilterChain chain = Mockito.mock(FilterChain.class);
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		final ServletContext servletContext = Mockito.mock(ServletContext.class);
+	void doFilterNoAuthority() throws Exception {
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getMethod()).thenReturn("GET");
-		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
@@ -69,23 +69,23 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	 * Plenty defined authority
 	 */
 	@Test
-	public void doFilterPlentyAuthority() throws Exception {
+	void doFilterPlentyAuthority() throws Exception {
 
-		for (final HttpMethod method : HttpMethod.values()) {
+		for (final var method : HttpMethod.values()) {
 			addSystemAuthorization(method, "role1", "^myurl");
 			addSystemAuthorization(method, "role2", "^myurl");
 		}
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
-		final FilterChain chain = Mockito.mock(FilterChain.class);
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		final ServletContext servletContext = Mockito.mock(ServletContext.class);
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getMethod()).thenReturn("GET");
-		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
@@ -99,12 +99,12 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	 * Anonymous user / role
 	 */
 	@Test
-	public void doFilterAnonymous() throws Exception {
+	void doFilterAnonymous() throws Exception {
 		cacheResource.invalidate("authorizations");
 		attachRole("ROLE_ANONYMOUS");
-		final FilterChain chain = Mockito.mock(FilterChain.class);
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		authorizingFilter.doFilter(request, response, chain);
 		Mockito.verify(chain, Mockito.atLeastOnce()).doFilter(request, response);
 		Mockito.validateMockitoUsage();
@@ -114,17 +114,17 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	 * Plenty attached authority
 	 */
 	@Test
-	public void doFilterAttachedAuthority() throws Exception {
+	void doFilterAttachedAuthority() throws Exception {
 		cacheResource.invalidate("authorizations");
 		attachRole(DEFAULT_ROLE, "other");
-		final FilterChain chain = Mockito.mock(FilterChain.class);
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		final ServletContext servletContext = Mockito.mock(ServletContext.class);
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getMethod()).thenReturn("GET");
-		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
@@ -138,9 +138,9 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	 * Plenty attached authority
 	 */
 	@Test
-	public void doFilterAttachedAuthority2() throws Exception {
+	void doFilterAttachedAuthority2() throws Exception {
 		attachRole(DEFAULT_ROLE, "role1", "role2", "role3");
-		for (final HttpMethod method : HttpMethod.values()) {
+		for (final var method : HttpMethod.values()) {
 			addSystemAuthorization(method, "role1", "^myurl");
 			addSystemAuthorization(method, "role2", "^myurl");
 			addSystemAuthorization(null, "role1", "^youurl");
@@ -149,14 +149,14 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
-		final FilterChain chain = Mockito.mock(FilterChain.class);
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		final ServletContext servletContext = Mockito.mock(ServletContext.class);
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getMethod()).thenReturn("GET");
-		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
@@ -171,21 +171,21 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	 * Plenty attached authority
 	 */
 	@Test
-	public void doFilterAttachedAuthority3() throws Exception {
+	void doFilterAttachedAuthority3() throws Exception {
 		attachRole(DEFAULT_ROLE, "role2");
 		addSystemAuthorization(HttpMethod.GET, "role2", "^rest/match$");
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
-		final FilterChain chain = Mockito.mock(FilterChain.class);
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		final ServletContext servletContext = Mockito.mock(ServletContext.class);
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
 		Mockito.when(servletContext.getContextPath()).thenReturn("/context");
 		Mockito.when(request.getRequestURI()).thenReturn("/context/rest/match");
 		Mockito.when(request.getQueryString()).thenReturn("query");
 		Mockito.when(request.getMethod()).thenReturn("GET");
-		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
@@ -196,13 +196,13 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 	}
 
 	private void addSystemAuthorization(final HttpMethod method, final String roleName, final String pattern) {
-		SystemRole role = systemRoleRepository.findByName(roleName);
+        var role = systemRoleRepository.findByName(roleName);
 		if (role == null) {
 			role = new SystemRole();
 			role.setName(roleName);
 			em.persist(role);
 		}
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		authorization.setRole(role);
 		authorization.setMethod(method);
 		authorization.setType(AuthorizationType.API);
@@ -215,7 +215,7 @@ public class AuthorizingFilterTest extends AbstractBootTest {
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
 		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
-		for (final String roleName : roleNames) {
+		for (final var roleName : roleNames) {
 			authorities.add(new SimpleGrantedAuthority(roleName));
 		}
 	}

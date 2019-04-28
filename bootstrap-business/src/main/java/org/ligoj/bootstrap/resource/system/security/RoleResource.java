@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.resource.system.security;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -74,7 +73,7 @@ public class RoleResource {
 	@GET
 	@org.springframework.transaction.annotation.Transactional(readOnly = true)
 	public TableItem<SystemRole> findAll() {
-		final TableItem<SystemRole> result = new TableItem<>();
+		final var result = new TableItem<SystemRole>();
 		result.setData(repository.findAll());
 		return result;
 	}
@@ -88,7 +87,7 @@ public class RoleResource {
 	@Path("withAuth")
 	@org.springframework.transaction.annotation.Transactional(readOnly = true)
 	public TableItem<SystemRoleVo> findAllFetchAuth() {
-		final TableItem<SystemRoleVo> result = new TableItem<>();
+		final var result = new TableItem<SystemRoleVo>();
 		// get all roles
 		final Map<Integer, SystemRoleVo> results = new TreeMap<>();
 		fetchRoles(results);
@@ -107,9 +106,9 @@ public class RoleResource {
 	 * Fetch roles and add them to result parameter.
 	 */
 	private void fetchRoles(final Map<Integer, SystemRoleVo> results) {
-		final List<SystemRole> roles = repository.findAll();
-		for (final SystemRole role : roles) {
-			final SystemRoleVo roleVo = new SystemRoleVo();
+		final var roles = repository.findAll();
+		for (final var role : roles) {
+			final var roleVo = new SystemRoleVo();
 			roleVo.setId(role.getId());
 			roleVo.setName(role.getName());
 			results.put(role.getId(), roleVo);
@@ -120,9 +119,9 @@ public class RoleResource {
 	 * Fetch authorizations and add them to result parameter.
 	 */
 	private void fetchAuthorizations(final Map<Integer, SystemRoleVo> results) {
-		final List<SystemAuthorization> auths = authorizationRepository.findAll();
-		for (final SystemAuthorization auth : auths) {
-			final AuthorizationEditionVo authVo = new AuthorizationEditionVo();
+		final var auths = authorizationRepository.findAll();
+		for (final var auth : auths) {
+			final var authVo = new AuthorizationEditionVo();
 			results.get(auth.getRole().getId()).getAuthorizations().add(authVo);
 			authVo.setId(auth.getId());
 			authVo.setPattern(auth.getPattern());
@@ -141,14 +140,14 @@ public class RoleResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@CacheRemoveAll(cacheName = "authorizations")
 	public int create(final SystemRoleVo roleVo) {
-		final SystemRole role = new SystemRole();
+		final var role = new SystemRole();
 		role.setName(roleVo.getName());
 		// create role
-		final Integer roleId = repository.saveAndFlush(role).getId();
+		final var roleId = repository.saveAndFlush(role).getId();
 
 		// create authorizations
-		for (final AuthorizationEditionVo authVo : roleVo.getAuthorizations()) {
-			final SystemAuthorization auth = new SystemAuthorization();
+		for (final var authVo : roleVo.getAuthorizations()) {
+			final var auth = new SystemAuthorization();
 			auth.setRole(role);
 			auth.setPattern(authVo.getPattern());
 			auth.setType(authVo.getType());
@@ -167,18 +166,18 @@ public class RoleResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void update(final SystemRoleVo roleVo) {
-		final SystemRole role = findById(roleVo.getId());
+		final var role = findById(roleVo.getId());
 		role.setName(roleVo.getName());
 		// delete authorizations
-		for (final SystemAuthorization auth : authorizationRepository.findAllBy(ROLE_ID, role.getId())) {
+		for (final var auth : authorizationRepository.findAllBy(ROLE_ID, role.getId())) {
 			if (roleVo.getAuthorizations().stream().noneMatch(authVo -> auth.getId().equals(authVo.getId()))) {
 				authorizationRepository.delete(auth);
 			}
 		}
 		// create new ones
-		for (final AuthorizationEditionVo authVo : roleVo.getAuthorizations()) {
+		for (final var authVo : roleVo.getAuthorizations()) {
 			if (authVo.getId() == null) {
-				final SystemAuthorization auth = new SystemAuthorization();
+				final var auth = new SystemAuthorization();
 				auth.setRole(role);
 				auth.setPattern(authVo.getPattern());
 				auth.setType(authVo.getType());

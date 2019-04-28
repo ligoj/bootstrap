@@ -26,14 +26,14 @@ public class FetchHelper {
 	 *            JPA entity type to fetch.
 	 * @param fetchedAssociations
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
-	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
-	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
+	 *            same identifier &lt;"contract.contract", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contracts.contract", JoinType.INNER&gt; is accepted.
 	 * @param root
 	 *            Criteria {@link Root}.
 	 */
 	public <T> void applyFetchedAssociations(final Map<String, JoinType> fetchedAssociations, final Root<T> root) {
-		for (final Map.Entry<String, JoinType> entry : fetchedAssociations.entrySet()) {
-			final JoinType joinType = entry.getValue();
+		for (final var entry : fetchedAssociations.entrySet()) {
+			final var joinType = entry.getValue();
 			fetchAssociation(root, entry, joinType);
 		}
 	}
@@ -42,9 +42,9 @@ public class FetchHelper {
 	 * Fetch association.
 	 */
 	private <T> void fetchAssociation(final Root<T> root, final Map.Entry<String, JoinType> entry, final JoinType joinType) {
-		final String[] propertiesToFetch = StringUtils.split(entry.getKey(), '.');
+		final var propertiesToFetch = StringUtils.split(entry.getKey(), '.');
 		FetchParent<?, ?> previouslyFetched = root;
-		for (final String property : propertiesToFetch) {
+		for (final var property : propertiesToFetch) {
 			previouslyFetched = getFetchedAssoc(previouslyFetched, joinType, property);
 		}
 	}

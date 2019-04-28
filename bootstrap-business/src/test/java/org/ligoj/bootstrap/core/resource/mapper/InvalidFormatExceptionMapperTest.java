@@ -11,11 +11,11 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 /**
  * Exception mapper test using {@link InvalidFormatExceptionMapper}
  */
-public class InvalidFormatExceptionMapperTest extends AbstractMapperTest {
+class InvalidFormatExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final InvalidFormatException exception = new InvalidFormatException(null, "", "", String.class);
+	void toResponse() {
+		final var exception = new InvalidFormatException(null, "", "", String.class);
 		check(mock(new InvalidFormatExceptionMapper()).toResponse(exception), 400, "{\"errors\":{}}");
 	}
 

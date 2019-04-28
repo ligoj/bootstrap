@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 import javax.persistence.criteria.JoinType;
@@ -33,7 +32,6 @@ import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 /**
@@ -97,12 +95,12 @@ public class UserResource {
 
 		@Override
 		public SystemUserVo apply(final SystemUser user) {
-			final SystemUserVo userVo = new SystemUserVo();
+			final var userVo = new SystemUserVo();
 			userVo.setLogin(user.getLogin());
-			userVo.setRoles(new ArrayList<SystemRoleVo>());
-			final Set<SystemRoleAssignment> roles = user.getRoles();
-			for (final SystemRoleAssignment role : roles) {
-				final SystemRoleVo systemRoleVo = new SystemRoleVo();
+			userVo.setRoles(new ArrayList<>());
+			final var roles = user.getRoles();
+			for (final var role : roles) {
+				final var systemRoleVo = new SystemRoleVo();
 				systemRoleVo.setId(role.getRole().getId());
 				systemRoleVo.setName(role.getRole().getName());
 				userVo.getRoles().add(systemRoleVo);
@@ -146,7 +144,7 @@ public class UserResource {
 	@GET
 	@Path("roles")
 	public TableItem<SystemUserVo> findAllWithRoles(@Context final UriInfo uriInfo) {
-		final Page<SystemUser> findAll = pagination.findAll(SystemUser.class, uriInfo, ORDERED_COLUMNS, null, FETCHED_ASSOCS);
+		final var findAll = pagination.findAll(SystemUser.class, uriInfo, ORDERED_COLUMNS, null, FETCHED_ASSOCS);
 		// apply pagination
 		return paginationJson.applyPagination(uriInfo, findAll, TO_BUSINESS_ROLES);
 	}
@@ -159,7 +157,7 @@ public class UserResource {
 	 */
 	@POST
 	public void create(final SystemUserEditionVo userVo) {
-		SystemUser user = new SystemUser();
+        var user = new SystemUser();
 		user.setLogin(userVo.getLogin());
 		// create the user
 		user = repository.save(user);
@@ -175,10 +173,10 @@ public class UserResource {
 	 */
 	@PUT
 	public void update(final SystemUserEditionVo userVo) {
-		final SystemUser user = repository.findOneExpected(userVo.getLogin());
+		final var user = repository.findOneExpected(userVo.getLogin());
 		final List<SystemRoleAssignment> roleToDelete = new ArrayList<>();
 		// remove roles deleted by the user
-		for (final SystemRoleAssignment role : user.getRoles()) {
+		for (final var role : user.getRoles()) {
 			if (userVo.getRoles().contains(role.getRole().getId())) {
 				userVo.getRoles().remove(userVo.getRoles().indexOf(role.getRole().getId()));
 			} else {
@@ -200,9 +198,9 @@ public class UserResource {
 	 *            the user
 	 */
 	private void createRoleAssignment(final List<Integer> roleIds, final SystemUser user) {
-		for (final Integer roleId : roleIds) {
-			final SystemRoleAssignment roleAssignment = new SystemRoleAssignment();
-			final SystemRole role = new SystemRole();
+		for (final var roleId : roleIds) {
+			final var roleAssignment = new SystemRoleAssignment();
+			final var role = new SystemRole();
 			role.setId(roleId);
 			roleAssignment.setRole(role);
 			roleAssignment.setUser(user);

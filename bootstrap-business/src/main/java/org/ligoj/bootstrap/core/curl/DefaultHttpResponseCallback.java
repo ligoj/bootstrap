@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 
@@ -25,7 +24,7 @@ public class DefaultHttpResponseCallback implements HttpResponseCallback {
 	public boolean onResponse(final CurlRequest request, final CloseableHttpResponse response) throws IOException {
 
 		// Read the response
-		final HttpEntity entity = response.getEntity();
+		final var entity = response.getEntity();
 		log.info("{} {}", response.getStatusLine().getStatusCode(), request.getUrl());
 		if (entity != null) {
 

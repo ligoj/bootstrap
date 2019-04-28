@@ -34,7 +34,7 @@ import de.svenjacobs.loremipsum.LoremIpsum;
  * {@link RestRepositoryImpl} class test.
  */
 @ExtendWith(SpringExtension.class)
-public class RestRepositoryImplTest extends AbstractBootTest {
+class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Autowired
 	private DialectRepository repository;
@@ -51,11 +51,11 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	private int lastKnownEntity;
 
 	@BeforeEach
-	public void setup() {
-		final LoremIpsum loremIpsum = new LoremIpsum();
-		SystemDialect dial1 = new SystemDialect();
-		for (int i = 0; i < 10; i++) {
-			SystemDialect dial2 = new SystemDialect();
+	void setup() {
+		final var loremIpsum = new LoremIpsum();
+        var dial1 = new SystemDialect();
+		for (var i = 0; i < 10; i++) {
+            var dial2 = new SystemDialect();
 			dial2.setDialLong((long) i);
 			dial2.setDialChar(loremIpsum.getWords(1, i % 50));
 			dial2.setDialDate(new Date(System.currentTimeMillis() + i));
@@ -77,8 +77,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find, and found.
 	 */
 	@Test
-	public void findOne() {
-		final SystemDialect dialect = repository.findOne(lastKnownEntity);
+	void findOne() {
+		final var dialect = repository.findOne(lastKnownEntity);
 		Assertions.assertNotNull(dialect);
 		Assertions.assertNotNull(dialect.getLink());
 		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
@@ -88,7 +88,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find, and not found.
 	 */
 	@Test
-	public void findOneNotFound() {
+	void findOneNotFound() {
 		Assertions.assertNull(repository.findOne(-1));
 	}
 
@@ -96,8 +96,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find one with expected result.
 	 */
 	@Test
-	public void findOneExpected() {
-		final SystemDialect dialect = repository.findOneExpected(lastKnownEntity);
+	void findOneExpected() {
+		final var dialect = repository.findOneExpected(lastKnownEntity);
 		Assertions.assertNotNull(dialect);
 		Assertions.assertNotNull(dialect.getLink());
 		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
@@ -107,7 +107,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Find one without expected result.
 	 */
 	@Test
-	public void findOneExpectedError() {
+	void findOneExpectedError() {
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.findOneExpected(-1));
 	}
 
@@ -115,11 +115,11 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find one with expected result and fetch association.
 	 */
 	@Test
-	public void findOneExpectedFetch() {
+	void findOneExpectedFetch() {
 		final Map<String, JoinType> fetch = new HashMap<>();
 		fetch.put("link", JoinType.LEFT);
 		fetch.put("link.children", JoinType.LEFT);
-		final SystemDialect dialect = repository.findOneExpected(lastKnownEntity, fetch);
+		final var dialect = repository.findOneExpected(lastKnownEntity, fetch);
 		Assertions.assertNotNull(dialect);
 		Assertions.assertNotNull(dialect.getLink());
 		Assertions.assertTrue(isLazyInitialized(dialect.getLink().getChildren()));
@@ -129,8 +129,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find one with expected result and empty fetch association.
 	 */
 	@Test
-	public void findOneExpectedEmptyFetch() {
-		final SystemDialect dialect = repository.findOneExpected(lastKnownEntity, null);
+	void findOneExpectedEmptyFetch() {
+		final var dialect = repository.findOneExpected(lastKnownEntity, null);
 		Assertions.assertNotNull(dialect);
 		Assertions.assertNotNull(dialect.getLink());
 		Assertions.assertFalse(isLazyInitialized(dialect.getLink().getChildren()));
@@ -140,8 +140,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find by name success.
 	 */
 	@Test
-	public void findByName() {
-		SystemRole role = new SystemRole();
+	void findByName() {
+        var role = new SystemRole();
 		role.setName("name");
 		em.persist(role);
 		em.flush();
@@ -153,8 +153,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void findByMoreProperties() {
-		SystemRole role = new SystemRole();
+	void findByMoreProperties() {
+        var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
 		em.flush();
@@ -166,11 +166,11 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void findByNull() {
-		final SystemDialect dial1 = new SystemDialect();
+	void findByNull() {
+		final var dial1 = new SystemDialect();
 		dial1.setDialLong(1L);
 		em.persist(dial1);
-		final SystemDialect dial2 = new SystemDialect();
+		final var dial2 = new SystemDialect();
 		dial2.setDialLong(2L);
 		dial2.setDialDate(new Date(System.currentTimeMillis()));
 		em.persist(dial2);
@@ -181,15 +181,15 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void findByDeepPathMoreProperties() {
-		SystemRole role = new SystemRole();
+	void findByDeepPathMoreProperties() {
+        var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
-		SystemUser user = new SystemUser();
+        var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
-		SystemRoleAssignment assignment = new SystemRoleAssignment();
+        var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
@@ -203,8 +203,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void countBy() {
-		SystemRole role = new SystemRole();
+	void countBy() {
+        var role = new SystemRole();
 		role.setName("john");
 		em.persist(role);
 		em.flush();
@@ -218,17 +218,17 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find all by name success.
 	 */
 	@Test
-	public void findAllByName() {
-		SystemRole role = new SystemRole();
+	void findAllByName() {
+        var role = new SystemRole();
 		role.setName("value2");
 		em.persist(role);
-		SystemRole role2 = new SystemRole();
+        var role2 = new SystemRole();
 		role2.setName("value1");
 		em.persist(role2);
 		em.flush();
 		em.clear();
 
-		List<SystemRole> roles = roleRepository.findAllBy("name", "value1");
+        var roles = roleRepository.findAllBy("name", "value1");
 		Assertions.assertNotNull(roles);
 		Assertions.assertEquals(1, roles.size());
 		Assertions.assertEquals("value1", roles.get(0).getName());
@@ -238,7 +238,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find by name not found.
 	 */
 	@Test
-	public void findByNameNull() {
+	void findByNameNull() {
 		Assertions.assertNull(roleRepository.findByName("any"));
 	}
 
@@ -246,8 +246,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Default find by name with expected result.
 	 */
 	@Test
-	public void findByNameExpected() {
-		SystemRole role = new SystemRole();
+	void findByNameExpected() {
+        var role = new SystemRole();
 		role.setName("name");
 		em.persist(role);
 		em.flush();
@@ -262,15 +262,13 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	 * Find by name without expected result.
 	 */
 	@Test
-	public void findByNameExpectedError() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
-			roleRepository.findByNameExpected("any");
-		});
+	void findByNameExpectedError() {
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> roleRepository.findByNameExpected("any"));
 	}
 
 	@Test
-	public void deleteAllNoFetch() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteAllNoFetch() {
+        var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertTrue(repository.deleteAllNoFetch() > 2);
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
@@ -281,8 +279,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllIdentifiers() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteAllIdentifiers() {
+        var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
@@ -295,8 +293,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllBy() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteAllBy() {
+        var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId()));
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
@@ -306,8 +304,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllByMoreProperties() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteAllByMoreProperties() {
+        var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertEquals(0,
 				repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" }, "some"));
@@ -320,7 +318,7 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.clear();
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 
-		SystemRole role = new SystemRole();
+        var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
 		em.flush();
@@ -332,15 +330,15 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllByDeepPathMoreProperties() {
-		SystemRole role = new SystemRole();
+	void deleteAllByDeepPathMoreProperties() {
+        var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
-		SystemUser user = new SystemUser();
+        var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
-		SystemRoleAssignment assignment = new SystemRoleAssignment();
+        var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
@@ -348,15 +346,15 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		final int nb = roleAssignmentRepository.deleteAllBy("role.id", role.getId(), new String[] { "user.login" },
+		final var nb = roleAssignmentRepository.deleteAllBy("role.id", role.getId(), new String[] { "user.login" },
 				DEFAULT_USER);
 		Assertions.assertNotNull(assignment);
 		Assertions.assertEquals(1, nb);
 	}
 
 	@Test
-	public void deleteAllExpected() {
-		final SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteAllExpected() {
+		final var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
@@ -368,8 +366,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllExpectedFailed() {
-		final SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteAllExpectedFailed() {
+		final var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
@@ -378,8 +376,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllIdentifiersEmpty() {
-		int size = repository.findAll().size();
+	void deleteAllIdentifiersEmpty() {
+        var size = repository.findAll().size();
 		Assertions.assertEquals(0, repository.deleteAll(new ArrayList<Integer>()));
 		Assertions.assertEquals(size, repository.findAll().size());
 		em.flush();
@@ -388,8 +386,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteAllIdentifiersNull() {
-		int size = repository.findAll().size();
+	void deleteAllIdentifiersNull() {
+        var size = repository.findAll().size();
 		Assertions.assertEquals(0, repository.deleteAll((Collection<Integer>) null));
 		Assertions.assertEquals(size, repository.findAll().size());
 		em.flush();
@@ -398,8 +396,8 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteExpected() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteExpected() {
+        var systemDialect = repository.findAll().get(1);
 		repository.deleteById(systemDialect.getId());
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
@@ -408,13 +406,13 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteExpectedError() {
+	void deleteExpectedError() {
 		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> repository.deleteById(-1));
 	}
 
 	@Test
-	public void deleteNoFetch() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteNoFetch() {
+        var systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
@@ -423,21 +421,21 @@ public class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteNoFetchError() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void deleteNoFetchError() {
+        var systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class,
 				() -> repository.deleteNoFetch(systemDialect.getId()));
 	}
 
 	@Test
-	public void existExpected() {
-		SystemDialect systemDialect = repository.findAll().get(1);
+	void existExpected() {
+        var systemDialect = repository.findAll().get(1);
 		repository.existExpected(systemDialect.getId());
 	}
 
 	@Test
-	public void existExpectedFail() {
+	void existExpectedFail() {
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.existExpected(-1));
 	}
 

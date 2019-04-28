@@ -30,11 +30,9 @@ public class DummyCacheBean {
 
 	/**
 	 * Cache efficiency test.
-	 * 
-	 * @return the last #hit counter known by the cache.
 	 */
 	@CachePut(cacheName = "test-cache")
-	public void updateHit(@CacheKey final String entry, @CacheValue int value) {
+	void updateHit(@CacheKey final String entry, @CacheValue int value) {
 		hit = value;
 	}
 
@@ -50,11 +48,9 @@ public class DummyCacheBean {
 
 	/**
 	 * Cache efficiency test for "test-cache-1"
-	 * 
-	 * @return the last #hit counter known by the cache.
 	 */
 	@CachePut(cacheName = "test-cache-1")
-	public void updateHit1(@CacheKey final String entry, @CacheValue int value) {
+	void updateHit1(@CacheKey final String entry, @CacheValue int value) {
 		hit = value;
 	}
 
@@ -70,11 +66,9 @@ public class DummyCacheBean {
 
 	/**
 	 * Cache efficiency test for "test-cache-2"
-	 * 
-	 * @return the last #hit counter known by the cache.
 	 */
 	@CachePut(cacheName = "test-cache-2")
-	public void updateHit2(@CacheKey final String entry, @CacheValue int value) {
+	void updateHit2(@CacheKey final String entry, @CacheValue int value) {
 		hit = value;
 	}
 

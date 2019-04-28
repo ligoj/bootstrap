@@ -3,15 +3,11 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,7 +33,7 @@ public class MatcherUtil {
 	 *            The unique error message
 	 */
 	public static void assertThrows(final ValidationJsonException ex, final String field, final String message) {
-		final Collection<Map<String, Serializable>> errors = CollectionUtils.emptyIfNull(ex.getErrors().get(field));
+		final var errors = CollectionUtils.emptyIfNull(ex.getErrors().get(field));
 		Assertions.assertEquals(errors.isEmpty() ? field : message,
 				errors.stream().map(e -> e.get("rule")).filter(message::equals).findAny()
 						.orElseGet(() -> errors.isEmpty() ? ex.getErrors().keySet().toString()
@@ -55,14 +51,14 @@ public class MatcherUtil {
 	 *            The unique error message
 	 */
 	public static void assertThrows(final ConstraintViolationException ex, final String field, final String message) {
-		final List<ConstraintViolation<?>> errors = ex.getConstraintViolations().stream()
+		final var errors = ex.getConstraintViolations().stream()
 				.filter(v -> field.equals(v.getPropertyPath().toString())).collect(Collectors.toList());
 		final List<String> errorsS = new ArrayList<>();
 		errors.forEach(v -> {
 			errorsS.add(StringUtils.defaultIfBlank(ClassUtils.getShortClassName(ClassUtils.getPackageName(v.getMessageTemplate())), null));
 			errorsS.add(StringUtils.defaultIfBlank(v.getMessageTemplate(), null));
 		});
-		final List<String> errorsS2 = errorsS.stream().filter(Objects::nonNull).map(String::toLowerCase).collect(Collectors.toList());
+		final var errorsS2 = errorsS.stream().filter(Objects::nonNull).map(String::toLowerCase).collect(Collectors.toList());
 		Assertions.assertEquals(errors.isEmpty() ? field : message.toLowerCase(),
 				errorsS2.stream().filter(message::equalsIgnoreCase).findAny().orElseGet(
 						() -> errors.isEmpty()

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * CPU informations.
+ * CPU information.
  */
 @Getter
 @Setter

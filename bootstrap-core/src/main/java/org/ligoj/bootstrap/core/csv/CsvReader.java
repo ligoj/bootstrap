@@ -27,7 +27,7 @@ public class CsvReader {
 	private final StringBuilder value = new StringBuilder(); // NOPMD -- Clear is ensured on read
 	private final Reader reader;
 	private final List<String> values = new ArrayList<>();
-	private char separator;
+	private final char separator;
 
 	/**
 	 * Attached reader.

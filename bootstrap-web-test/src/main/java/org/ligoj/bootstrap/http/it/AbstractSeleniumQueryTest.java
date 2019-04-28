@@ -17,20 +17,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * Common Selenium test class, provides convenient methods to interact with browsers.
  */
-public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncherTest {
+abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncherTest {
 
-	protected static final String S2_ID = "//div[@id='s2id_";
+	private static final String S2_ID = "//div[@id='s2id_";
 
-	protected static final String DATATABLES_ID = "//table[@id='";
+	private static final String DATATABLES_ID = "//table[@id='";
 
 	/**
-	 * Find the bootstrap control group of an element in a form. Usefull to check validation error
+	 * Find the bootstrap control group of an element in a form. Useful to check validation error
 	 * 
 	 * @param elementId
 	 *            Id of the element
 	 * @return Element location
 	 */
-	protected By findControlGroup(final String elementId) {
+    By findControlGroup(final String elementId) {
 		return By.xpath("//div[contains(@class,'control-group')]//*[@id='" + elementId + "']/../..");
 	}
 
@@ -45,7 +45,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 *            Column number (first column : 1)
 	 * @return Element location
 	 */
-	protected By findCellChild(final String tableId, final int row, final int column) {
+    By findCellChild(final String tableId, final int row, final int column) {
 		return By.xpath(DATATABLES_ID + tableId + tableXPath(row, column) + "/*[1]");
 	}
 
@@ -60,7 +60,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 *            Column number (first column : 1)
 	 * @return Element location
 	 */
-	protected By findCell(final String tableId, final int row, final int column) {
+    By findCell(final String tableId, final int row, final int column) {
 		return By.xpath(DATATABLES_ID + tableId + tableXPath(row, column));
 	}
 
@@ -75,11 +75,11 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 *            Column index (first : 1)
 	 * @return Error text
 	 */
-	protected String findErrorInTable(final String tableId, final int row, final int column) {
+    String findErrorInTable(final String tableId, final int row, final int column) {
 		return driver.findElement(By.xpath(DATATABLES_ID + tableId + tableXPath(row, column))).getAttribute("title");
 	}
 
-	protected String tableXPath(final int row, final int column) {
+	private String tableXPath(final int row, final int column) {
 		return "']/tbody/tr[" + row + "]/td[" + column + "]";
 	}
 
@@ -91,7 +91,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @param expectedText
 	 *            Expected selected text
 	 */
-	protected void assertSelectedText(final String expectedText, final By by) {
+    void assertSelectedText(final String expectedText, final By by) {
 		new WebDriverWait(driver, timeout)
 				.until(d -> new Select(driver.findElement(by)).getFirstSelectedOption().getText().equals(expectedText));
 	}
@@ -103,7 +103,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 *            Element location
 	 * @return Element
 	 */
-	protected WebElement getElement(final By by) {
+    WebElement getElement(final By by) {
 		return new WebDriverWait(driver, timeout)
 				.until(d -> Optional.ofNullable(driver.findElement(by)).filter(WebElement::isDisplayed).orElse(null));
 	}
@@ -118,7 +118,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @throws InterruptedException
 	 *             From {@link Thread#sleep(long)}
 	 */
-	protected void select2RemoveValue(final String select2Id, final String option2Remove) throws InterruptedException {
+    void select2RemoveValue(final String select2Id, final String option2Remove) throws InterruptedException {
 		getElement(By.xpath(S2_ID + select2Id + "']//div[text()='" + option2Remove + "']/../a")).click();
 		smallSleep();
 	}
@@ -133,7 +133,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @throws InterruptedException
 	 *             From {@link Thread#sleep(long)}
 	 */
-	protected void select2SelectValue(final String select2Id, final String option2Add) throws InterruptedException {
+    void select2SelectValue(final String select2Id, final String option2Add) throws InterruptedException {
 		// Click on the select 2 to display the options
 		// * = ul for a multiselect, a for a single select
 		getElement(By.xpath(S2_ID + select2Id + "']/*")).click();
@@ -154,7 +154,7 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @throws InterruptedException
 	 *             From {@link Thread#sleep(long)}
 	 */
-	protected void select2SelectValue(final String select2Id, final int optionNumber) throws InterruptedException {
+    void select2SelectValue(final String select2Id, final int optionNumber) throws InterruptedException {
 		// Click on the select 2 to display the options
 		// * = ul for a multiselect, a for a single select
 		getElement(By.xpath(S2_ID + select2Id + "']/*")).click();
@@ -172,9 +172,9 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 *            Id of the select2
 	 * @return List of the values
 	 */
-	protected List<String> select2GetValues(final String select2Id) {
+    List<String> select2GetValues(final String select2Id) {
 		final List<String> options = new ArrayList<>();
-		int numOption = 0;
+        var numOption = 0;
 		while (true) { // NOSONAR - Increment the select index until there is no more entries
 			numOption++;
 			try {
@@ -196,14 +196,14 @@ public abstract class AbstractSeleniumQueryTest extends AbstractSeleniumLauncher
 	 * @param optionText
 	 *            Text of the option to select
 	 */
-	protected void selectOptionByText(final By by, final String optionText) {
+    void selectOptionByText(final By by, final String optionText) {
 		new Select(getElement(by)).selectByVisibleText(optionText);
 	}
 
 	/**
 	 * Wait for the server to answer : only use this when no screen modification is detectable. Very long (10 s)
 	 */
-	protected void waitFixedTime() {
+    void waitFixedTime() {
 		driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 	}
 }

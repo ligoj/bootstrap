@@ -48,17 +48,17 @@ public class CurlRequest {
 	/**
 	 * HTTP method to execute, upper case.
 	 */
-	private String method;
+	private final String method;
 
 	/**
 	 * URL encoded to execute.
 	 */
-	private String url;
+	private final String url;
 
 	/**
 	 * Nullable encoded entity content to send.
 	 */
-	private String content;
+	private final String content;
 
 	/**
 	 * Nullable headers
@@ -99,8 +99,8 @@ public class CurlRequest {
 		this.content = content;
 		this.headers = new HashMap<>();
 		this.callback = callback;
-		for (final String header : headers) {
-			final String[] split = header.split(":");
+		for (final var header : headers) {
+			final var split = header.split(":");
 			this.headers.put(split[0], split[1]);
 		}
 	}

@@ -11,30 +11,30 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link InsensitiveEnumParameterHandler}
  */
-public class InsensitiveEnumParameterHandlerTest {
+class InsensitiveEnumParameterHandlerTest {
 
 	@Test
-	public void testNullEnum() {
+	void testNullEnum() {
 		Assertions.assertNull(new InsensitiveEnumParameterHandler().getConverter(Status.class, null, null).fromString(null));
 	}
 
 	@Test
-	public void testNotEnu() {
-		Assertions.assertEquals(null, new InsensitiveEnumParameterHandler().getConverter(String.class, null, null));
+	void testNotEnu() {
+		Assertions.assertNull(new InsensitiveEnumParameterHandler().getConverter(String.class, null, null));
 	}
 
 	@Test
-	public void testExactMatch() {
+	void testExactMatch() {
 		Assertions.assertEquals(Status.OK, new InsensitiveEnumParameterHandler().getConverter(Status.class, null, null).fromString("OK"));
 	}
 
 	@Test
-	public void testLowerCase() {
+	void testLowerCase() {
 		Assertions.assertEquals(Status.OK, new InsensitiveEnumParameterHandler().getConverter(Status.class, null, null).fromString("ok"));
 	}
 
 	@Test
-	public void testToString() {
+	void testToString() {
 		Assertions.assertEquals("ok", new InsensitiveEnumParameterHandler().getConverter(Status.class, null, null).toString(Status.OK));
 	}
 }

@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 /**
  * A technical exception test.
  */
-public class TechnicalExceptionTest {
+class TechnicalExceptionTest {
 
 	/**
 	 * Simple constructor test.
 	 */
 	@Test
-	public void testException() {
+    void testException() {
 		final Error cause = new IllegalAccessError();
-		final TechnicalException exception = new TechnicalException("null", cause, "param1");
+		final var exception = new TechnicalException("null", cause, "param1");
 		Assertions.assertEquals(1, exception.getParameters().length);
 		Assertions.assertEquals("null", exception.getMessage());
 		Assertions.assertEquals("param1", exception.getParameters()[0]);
@@ -29,10 +29,10 @@ public class TechnicalExceptionTest {
 	 * No cause, no parameter.
 	 */
 	@Test
-	public void testExceptionNoCause() {
-		final TechnicalException exception = new TechnicalException("null");
+    void testExceptionNoCause() {
+		final var exception = new TechnicalException("null");
 		Assertions.assertEquals(0, exception.getParameters().length);
 		Assertions.assertEquals("null", exception.getMessage());
-		Assertions.assertEquals(null, exception.getCause());
+		Assertions.assertNull(exception.getCause());
 	}
 }

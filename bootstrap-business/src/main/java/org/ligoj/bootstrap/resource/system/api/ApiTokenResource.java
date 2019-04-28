@@ -60,10 +60,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiTokenResource {
 
 	/**
-	 * Random string generator.
-	 */
-
-	/**
 	 * Az09 string generator.
 	 */
 	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
@@ -144,7 +140,7 @@ public class ApiTokenResource {
 	@Path("{name:\\w+}")
 	@OnNullReturn404
 	public String getToken(@PathParam("name") final String name) throws GeneralSecurityException {
-		final SystemApiToken entity = repository.findByUserAndName(securityHelper.getLogin(), name);
+		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
 		return decrypt(entity.getToken(), newSecretKey(entity.getUser(), entity.getName()));
 	}
 
@@ -160,14 +156,14 @@ public class ApiTokenResource {
 	 *             When there is a security issue.
 	 */
 	private String decrypt(final String encryptedMessage, final byte[] secretKey) throws GeneralSecurityException {
-		final byte[] message = Base64.decodeBase64(encryptedMessage.getBytes(StandardCharsets.UTF_8));
-		final MessageDigest md = MessageDigest.getInstance(tokenDigest);
-		final byte[] digestOfPassword = md.digest(secretKey);
-		final byte[] keyBytes = Arrays.copyOf(digestOfPassword, 24);
+		final var message = Base64.decodeBase64(encryptedMessage.getBytes(StandardCharsets.UTF_8));
+		final var md = MessageDigest.getInstance(tokenDigest);
+		final var digestOfPassword = md.digest(secretKey);
+		final var keyBytes = Arrays.copyOf(digestOfPassword, 24);
 		final SecretKey key = new SecretKeySpec(keyBytes, tokenCrypt);
-		final Cipher decipher = Cipher.getInstance(tokenCrypt);
+		final var decipher = Cipher.getInstance(tokenCrypt);
 		decipher.init(Cipher.DECRYPT_MODE, key);
-		final byte[] plainText = decipher.doFinal(message);
+		final var plainText = decipher.doFinal(message);
 		return new String(plainText, StandardCharsets.UTF_8);
 	}
 
@@ -183,16 +179,16 @@ public class ApiTokenResource {
 	 *             When there is a security issue.
 	 */
 	private String encrypt(final String message, final byte[] secretKey) throws GeneralSecurityException {
-		final MessageDigest digest = MessageDigest.getInstance(tokenDigest);
+		final var digest = MessageDigest.getInstance(tokenDigest);
 		digest.reset();
-		final byte[] digestOfPassword = digest.digest(secretKey);
-		final byte[] keyBytes = Arrays.copyOf(digestOfPassword, 24);
+		final var digestOfPassword = digest.digest(secretKey);
+		final var keyBytes = Arrays.copyOf(digestOfPassword, 24);
 		final SecretKey key = new SecretKeySpec(keyBytes, tokenCrypt);
-		final Cipher cipher = Cipher.getInstance(tokenCrypt);
+		final var cipher = Cipher.getInstance(tokenCrypt);
 		cipher.init(Cipher.ENCRYPT_MODE, key);
-		final byte[] plainTextBytes = message.getBytes(StandardCharsets.UTF_8);
-		final byte[] buf = cipher.doFinal(plainTextBytes);
-		final byte[] base64Bytes = Base64.encodeBase64(buf);
+		final var plainTextBytes = message.getBytes(StandardCharsets.UTF_8);
+		final var buf = cipher.doFinal(plainTextBytes);
+		final var base64Bytes = Base64.encodeBase64(buf);
 		return new String(base64Bytes, StandardCharsets.UTF_8);
 	}
 
@@ -204,7 +200,7 @@ public class ApiTokenResource {
 	 * @return the hash without salt.
 	 */
 	private String hash(final String token) throws NoSuchAlgorithmException {
-		final MessageDigest digest = MessageDigest.getInstance(tokenDigest);
+		final var digest = MessageDigest.getInstance(tokenDigest);
 		digest.reset();
 		return Base64.encodeBase64String(digest.digest(token.getBytes(StandardCharsets.UTF_8)));
 	}
@@ -222,10 +218,10 @@ public class ApiTokenResource {
 	 */
 	protected byte[] simpleHash(final int iterations, final String password) throws NoSuchAlgorithmException {
 		// This is not a single hash
-		final MessageDigest digest = MessageDigest.getInstance("SHA-1"); // NOSONAR
+		final var digest = MessageDigest.getInstance("SHA-1"); // NOSONAR
 		digest.reset();
-		byte[] input = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-		for (int i = 0; i < iterations; i++) {
+        var input = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+		for (var i = 0; i < iterations; i++) {
 			digest.reset();
 			input = digest.digest(input);
 		}
@@ -250,10 +246,10 @@ public class ApiTokenResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{name:[\\w\\-\\.]+}")
 	public String create(@PathParam("name") final String name) throws GeneralSecurityException {
-		final SystemApiToken entity = new SystemApiToken();
+		final var entity = new SystemApiToken();
 		entity.setName(name);
 		entity.setUser(securityHelper.getLogin());
-		final String token = newToken(entity);
+		final var token = newToken(entity);
 		repository.saveAndFlush(entity);
 		return token;
 	}
@@ -262,7 +258,7 @@ public class ApiTokenResource {
 	 * Update the token with a new one.
 	 */
 	private String newToken(final SystemApiToken entity) throws GeneralSecurityException {
-		final String token = newToken();
+		final var token = newToken();
 		entity.setHash(hash(token));
 		entity.setToken(encrypt(token, newSecretKey(entity.getUser(), entity.getName())));
 		return token;
@@ -288,14 +284,14 @@ public class ApiTokenResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{name:[\\w\\-\\.]+}")
 	public String update(@PathParam("name") final String name) throws GeneralSecurityException {
-		final SystemApiToken entity = repository.findByUserAndName(securityHelper.getLogin(), name);
+		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
 		if (entity == null) {
 			// No token with given name
 			throw new EntityNotFoundException();
 		}
 
 		// Token has been found, update it
-		final String token = newToken(entity);
+		final var token = newToken(entity);
 		repository.saveAndFlush(entity);
 		return token;
 	}

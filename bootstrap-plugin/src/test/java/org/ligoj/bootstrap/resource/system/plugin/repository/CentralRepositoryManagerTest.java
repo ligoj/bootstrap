@@ -9,7 +9,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
@@ -52,7 +51,7 @@ public class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractSe
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
 								StandardCharsets.UTF_8))));
 		httpServer.start();
-		final Map<String, Artifact> versions = resource.getLastPluginVersions();
+		final var versions = resource.getLastPluginVersions();
 		Assertions.assertEquals(versions.keySet(), resource.getLastPluginVersions().keySet());
 		resource.invalidateLastPluginVersions();
 		Assertions.assertEquals(versions.keySet(), resource.getLastPluginVersions().keySet());

@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.resource.system.security;
 
 import java.security.GeneralSecurityException;
-import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -39,8 +38,8 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 	private SystemApiTokenRepository repository;
 
 	@BeforeEach
-	public void setUp2() {
-		SystemApiToken entity = new SystemApiToken();
+	void setUp2() {
+        var entity = new SystemApiToken();
 		entity.setToken(TOKEN_CRYPT);
 		entity.setHash(TOKEN_HASH);
 		entity.setName("name");
@@ -57,72 +56,72 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void getToken() throws GeneralSecurityException {
-		final String tokens = resource.getToken("name");
+	void getToken() throws GeneralSecurityException {
+		final var tokens = resource.getToken("name");
 		Assertions.assertEquals(TOKEN, tokens);
 	}
 
 	@Test
-	public void getTokenNames() {
-		final List<String> tokensName = resource.getTokenNames();
+	void getTokenNames() {
+		final var tokensName = resource.getTokenNames();
 		Assertions.assertEquals(1, tokensName.size());
 		Assertions.assertEquals("name", tokensName.get(0));
 	}
 
 	@Test
-	public void check() {
+	void check() {
 		Assertions.assertTrue(resource.check(DEFAULT_USER, TOKEN));
 	}
 
 	@Test
-	public void checkNoUser() {
+	void checkNoUser() {
 		Assertions.assertFalse(resource.check("any", TOKEN));
 	}
 
 	@Test
-	public void checkWrongUser() {
+	void checkWrongUser() {
 		Assertions.assertFalse(resource.check("other", TOKEN));
 	}
 
 	@Test
-	public void checkWrongKey() {
+	void checkWrongKey() {
 		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN2));
 	}
 
 	@Test
-	public void checkInvalidDigest() {
-		final ApiTokenResource resource = new ApiTokenResource();
+	void checkInvalidDigest() {
+		final var resource = new ApiTokenResource();
 		resource.setTokenDigest("any");
 		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN));
 	}
 
 	@Test
-	public void create() throws GeneralSecurityException {
+	void create() throws GeneralSecurityException {
 		Assertions.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
-		final String token = resource.create("new-api");
+		final var token = resource.create("new-api");
 
 		// Check new state
-		final SystemApiToken newToken = repository.findByNameExpected("new-api");
+		final var newToken = repository.findByNameExpected("new-api");
 		Assertions.assertNotNull(token);
 		Assertions.assertEquals(DEFAULT_USER, newToken.getUser());
 		Assertions.assertNotNull(newToken.getHash());
-		final List<String> tokens = resource.getTokenNames();
+		final var tokens = resource.getTokenNames();
 		Assertions.assertEquals(2, tokens.size());
 		Assertions.assertEquals("new-api", tokens.get(1));
 		Assertions.assertEquals(token, resource.getToken("new-api"));
 	}
 
 	@Test
-	public void updateNotExist() {
+	void updateNotExist() {
 		Assertions.assertThrows(EntityNotFoundException.class, () -> resource.update("any"));
 	}
 
 	@Test
-	public void update() throws GeneralSecurityException {
-		List<String> tokens = resource.getTokenNames();
+	void update() throws GeneralSecurityException {
+        var tokens = resource.getTokenNames();
 		Assertions.assertEquals(1, tokens.size());
 		Assertions.assertEquals("name", tokens.get(0));
-		final String token = resource.update("name");
+		final var token = resource.update("name");
 
 		// Check new state
 		Assertions.assertNotNull(token);
@@ -130,7 +129,7 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(1, tokens.size());
 		Assertions.assertEquals("name", tokens.get(0));
 		Assertions.assertEquals(token, resource.getToken("name"));
-		final SystemApiToken newToken = repository.findByUserAndName(DEFAULT_USER, "name");
+		final var newToken = repository.findByUserAndName(DEFAULT_USER, "name");
 		Assertions.assertNotNull(newToken);
 		Assertions.assertEquals(DEFAULT_USER, newToken.getUser());
 		Assertions.assertNotNull(newToken.getToken());
@@ -138,7 +137,7 @@ public class ApiTokenResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void remove() {
+	void remove() {
 		Assertions.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
 		resource.remove("name");
 

@@ -119,7 +119,7 @@ public class ValidationJsonException extends RuntimeException {
 
 	private ValidationJsonException(final JsonMappingException mappingException, final String message, final String rule) {
 		this(message);
-		final StringBuilder propertyPath = buildPropertyPath(mappingException.getPath());
+		final var propertyPath = buildPropertyPath(mappingException.getPath());
 		if (propertyPath.length() > 0) {
 
 			// Add the error.
@@ -170,7 +170,7 @@ public class ValidationJsonException extends RuntimeException {
 	 */
 	private Map<String, Serializable> toMap(final Serializable... parametersKeyValue) {
 		final Map<String, Serializable> parameters = new HashMap<>();
-		for (int i = 0; i < parametersKeyValue.length; i += 2) {
+		for (var i = 0; i < parametersKeyValue.length; i += 2) {
 			parameters.put(parametersKeyValue[i].toString(), parametersKeyValue[i + 1]);
 		}
 		return parameters;
@@ -180,9 +180,9 @@ public class ValidationJsonException extends RuntimeException {
 	 * Build and return a property path of given exception.
 	 */
 	private StringBuilder buildPropertyPath(final List<InvalidFormatException.Reference> path) {
-		final StringBuilder propertyPath = new StringBuilder();
+		final var propertyPath = new StringBuilder();
 		InvalidFormatException.Reference parent = null;
-		for (final InvalidFormatException.Reference reference : path) {
+		for (final var reference : path) {
 			buildPropertyPath(propertyPath, reference, parent);
 			parent = reference;
 		}
@@ -219,7 +219,7 @@ public class ValidationJsonException extends RuntimeException {
 	 * Parse the rule name from the Jackson mapping exception message in the given violation.
 	 */
 	private static String parseRule(final MismatchedInputException mappingException) {
-		final String rule = StringUtils.capitalize(mappingException.getTargetType().getSimpleName());
+		final var rule = StringUtils.capitalize(mappingException.getTargetType().getSimpleName());
 
 		// Manage the primitive type "int" due to Jackson 2.x new features
 		return "Int".equals(rule) ? "Integer" : rule;
@@ -240,14 +240,14 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * serialize a violation from Hibernate validation
 	 *
-	 * @param error
-	 *            validation error
+	 * @param violation
+	 *            The validation error
 	 * @return serialized error
 	 */
 	private Map<String, Serializable> serializeHibernateValidationError(final ConstraintViolation<?> violation) {
 		final Map<String, Serializable> error = new HashMap<>();
 		final Map<String, Serializable> parameters = new HashMap<>();
-		for (final Map.Entry<String, Object> entry : violation.getConstraintDescriptor().getAttributes().entrySet()) {
+		for (final var entry : violation.getConstraintDescriptor().getAttributes().entrySet()) {
 			// ignore some parameters
 			if (!IGNORED_PARAMETERS.contains(entry.getKey())) {
 				parameters.put(entry.getKey(), (Serializable) entry.getValue());
@@ -297,11 +297,11 @@ public class ValidationJsonException extends RuntimeException {
 	 * @return a validation exception containing given errors.
 	 */
 	public static ValidationJsonException newValidationJsonException(final String error, final String... fields) {
-		final ValidationJsonException exception = new ValidationJsonException(error + ":" + ArrayUtils.toString(fields));
+		final var exception = new ValidationJsonException(error + ":" + ArrayUtils.toString(fields));
 		if (fields.length == 0) {
 			exception.addError(DEFAULT_FIELD, error);
 		} else {
-			for (final String field : fields) {
+			for (final var field : fields) {
 				exception.addError(field, error);
 			}
 		}
@@ -320,7 +320,7 @@ public class ValidationJsonException extends RuntimeException {
 	 */
 	public static void assertTrue(final boolean assertTrue, final String error, final Object... params) {
 		if (!assertTrue) {
-			final ValidationJsonException exception = new ValidationJsonException();
+			final var exception = new ValidationJsonException();
 			exception.addError(DEFAULT_FIELD, error, params);
 			throw exception;
 		}

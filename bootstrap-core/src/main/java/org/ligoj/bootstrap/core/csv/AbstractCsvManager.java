@@ -86,7 +86,7 @@ public abstract class AbstractCsvManager {
 
 	/**
 	 * Writes to the given writer the given items in CSV format with a header. The generator use Java Bean properties
-	 * having a writable method. If managed JPA properties are expected, see {@link #toCsv(List, Class, Writer)}.
+	 * having a writable method.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -101,16 +101,16 @@ public abstract class AbstractCsvManager {
 	 */
 	public <T> void toCsv(final List<T> items, final Class<T> beanType, final Writer result) throws IOException {
 		// Build descriptor list respecting the declaration order
-		final List<String> descriptorsOrdered = Arrays.stream(BeanUtils.getPropertyDescriptors(beanType))
+		final var descriptorsOrdered = Arrays.stream(BeanUtils.getPropertyDescriptors(beanType))
 				.filter(property -> property.getWriteMethod() != null).map(PropertyDescriptor::getName)
 				.collect(Collectors.toList());
-		String[] headers = new String[descriptorsOrdered.size()];
+        var headers = new String[descriptorsOrdered.size()];
 		headers = descriptorsOrdered.toArray(headers);
 
 		// Write the data
-		final CsvBeanWriter writer = new CsvBeanWriter(result);
+		final var writer = new CsvBeanWriter(result);
 		writer.writeHeader(headers);
-		for (final T item : items) {
+		for (final var item : items) {
 			writer.write(headers, item);
 		}
 		result.flush();

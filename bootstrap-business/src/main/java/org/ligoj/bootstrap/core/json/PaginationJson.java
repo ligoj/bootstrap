@@ -70,10 +70,10 @@ public class PaginationJson {
 	 * @return a page request build with sort and filter.
 	 */
 	public UiPageRequest getUiPageRequest(final UriInfo uriInfo, final Map<String, String> ormMapping) {
-		final MultivaluedMap<String, String> parameters = uriInfo.getQueryParameters();
+		final var parameters = uriInfo.getQueryParameters();
 
 		// Build the page request object
-		final UiPageRequest request = new UiPageRequest();
+		final var request = new UiPageRequest();
 		request.setUiFilter(buildFilter(parameters.getFirst("filters")));
 		request.setUiSort(buildSort(getOrmColumn(ormMapping, getSortColumn(parameters)), getSortDirection(parameters)));
 		request.setPage(ObjectUtils.defaultIfNull(getPage(parameters), 1));
@@ -94,7 +94,7 @@ public class PaginationJson {
 		if (sortColumn == null) {
 			return null;
 		}
-		final UiSort sort = new UiSort();
+		final var sort = new UiSort();
 		sort.setColumn(sortColumn);
 		sort.setDirection(Optional.ofNullable(sorDirection).map(d -> Direction.valueOf(d.toUpperCase(Locale.ENGLISH)))
 				.orElse(Direction.ASC));
@@ -128,16 +128,16 @@ public class PaginationJson {
 	 */
 	public PageRequest getPageRequest(final UriInfo uriInfo, final Map<String, String> ormMapping,
 			final Collection<String> caseSensitiveColumns) {
-		// Update pagination informations
+		// Update pagination information
 		if (uriInfo == null) {
 			return PageRequest.of(0, 10);
 		}
-		final MultivaluedMap<String, String> parameters = uriInfo.getQueryParameters();
-		final int pageLength = getPageLength(parameters);
+		final var parameters = uriInfo.getQueryParameters();
+		final var pageLength = getPageLength(parameters);
 		final int firstPage = Optional.ofNullable(getPage(parameters)).map(p -> p - 1)
 				.orElse(getStart(parameters) / pageLength);
 
-		// Update sort informations
+		// Update sort information
 		return buildOrderedPageRequest(ormMapping, parameters, pageLength, firstPage, caseSensitiveColumns);
 	}
 
@@ -236,9 +236,9 @@ public class PaginationJson {
 	private PageRequest newSortedPageRequest(final Map<String, String> ormMapping,
 			final MultivaluedMap<String, String> parameters, final int pageLength, final int firstPage,
 			final String column, final Collection<String> caseSensitiveColumns) {
-		final String direction = getSortDirection(parameters);
+		final var direction = getSortDirection(parameters);
 		final PageRequest pageRequest;
-		final String ormProperty = getOrmColumn(ormMapping, column);
+		final var ormProperty = getOrmColumn(ormMapping, column);
 		if (ormProperty == null) {
 			// Not enough information for build an ORDER BY
 			pageRequest = PageRequest.of(firstPage, pageLength);
@@ -284,8 +284,8 @@ public class PaginationJson {
 	 */
 	public <T, E> TableItem<T> applyPagination(final UriInfo uriInfo, final Page<E> items,
 			final Function<E, T> converter) {
-		// update JSon component with pagination informations
-		final TableItem<T> result = new TableItem<>();
+		// update JSon component with pagination information
+		final var result = new TableItem<T>();
 
 		// Force the content to be fetched
 		result.setData(items.getContent().stream().map(converter).collect(Collectors.toList()));

@@ -4,10 +4,8 @@
 package org.ligoj.bootstrap.core.plugin;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,11 +14,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -74,7 +69,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * The plug-in directory, inside the home directory.
 	 */
-	private Path pluginDirectory;
+	private final Path pluginDirectory;
 
 	/**
 	 * Read only plug-in safe mode. When <code>false</code>, external plug-ins are not participating to the classpath.
@@ -120,11 +115,11 @@ public class PluginsClassLoader extends URLClassLoader {
 		final Map<String, Path> versionFileToPath = new HashMap<>();
 
 		// Ordered last version (to be enabled) plug-ins.
-		final Map<String, String> enabledPlugins = getInstalledPlugins(versionFileToPath);
+		final var enabledPlugins = getInstalledPlugins(versionFileToPath);
 
 		// Add the filtered plug-in files to the class-path
-		for (final Entry<String, String> plugin : enabledPlugins.entrySet()) {
-			final URI uri = versionFileToPath.get(plugin.getValue()).toUri();
+		for (final var plugin : enabledPlugins.entrySet()) {
+			final var uri = versionFileToPath.get(plugin.getValue()).toUri();
 			log.debug("Add plugin {}", uri);
 			copyExportedResources(plugin.getKey(), versionFileToPath.get(plugin.getValue()));
 			addURL(uri.toURL());
@@ -147,7 +142,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	private Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath) throws IOException {
 		final Map<String, String> versionFiles = new TreeMap<>();
-		try (Stream<Path> list = Files.list(this.pluginDirectory)) {
+		try (var list = Files.list(this.pluginDirectory)) {
 			list.filter(p -> p.toString().endsWith(".jar"))
 					.forEach(path -> addVersionFile(versionFileToPath, versionFiles, path));
 		}
@@ -217,11 +212,11 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *             When plug-in file cannot be read.
 	 */
 	protected void copyExportedResources(final String plugin, final Path pluginFile) throws IOException {
-		try (FileSystem fileSystem = FileSystems.newFileSystem(pluginFile, this)) {
-			final Path export = fileSystem.getPath("/" + EXPORT_DIR);
+		try (var fileSystem = FileSystems.newFileSystem(pluginFile, this)) {
+			final var export = fileSystem.getPath("/" + EXPORT_DIR);
 			if (Files.exists(export)) {
-				final Path targetExport = getHomeDirectory().resolve(EXPORT_DIR);
-				try (Stream<Path> walk = Files.walk(export)) {
+				final var targetExport = getHomeDirectory().resolve(EXPORT_DIR);
+				try (var walk = Files.walk(export)) {
 					walk.forEach(from -> copyExportedResource(plugin, targetExport, export, from));
 				}
 			}
@@ -232,7 +227,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Copy a resource as needed to be exported from the JAR plug-in to the home.
 	 */
 	private void copyExportedResource(final String plugin, final Path targetExport, final Path root, final Path from) {
-		final Path dest = targetExport.resolve(root.relativize(from).toString());
+		final var dest = targetExport.resolve(root.relativize(from).toString());
 		// Copy without overwrite
 		if (!dest.toFile().exists()) {
 			try {
@@ -264,8 +259,8 @@ public class PluginsClassLoader extends URLClassLoader {
 
 	private void addVersionFile(final Map<String, Path> versionFileToPath, final Map<String, String> versionFiles,
 			final Path path) {
-		final String file = path.getFileName().toString();
-		final Matcher matcher = VERSION_PATTERN.matcher(file);
+		final var file = path.getFileName().toString();
+		final var matcher = VERSION_PATTERN.matcher(file);
 		final String noVersionFile;
 		final String fileWithExtVersion;
 		if (matcher.find()) {
@@ -295,9 +290,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @see PluginsClassLoader#toExtendedVersion(String)
 	 */
 	public static String toExtendedVersion(final String version) {
-		final StringBuilder fileWithVersionExp = new StringBuilder();
+		final var fileWithVersionExp = new StringBuilder();
 		final String[] allFragments = { "0", "0", "0", "0" };
-		final String[] versionFragments = ObjectUtils.defaultIfNull(StringUtils.split(version, "-."), allFragments);
+		final var versionFragments = ObjectUtils.defaultIfNull(StringUtils.split(version, "-."), allFragments);
 		System.arraycopy(versionFragments, 0, allFragments, 0, versionFragments.length);
 		Arrays.stream(allFragments).map(s -> StringUtils.leftPad(StringUtils.leftPad(s, 7, '0'), 8, 'Z'))
 				.forEach(fileWithVersionExp::append);
@@ -352,9 +347,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *             When the parent directories creation failed.
 	 */
 	protected Path toPath(final Path parent, final String... fragments) throws IOException {
-		Path parentR = parent;
-		for (int i = 0; i < fragments.length; i++) {
-			parentR = parentR.resolve(fragments[i]);
+        var parentR = parent;
+		for (var fragment : fragments) {
+			parentR = parentR.resolve(fragment);
 		}
 		// Ensure the parent path is created
 		FileUtils.forceMkdir(parentR.getParent().toFile());

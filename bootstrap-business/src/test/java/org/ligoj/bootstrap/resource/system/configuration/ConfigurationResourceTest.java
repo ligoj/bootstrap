@@ -24,13 +24,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link ConfigurationResource}
  */
 @ExtendWith(SpringExtension.class)
-public class ConfigurationResourceTest extends AbstractBootTest {
+class ConfigurationResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private ConfigurationResource resource;
 
 	@BeforeEach
-	public void prepare() {
+	void prepare() {
 		System.setProperty("test-key0", cryptoHelper.encrypt("value0"));
 		System.setProperty("test-key1", cryptoHelper.encrypt("value1"));
 		System.setProperty("test-key2", "value2");
@@ -38,27 +38,27 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 		System.setProperty("test-key-int", "54");
 		System.setProperty("test-key6", "  ");
 
-		final SystemConfiguration entity0 = new SystemConfiguration();
+		final var entity0 = new SystemConfiguration();
 		entity0.setName("test-key0");
 		entity0.setValue("value-db0");
 		em.persist(entity0);
 
-		final SystemConfiguration entity2 = new SystemConfiguration();
+		final var entity2 = new SystemConfiguration();
 		entity2.setName("test-key2");
 		entity2.setValue("value-db2");
 		em.persist(entity2);
 
-		final SystemConfiguration entity4 = new SystemConfiguration();
+		final var entity4 = new SystemConfiguration();
 		entity4.setName("test-key4");
 		entity4.setValue("value-db4");
 		em.persist(entity4);
 
-		final SystemConfiguration entity5 = new SystemConfiguration();
+		final var entity5 = new SystemConfiguration();
 		entity5.setName("test-key5");
 		entity5.setValue(cryptoHelper.encrypt("value-db5"));
 		em.persist(entity5);
 
-		final SystemConfiguration entity6 = new SystemConfiguration();
+		final var entity6 = new SystemConfiguration();
 		entity6.setName("test-key6");
 		entity6.setValue("value-db6");
 		em.persist(entity6);
@@ -68,12 +68,12 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@AfterEach
-	public void clean() {
+	void clean() {
 		cacheManager.getCache("configuration").clear();
 	}
 
 	@Test
-	public void get() {
+	void get() {
 		Assertions.assertEquals("value0", resource.get("test-key0"));
 		Assertions.assertEquals("value1", resource.get("test-key1"));
 		Assertions.assertEquals("value2", resource.get("test-key2"));
@@ -89,7 +89,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void findAll() {
+	void findAll() {
 		final Map<String, ConfigurationVo> result = new HashMap<>();
 		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
 		Assertions.assertNull(result.get("test-key0").getValue());
@@ -114,13 +114,13 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void getInt() {
+	void getInt() {
 		Assertions.assertEquals(99, resource.get("test-key-any", 99));
 		Assertions.assertEquals(54, resource.get("test-key-int", 77));
 	}
 
 	@Test
-	public void getDefault() {
+	void getDefault() {
 		Assertions.assertNull(resource.get("test-key-any"));
 		Assertions.assertEquals("99", resource.get("test-key-any", "99"));
 		Assertions.assertEquals("54", resource.get("test-key-int"));
@@ -128,8 +128,8 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void put() {
-		final SystemConfiguration value = em
+	void put() {
+		final var value = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 		em.clear();
@@ -139,7 +139,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-db5", resource.get("test-key5"));
-		SystemConfiguration newValue = em
+        var newValue = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 
@@ -157,8 +157,8 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void putSecuredOverrideSystem() {
-		final ConfigurationEditionVo vo = new ConfigurationEditionVo();
+	void putSecuredOverrideSystem() {
+		final var vo = new ConfigurationEditionVo();
 		vo.setName("test-key44");
 		vo.setValue("new-value-db4");
 		vo.setSystem(true);
@@ -177,7 +177,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 			Assertions.assertEquals("new-value-db4", System.getProperty(vo.getName()));
 
 			// Check the data from the database
-			SystemConfiguration newValue = em
+            var newValue = em
 					.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 					.setParameter("name", vo.getName()).getSingleResult();
 
@@ -190,12 +190,12 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void create() {
+	void create() {
 		resource.put("test-keyX", "new-value-dbX");
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-dbX", resource.get("test-keyX"));
-		SystemConfiguration newValue = em
+        var newValue = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getSingleResult();
 
@@ -210,12 +210,12 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void createSecured() {
+	void createSecured() {
 		resource.put("test-keyX", "new-value-dbX", false, true);
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-dbX", resource.get("test-keyX"));
-		SystemConfiguration newValue = em
+        var newValue = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getSingleResult();
 
@@ -230,7 +230,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void delete() {
+	void delete() {
 		Assertions.assertEquals("value-db5", resource.get("test-key5"));
 		resource.delete("test-key5");
 
@@ -245,7 +245,7 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void deleteWithEnvironment() {
+	void deleteWithEnvironment() {
 		resource.put("test-key00", "value-db-env", true);
 		resource.put("test-key00", "value-db-jpa", false);
 		Assertions.assertEquals("value-db-jpa", resource.get("test-key00"));
@@ -259,11 +259,11 @@ public class ConfigurationResourceTest extends AbstractBootTest {
 	 * Not enumerable test
 	 */
 	@Test
-	public void findAllNotEnumerable() {
-		final ConfigurationResource resource = new ConfigurationResource();
+	void findAllNotEnumerable() {
+		final var resource = new ConfigurationResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		resource.env = Mockito.mock(ConfigurableEnvironment.class);
-		final MutablePropertySources mutablePropertySources = new MutablePropertySources();
+		final var mutablePropertySources = new MutablePropertySources();
 		mutablePropertySources.addFirst(Mockito.mock(PropertySource.class));
 		Mockito.when(resource.env.getPropertySources()).thenReturn(mutablePropertySources);
 		final Map<String, ConfigurationVo> result = new HashMap<>();

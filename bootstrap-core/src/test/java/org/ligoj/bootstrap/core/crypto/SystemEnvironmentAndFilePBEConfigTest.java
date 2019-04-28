@@ -13,10 +13,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-public class SystemEnvironmentAndFilePBEConfigTest extends AbstractSystemEnvironmentAndFilePBEConfigTest {
+class SystemEnvironmentAndFilePBEConfigTest extends AbstractSystemEnvironmentAndFilePBEConfigTest {
 
 	@BeforeAll
-	public static void init() {
+    static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 	}
 

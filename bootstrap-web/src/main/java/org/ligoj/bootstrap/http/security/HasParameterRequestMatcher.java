@@ -7,22 +7,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.AllArgsConstructor;
+
 /**
  * Matches when the current request contains a specific parameter.
  */
+@AllArgsConstructor
 public class HasParameterRequestMatcher implements org.springframework.security.web.util.matcher.RequestMatcher {
 
-	private String parameter;
-
-	/**
-	 * Takes a required parameter name. Case is sensitive.
-	 * 
-	 * @param parameter
-	 *            the parameter name.
-	 */
-	public HasParameterRequestMatcher(final String parameter) {
-		this.parameter = parameter;
-	}
+	private final String parameter;
 
 	@Override
 	public boolean matches(final HttpServletRequest request) {

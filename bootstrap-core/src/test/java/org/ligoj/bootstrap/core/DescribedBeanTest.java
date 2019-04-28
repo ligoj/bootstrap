@@ -17,13 +17,13 @@ import org.ligoj.bootstrap.core.model.AbstractDescribedEntity;
 /**
  * {@link DescribedBean} test class.
  */
-public class DescribedBeanTest {
+class DescribedBeanTest {
 
 	/**
 	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
 	 */
 	@Test
-	public void testCopyAudited() {
+    void testCopyAudited() {
 		final IDescribableBean<Integer> from = new DescribedAuditedBean<>();
 		from.setDescription("any");
 		from.setName("one");
@@ -37,7 +37,7 @@ public class DescribedBeanTest {
 	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
 	 */
 	@Test
-	public void testCopyEntity() {
+    void testCopyEntity() {
 		final IDescribableBean<Integer> from = new AbstractDescribedAuditedEntity<>() {
 
 			/**
@@ -66,7 +66,7 @@ public class DescribedBeanTest {
 	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
 	 */
 	@Test
-	public void testCopy() {
+    void testCopy() {
 		final IDescribableBean<Integer> from = newDescribedBean();
 		final IDescribableBean<Integer> to = new DescribedBean<>();
 		DescribedBean.copy(from, to);
@@ -74,14 +74,14 @@ public class DescribedBeanTest {
 	}
 
 	@Test
-	public void testNamedBean() {
-		final NamedBean<Integer> bean = new NamedBean<>(1, "VALUE");
+    void testNamedBean() {
+		final var bean = new NamedBean<Integer>(1, "VALUE");
 		Assertions.assertEquals("VALUE", bean.getName());
 		Assertions.assertEquals(1, bean.getId().intValue());
 	}
 
 	@Test
-	public void testCompareTo() {
+    void testCompareTo() {
 		final Set<NamedBean<Integer>> beans = new TreeSet<>();
 		beans.add(new NamedBean<>(3, "VALUE3"));
 		beans.add(new NamedBean<>(1, "VALUE1"));
@@ -100,7 +100,7 @@ public class DescribedBeanTest {
 	 * Test {@link NamedBean#copy(INamableBean, INamableBean)}
 	 */
 	@Test
-	public void testCopyBusiness() {
+    void testCopyBusiness() {
 		final IDescribableBean<String> from = new AbstractDescribedBusinessEntity<>() {
 
 			/**
@@ -125,7 +125,7 @@ public class DescribedBeanTest {
 	 * Test {@link DescribedBean#clone(IDescribableBean)}
 	 */
 	@Test
-	public void testClone() {
+    void testClone() {
 		final IDescribableBean<Integer> from = newDescribedBean();
 		from.setDescription("any");
 		from.setName("one");
@@ -137,7 +137,7 @@ public class DescribedBeanTest {
 	 * Test {@link DescribedBean#clone(IDescribableBean)}
 	 */
 	@Test
-	public void testCloneEntity() {
+    void testCloneEntity() {
 		final IDescribableBean<Integer> from = new AbstractDescribedEntity<>() {
 
 			/**
@@ -159,7 +159,7 @@ public class DescribedBeanTest {
 	 * Test {@link DescribedBean#clone(IDescribableBean)} with <code>null</code> input.
 	 */
 	@Test
-	public void testCloneNull() {
+    void testCloneNull() {
 		Assertions.assertNull(DescribedBean.clone(null));
 	}
 
@@ -171,7 +171,7 @@ public class DescribedBeanTest {
 	}
 
 	private DescribedBean<Integer> newDescribedBean() {
-		final DescribedBean<Integer> from = new DescribedBean<>();
+		final var from = new DescribedBean<Integer>();
 		from.setDescription("any");
 		from.setName("one");
 		from.setId(5);

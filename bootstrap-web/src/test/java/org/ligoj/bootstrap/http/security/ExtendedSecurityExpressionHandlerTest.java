@@ -14,12 +14,12 @@ import org.springframework.security.web.FilterInvocation;
 /**
  * Test class of {@link ExtendedSecurityExpressionHandler}
  */
-public class ExtendedSecurityExpressionHandlerTest {
+class ExtendedSecurityExpressionHandlerTest {
 
 	@Test
-	public void testHasHeader() {
-		FilterInvocation invocation = Mockito.mock(FilterInvocation.class);
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testHasHeader() {
+        var invocation = Mockito.mock(FilterInvocation.class);
+        var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("header")).thenReturn("value");
 		Mockito.when(invocation.getRequest()).thenReturn(request);
 		Assertions.assertTrue(((ExtendedWebSecurityExpressionRoot) new ExtendedSecurityExpressionHandler().createSecurityExpressionRoot(
@@ -27,9 +27,9 @@ public class ExtendedSecurityExpressionHandlerTest {
 	}
 
 	@Test
-	public void testHasParameter() {
-		FilterInvocation invocation = Mockito.mock(FilterInvocation.class);
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testHasParameter() {
+        var invocation = Mockito.mock(FilterInvocation.class);
+        var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getParameter("parameter")).thenReturn("value");
 		Mockito.when(invocation.getRequest()).thenReturn(request);
 		Assertions.assertTrue(((ExtendedWebSecurityExpressionRoot) new ExtendedSecurityExpressionHandler().createSecurityExpressionRoot(

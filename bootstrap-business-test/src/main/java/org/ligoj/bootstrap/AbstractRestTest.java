@@ -25,25 +25,25 @@ import lombok.extern.slf4j.Slf4j;
  * An integration test.
  */
 @Slf4j
-public abstract class AbstractRestTest extends AbstractTest {
+abstract class AbstractRestTest extends AbstractTest {
 	/**
 	 * URI
 	 */
-	protected static final String PORT = "6380";
-	protected static final String BASE_URI = "http://localhost:" + PORT + "/bootstrap-business/rest";
+	private static final String PORT = "6380";
+	private static final String BASE_URI = "http://localhost:" + PORT + "/bootstrap-business/rest";
 
 	protected static final String DEFAULT_USER = "junit";
 
-	protected static final int DEFAULT_RETRIES = 20;
+	private static final int DEFAULT_RETRIES = 20;
 
-	protected int retries = DEFAULT_RETRIES;
-	protected CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+	int retries = DEFAULT_RETRIES;
+	CloseableHttpClient httpclient = HttpClientBuilder.create().build();
 
 	/**
 	 * Initialize overridden values.
 	 */
 	@BeforeEach
-	public void configureCient() {
+	public void configureClient() {
 		retries = DEFAULT_RETRIES;
 		httpclient = HttpClientBuilder.create().build();
 	}
@@ -52,11 +52,11 @@ public abstract class AbstractRestTest extends AbstractTest {
 	 * Close client.
 	 */
 	@AfterEach
-	public void closeCient() {
+	public void closeClient() {
 		closeQuietly(httpclient);
 	}
 
-	protected void initProperties(final String webDescriptor) {
+	private void initProperties(final String webDescriptor) {
 		System.setProperty("jetty.descriptor", webDescriptor);
 		System.setProperty("jetty.port", PORT);
 		System.setProperty("user.language", "en_en");
@@ -68,7 +68,7 @@ public abstract class AbstractRestTest extends AbstractTest {
 	 *
 	 * @return URI used to check the server is UP.
 	 */
-	protected String getPingUri() {
+    private String getPingUri() {
 		return BASE_URI + "?_wadl";
 	}
 
@@ -79,10 +79,10 @@ public abstract class AbstractRestTest extends AbstractTest {
 	 *            location of Jetty Web descriptor file
 	 * @return Jetty server object built from the web descriptor.
 	 */
-	protected Server startRestServer(final String webDescriptor) {
+    Server startRestServer(final String webDescriptor) {
 		initProperties(webDescriptor);
 		try {
-			final Server server = new org.ligoj.bootstrap.http.server.Main().getServer();
+			final var server = new org.ligoj.bootstrap.http.server.Main().getServer();
 			server.start();
 			waitForServerReady();
 
@@ -97,13 +97,13 @@ public abstract class AbstractRestTest extends AbstractTest {
 	 * Wait for the server is ready.
 	 */
 	private void waitForServerReady() throws IOException, InterruptedException {
-		final HttpGet httpget = new HttpGet(getPingUri());
+		final var httpget = new HttpGet(getPingUri());
 		HttpResponse response = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_FOUND, ""));
-		int counter = 0;
+        var counter = 0;
 		while (true) {
 			try {
 				response = httpclient.execute(httpget);
-				final int status = response.getStatusLine().getStatusCode();
+				final var status = response.getStatusLine().getStatusCode();
 				if (status == HttpStatus.SC_OK) {
 					break;
 				}

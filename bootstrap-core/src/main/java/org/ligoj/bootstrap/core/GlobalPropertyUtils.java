@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.core;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -60,8 +59,8 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 
 		// Cleanup resources to avoid useless WAR
 		final List<Resource> newLocations = new ArrayList<>(locations.length);
-		for (final Resource location : locations) {
-			try (InputStream inputStream = location.getInputStream()) {
+		for (final var location : locations) {
+			try (var inputStream = location.getInputStream()) {
 				if (inputStream != null) {
 					newLocations.add(location);
 				}
@@ -73,7 +72,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 		if (newLocations.size() == locations.length) {
 			newLocationsArray = locations;
 		} else {
-			newLocationsArray = newLocations.toArray(new Resource[newLocations.size()]);
+			newLocationsArray = newLocations.toArray(new Resource[0]);
 		}
 
 		// Add the locations to the bean

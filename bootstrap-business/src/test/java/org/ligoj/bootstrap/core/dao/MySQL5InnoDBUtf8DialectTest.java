@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link MySQL5InnoDBUtf8Dialect}
  */
-public class MySQL5InnoDBUtf8DialectTest {
+class MySQL5InnoDBUtf8DialectTest {
 
 	@Test
-	public void getTableTypeString() {
+	void getTableTypeString() {
 		Assertions.assertEquals(" engine=InnoDB DEFAULT CHARSET=utf8", new MySQL5InnoDBUtf8Dialect().getTableTypeString());
 	}
 
 	@Test
-	public void getNameQualifierSupport() {
+	void getNameQualifierSupport() {
 		Assertions.assertEquals(NameQualifierSupport.NONE, new MySQL5InnoDBUtf8Dialect().getNameQualifierSupport());
 	}
 

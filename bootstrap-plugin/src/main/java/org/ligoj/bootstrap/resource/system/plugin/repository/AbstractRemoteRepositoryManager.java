@@ -50,7 +50,7 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	 *            The default URL.
 	 * @return The plug-ins download URL.
 	 */
-	protected String getArtifactlBaseUrl(final String defaultUrl) {
+	protected String getArtifactBaseUrl(final String defaultUrl) {
 		return getConfiguration("artifact.url", defaultUrl);
 	}
 
@@ -79,7 +79,7 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	 * @return The plug-ins download URL. Ends with "/".
 	 */
 	protected String getArtifactUrl(String artifact, String version, final String defaultUrl) {
-		return StringUtils.appendIfMissing(getArtifactlBaseUrl(defaultUrl), "/") + artifact + "/" + version + "/" + artifact + "-" + version + ".jar";
+		return StringUtils.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/") + artifact + "/" + version + "/" + artifact + "-" + version + ".jar";
 	}
 
 	/**
@@ -92,12 +92,12 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	 * @param defaultUrl
 	 *            The default artifact base URL.
 	 * @return The opened {@link InputStream} of the artifact to download.
-	 * @see #getArtifactlBaseUrl(String)
+	 * @see #getArtifactBaseUrl(String)
 	 * @throws IOException
 	 *             When download failed.
 	 */
 	public InputStream getArtifactInputStream(String artifact, String version, final String defaultUrl) throws IOException {
-		final String url = getArtifactUrl(artifact, version, defaultUrl);
+		final var url = getArtifactUrl(artifact, version, defaultUrl);
 		log.info("Resolved remote URL is {}", url);
 		return new URL(url).openStream();
 	}

@@ -12,13 +12,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.UnavailableException;
@@ -49,15 +45,15 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Headers will not be forwarded from the back-end.
 	 */
-	private static final String[] INGNORE_HEADERS = new String[] { "expires", "x-content-type-options", "server", "visited", "date",
+	private static final String[] IGNORE_HEADERS = new String[] { "expires", "x-content-type-options", "server", "visited", "date",
 			"x-frame-options", "x-xss-protection", "pragma", "cache-control" };
 
 	/**
 	 * Header will be ignore when the value starts with the
 	 */
-	private static final Map<String, String> INGORE_HEADER_VALUE = new HashMap<>();
+	private static final Map<String, String> IGNORE_HEADER_VALUE = new HashMap<>();
 	static {
-		INGORE_HEADER_VALUE.put("set-cookie", COOKIE_JEE);
+		IGNORE_HEADER_VALUE.put("set-cookie", COOKIE_JEE);
 	}
 
 	/**
@@ -106,7 +102,7 @@ public class BackendProxyServlet extends ProxyServlet {
 		proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getParameter(apiKeyParameter)));
 
 		// Forward all cookies but JSESSIONID.
-		final String cookies = clientRequest.getHeader(HEADER_COOKIE);
+		final var cookies = clientRequest.getHeader(HEADER_COOKIE);
 		if (cookies != null) {
 			proxyRequest.header(HEADER_COOKIE, StringUtils.trimToNull(
 					Arrays.stream(cookies.split("; ")).filter(cookie -> !cookie.split("=")[0].equals(COOKIE_JEE)).collect(Collectors.joining("; "))));
@@ -137,7 +133,7 @@ public class BackendProxyServlet extends ProxyServlet {
 				}
 			}
 			proxyResponse.setHeader(HttpHeader.CONNECTION.asString(), HttpHeaderValue.CLOSE.asString());
-			final AsyncContext asyncContext = clientRequest.getAsyncContext();
+			final var asyncContext = clientRequest.getAsyncContext();
 			asyncContext.complete();
 		}
 	}
@@ -154,7 +150,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	 *             when required parameter is not defined.
 	 */
 	protected String getRequiredInitParameter(final String parameter, final String defaultValue) throws UnavailableException {
-		final String value = ObjectUtils.defaultIfNull(StringUtils.trimToNull(getServletConfig().getInitParameter(parameter)), defaultValue);
+		final var value = ObjectUtils.defaultIfNull(StringUtils.trimToNull(getServletConfig().getInitParameter(parameter)), defaultValue);
 		if (value == null) {
 			throw new UnavailableException("Init parameter '" + parameter + "' is required.");
 		}
@@ -169,8 +165,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * @return the lower value of given parameter.
 	 */
 	private String getRequiredSystemInitParameter(final String parameter) throws UnavailableException {
-		final String parameterValue = StringUtils.trimToNull(getRequiredInitParameter(parameter, null));
-		final String value = StringUtils.trimToNull(System.getProperty(parameterValue));
+		final var parameterValue = StringUtils.trimToNull(getRequiredInitParameter(parameter, null));
+		final var value = StringUtils.trimToNull(System.getProperty(parameterValue));
 		if (value == null) {
 			throw new UnavailableException(
 					"Init parameter '" + parameter + "' is defined, but points to a non defined system property '" + parameterValue + "'");
@@ -181,7 +177,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		final ServletConfig config = getServletConfig();
+		final var config = getServletConfig();
 
 		// Read "proxy to" end point URL from "Servlet" configuration and system
 		this.prefix = getServletContext().getContextPath() + StringUtils.trimToEmpty(config.getInitParameter("prefix"));
@@ -206,7 +202,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	@Override
 	protected String rewriteTarget(final HttpServletRequest request) {
-		String path = request.getRequestURI();
+		var path = request.getRequestURI();
 		if (!path.startsWith(this.prefix)) {
 			// No match
 			return null;
@@ -215,7 +211,7 @@ public class BackendProxyServlet extends ProxyServlet {
 		// Append the query string
 		path = newPathWithQueryString(request);
 
-		final URI rewrittenURI = URI.create(this.proxyTo + path.substring(this.prefix.length())).normalize();
+		final var rewrittenURI = URI.create(this.proxyTo + path.substring(this.prefix.length())).normalize();
 		if (validateDestination(rewrittenURI.getHost(), rewrittenURI.getPort())) {
 			// It's a valid and up target
 			return rewrittenURI.toString();
@@ -227,8 +223,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * Build a complete URI with original query string, but without API key.
 	 */
 	private String newPathWithQueryString(final HttpServletRequest request) {
-		final String path = request.getRequestURI();
-		String query = request.getQueryString();
+		final var path = request.getRequestURI();
+		var query = request.getQueryString();
 
 		if (query == null) {
 			// No query, return only the path
@@ -254,7 +250,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * Remove API key parameter from the given query.
 	 */
 	private String removeApiParameter(final String query, final Pattern pattern) {
-		final Matcher apiMatcher = pattern.matcher(query);
+		final var apiMatcher = pattern.matcher(query);
 		if (apiMatcher.find()) {
 			// API Token is defined as a query parameter, we can remove it
 			return ObjectUtils.defaultIfNull(apiMatcher.group(2), "") + ObjectUtils.defaultIfNull(apiMatcher.group(4), "");
@@ -266,9 +262,9 @@ public class BackendProxyServlet extends ProxyServlet {
 	protected String filterServerResponseHeader(final HttpServletRequest clientRequest, final Response serverResponse, final String headerName,
 			final String headerValue) {
 		// Filter some headers
-		final String lowerCase = StringUtils.lowerCase(headerName);
-		return ArrayUtils.contains(INGNORE_HEADERS, lowerCase)
-				|| INGORE_HEADER_VALUE.containsKey(lowerCase) && headerValue.startsWith(INGORE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
+		final var lowerCase = StringUtils.lowerCase(headerName);
+		return ArrayUtils.contains(IGNORE_HEADERS, lowerCase)
+				|| IGNORE_HEADER_VALUE.containsKey(lowerCase) && headerValue.startsWith(IGNORE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
 	}
 
 	/**
@@ -285,13 +281,13 @@ public class BackendProxyServlet extends ProxyServlet {
 	@Override
 	protected void onResponseContent(final HttpServletRequest request, final HttpServletResponse response, final Response proxyResponse,
 			final byte[] buffer, final int offset, final int length, final Callback callback) {
-		final int plainStatus = needPlainPageErrorStatus(request, proxyResponse.getStatus());
+		final var plainStatus = needPlainPageErrorStatus(request, proxyResponse.getStatus());
 		if (plainStatus == 0) {
 			super.onResponseContent(request, response, proxyResponse, buffer, offset, length, callback);
 		} else {
 			try {
 				// Standard 404/... page, abort the original response
-				final RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/" + plainStatus + ".html");
+				final var dispatcher = getServletContext().getRequestDispatcher("/" + plainStatus + ".html");
 				dispatcher.forward(getRoot(request), response);
 				callback.succeeded();
 			} catch (final Exception e) {
@@ -308,8 +304,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * @return the nearest managed status.
 	 */
 	protected int getManagedPlainPageError(final int status) {
-		final Integer mapped = MANAGED_PLAIN_ERROR.get(status);
-		return mapped == null ? 0 : mapped.intValue();
+		return ObjectUtils.defaultIfNull(MANAGED_PLAIN_ERROR.get(status), 0);
 	}
 
 	/**
@@ -322,7 +317,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * @return 0 or the status to display.
 	 */
 	protected int needPlainPageErrorStatus(final HttpServletRequest request, final int status) {
-		final int plainStatus = getManagedPlainPageError(status);
+		final var plainStatus = getManagedPlainPageError(status);
 		return plainStatus == 0 || isAjaxRequest(request) ? 0 : plainStatus;
 	}
 

@@ -12,33 +12,33 @@ import org.mockito.Mockito;
 /**
  * Test of {@link AbstractTest}
  */
-public class TestAbstractTest extends AbstractTest {
+class TestAbstractTest extends AbstractTest {
 
 	@Test
-	public void testCloseQuietly() throws IOException {
-		final Closeable mock = Mockito.mock(Closeable.class);
-		super.closeQuietly(mock);
+	void testCloseQuietly() throws IOException {
+		final var mock = Mockito.mock(Closeable.class);
+		closeQuietly(mock);
 		Mockito.verify(mock, Mockito.atLeastOnce()).close();
 	}
 
 	@Test
-	public void testCloseQuietlyClosed() throws IOException {
-		final Closeable mock = Mockito.mock(Closeable.class);
+	void testCloseQuietlyClosed() throws IOException {
+		final var mock = Mockito.mock(Closeable.class);
 		Mockito.doThrow(new IOException()).when(mock).close();
-		super.closeQuietly(mock);
+		closeQuietly(mock);
 		Mockito.verify(mock, Mockito.atLeastOnce()).close();
 	}
 
 	@Test
-	public void testCloseNull() {
-		super.closeQuietly(null);
+	void testCloseNull() {
+		closeQuietly(null);
 	}
 
 	@Test
-	public void testCheckPermission() {
+	void testCheckPermission() {
 		// only for coverage
 		SECURITY_MANAGER_THREAD.get().checkPermission(newPermission("name"));
-		final String oldValue = System.getProperty("app-env");
+		final var oldValue = System.getProperty("app-env");
 		try {
 			System.setProperty("app-env", "-test");
 			SECURITY_MANAGER_THREAD.get().checkPermission(newPermission("exitVM"));

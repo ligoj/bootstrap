@@ -10,11 +10,11 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedC
 /**
  * Exception mapper test using {@link AuthenticationExceptionMapper}
  */
-public class AuthenticationExceptionMapperTest extends AbstractMapperTest {
+class AuthenticationExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final PreAuthenticatedCredentialsNotFoundException exception = new PreAuthenticatedCredentialsNotFoundException("message-error");
+	void toResponse() {
+		final var exception = new PreAuthenticatedCredentialsNotFoundException("message-error");
 		check(mock(new AuthenticationExceptionMapper()).toResponse(exception), 401,
 				"{\"code\":\"security\",\"message\":\"message-error\",\"parameters\":null,\"cause\":null}");
 	}

@@ -5,12 +5,10 @@ package org.ligoj.bootstrap.core.plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
@@ -35,12 +33,12 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void getInstalledPlugins() throws IOException {
-		final String oldHome = System.getProperty("user.home");
+		final var oldHome = System.getProperty("user.home");
 		try {
 			System.setProperty("user.home", USER_HOME_DIRECTORY);
-			try (PluginsClassLoader classLoader = checkClassLoader()) {
+			try (var classLoader = checkClassLoader()) {
 				// Nothing to do
-				final Map<String, String> plugins = classLoader.getInstalledPlugins();
+				final var plugins = classLoader.getInstalledPlugins();
 				Assertions.assertEquals(3, plugins.size());
 				Assertions.assertEquals("plugin-foo-Z0000001Z0000000Z0000001Z0000000", plugins.get("plugin-foo"));
 				Assertions.assertEquals("plugin-bar-Z0000001Z0000000Z0000000Z0000000", plugins.get("plugin-bar"));
@@ -53,14 +51,14 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void safeMode() throws IOException {
-		final String old = System.getProperty("ligoj.plugin.enabled");
+		final var old = System.getProperty("ligoj.plugin.enabled");
 		try {
 			System.setProperty("ligoj.plugin.enabled", "false");
-			try (PluginsClassLoader classLoader = new PluginsClassLoader()) {
+			try (var classLoader = new PluginsClassLoader()) {
 				Assertions.assertFalse(classLoader.isEnabled());
 
 				// Check the home is in the class-path
-				final URL homeUrl = classLoader.getURLs()[0];
+				final var homeUrl = classLoader.getURLs()[0];
 				Assertions.assertTrue(homeUrl.getFile().endsWith("/"));
 
 				// Check the plug-in is in the class-path
@@ -79,7 +77,7 @@ public class PluginsClassLoaderTest {
 	public void forcedHome() throws IOException {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
-			try (PluginsClassLoader classLoader = checkClassLoader()) {
+			try (var classLoader = checkClassLoader()) {
 				// Nothing to do
 			}
 		} finally {
@@ -105,7 +103,7 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void getInstance() {
-		ClassLoader old = Thread.currentThread().getContextClassLoader();
+        var old = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread()
 					.setContextClassLoader(new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class)));
@@ -119,7 +117,7 @@ public class PluginsClassLoaderTest {
 	public void forcedHomeTwice() throws Exception {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
-			try (PluginsClassLoader classLoader = checkClassLoader()) {
+			try (var classLoader = checkClassLoader()) {
 				Assertions.assertNotNull(classLoader.getHomeDirectory());
 				Assertions.assertNotNull(classLoader.getPluginDirectory());
 			}
@@ -130,15 +128,15 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void toFile() throws IOException {
-		final File file = new File(USER_HOME_DIRECTORY, ".ligoj/service-id/foo/bar.log");
-		final File subscriptionParent = new File(USER_HOME_DIRECTORY, ".ligoj/service-id");
+		final var file = new File(USER_HOME_DIRECTORY, ".ligoj/service-id/foo/bar.log");
+		final var subscriptionParent = new File(USER_HOME_DIRECTORY, ".ligoj/service-id");
 		FileUtils.deleteQuietly(subscriptionParent);
 		Assertions.assertFalse(subscriptionParent.exists());
 		Assertions.assertFalse(file.exists());
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
-			try (PluginsClassLoader classLoader = checkClassLoader()) {
-				final File cfile = classLoader.toPath("service-id", "foo", "bar.log").toFile();
+			try (var classLoader = checkClassLoader()) {
+				final var cfile = classLoader.toPath("service-id", "foo", "bar.log").toFile();
 				Assertions.assertTrue(subscriptionParent.exists());
 				Assertions.assertTrue(cfile.getParentFile().exists());
 				Assertions.assertTrue(file.getParentFile().exists());
@@ -151,7 +149,7 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void copyFailed() {
-		final AtomicReference<PluginsClassLoader> refError = new AtomicReference<>();
+		final var refError = new AtomicReference<PluginsClassLoader>();
 		Assertions.assertThrows(PluginException.class, () -> {
 			try {
 				System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
@@ -174,7 +172,7 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void copyAlreadyExists() throws IOException {
-		final AtomicReference<PluginsClassLoader> refError = new AtomicReference<>();
+		final var refError = new AtomicReference<PluginsClassLoader>();
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			try (PluginsClassLoader classLoader = new PluginsClassLoader() {
@@ -187,7 +185,7 @@ public class PluginsClassLoaderTest {
 			}) {
 				classLoader.copyExportedResources("plugin-foo",
 						new File(USER_HOME_DIRECTORY, ".ligoj/plugins/plugin-foo-1.0.1.jar").toPath());
-				File exported = new File(USER_HOME_DIRECTORY, ".ligoj/export/export.txt");
+                var exported = new File(USER_HOME_DIRECTORY, ".ligoj/export/export.txt");
 				Assertions.assertTrue(exported.exists());
 				FileUtils.write(exported, "value", StandardCharsets.UTF_8);
 
@@ -208,19 +206,19 @@ public class PluginsClassLoaderTest {
 	}
 
 	private PluginsClassLoader checkClassLoader() throws IOException {
-		final PluginsClassLoader classLoader = new PluginsClassLoader();
+		final var classLoader = new PluginsClassLoader();
 		Assertions.assertEquals(4, classLoader.getURLs().length);
 
 		// Check the home is in the class-path
-		final URL homeUrl = classLoader.getURLs()[0];
+		final var homeUrl = classLoader.getURLs()[0];
 		Assertions.assertTrue(homeUrl.getFile().endsWith("/"));
 
 		// Check the plug-in is in the class-path
-		final URL pluginTestUrl = classLoader.getURLs()[2];
+		final var pluginTestUrl = classLoader.getURLs()[2];
 		Assertions.assertTrue(pluginTestUrl.getFile().endsWith("plugin-foo-1.0.1.jar"));
 
 		// Check the JAR is readable
-		try (InputStream pluginTestUrlStream = pluginTestUrl.openStream()) {
+		try (var pluginTestUrlStream = pluginTestUrl.openStream()) {
 			Assertions.assertNotNull(pluginTestUrlStream);
 		}
 
@@ -230,7 +228,7 @@ public class PluginsClassLoaderTest {
 		Assertions.assertEquals("FOO",
 				IOUtils.toString(classLoader.getResourceAsStream("plugin-foo.txt"), StandardCharsets.UTF_8.name()));
 
-		final File export = new File(USER_HOME_DIRECTORY + "/.ligoj/export");
+		final var export = new File(USER_HOME_DIRECTORY + "/.ligoj/export");
 		Assertions.assertTrue(export.exists());
 		Assertions.assertTrue(export.isDirectory());
 		Assertions.assertTrue(new File(export, "export.txt").exists());

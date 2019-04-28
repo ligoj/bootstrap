@@ -13,16 +13,16 @@ import org.mockito.Mockito;
 import com.hazelcast.config.CacheConfig;
 
 /**
- * Test class of {@link MergedHazelCacheManagerFactoryBean}
+ * Test class of {@link MergedHazelCastManagerFactoryBean}
  */
-public class MergedHazelCacheManagerFactoryBeanTest {
+class MergedHazelCastManagerFactoryBeanTest {
 
-	private MergedHazelCacheManagerFactoryBean bean;
+	private MergedHazelCastManagerFactoryBean bean;
 	private String oldPolicy;
 
 	@BeforeEach
-	public void prepare() {
-		bean = new MergedHazelCacheManagerFactoryBean();
+	void prepare() {
+		bean = new MergedHazelCastManagerFactoryBean();
 		oldPolicy = System.getProperty("java.security.policy");
 	}
 
@@ -35,19 +35,19 @@ public class MergedHazelCacheManagerFactoryBeanTest {
 	}
 
 	@Test
-	public void destroy() {
+	void destroy() {
 		bean.cacheManager = Mockito.mock(CacheManager.class);
 		bean.destroy();
 	}
 
 	@Test
-	public void getObjectTypeNotInitialized() {
+	void getObjectTypeNotInitialized() {
 		// JHCache instance, not Spring
 		Assertions.assertEquals(CacheManager.class, bean.getObjectType());
 	}
 
 	@Test
-	public void getObjectType() {
+	void getObjectType() {
 		bean.cacheManager = Mockito.mock(CacheManager.class);
 
 		// JHCache instance, not Spring
@@ -55,7 +55,7 @@ public class MergedHazelCacheManagerFactoryBeanTest {
 	}
 
 	@Test
-	public void postConfigureNoPolicy() {
+	void postConfigureNoPolicy() {
 		final CacheConfig<?,?> mapConfig = Mockito.mock(CacheConfig.class);
 		try {
 			System.clearProperty("java.security.policy");
@@ -67,7 +67,7 @@ public class MergedHazelCacheManagerFactoryBeanTest {
 	}
 
 	@Test
-	public void postConfigurePolicy() {
+	void postConfigurePolicy() {
 		final CacheConfig<?,?> mapConfig = Mockito.mock(CacheConfig.class);
 		try {
 			System.setProperty("java.security.policy", "some_path_to_policy");

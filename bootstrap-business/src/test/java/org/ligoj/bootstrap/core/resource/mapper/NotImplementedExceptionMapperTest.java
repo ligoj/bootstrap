@@ -10,11 +10,11 @@ import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 /**
  * Exception mapper test using {@link WebApplicationExceptionMapper}
  */
-public class NotImplementedExceptionMapperTest extends AbstractMapperTest {
+class NotImplementedExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final NotImplementedException exception = new NotImplementedException("message-error");
+	void toResponse() {
+		final var exception = new NotImplementedException("message-error");
 		check(mock(new NotImplementedExceptionMapper()).toResponse(exception), 501,
 				"{\"code\":\"not-implemented\",\"message\":\"message-error\",\"parameters\":null,\"cause\":null}");
 	}

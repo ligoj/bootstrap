@@ -24,9 +24,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 /**
  * ContainerResponseFilter resource test, includes {@link NotFoundResponseFilter}
  */
-public class NotFoundResponseFilterTest {
+class NotFoundResponseFilterTest {
 
-	private NotFoundResponseFilter filter = new NotFoundResponseFilter() {
+	private final NotFoundResponseFilter filter = new NotFoundResponseFilter() {
 		@Override
 		protected Object toEntity(final Object object) {
 			try {
@@ -39,25 +39,25 @@ public class NotFoundResponseFilterTest {
 	};
 
 	@Test
-	public void filterOk() {
-		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+	void filterOk() {
+		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		Mockito.when(responseContext.getStatus()).thenReturn(200);
 		filter.filter(null, responseContext);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void filter404SingleParameter() {
-		final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+	void filter404SingleParameter() {
+		final var requestContext = Mockito.mock(ContainerRequestContext.class);
+		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		Mockito.when(responseContext.getStatus()).thenReturn(204);
-		final Annotation anno1 = Mockito.mock(Annotation.class);
-		final Annotation anno2 = Mockito.mock(Annotation.class);
-		final Annotation[] annotations = new Annotation[] { anno1, anno2 };
-		Mockito.when((Class) anno2.annotationType()).thenReturn(OnNullReturn404.class);
+		final var annotation1 = Mockito.mock(Annotation.class);
+		final var annotation2 = Mockito.mock(Annotation.class);
+		final var annotations = new Annotation[] { annotation1, annotation2 };
+		Mockito.when((Class) annotation2.annotationType()).thenReturn(OnNullReturn404.class);
 		Mockito.when(responseContext.getEntityAnnotations()).thenReturn(annotations);
 
-		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
+		final var uriInfo = Mockito.mock(UriInfo.class);
 		final MultivaluedMap<String, String> parameters = new MultivaluedHashMap<>();
 		parameters.putSingle("id", "2000");
 
@@ -70,28 +70,28 @@ public class NotFoundResponseFilterTest {
 	}
 
 	@Test
-	public void filterNoAnnotation() {
-		final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+	void filterNoAnnotation() {
+		final var requestContext = Mockito.mock(ContainerRequestContext.class);
+		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		Mockito.when(responseContext.getStatus()).thenReturn(204);
-		final Annotation[] annotations = new Annotation[] {};
+		final var annotations = new Annotation[] {};
 		Mockito.when(responseContext.getEntityAnnotations()).thenReturn(annotations);
 		filter.filter(requestContext, responseContext);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void filter404NoParameter() {
-		final ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-		final ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
+	void filter404NoParameter() {
+		final var requestContext = Mockito.mock(ContainerRequestContext.class);
+		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		Mockito.when(responseContext.getStatus()).thenReturn(204);
-		final Annotation anno1 = Mockito.mock(Annotation.class);
-		final Annotation anno2 = Mockito.mock(Annotation.class);
-		final Annotation[] annotations = new Annotation[] { anno1, anno2 };
-		Mockito.when((Class) anno2.annotationType()).thenReturn(OnNullReturn404.class);
+		final var annotation1 = Mockito.mock(Annotation.class);
+		final var annotation2 = Mockito.mock(Annotation.class);
+		final var annotations = new Annotation[] { annotation1, annotation2 };
+		Mockito.when((Class) annotation2.annotationType()).thenReturn(OnNullReturn404.class);
 		Mockito.when(responseContext.getEntityAnnotations()).thenReturn(annotations);
 
-		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
+		final var uriInfo = Mockito.mock(UriInfo.class);
 		final MultivaluedMap<String, String> parameters = new MultivaluedHashMap<>();
 
 		Mockito.when(uriInfo.getPathParameters()).thenReturn(parameters);

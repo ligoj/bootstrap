@@ -63,9 +63,9 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	@Override
 	protected void setForeignProperty(final T bean, final String fqname, final String rawValue, final int fkeyIndex)
 			throws ReflectiveOperationException {
-		final String name = fqname.substring(0, fkeyIndex);
-		final Field field = getField(clazz, name);
-		final String fkeyName = fqname.substring(fkeyIndex + 1);
+		final var name = fqname.substring(0, fkeyIndex);
+		final var field = getField(clazz, name);
+		final var fkeyName = fqname.substring(fkeyIndex + 1);
 
 		// Collection management
 		if (field.getType().isAssignableFrom(Set.class)) {
@@ -97,8 +97,8 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 
 	private Collection<Object> newCollection(final String rawValue, final String masterPropertyName, final Field field,
 			String propertyName, final Collection<Object> arrayList) throws ReflectiveOperationException {
-		final Class<?> generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-		for (final String item : rawValue.split(",")) {
+		final var generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+		for (final var item : rawValue.split(",")) {
 			arrayList.add(getForeignProperty(item, masterPropertyName, field, generic, propertyName));
 		}
 		return arrayList;
@@ -160,7 +160,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Read from database and try to match the value of column to match then entity.
 	 */
 	private Object readFromRowNumberCache(final String rawValue, final Class<?> type) {
-		final int index = Integer.parseInt(rawValue);
+		final var index = Integer.parseInt(rawValue);
 		if (!foreignCacheRows.containsKey(type)) {
 			foreignCacheRows.put(type, readAll(type));
 		}
@@ -194,11 +194,10 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Return a map where key is the foreign key and value is the entity.
 	 */
-	private Map<String, Object> buildMap(final List<?> list, final String property)
-			throws ReflectiveOperationException {
+	private Map<String, Object> buildMap(final List<?> list, final String property) {
 		final Map<String, Object> result = new HashMap<>();
 		for (final Object item : list) {
-			final Object value = beanUtilsBean.getProperty(item, property);
+			final var value = beanUtilsBean.getProperty(item, property);
 			if (value != null) {
 				result.put(String.valueOf(value), item);
 			}

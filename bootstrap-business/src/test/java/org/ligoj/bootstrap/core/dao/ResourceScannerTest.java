@@ -15,7 +15,6 @@ import java.util.List;
 import org.hibernate.boot.archive.scan.spi.ScanEnvironment;
 import org.hibernate.boot.archive.scan.spi.ScanOptions;
 import org.hibernate.boot.archive.scan.spi.ScanParameters;
-import org.hibernate.boot.archive.scan.spi.ScanResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,7 +28,7 @@ public class ResourceScannerTest {
 	 * Simulate {@link IOException} for {@link ResourceScanner#getJarUrl(URL)}
 	 */
 	@Test
-	public void testInJarUrlIoException() {
+	void testInJarUrlIoException() {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected URL getJarUrl(final URL ormUrl) throws MalformedURLException {
@@ -44,7 +43,7 @@ public class ResourceScannerTest {
 	 * Simulate {@link IOException} for {@link ResourceScanner#getOrmUrls()}
 	 */
 	@Test
-	public void testFilesInJarIoException() {
+	void testFilesInJarIoException() {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
@@ -56,7 +55,7 @@ public class ResourceScannerTest {
 	}
 
 	private ScanEnvironment newScanEnvironment() {
-		ScanEnvironment environment = Mockito.mock(ScanEnvironment.class);
+        var environment = Mockito.mock(ScanEnvironment.class);
 		List<URL> nonRootUrls = new ArrayList<>();
 		Mockito.when(environment.getNonRootUrls()).thenReturn(nonRootUrls);
 		return environment;
@@ -66,7 +65,7 @@ public class ResourceScannerTest {
 	 * Simulate a non existing JAR entry inside a WAR entry.
 	 */
 	@Test
-	public void testFilesInJarInWar() {
+	void testFilesInJarInWar() {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
@@ -84,7 +83,7 @@ public class ResourceScannerTest {
 	 * Simulate a non existing JAR entry.
 	 */
 	@Test
-	public void testFilesInJar() {
+	void testFilesInJar() {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
@@ -102,9 +101,9 @@ public class ResourceScannerTest {
 	 * Standard class.
 	 */
 	@Test
-	public void testFilesInJarIoException2() {
-		final ResourceScanner scanner = new ResourceScanner();
-		ScanResult scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
+	void testFilesInJarIoException2() {
+		final var scanner = new ResourceScanner();
+        var scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
 				Mockito.mock(ScanParameters.class));
 		Assertions.assertNotNull(scan);
 	}

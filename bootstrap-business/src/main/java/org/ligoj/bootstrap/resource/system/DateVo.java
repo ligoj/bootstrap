@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Date informations.
+ * Date information.
  */
 @Getter
 @Setter

@@ -75,9 +75,9 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	 *            The ordered readers. Stopped when <code>null</code> is returned.
 	 */
 	@SafeVarargs
-	private final String pipe(final String property, final UnaryOperator<String>... pipedReaders) {
-		String value = property;
-		for (final UnaryOperator<String> reader : pipedReaders) {
+	private String pipe(final String property, final UnaryOperator<String>... pipedReaders) {
+        var value = property;
+		for (final var reader : pipedReaders) {
 			if (StringUtils.isNotBlank(value)) {
 				value = reader.apply(value);
 			}
@@ -93,7 +93,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	@Override
 	public char[] getPasswordCharArray() {
 		// Raw value providers
-		String password = pipe(passwordSysPropertyName, System::getProperty);
+        var password = pipe(passwordSysPropertyName, System::getProperty);
 		if (password == null) {
 			password = pipe(passwordSysPropertyName, GlobalPropertyUtils::getProperty);
 		}

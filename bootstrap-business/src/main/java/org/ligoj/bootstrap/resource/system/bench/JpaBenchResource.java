@@ -58,10 +58,10 @@ public class JpaBenchResource {
 	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA })
 	public String prepareData(@Multipart(value = "blob", required = false) final InputStream blob,
 			@Multipart("nb") final int nb) throws IOException {
-		final long start = System.currentTimeMillis();
-		final byte[] lobData = blob == null ? new byte[0] : IOUtils.toByteArray(blob);
+		final var start = System.currentTimeMillis();
+		final var lobData = blob == null ? new byte[0] : IOUtils.toByteArray(blob);
 		log.info("Content size :" + lobData.length);
-		final BenchResult result = jpaDao.initialize(nb, lobData);
+		final var result = jpaDao.initialize(nb, lobData);
 		result.setDuration(System.currentTimeMillis() - start);
 		return new org.ligoj.bootstrap.core.json.ObjectMapperTrim().writeValueAsString(result);
 	}
@@ -73,8 +73,8 @@ public class JpaBenchResource {
 	 */
 	@GET
 	public BenchResult benchRead() {
-		final long start = System.currentTimeMillis();
-		final BenchResult result = jpaDao.benchRead();
+		final var start = System.currentTimeMillis();
+		final var result = jpaDao.benchRead();
 		result.setDuration(System.currentTimeMillis() - start);
 		return result;
 	}
@@ -87,8 +87,8 @@ public class JpaBenchResource {
 	@GET
 	@Path("all")
 	public BenchResult benchReadAll() {
-		final long start = System.currentTimeMillis();
-		final BenchResult result = jpaDao.benchReadAll();
+		final var start = System.currentTimeMillis();
+		final var result = jpaDao.benchReadAll();
 		result.setDuration(System.currentTimeMillis() - start);
 		return result;
 	}
@@ -100,8 +100,8 @@ public class JpaBenchResource {
 	 */
 	@PUT
 	public BenchResult benchUpdate() {
-		final long start = System.currentTimeMillis();
-		final BenchResult result = jpaDao.benchUpdate();
+		final var start = System.currentTimeMillis();
+		final var result = jpaDao.benchUpdate();
 		result.setDuration(System.currentTimeMillis() - start);
 		return result;
 	}
@@ -113,8 +113,8 @@ public class JpaBenchResource {
 	 */
 	@DELETE
 	public BenchResult benchDelete() {
-		final long start = System.currentTimeMillis();
-		final BenchResult result = jpaDao.benchDelete();
+		final var start = System.currentTimeMillis();
+		final var result = jpaDao.benchDelete();
 		result.setDuration(System.currentTimeMillis() - start);
 		return result;
 	}
@@ -130,7 +130,7 @@ public class JpaBenchResource {
 	@OnNullReturn404
 	public StreamingOutput downloadLobFile() {
 		log.info("Picture download is requested");
-		final byte[] firstAvailableLob = jpaDao.getLastAvailableLob();
+		final var firstAvailableLob = jpaDao.getLastAvailableLob();
 		if (firstAvailableLob.length == 0) {
 			return null;
 		}

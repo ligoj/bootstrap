@@ -5,34 +5,26 @@ package org.ligoj.bootstrap.core.curl;
 
 import java.io.IOException;
 
-import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
+
+import lombok.AllArgsConstructor;
 
 /**
  * This callback get the header from the response.
  */
+@AllArgsConstructor
 public class HeaderHttpResponseCallback extends DefaultHttpResponseCallback {
 
 	/**
 	 * The header name to save as response.
 	 */
-	private String header;
-
-	/**
-	 * Simple constructor with header name for response.
-	 * 
-	 * @param header
-	 *            The header name to save as response.
-	 */
-	public HeaderHttpResponseCallback(final String header) {
-		this.header = header;
-	}
+	private final String header;
 
 	@Override
 	public boolean onResponse(final CurlRequest request, final CloseableHttpResponse response) throws IOException {
 		super.onResponse(request, response);
 		// Response is pre-checked
-		final Header value = response.getFirstHeader(header);
+		final var value = response.getFirstHeader(header);
 		if (value == null) {
 			// Header is not present
 			request.setResponse(null);

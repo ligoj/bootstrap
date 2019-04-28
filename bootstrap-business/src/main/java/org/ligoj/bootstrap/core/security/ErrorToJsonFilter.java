@@ -34,7 +34,7 @@ public class ErrorToJsonFilter extends GenericFilterBean {
 			log.error("High level error", exception);
 			
 			// Catch this stack
-			final HttpServletResponse response3 = (HttpServletResponse) response;
+			final var response3 = (HttpServletResponse) response;
 			response3.setStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode());
 			response3.setContentType(MediaType.APPLICATION_JSON_TYPE.toString());
 			response3.setCharacterEncoding(StandardCharsets.UTF_8.name());

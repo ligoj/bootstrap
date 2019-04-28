@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 /**
  * {@link AbstractBusinessEntity} test class.
  */
-public class TestAbstractBusinessEntityTest {
+class TestAbstractBusinessEntityTest {
 
 	@Test
-	public void testIsNewNew() {
+    void testIsNewNew() {
 		Assertions.assertTrue(new AbstractBusinessEntity<Integer>() {
 
 			// Nothing
@@ -20,7 +20,7 @@ public class TestAbstractBusinessEntityTest {
 	}
 
 	@Test
-	public void testNamed() {
+    void testNamed() {
 		AbstractNamedBusinessEntity<Integer> entity = new AbstractNamedBusinessEntity<>() {
 
 			/**
@@ -34,7 +34,7 @@ public class TestAbstractBusinessEntityTest {
 	}
 
 	@Test
-	public void testIsNewSet() {
+    void testIsNewSet() {
 		AbstractBusinessEntity<Integer> entity = new AbstractBusinessEntity<>() {
 			// Nothing
 		};
@@ -44,10 +44,10 @@ public class TestAbstractBusinessEntityTest {
 
 	@SuppressWarnings("unlikely-arg-type")
 	@Test
-	public void testEquals() {
-		final DummyBusinessEntity entity1 = new DummyBusinessEntity();
+    void testEquals() {
+		final var entity1 = new DummyBusinessEntity();
 		Assertions.assertTrue(entity1.equals(entity1));
-		final DummyBusinessEntity entity2 = new DummyBusinessEntity();
+		final var entity2 = new DummyBusinessEntity();
 		Assertions.assertTrue(entity1.equals(entity2));
 		Assertions.assertFalse(entity1.equals(new DummyBusinessEntity2()));
 		entity1.setId("a");
@@ -61,8 +61,8 @@ public class TestAbstractBusinessEntityTest {
 	}
 
 	@Test
-	public void testHashCode() {
-		final DummyBusinessEntity entity1 = new DummyBusinessEntity();
+    void testHashCode() {
+		final var entity1 = new DummyBusinessEntity();
 		entity1.hashCode();
 		entity1.setId("a");
 		entity1.hashCode();
@@ -72,8 +72,8 @@ public class TestAbstractBusinessEntityTest {
 	 * Test equals and hash code operation with all possible combinations with default identifier.
 	 */
 	@Test
-	public void testToString() {
-		final DummyBusinessEntity entity = new DummyBusinessEntity();
+    void testToString() {
+		final var entity = new DummyBusinessEntity();
 		entity.setId("any");
 		Assertions.assertEquals("AbstractBusinessEntity(id=any)", entity.toString());
 	}

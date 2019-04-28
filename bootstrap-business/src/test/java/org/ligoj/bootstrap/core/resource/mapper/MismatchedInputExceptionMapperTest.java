@@ -11,11 +11,11 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 /**
  * Exception mapper test using {@link MismatchedInputExceptionMapper}
  */
-public class MismatchedInputExceptionMapperTest extends AbstractMapperTest {
+class MismatchedInputExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final MismatchedInputException exception = MismatchedInputException.from(null, String.class, "msg");
+	void toResponse() {
+		final var exception = MismatchedInputException.from(null, String.class, "msg");
 		check(mock(new MismatchedInputExceptionMapper()).toResponse(exception), 400, "{\"errors\":{}}");
 	}
 

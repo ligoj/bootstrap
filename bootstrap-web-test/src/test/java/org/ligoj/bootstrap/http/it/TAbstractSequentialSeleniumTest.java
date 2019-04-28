@@ -37,7 +37,7 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	private WebDriver mockDriver;
 
 	@Test
-	public void testSetup() throws Exception {
+    void testSetup() throws Exception {
 		System.setProperty("test.selenium.remote", "any");
 		super.setUpDriver();
 	}
@@ -46,33 +46,33 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	 * Run sequentially the given runnable instance.
 	 */
 	@Test
-	public void testSequential() {
+    void testSequential() {
 		super.runSequential();
 	}
 
 	@Override
-	protected void runSequential() {
+    void runSequential() {
 		// Nothing to do
 	}
 
 	/**
 	 * Run test.
 	 */
-	public void mockTest() {
+    void mockTest() {
 		// Nothing to do
 	}
 
 	/**
 	 * Run test.
 	 */
-	public void mockTestIOE() throws IOException {
+    void mockTestIOE() throws IOException {
 		throw new IOException();
 	}
 
 	/**
 	 * Run test.
 	 */
-	public void mockTestError() {
+    void mockTestError() {
 		throw new AssertionFailedError();
 	}
 
@@ -80,28 +80,24 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	 * Run sequentially (one instance) the given runnable instance with an error.
 	 */
 	@Test
-	public void testSequentialError() {
+    void testSequentialError() {
 		testName = Mockito.mock(TestInfo.class);
 		Mockito.when(testName.getTestMethod())
 				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestError")));
 		mockDriver = Mockito.mock(WebDriver.class);
 		Mockito.when(mockDriver.manage()).thenThrow(new AssertionFailedError());
-		Assertions.assertThrows(AssertionError.class, () -> {
-			super.runSequential();
-		});
+		Assertions.assertThrows(AssertionError.class, super::runSequential);
 	}
 
 	/**
 	 * Run sequentially the given runnable instance with an error.
 	 */
 	@Test
-	public void testSequentialError2() {
+    void testSequentialError2() {
 		testName = Mockito.mock(TestInfo.class);
 		Mockito.when(testName.getTestMethod())
 				.thenReturn(Optional.ofNullable(MethodUtils.getMatchingMethod(this.getClass(), "mockTestError")));
-		Assertions.assertThrows(AssertionError.class, () -> {
-			super.runSequential();
-		});
+		Assertions.assertThrows(AssertionError.class, super::runSequential);
 	}
 
 	/**
@@ -109,14 +105,14 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	 */
 	@Override
 	@BeforeEach
-	public void setUpDriver() throws Exception {
+    void setUpDriver() throws Exception {
 		System.clearProperty("test.selenium.remote");
 		localDriverClass = WebDriverMock.class.getName();
 		prepareDriver();
 	}
 
 	@AfterEach
-	public void restoreProperties() {
+    void restoreProperties() {
 		if (ORIGINAL_ENV == null) {
 			System.clearProperty("test.selenium.remote");
 		} else {
@@ -125,7 +121,7 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 	}
 
 	@Override
-	protected void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver, final DesiredCapabilities capability)
+    void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver, final DesiredCapabilities capability)
 			throws Exception { // NOPMD -- too many
 		((TAbstractSequentialSeleniumTest) target).mockDriver = mockDriver;
 		super.cloneAndRun(target, mockDriver, capability);
@@ -144,17 +140,17 @@ public class TAbstractSequentialSeleniumTest extends AbstractSequentialSeleniumT
 		mockDriver = Mockito.mock(WebDriverMock.class);
 		Mockito.when(((WebDriverMock) mockDriver).getScreenshotAs(ArgumentMatchers.any(OutputType.class)))
 				.thenReturn(new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI()));
-		final Options options = Mockito.mock(Options.class);
+		final var options = Mockito.mock(Options.class);
 		Mockito.when(options.window()).thenReturn(Mockito.mock(Window.class));
 		Mockito.when(mockDriver.manage()).thenReturn(options);
-		final WebElement webElement = Mockito.mock(WebElement.class);
+		final var webElement = Mockito.mock(WebElement.class);
 		Mockito.when(mockDriver.findElement(ArgumentMatchers.any(By.class))).thenReturn(webElement);
 		Mockito.when(webElement.isDisplayed()).thenReturn(true);
 		this.driver = mockDriver;
 	}
 
 	@Override
-	protected void prepareBrowser() {
+    void prepareBrowser() {
 		driver = mockDriver;
 		super.prepareBrowser();
 	}

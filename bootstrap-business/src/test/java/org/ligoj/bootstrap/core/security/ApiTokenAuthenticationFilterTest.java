@@ -16,14 +16,14 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedC
 /**
  * Test class of {@link ApiTokenAuthenticationFilter}
  */
-public class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
+class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 
 	private ApiTokenAuthenticationFilter filter;
 
 	private ApiTokenResource resource;
 
 	@BeforeEach
-	public void initializeData() {
+	void initializeData() {
 		filter = new ApiTokenAuthenticationFilter();
 		filter.setCredentialsRequestHeader("credential");
 		filter.setPrincipalRequestHeader("principal");
@@ -33,43 +33,41 @@ public class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void testCredential() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testCredential() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("credential")).thenReturn("A");
 		Assertions.assertEquals("A", filter.getPreAuthenticatedCredentials(request));
 	}
 
 	@Test
-	public void testNoCredential() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testNoCredential() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Assertions.assertEquals("N/A", filter.getPreAuthenticatedCredentials(request));
 	}
 
 	@Test
-	public void testPrincipalHeaderMissing() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testPrincipalHeaderMissing() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		filter.setExceptionIfHeaderMissing(true);
-		Assertions.assertThrows(PreAuthenticatedCredentialsNotFoundException.class, () -> {
-			filter.getPreAuthenticatedPrincipal(request);
-		});
+		Assertions.assertThrows(PreAuthenticatedCredentialsNotFoundException.class, () -> filter.getPreAuthenticatedPrincipal(request));
 	}
 
 	@Test
-	public void testNoPrincipal() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testNoPrincipal() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Assertions.assertNull(filter.getPreAuthenticatedPrincipal(request));
 	}
 
 	@Test
-	public void testPrincipal() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testPrincipal() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
 		Assertions.assertEquals(DEFAULT_USER, filter.getPreAuthenticatedPrincipal(request));
 	}
 
 	@Test
-	public void testPrincipalWithCredentialAsToken() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testPrincipalWithCredentialAsToken() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
 		Mockito.when(request.getHeader("credential")).thenReturn("RFYG");
 		Mockito.when(resource.check(DEFAULT_USER, "RFYG")).thenReturn(true);
@@ -77,8 +75,8 @@ public class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void testInvalidToken() {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+	void testInvalidToken() {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
 		Mockito.when(request.getHeader("credential")).thenReturn("RFYG");
 		Assertions.assertNull(filter.getPreAuthenticatedPrincipal(request));

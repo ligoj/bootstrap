@@ -117,7 +117,7 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Bean utility.
 	 */
-	protected BeanUtil beanUtilsBean = BeanUtil.declared;
+	protected final BeanUtil beanUtilsBean = BeanUtil.declared;
 
 	/**
 	 * All fields constructor.
@@ -134,12 +134,12 @@ public abstract class AbstractCsvReader<T> {
 
 		// Put default date patterns
 
-		final DateConverter dateConverter = new DateConverter();
+		final var dateConverter = new DateConverter();
 		final TypeConverter<Date> dateJConverter = value -> {
 			try {
 				return dateConverter.convert(value);
 			} catch (DateTimeParseException | TypeConversionException tce) {
-				for (final String pattern : DATE_PATTERNS) {
+				for (final var pattern : DATE_PATTERNS) {
 					final DateFormat format = new SimpleDateFormat(pattern);
 					format.setTimeZone(DateUtils.getApplicationTimeZone());
 					format.setLenient(false);
@@ -199,7 +199,7 @@ public abstract class AbstractCsvReader<T> {
 
 		// Build the instance
 		try {
-			final T bean = clazz.getDeclaredConstructor().newInstance();
+			final var bean = clazz.getDeclaredConstructor().newInstance();
 
 			// Fill the instance
 			fillInstance(bean, values, setter);
@@ -221,8 +221,8 @@ public abstract class AbstractCsvReader<T> {
 	 */
 	protected void fillInstance(final T bean, final List<String> values, final TriConsumer<T, String, String> setter)
 			throws ReflectiveOperationException {
-		int index = 0;
-		for (final String property : headers) {
+        var index = 0;
+		for (final var property : headers) {
 			if (index >= values.size()) {
 				// Trailing null data are ignored
 				break;
@@ -232,7 +232,7 @@ public abstract class AbstractCsvReader<T> {
 			if (StringUtils.isNotBlank(property)) {
 
 				// Read the mapped column value
-				final String rawValue = values.get(index);
+				final var rawValue = values.get(index);
 				if (rawValue.length() > 0) {
 					setProperty(bean, property, rawValue, setter);
 				}
@@ -253,7 +253,7 @@ public abstract class AbstractCsvReader<T> {
 	protected void setProperty(final T bean, final String property, final String rawValue,
 			final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
 		if (setter == null) {
-			final int fkeyIndex = property.indexOf('.');
+			final var fkeyIndex = property.indexOf('.');
 			if (fkeyIndex == -1) {
 				setSimpleProperty(bean, property, rawValue);
 			} else {
@@ -288,7 +288,7 @@ public abstract class AbstractCsvReader<T> {
 	 * @return the {@link Field} of this property.
 	 */
 	protected Field getField(final Class<?> beanType, final String property) {
-		final Field field = FieldUtils.getField(beanType, property, true);
+		final var field = FieldUtils.getField(beanType, property, true);
 		if (field == null) {
 			throw new TechnicalException("Unknown property " + property + " in class " + beanType.getName());
 		}
@@ -307,11 +307,11 @@ public abstract class AbstractCsvReader<T> {
 	 */
 	protected void setMapProperty(final T bean, final String property, final String key, final String rawValue)
 			throws IllegalAccessException {
-		final Field mapField = getField(clazz, property);
+		final var mapField = getField(clazz, property);
 
 		// Get/initialize the Map
 		@SuppressWarnings("unchecked")
-		Map<String, String> map = (Map<String, String>) mapField.get(bean);
+        var map = (Map<String, String>) mapField.get(bean);
 		if (map == null) {
 			map = new LinkedHashMap<>();
 			mapField.set(bean, map);
@@ -334,7 +334,7 @@ public abstract class AbstractCsvReader<T> {
 	 */
 	private void setSimpleProperty(final T bean, final String property, final String rawValue)
 			throws ReflectiveOperationException {
-		final int mapIndex = property.indexOf('$');
+		final var mapIndex = property.indexOf('$');
 		if (mapIndex == -1) {
 			setSimpleRawProperty(bean, property, rawValue);
 		} else {
@@ -349,18 +349,16 @@ public abstract class AbstractCsvReader<T> {
 	 * @param property the bean property to set.
 	 * @param rawValue the raw value to set.
 	 * @param <E>      Enumeration type.
-	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	@SuppressWarnings("unchecked")
-	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue)
-			throws ReflectiveOperationException {
-		final Field field = getField(clazz, property);
+	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue) {
+		final var field = getField(clazz, property);
 
 		// Update the property
 		if (field.getAnnotation(GeneratedValue.class) == null) {
 			if (field.getType().isEnum()) {
 				// Ignore case of Enum name
-				final Class<E> enumClass = (Class<E>) field.getType();
+				final var enumClass = (Class<E>) field.getType();
 				beanUtilsBean.setProperty(bean, property, Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass)
 						.keySet().stream().filter(rawValue::equalsIgnoreCase).findFirst().orElse(rawValue)));
 			} else if (field.getType().isAssignableFrom(Set.class)) {
@@ -383,11 +381,11 @@ public abstract class AbstractCsvReader<T> {
 	@SuppressWarnings("unchecked")
 	private <E extends Enum<E>> Collection<Object> newCollection(final String rawValue, final Field field,
 			final Collection<Object> result) {
-		final Class<?> generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-		for (final String item : rawValue.split(",")) {
+		final var generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+		for (final var item : rawValue.split(",")) {
 			if (generic.isEnum()) {
 				// Ignore case of Enum name
-				final Class<E> enumClass = (Class<E>) generic;
+				final var enumClass = (Class<E>) generic;
 				result.add(Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass).keySet().stream()
 						.filter(rawValue::equalsIgnoreCase).findFirst().orElse(item)));
 			} else {

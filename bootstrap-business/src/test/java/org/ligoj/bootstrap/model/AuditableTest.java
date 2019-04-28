@@ -5,10 +5,6 @@ package org.ligoj.bootstrap.model;
 
 import java.util.Date;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,20 +20,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Audit test
  */
 @ExtendWith(SpringExtension.class)
-public class AuditableTest extends AbstractBootTest {
-
-	/**
-	 * Entity manager.
-	 */
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION)
-	private EntityManager em;
+class AuditableTest extends AbstractBootTest {
 
 	/**
 	 * Fresh entity
 	 */
 	@Test
-	public void testNullAudit() {
-		final SystemBench entity = new SystemBench();
+	void testNullAudit() {
+		final var entity = new SystemBench();
 		Assertions.assertNull(entity.getCreatedBy());
 		Assertions.assertNull(entity.getCreatedDate());
 		Assertions.assertNull(entity.getLastModifiedBy());
@@ -48,9 +38,9 @@ public class AuditableTest extends AbstractBootTest {
 	 * Persisted entity test
 	 */
 	@Test
-	public void testAuditCreate() {
+	void testAuditCreate() {
 		SecurityContextHolder.clearContext();
-		final SystemBench entity = new SystemBench();
+		final var entity = new SystemBench();
 		em.persist(entity);
 		em.flush();
 		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, entity.getCreatedBy());
@@ -64,8 +54,8 @@ public class AuditableTest extends AbstractBootTest {
 	 * Updated entity test
 	 */
 	@Test
-	public void testAuditUpdate() throws InterruptedException {
-		final SystemBench entity = new SystemBench();
+	void testAuditUpdate() throws InterruptedException {
+		final var entity = new SystemBench();
 		em.persist(entity);
 		em.flush();
 		Thread.sleep(200); // NOSONAR -- Have to pause the thread for the test
@@ -83,10 +73,10 @@ public class AuditableTest extends AbstractBootTest {
 	 * Updated entity test
 	 */
 	@Test
-	public void testAuditUpdateWithNew() throws InterruptedException {
+	void testAuditUpdateWithNew() throws InterruptedException {
 		
 		// Initial save
-		final SystemBench entity = new SystemBench();
+		final var entity = new SystemBench();
 		em.persist(entity);
 		em.flush();
 		em.clear();
@@ -94,8 +84,8 @@ public class AuditableTest extends AbstractBootTest {
 
 		// Update from a new instance
 		SecurityContextHolder.clearContext();
-		SystemBench entityUpdate = new SystemBench();
-		entityUpdate.setId(entity.getId().intValue());
+        var entityUpdate = new SystemBench();
+		entityUpdate.setId(entity.getId());
 		entityUpdate.setPrfBool(true);
 		em.merge(entityUpdate);
 		em.flush();
@@ -114,9 +104,9 @@ public class AuditableTest extends AbstractBootTest {
 	 * Audit VO copy
 	 */
 	@Test
-	public void testAuditVo() {
-		final AuditedBean<String, Integer> auditedVo = new AuditedBean<>();
-		final SystemBench object = new SystemBench();
+	void testAuditVo() {
+		final var auditedVo = new AuditedBean<String, Integer>();
+		final var object = new SystemBench();
 		object.setCreatedBy(DEFAULT_USER);
 		object.setLastModifiedBy(DEFAULT_ROLE);
 		object.setCreatedDate(new Date());
@@ -132,8 +122,8 @@ public class AuditableTest extends AbstractBootTest {
 	 * Null Audit VO copy
 	 */
 	@Test
-	public void testAuditVoNull() {
-		final AuditedBean<String, Integer> auditedVo = new AuditedBean<>();
+	void testAuditVoNull() {
+		final var auditedVo = new AuditedBean<String, Integer>();
 		auditedVo.copyAuditData(null);
 		Assertions.assertNull(auditedVo.getCreatedBy());
 		Assertions.assertNull(auditedVo.getLastModifiedBy());
@@ -145,7 +135,7 @@ public class AuditableTest extends AbstractBootTest {
 	 * Null Audit VO copy
 	 */
 	@Test
-	public void testAuditVoNullCopy() {
+	void testAuditVoNullCopy() {
 		AuditedBean.copyAuditData(null, (Auditable<String, String, Date>) null);
 	}
 
@@ -153,13 +143,13 @@ public class AuditableTest extends AbstractBootTest {
 	 * Null Audit VO copy
 	 */
 	@Test
-	public void testAuditVoCopy() {
-		final SystemBench from = new SystemBench();
+	void testAuditVoCopy() {
+		final var from = new SystemBench();
 		from.setCreatedBy(DEFAULT_USER);
 		from.setLastModifiedBy(DEFAULT_ROLE);
 		from.setCreatedDate(new Date());
 		from.setLastModifiedDate(new Date());
-		final SystemBench to = new SystemBench();
+		final var to = new SystemBench();
 		AuditedBean.copyAuditData(from, to);
 		Assertions.assertEquals(DEFAULT_USER, to.getCreatedBy());
 		Assertions.assertEquals(DEFAULT_ROLE, to.getLastModifiedBy());

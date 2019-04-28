@@ -24,9 +24,9 @@ public class FormatProcessorTest {
 	@Test
 	public void testGetValue() throws ParseException {
 		final Deque<Object> contextData = new LinkedList<>();
-		final SystemUser systemUser = new SystemUser();
+		final var systemUser = new SystemUser();
 		contextData.add(systemUser);
-		final FastDateFormat df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);
+		final var df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);
 		Assertions.assertEquals("2014/05/30", new FormatProcessor<>(df, DateUtils.parseDate("2014/05/30", "yyyy/MM/dd")).getValue(contextData));
 	}
 
@@ -37,7 +37,7 @@ public class FormatProcessorTest {
 	public void testGetItemValue() throws ParseException {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(DateUtils.parseDate("2014/05/30", "yyyy/MM/dd"));
-		final FastDateFormat df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);
+		final var df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);
 		Assertions.assertEquals("2014/05/30", new FormatProcessor<>(df).getValue(contextData));
 	}
 

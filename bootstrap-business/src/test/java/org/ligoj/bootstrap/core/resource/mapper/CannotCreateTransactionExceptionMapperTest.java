@@ -10,11 +10,11 @@ import org.springframework.transaction.CannotCreateTransactionException;
 /**
  * Exception mapper test using {@link CannotCreateTransactionExceptionMapper}
  */
-public class CannotCreateTransactionExceptionMapperTest extends AbstractMapperTest {
+class CannotCreateTransactionExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final CannotCreateTransactionException exception = new CannotCreateTransactionException("message-error");
+	void toResponse() {
+		final var exception = new CannotCreateTransactionException("message-error");
 		check(mock(new CannotCreateTransactionExceptionMapper()).toResponse(exception), 503,
 				"{\"code\":\"database-down\",\"message\":null,\"parameters\":null,\"cause\":null}");
 	}

@@ -37,8 +37,8 @@ public class ApiTokenAuthenticationFilter extends RequestHeaderAuthenticationFil
 	 */
 	@Override
 	protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
-		final String principal = (String) super.getPreAuthenticatedPrincipal(request);
-		final String credential = (String) super.getPreAuthenticatedCredentials(request);
+		final var principal = (String) super.getPreAuthenticatedPrincipal(request);
+		final var credential = (String) super.getPreAuthenticatedCredentials(request);
 		if (principal == null || credential == null || resource.check(principal, credential)) {
 			return principal;
 		}

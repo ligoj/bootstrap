@@ -6,9 +6,6 @@ package org.ligoj.bootstrap.core.curl;
 import org.apache.http.auth.AUTH;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.curl.AuthCurlProcessor;
-import org.ligoj.bootstrap.core.curl.CurlProcessor;
-import org.ligoj.bootstrap.core.curl.CurlRequest;
 
 /**
  * Test class of {@link AuthCurlProcessor}
@@ -19,8 +16,8 @@ public class AuthCurlProcessorTest {
 	 * Process with provided and not empty credentials.
 	 */
 	@Test
-	public void process() {
-		CurlRequest request = new CurlRequest("", "", "");
+	void process() {
+        var request = new CurlRequest("", "", "");
 		try (final CurlProcessor processor = new AuthCurlProcessor("junit", "passwd") {
 			@Override
 			protected boolean call(final CurlRequest request, final String url) {
@@ -39,8 +36,8 @@ public class AuthCurlProcessorTest {
 	 * Process without provided user.
 	 */
 	@Test
-	public void processNoUser() {
-		final CurlRequest request = new CurlRequest("", "", "");
+	void processNoUser() {
+		final var request = new CurlRequest("", "", "");
 		try (final CurlProcessor processor = new AuthCurlProcessor("", "any") {
 			@Override
 			protected boolean call(final CurlRequest request, final String url) {

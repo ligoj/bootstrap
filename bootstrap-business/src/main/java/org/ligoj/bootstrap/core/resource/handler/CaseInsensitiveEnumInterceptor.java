@@ -8,7 +8,7 @@ import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 
 /**
- * Case insentive {@link Enum} flag into the message for FIQL of JAX-RS.
+ * Case insensitive {@link Enum} flag into the message for FIQL of JAX-RS.
  */
 public class CaseInsensitiveEnumInterceptor extends AbstractPhaseInterceptor<Message> {
 

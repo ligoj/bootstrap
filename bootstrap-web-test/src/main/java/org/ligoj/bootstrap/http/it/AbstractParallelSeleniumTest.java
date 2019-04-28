@@ -33,17 +33,17 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	/**
 	 * Thread alive check, in millisecond.
 	 */
-	protected int aliveCheck = DEFAULT_ALIVE_CHECK;
+    private int aliveCheck = DEFAULT_ALIVE_CHECK;
 
 	/**
 	 * Retries count for slow browsers do not responding while at least on has
 	 * already finished its execution.
 	 */
-	protected int maxRetry = DEFAULT_MAX_RETRY;
+    int maxRetry = DEFAULT_MAX_RETRY;
 
 	@BeforeEach
 	@Override
-	public void setUpDriver() throws Exception { // NOSONAR -- too much exception
+	void setUpDriver() throws Exception { // NOSONAR -- too much exception
 		super.setUpDriver();
 		runParallel();
 	}
@@ -51,35 +51,35 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	/**
 	 * Run asynchronously the current test, and join their execution.
 	 */
-	protected void runParallel() {
-		final WebDriver[] drivers = new WebDriver[repeatedCapabilities.length];
-		final boolean[] success = new boolean[repeatedCapabilities.length];
-		final Thread[] threads = prepareThreads(drivers, success); // NOPMD -- thread
+    void runParallel() {
+		final var drivers = new WebDriver[repeatedCapabilities.length];
+		final var success = new boolean[repeatedCapabilities.length];
+		final var threads = prepareThreads(drivers, success); // NOPMD -- thread
 
 		// Start the browsers
-		final int finished = startThreads(threads);
+		final var finished = startThreads(threads);
 
 		// Monitor the browsers
-		final List<String> faillures = new ArrayList<>();
+		final List<String> failures = new ArrayList<>();
 		try {
 			monitorThreads(threads, finished, success, drivers);
 
-			checkResults(success, faillures);
+			checkResults(success, failures);
 		} catch (final Exception e) {
 			log.error("Weird Exception during the run ...", e);
-			faillures.add("Weird Exception during the run ...");
+			failures.add("Weird Exception during the run ...");
 		}
-		Assertions.assertTrue(faillures.size() != success.length, "All browsers test failed");
-		Assertions.assertEquals(0, faillures.size(), "Some browsers test failed");
+		Assertions.assertTrue(failures.size() != success.length, "All browsers test failed");
+		Assertions.assertEquals(0, failures.size(), "Some browsers test failed");
 	}
 
 	/**
 	 * Check the results.
 	 */
-	private void checkResults(final boolean[] success, final List<String> faillures) {
-		for (int index = 0; index < success.length; index++) {
+	private void checkResults(final boolean[] success, final List<String> failures) {
+		for (var index = 0; index < success.length; index++) {
 			if (!success[index]) {
-				faillures.add(repeatedCapabilities[index].getBrowserName() + "[" + repeatedCapabilities[index].getVersion() + "]/"
+				failures.add(repeatedCapabilities[index].getBrowserName() + "[" + repeatedCapabilities[index].getVersion() + "]/"
 						+ repeatedCapabilities[index].getPlatform());
 			}
 		}
@@ -90,12 +90,12 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	 */
 	private void monitorThreads(final Thread[] threads, final int startedThreads, // NOPMD NOSONAR -- thread
 			final boolean[] success, final WebDriver... drivers) throws InterruptedException {
-		final State state = new State();
+		final var state = new State();
 		state.finished = startedThreads;
 		state.retryCount = 0;
 		state.succeed = 0;
 		while (state.finished != threads.length) {
-			for (int index = 0; index < threads.length; index++) {
+			for (var index = 0; index < threads.length; index++) {
 				monitorThread(threads, success, state, index, drivers);
 			}
 		}
@@ -107,7 +107,7 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	private void monitorThread(final Thread[] threads, final boolean[] success, final State state, final int index,
 			final WebDriver... drivers) // NOPMD
 			throws InterruptedException {
-		final Thread thread = threads[index]; // NOPMD -- thread
+		final var thread = threads[index]; // NOPMD -- thread
 		if (thread != null) {
 			// Check the browser is alive
 			thread.join(aliveCheck); // NOPMD -- thread
@@ -146,8 +146,8 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	 * Start the given threads.
 	 */
 	private int startThreads(final Thread... threads) { // NOPMD -- thread
-		int finished = 0;
-		for (final Thread thread : threads) { // NOPMD -- thread
+        var finished = 0;
+		for (final var thread : threads) { // NOPMD -- thread
 			if (thread == null) {
 				finished++;
 			} else {
@@ -161,15 +161,14 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	 * Prepare the thread instances.
 	 */
 	private Thread[] prepareThreads(final WebDriver[] drivers, final boolean[] success) { // NOPMD
-		final Thread[] threads = new Thread[repeatedCapabilities.length]; // NOPMD -- thread
-		for (int index = 0; index < repeatedCapabilities.length; index++) {
-			final int driverIndex = index;
-			final DesiredCapabilities capability = repeatedCapabilities[driverIndex];
-			success[driverIndex] = false;
+		final var threads = new Thread[repeatedCapabilities.length]; // NOPMD -- thread
+		for (var index = 0; index < repeatedCapabilities.length; index++) {
+			final var capability = repeatedCapabilities[index];
+			success[index] = false;
 			try {
-				final WebDriver driver = getRemoteDriver(capability);
-				drivers[driverIndex] = driver;
-				threads[driverIndex] = prepareThread(driver, driverIndex, success, capability);
+				final var driver = getRemoteDriver(capability);
+				drivers[index] = driver;
+				threads[index] = prepareThread(driver, index, success, capability);
 			} catch (final Exception e) {
 				log.error("Unable to connect the remote web driver, other tests are not interrupted : " + capability, e);
 			} finally {
@@ -184,23 +183,20 @@ public abstract class AbstractParallelSeleniumTest extends AbstractRepeatableSel
 	 */
 	private Thread prepareThread(final WebDriver driver, final int driverIndex, // NOPMD -- thread
 			final boolean[] success, final DesiredCapabilities capability) {
-		return new Thread() { // NOPMD -- thread
-
-			@Override
-			public void run() {
-				AbstractParallelSeleniumTest seleniumTest = AbstractParallelSeleniumTest.this;
-				try {
-					seleniumTest = AbstractParallelSeleniumTest.this.getClass().getDeclaredConstructor().newInstance();
-					AbstractParallelSeleniumTest.this.cloneAndRun(seleniumTest, driver, capability);
-					success[driverIndex] = true;
-				} catch (final Exception e) {
-					log.error("Unable to build the driver for requested capability, other tests are not interrupted : " + capability, e);
-				} finally {
-					cleanup();
-					seleniumTest.cleanup();
-				}
+		// NOPMD -- thread
+		return new Thread(() -> {
+            var seleniumTest = AbstractParallelSeleniumTest.this;
+			try {
+				seleniumTest = AbstractParallelSeleniumTest.this.getClass().getDeclaredConstructor().newInstance();
+				AbstractParallelSeleniumTest.this.cloneAndRun(seleniumTest, driver, capability);
+				success[driverIndex] = true;
+			} catch (final Exception e) {
+				log.error("Unable to build the driver for requested capability, other tests are not interrupted : " + capability, e);
+			} finally {
+				cleanup();
+				seleniumTest.cleanup();
 			}
-		};
+		});
 	}
 
 }

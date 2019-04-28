@@ -22,19 +22,19 @@ import org.mockito.Mockito;
 /**
  * Test of {@link AbstractRestTest}
  */
-public class TestAbstractRestTest extends AbstractRestTest {
+class TestAbstractRestTest extends AbstractRestTest {
 
 	@Test
-	public void testStartRestServer2() throws IOException {
+	void testStartRestServer2() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
-		final CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
-		final StatusLine statusLine = Mockito.mock(StatusLine.class);
+		final var response = Mockito.mock(CloseableHttpResponse.class);
+		final var statusLine = Mockito.mock(StatusLine.class);
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class))).thenReturn(response);
-		final HttpEntity entity = Mockito.mock(HttpEntity.class);
-		final InputStream content = Mockito.mock(InputStream.class);
+		final var entity = Mockito.mock(HttpEntity.class);
+		final var content = Mockito.mock(InputStream.class);
 		Mockito.when(response.getEntity()).thenReturn(entity);
 		Mockito.when(entity.getContent()).thenReturn(content);
 
@@ -42,42 +42,36 @@ public class TestAbstractRestTest extends AbstractRestTest {
 	}
 
 	@Test
-	public void testStartRestServerKo1() throws IOException {
+	void testStartRestServerKo1() throws IOException {
 		retries = 1;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
-		final CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
-		final StatusLine statusLine = Mockito.mock(StatusLine.class);
+		final var response = Mockito.mock(CloseableHttpResponse.class);
+		final var statusLine = Mockito.mock(StatusLine.class);
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_GATEWAY_TIMEOUT);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class))).thenReturn(response);
-		final HttpEntity entity = Mockito.mock(HttpEntity.class);
-		final InputStream content = Mockito.mock(InputStream.class);
+		final var entity = Mockito.mock(HttpEntity.class);
+		final var content = Mockito.mock(InputStream.class);
 		Mockito.when(response.getEntity()).thenReturn(entity);
 		Mockito.when(entity.getContent()).thenReturn(content);
 
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			startRestServer("log4j2.json");
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
 	}
 
 	@Test
-	public void testStartRestServerKo2() throws IOException {
+	void testStartRestServerKo2() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class))).thenThrow(new IOException());
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			startRestServer("log4j2.json");
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
 	}
 
 	@Test
-	public void testStartRestServerKo3() throws IOException {
+	void testStartRestServerKo3() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class)))
 				.thenThrow(new HttpHostConnectException(null, null, new InetAddress[0]));
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			startRestServer("log4j2.json");
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
 	}
 }

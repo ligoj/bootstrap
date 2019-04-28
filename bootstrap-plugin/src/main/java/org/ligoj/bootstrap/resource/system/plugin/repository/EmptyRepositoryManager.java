@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
 public class EmptyRepositoryManager implements RepositoryManager {
 
 	@Override
-	public Map<String, Artifact> getLastPluginVersions() throws IOException {
+	public Map<String, Artifact> getLastPluginVersions() {
 		return Collections.emptyMap();
 	}
 
@@ -24,7 +23,7 @@ public class EmptyRepositoryManager implements RepositoryManager {
 	}
 
 	@Override
-	public InputStream getArtifactInputStream(String artifact, String version) throws IOException {
+	public InputStream getArtifactInputStream(String artifact, String version) {
 		return null;
 	}
 

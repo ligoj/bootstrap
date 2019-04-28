@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -43,7 +42,7 @@ public class SecurityHelperTest {
 	 */
 	@Test
 	public void setUserName() {
-		final SecurityContext sc = new SecurityHelper().setUserName("name");
+		final var sc = new SecurityHelper().setUserName("name");
 		Assertions.assertEquals("name", sc.getAuthentication().getName());
 		Assertions.assertEquals("name", new SecurityHelper().getLogin());
 	}

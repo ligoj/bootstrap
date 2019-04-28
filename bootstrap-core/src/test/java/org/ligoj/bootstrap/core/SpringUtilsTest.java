@@ -15,20 +15,20 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/spring/application-context-test.xml" })
-public class SpringUtilsTest {
+class SpringUtilsTest {
 
 	@BeforeAll
-	public static void init() {
+    static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 	}
 
 	@Test
-	public void getApplicationContext() {
+    void getApplicationContext() {
 		Assertions.assertNotNull(SpringUtils.getApplicationContext());
 	}
 
 	@Test
-	public void testApplicationContext2() {
+    void testApplicationContext2() {
 		Assertions.assertNotNull(SpringUtils.getBean(org.jasypt.encryption.pbe.StandardPBEStringEncryptor.class));
 	}
 

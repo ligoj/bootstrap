@@ -27,12 +27,12 @@ public class RoleDaoTest extends AbstractBootTest {
 	private SystemRoleRepository repository;
 
 	@BeforeEach
-	public void prepareData() throws IOException {
+	void prepareData() throws IOException {
 		persistEntities(SystemRole.class, "csv/system-test/role.csv");
 	}
 
 	@Test
-	public void testFindAllSN1() {
+	void testFindAllSN1() {
 		Assertions.assertFalse(repository.findAll().isEmpty());
 	}
 }

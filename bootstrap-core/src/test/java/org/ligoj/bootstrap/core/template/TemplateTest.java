@@ -25,14 +25,14 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 /**
  * Test class of {@link TemplateTest}
  */
-public class TemplateTest {
+class TemplateTest {
 
 	private Writer writer;
 
 	private ByteArrayOutputStream bos;
 
 	@BeforeEach
-	public void initialize() {
+    void initialize() {
 		bos = new ByteArrayOutputStream();
 		writer = new PrintWriter(bos);
 	}
@@ -41,8 +41,8 @@ public class TemplateTest {
 	 * Simple write empty template.
 	 */
 	@Test
-	public void testWriteEmpty() throws IOException {
-		new Template<>("").write(writer, new HashMap<String, Processor<?>>(), null);
+    void testWriteEmpty() throws IOException {
+		new Template<>("").write(writer, new HashMap<>(), null);
 		Assertions.assertEquals(0, bos.toByteArray().length);
 	}
 
@@ -50,51 +50,43 @@ public class TemplateTest {
 	 * Not mapped tag.
 	 */
 	@Test
-	public void testWriteNotMappedTag() {
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{any/}}").write(writer, new HashMap<String, Processor<?>>(), null);
-		}, "Not mapped template tag {{any}} found at position 0");
+    void testWriteNotMappedTag() {
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{any/}}").write(writer, new HashMap<>(), null), "Not mapped template tag {{any}} found at position 0");
 	}
 
 	/**
 	 * Not invalid end tag.
 	 */
 	@Test
-	public void testWriteInvalidEnd() {
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{any/}").write(writer, new HashMap<String, Processor<?>>(), null);
-		}, "Invalid opening tag syntax '{{' without '}}' at position 0");
+    void testWriteInvalidEnd() {
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{any/}").write(writer, new HashMap<>(), null), "Invalid opening tag syntax '{{' without '}}' at position 0");
 	}
 
 	/**
 	 * Not invalid end tag.
 	 */
 	@Test
-	public void testWriteInvalidEndOverlay() {
+    void testWriteInvalidEndOverlay() {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>(new String[] { "value" }));
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{any}}{{one... {{/any}}..}}").write(writer, tags, null);
-		}, "Invalid opening tag syntax '{{' without '}}' at position 7");
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{any}}{{one... {{/any}}..}}").write(writer, tags, null), "Invalid opening tag syntax '{{' without '}}' at position 7");
 	}
 
 	/**
 	 * Missing closing tag.
 	 */
 	@Test
-	public void testWriteNoClosing() {
+    void testWriteNoClosing() {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>());
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{any}}..").write(writer, tags, null);
-		}, "Closing tag {{/any}} not found");
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{any}}..").write(writer, tags, null), "Closing tag {{/any}} not found");
 	}
 
 	/**
 	 * Null collection.
 	 */
 	@Test
-	public void testWriteNullCollection() throws IOException {
+    void testWriteNullCollection() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>());
 		new Template<>("{{any}}.{{/any}}").write(writer, tags, null);
@@ -105,40 +97,34 @@ public class TemplateTest {
 	 * Missing closing tag.
 	 */
 	@Test
-	public void testWriteNoClosingNesting() {
+    void testWriteNoClosingNesting() {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("any", new Processor<>(new String[] { "value" }));
 		tags.put("one", new Processor<>());
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{any}}.{{one}}.{{/any}}.{{/one}}").write(writer, tags, null);
-		}, "Closing tag {{/one}} not found");
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{any}}.{{one}}.{{/any}}.{{/one}}").write(writer, tags, null), "Closing tag {{/one}} not found");
 	}
 
 	/**
 	 * Empty tag name.
 	 */
 	@Test
-	public void testWriteEmptyTag() {
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{}}").write(writer, new HashMap<String, Processor<?>>(), null);
-		}, "Empty tag {{}} found at position 0");
+    void testWriteEmptyTag() {
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{}}").write(writer, new HashMap<>(), null), "Empty tag {{}} found at position 0");
 	}
 
 	/**
 	 * Too long tag name.
 	 */
 	@Test
-	public void testWriteTooLongTag() {
-		Assertions.assertThrows(Exception.class, () -> {
-			new Template<>("{{" + "z".repeat(101) + "}}..").write(writer, new HashMap<String, Processor<?>>(), null);
-		}, "Too long (max is 100 tag zzzzzzzzzzzzzzzzzzzzzzzzzzzz...}} found at position 0");
+    void testWriteTooLongTag() {
+		Assertions.assertThrows(Exception.class, () -> new Template<>("{{" + "z".repeat(101) + "}}..").write(writer, new HashMap<>(), null), "Too long (max is 100 tag zzzzzzzzzzzzzzzzzzzzzzzzzzzz...}} found at position 0");
 	}
 
 	/**
 	 * Bean, without attribute access
 	 */
 	@Test
-	public void testWriteBean() throws IOException {
+    void testWriteBean() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>("value"));
 		new Template<>("{{tag}}..{{/tag}}").write(writer, tags, null);
@@ -149,13 +135,13 @@ public class TemplateTest {
 	 * Cascaded beans
 	 */
 	@Test
-	public void testWriteCascadedBean() throws IOException {
+    void testWriteCascadedBean() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
-		final SystemUser user = new SystemUser();
+		final var user = new SystemUser();
 		user.setLogin("junit");
 		final Set<SystemRoleAssignment> assignments = new HashSet<>();
-		final SystemRoleAssignment assignment = new SystemRoleAssignment();
-		final SystemRole role = new SystemRole();
+		final var assignment = new SystemRoleAssignment();
+		final var role = new SystemRole();
 		role.setName("myrole");
 		assignment.setRole(role);
 		assignments.add(assignment);
@@ -174,7 +160,7 @@ public class TemplateTest {
 	 * Nullable bean.
 	 */
 	@Test
-	public void testWriteCascadedNullableBean() throws IOException {
+    void testWriteCascadedNullableBean() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("user", new Processor<>("junit"));
 		new Template<>("0{{user}}1{{user/}}2{{/user}}3").write(writer, tags, null);
@@ -185,7 +171,7 @@ public class TemplateTest {
 	 * Expecting collection or array and got empty {@link ArrayList}
 	 */
 	@Test
-	public void testWriteEmptyCollection() throws IOException {
+    void testWriteEmptyCollection() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>(new ArrayList<>()));
 		new Template<>("{{tag}}..{{/tag}}").write(writer, tags, null);
@@ -196,7 +182,7 @@ public class TemplateTest {
 	 * Null data
 	 */
 	@Test
-	public void testWriteNullData() throws IOException {
+    void testWriteNullData() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>());
 		new Template<>("{{tag/}}").write(writer, tags, null);
@@ -207,7 +193,7 @@ public class TemplateTest {
 	 * Expecting collection or array and got a simple array
 	 */
 	@Test
-	public void testWriteArray() throws IOException {
+    void testWriteArray() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>(new String[] { "value" }));
 		new Template<>("{{tag}}..{{/tag}}").write(writer, tags, null);
@@ -218,7 +204,7 @@ public class TemplateTest {
 	 * Compete features
 	 */
 	@Test
-	public void testWriteFullFeature() throws IOException {
+    void testWriteFullFeature() throws IOException {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>(new String[] { "A", "B" }));
 		tags.put("tag-value", new Processor<>());

@@ -10,7 +10,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.curl.OnlyRedirectHttpResponseCallback;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -20,40 +19,40 @@ import org.mockito.Mockito;
 public class OnlyRedirectHttpResponseCallbackTest {
 
 	@Test
-	public void testLocation() {
+	void testLocation() {
 		Assertions.assertFalse(new OnlyRedirectHttpResponseCallback().acceptLocation(null));
 		Assertions.assertTrue(new OnlyRedirectHttpResponseCallback().acceptLocation("/"));
 	}
 
 	@Test
-	public void testStatus() {
+	void testStatus() {
 		Assertions.assertFalse(new OnlyRedirectHttpResponseCallback().acceptStatus(HttpServletResponse.SC_ACCEPTED));
 		Assertions.assertTrue(new OnlyRedirectHttpResponseCallback().acceptStatus(HttpServletResponse.SC_MOVED_TEMPORARILY));
 	}
 
 	@Test
-	public void testResponseNotMoved() {
-		final CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
-		final StatusLine statusLine = Mockito.mock(StatusLine.class);
+	void testResponseNotMoved() {
+		final var response = Mockito.mock(CloseableHttpResponse.class);
+		final var statusLine = Mockito.mock(StatusLine.class);
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_OK);
 		Assertions.assertFalse(new OnlyRedirectHttpResponseCallback().acceptResponse(response));
 	}
 
 	@Test
-	public void testResponseNoLocation() {
-		final CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
-		final StatusLine statusLine = Mockito.mock(StatusLine.class);
+	void testResponseNoLocation() {
+		final var response = Mockito.mock(CloseableHttpResponse.class);
+		final var statusLine = Mockito.mock(StatusLine.class);
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_MOVED_TEMPORARILY);
 		Assertions.assertFalse(new OnlyRedirectHttpResponseCallback().acceptResponse(response));
 	}
 
 	@Test
-	public void testResponseEmptyLocation() {
-		final CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
-		final StatusLine statusLine = Mockito.mock(StatusLine.class);
-		final Header header = Mockito.mock(Header.class);
+	void testResponseEmptyLocation() {
+		final var response = Mockito.mock(CloseableHttpResponse.class);
+		final var statusLine = Mockito.mock(StatusLine.class);
+		final var header = Mockito.mock(Header.class);
 		Mockito.when(response.getFirstHeader(ArgumentMatchers.eq("location"))).thenReturn(header);
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -61,10 +60,10 @@ public class OnlyRedirectHttpResponseCallbackTest {
 	}
 
 	@Test
-	public void testResponse() {
-		final CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
-		final StatusLine statusLine = Mockito.mock(StatusLine.class);
-		final Header header = Mockito.mock(Header.class);
+	void testResponse() {
+		final var response = Mockito.mock(CloseableHttpResponse.class);
+		final var statusLine = Mockito.mock(StatusLine.class);
+		final var header = Mockito.mock(Header.class);
 		Mockito.when(response.getFirstHeader(ArgumentMatchers.eq("location"))).thenReturn(header);
 		Mockito.when(header.getValue()).thenReturn("/");
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);

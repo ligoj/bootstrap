@@ -12,29 +12,29 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * Test {@link AuditorStringAwareImpl}
  */
-public class AuditorStringAwareImplTest {
+class AuditorStringAwareImplTest {
 
 	private AuditorStringAwareImpl auditor;
 
 	@BeforeEach
-	public void setup() {
+    void setup() {
 		auditor = new AuditorStringAwareImpl();
 		auditor.setSecurityHelper(new SecurityHelper());
 		SecurityContextHolder.clearContext();
 	}
 
 	@Test
-	public void getCurrentAuditorNoUser() {
+    void getCurrentAuditorNoUser() {
 		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, auditor.getCurrentAuditor().get());
 	}
 
 	@Test
-	public void getCurrentAuditorNoProvider() {
+    void getCurrentAuditorNoProvider() {
 		Assertions.assertEquals(SecurityHelper.SYSTEM_USERNAME, new AuditorStringAwareImpl().getCurrentAuditor().get());
 	}
 
 	@Test
-	public void getCurrentAuditor() {
+    void getCurrentAuditor() {
 		new SecurityHelper().setUserName("name");
 		Assertions.assertEquals("name", auditor.getCurrentAuditor().get());
 	}

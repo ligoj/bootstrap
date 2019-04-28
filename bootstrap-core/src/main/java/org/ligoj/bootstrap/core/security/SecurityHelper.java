@@ -39,7 +39,7 @@ public class SecurityHelper {
 			log.error("userName is needed in aim to update SecurityContext");
 			return null;
 		}
-		final SecurityContext context = SecurityContextHolder.getContext();
+		final var context = SecurityContextHolder.getContext();
 		final UserDetails newPrincipal = new User(username, "N/A", new ArrayList<>(0));
 		replaceContext(context, newPrincipal);
 		return context;
@@ -54,10 +54,10 @@ public class SecurityHelper {
 	 *            the new principal to place.
 	 */
 	private void replaceContext(final SecurityContext context, final UserDetails newPrincipal) {
-		final PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(newPrincipal, null);
+		final var authentication = new PreAuthenticatedAuthenticationToken(newPrincipal, null);
 		authentication.setDetails(newPrincipal);
 		context.setAuthentication(authentication);
-		final SecurityContextImpl securityContextImpl = new SecurityContextImpl();
+		final var securityContextImpl = new SecurityContextImpl();
 		securityContextImpl.setAuthentication(authentication);
 
 		// Replace the old context
@@ -70,7 +70,7 @@ public class SecurityHelper {
 	 * @return the current user name.
 	 */
 	public String getLogin() {
-		final SecurityContext context = SecurityContextHolder.getContext();
+		final var context = SecurityContextHolder.getContext();
 		if (context.getAuthentication() != null) {
 			return context.getAuthentication().getName();
 		}

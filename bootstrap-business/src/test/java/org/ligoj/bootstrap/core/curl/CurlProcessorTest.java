@@ -16,9 +16,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.curl.CurlProcessor;
-import org.ligoj.bootstrap.core.curl.CurlRequest;
-import org.ligoj.bootstrap.core.curl.DefaultHttpResponseCallback;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.mockito.Mockito;
 
@@ -38,37 +35,35 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	private static final int PROXY_PORT = 8122;
 
 	@Test
-	public void testX509() {
-		final CurlProcessor.TrustedX509TrustManager x509TrustManager = new CurlProcessor.TrustedX509TrustManager();
+	void testX509() {
+		final var x509TrustManager = new CurlProcessor.TrustedX509TrustManager();
 		x509TrustManager.checkClientTrusted(null, null);
 		x509TrustManager.checkServerTrusted(null, null);
 		Assertions.assertEquals(0, x509TrustManager.getAcceptedIssuers().length);
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			Assertions.assertNotNull(processor.getHttpClient());
 		}
 	}
 
 	@Test
-	public void testX509Failed() {
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			CurlProcessor.newSslContext("none");
-		});
+	void testX509Failed() {
+		Assertions.assertThrows(IllegalStateException.class, () -> CurlProcessor.newSslContext("none"));
 	}
 
 	@Test
-	public void testGet() {
+	void testGet() {
 		httpServer.stubFor(
 				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
-			final String downloadPage = processor.get("http://localhost:" + MOCK_PORT);
+		try (final var processor = new CurlProcessor()) {
+			final var downloadPage = processor.get("http://localhost:" + MOCK_PORT);
 			Assertions.assertEquals("CONTENT", downloadPage);
 		}
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		httpServer.stubFor(
 				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
@@ -77,20 +72,20 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void validateFail() {
+	void validateFail() {
 		httpServer.stubFor(get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 		httpServer.start();
 
-		final ValidationJsonException vse = Assertions.assertThrows(ValidationJsonException.class,
+		final var vse = Assertions.assertThrows(ValidationJsonException.class,
 				() -> CurlProcessor.validateAndClose("http://localhost:" + MOCK_PORT, "parameter", "value"));
 		Assertions.assertEquals("value", vse.getErrors().get("parameter").get(0).get("rule"));
 	}
 
 	@Test
-	public void testGetFailed() {
-		final CurlRequest curlRequest = new CurlRequest(null, "http://localhost:" + MOCK_PORT);
+	void testGetFailed() {
+		final var curlRequest = new CurlRequest(null, "http://localhost:" + MOCK_PORT);
 		curlRequest.setSaveResponse(true);
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			processor.process(curlRequest);
 		}
 		Assertions.assertNull(curlRequest.getResponse());
@@ -100,14 +95,14 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void testPost() {
+	void testPost() {
 		httpServer.stubFor(
 				post(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
-		final CurlRequest curlRequest = new CurlRequest("POST", "http://localhost:" + MOCK_PORT, "CONTENT");
+		final var curlRequest = new CurlRequest("POST", "http://localhost:" + MOCK_PORT, "CONTENT");
 		curlRequest.setSaveResponse(true);
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			Assertions.assertTrue(processor.process(curlRequest));
 		}
 		Assertions.assertEquals("CONTENT", curlRequest.getResponse());
@@ -115,23 +110,23 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void process() {
+	void process() {
 		httpServer.stubFor(
 				post(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
-		final CurlProcessor processor = new CurlProcessor();
+		final var processor = new CurlProcessor();
 
 		// Would succeed
-		final CurlRequest curlRequest1 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT, "CONTENT");
+		final var curlRequest1 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT, "CONTENT");
 		curlRequest1.setSaveResponse(true);
 
 		// Would fail
-		final CurlRequest curlRequest2 = new CurlRequest("PUT", "http://localhost:" + MOCK_PORT, "CONTENT");
+		final var curlRequest2 = new CurlRequest("PUT", "http://localhost:" + MOCK_PORT, "CONTENT");
 		curlRequest2.setSaveResponse(true);
 
 		// Never executed
-		final CurlRequest curlRequest3 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT, "CONTENT");
+		final var curlRequest3 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT, "CONTENT");
 		curlRequest3.setSaveResponse(true);
 
 		// Process
@@ -148,29 +143,29 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void processTimeout() {
+	void processTimeout() {
 		httpServer.stubFor(post(urlPathEqualTo("/success"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.stubFor(post(urlPathEqualTo("/timeout"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT").withFixedDelay(4000)));
 		httpServer.start();
 
-		long start = System.currentTimeMillis();
+        var start = System.currentTimeMillis();
 
 		// Would succeed
-		final CurlRequest curlRequest1 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT + "/success",
+		final var curlRequest1 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT + "/success",
 				"CONTENT");
 		curlRequest1.setTimeout(500);
 		curlRequest1.setSaveResponse(true);
 
 		// Would fail timeout
-		final CurlRequest curlRequest2 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT + "/timeout",
+		final var curlRequest2 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT + "/timeout",
 				"CONTENT");
 		curlRequest2.setTimeout(500);
 		curlRequest2.setSaveResponse(true);
 
 		// Process
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			Assertions.assertFalse(processor.process(curlRequest1, curlRequest2));
 			Assertions.assertEquals("CONTENT", curlRequest1.getResponse());
 			Assertions.assertNull(curlRequest2.getResponse());
@@ -179,53 +174,53 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void testHeaders() {
+	void testHeaders() {
 		httpServer.stubFor(
 				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			Assertions.assertEquals("CONTENT",
 					processor.get("http://localhost:" + MOCK_PORT, "Content-Type:text/html"));
 		}
 	}
 
 	@Test
-	public void testHeadersOverrideDefault() {
+	void testHeadersOverrideDefault() {
 		httpServer.stubFor(get(urlPathEqualTo("/")).withHeader("ACCEPT-charset", new EqualToPattern("utf-8"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			Assertions.assertEquals("CONTENT", processor.get("http://localhost:" + MOCK_PORT, "ACCEPT-charset:utf-8"));
 		}
 	}
 
 	@Test
-	public void testGetRedirected() {
+	void testGetRedirected() {
 		httpServer.stubFor(get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_MOVED_TEMPORARILY)
 				.withHeader("Location", "http://www.google.fr")));
 		httpServer.start();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
-			final String downloadPage = processor.get("http://localhost:" + MOCK_PORT);
+		try (final var processor = new CurlProcessor()) {
+			final var downloadPage = processor.get("http://localhost:" + MOCK_PORT);
 			Assertions.assertNull(downloadPage);
 		}
 	}
 
 	@Test
-	public void processNext() {
+	void processNext() {
 		httpServer.stubFor(
 				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
 		final List<CurlRequest> requests = new ArrayList<>();
-		final CurlRequest curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
+		final var curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
 		curlRequest.setSaveResponse(true);
 		requests.add(curlRequest);
 		requests.add(new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null));
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			Assertions.assertTrue(processor.process(requests));
 			Assertions.assertEquals("CONTENT", curlRequest.getResponse());
 
@@ -237,7 +232,7 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void processReplay() {
+	void processReplay() {
 		httpServer.stubFor(get(urlPathEqualTo("/")).inScenario("replay").whenScenarioStateIs(Scenario.STARTED)
 				.willReturn(aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED)).willSetStateTo("second-attempt"));
 		httpServer.stubFor(get(urlPathEqualTo("/")).inScenario("replay").whenScenarioStateIs("second-attempt")
@@ -246,9 +241,9 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 		final List<CurlRequest> requests = new ArrayList<>();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			processor.setReplay(r -> r.getStatus() == 401);
-			final CurlRequest curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
+			final var curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
 			curlRequest.setSaveResponse(true);
 			requests.add(curlRequest);
 			requests.add(new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null));
@@ -266,7 +261,7 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * Replay conditions are not met.
 	 */
 	@Test
-	public void processReplayRejected() {
+	void processReplayRejected() {
 		httpServer.stubFor(get(urlPathEqualTo("/")).inScenario("replay").whenScenarioStateIs(Scenario.STARTED)
 				.willReturn(aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED)).willSetStateTo("second-attempt"));
 		httpServer.stubFor(get(urlPathEqualTo("/")).inScenario("replay").whenScenarioStateIs("second-attempt")
@@ -275,9 +270,9 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 		final List<CurlRequest> requests = new ArrayList<>();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			processor.setReplay(r -> false);
-			final CurlRequest curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
+			final var curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
 			curlRequest.setSaveResponse(true);
 			requests.add(curlRequest);
 			requests.add(new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null));
@@ -289,15 +284,15 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * Replay failed at the second attempt
 	 */
 	@Test
-	public void processReplayFailed() {
+	void processReplayFailed() {
 		httpServer.stubFor(get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_UNAUTHORIZED)));
 		httpServer.start();
 
 		final List<CurlRequest> requests = new ArrayList<>();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
+		try (final var processor = new CurlProcessor()) {
 			processor.setReplay(r -> true);
-			final CurlRequest curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
+			final var curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
 			curlRequest.setSaveResponse(true);
 			requests.add(curlRequest);
 			requests.add(new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null));
@@ -306,15 +301,15 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void processCallbackFails() {
+	void processCallbackFails() {
 		httpServer.stubFor(
 				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
 		httpServer.start();
 
 		final List<CurlRequest> requests = new ArrayList<>();
 
-		try (final CurlProcessor processor = new CurlProcessor()) {
-			final CurlRequest curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
+		try (final var processor = new CurlProcessor()) {
+			final var curlRequest = new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null);
 			curlRequest.setSaveResponse(true);
 			requests.add(curlRequest);
 			requests.add(new CurlRequest("GET", "http://localhost:" + MOCK_PORT, null));
@@ -330,11 +325,11 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void testProxy() {
+	void testProxy() {
 		// set proxy configuration and proxy server
 		System.setProperty("https.proxyHost", "localhost");
 		System.setProperty("https.proxyPort", String.valueOf(PROXY_PORT));
-		final WireMockServer proxyServer = new WireMockServer(PROXY_PORT);
+		final var proxyServer = new WireMockServer(PROXY_PORT);
 		proxyServer.stubFor(
 				get(WireMock.urlMatching(".*")).willReturn(aResponse().proxiedFrom("http://localhost:" + MOCK_PORT)));
 		proxyServer.start();
@@ -345,8 +340,8 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 		httpServer.start();
 
 		// launch request
-		try (final CurlProcessor processor = new CurlProcessor()) {
-			final String downloadPage = processor.get("http://localhost:" + PROXY_PORT);
+		try (final var processor = new CurlProcessor()) {
+			final var downloadPage = processor.get("http://localhost:" + PROXY_PORT);
 			Assertions.assertEquals("CONTENT", downloadPage);
 			// clean proxy configuration
 			System.clearProperty("https.proxyHost");
@@ -356,15 +351,15 @@ public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	public void closeTwice() {
-		try (final CurlProcessor processor = new CurlProcessor()) {
+	void closeTwice() {
+		try (final var processor = new CurlProcessor()) {
 			processor.close();
 		}
 	}
 
 	@Test
-	public void closeErrorTwice() throws IOException {
-		final CloseableHttpClient mock = Mockito.mock(CloseableHttpClient.class);
+	void closeErrorTwice() throws IOException {
+		final var mock = Mockito.mock(CloseableHttpClient.class);
 		Mockito.doThrow(new IOException()).when(mock).close();
 		try (final CurlProcessor processor = new CurlProcessor() {
 			@Override

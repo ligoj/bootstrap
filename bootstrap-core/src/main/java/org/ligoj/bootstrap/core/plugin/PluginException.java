@@ -9,7 +9,7 @@ import lombok.Getter;
  * An exception of plug-in management.
  */
 @Getter
-public class PluginException extends RuntimeException {
+class PluginException extends RuntimeException {
 
 	/**
 	 * SID

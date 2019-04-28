@@ -13,29 +13,29 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link DataTableAttributes}
  */
-public class DataTableAttributesTest {
+class DataTableAttributesTest {
 
 	@Test
-	public void getSearchSelect2() {
-		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
-		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
+	void getSearchSelect2() {
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<>());
 		uriInfo.getQueryParameters().add("q", "  S1 ");
 		Assertions.assertEquals("S1", DataTableAttributes.getSearch(uriInfo));
 	}
 
 	@Test
-	public void getSearchDataTable() {
-		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
-		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
+	void getSearchDataTable() {
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<>());
 		uriInfo.getQueryParameters().add(DataTableAttributes.SEARCH, "  S1 ");
 		Assertions.assertEquals("S1", DataTableAttributes.getSearch(uriInfo));
 	}
 
 	@Test
-	public void getSearchDataTableToNull() {
-		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
-		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
+	void getSearchDataTableToNull() {
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<>());
 		uriInfo.getQueryParameters().add(DataTableAttributes.SEARCH, "   ");
-		Assertions.assertTrue(DataTableAttributes.getSearch(uriInfo).length() == 0);
+		Assertions.assertEquals(0, DataTableAttributes.getSearch(uriInfo).length());
 	}
 }

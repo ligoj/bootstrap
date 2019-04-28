@@ -13,10 +13,10 @@ import org.ligoj.bootstrap.core.DateUtils;
 /**
  * Test class of {@link DecimalDateProcessor}
  */
-public class DecimalDateProcessorTest {
+class DecimalDateProcessorTest {
 
 	@BeforeAll
-	public static void init() {
+    static void init() {
 		// Fix UTC time zone for this test, since date are compared
 		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("UTC"));
 	}
@@ -25,7 +25,7 @@ public class DecimalDateProcessorTest {
 	 * Simple date format of static context.
 	 */
 	@Test
-	public void testGetValue() {
+    void testGetValue() {
 		Assertions.assertEquals(1278227550000L, new DecimalDateProcessor().getValue("40363.300347222").getTime());
 	}
 
@@ -33,10 +33,8 @@ public class DecimalDateProcessorTest {
 	 * Simple date format of dynamic context.
 	 */
 	@Test
-	public void testGetItemValue() {
-		Assertions.assertThrows(IllegalArgumentException.class, () -> {
-			new DecimalDateProcessor().getValue("40363-300347222");
-		}, "Invalid string '40363-300347222' for decimal Excel date");
+    void testGetItemValue() {
+		Assertions.assertThrows(IllegalArgumentException.class, () -> new DecimalDateProcessor().getValue("40363-300347222"), "Invalid string '40363-300347222' for decimal Excel date");
 	}
 
 }

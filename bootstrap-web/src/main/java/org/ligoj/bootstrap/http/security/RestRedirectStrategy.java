@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.RedirectStrategy;
 
@@ -44,13 +43,13 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 		response.setContentType("application/json");
 
-		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final var authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (success && authentication instanceof CookieUsernamePasswordAuthenticationToken) {
 			// Forward cookies from back-office
 			((CookieUsernamePasswordAuthenticationToken) authentication).getCookies().forEach(cookie -> response.addHeader("Set-Cookie", cookie));
 		}
 		// Write the JSON data containing the redirection and the status
-		final String redirectUrl = response.encodeRedirectURL(request.getContextPath() + url);
+		final var redirectUrl = response.encodeRedirectURL(request.getContextPath() + url);
 		IOUtils.write(String.format("{\"success\":%b,\"redirect\":\"%s\"}", success, redirectUrl), response.getOutputStream(),
 				StandardCharsets.UTF_8);
 	}

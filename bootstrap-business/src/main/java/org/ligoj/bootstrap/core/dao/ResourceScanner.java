@@ -80,7 +80,7 @@ public class ResourceScanner extends StandardScanner {
 	 */
 	protected URL getJarUrl(final URL ormUrl) throws MalformedURLException {
 		final URL ormJarUrl;
-		final String urlStr = ormUrl.toString();
+		final var urlStr = ormUrl.toString();
 		if ("jar".equals(ormUrl.getProtocol())) {
 			if (StringUtils.countMatches(ormUrl.getPath(), "!") > 1) {
 				// Cascaded JAR URL, remove only the last fragment

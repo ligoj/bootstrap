@@ -12,11 +12,11 @@ import org.ligoj.bootstrap.core.resource.BusinessException;
 /**
  * Exception mapper test using {@link BusinessExceptionMapper}
  */
-public class BusinessExceptionMapperTest extends AbstractMapperTest {
+class BusinessExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final BusinessException exception = new BusinessException(BusinessException.KEY_UNKNOW_ID, new IOException(), "parameter1", "parameter2");
+	void toResponse() {
+		final var exception = new BusinessException(BusinessException.KEY_UNKNOWN_ID, new IOException(), "parameter1", "parameter2");
 		check(mock(new BusinessExceptionMapper()).toResponse(exception), 500,
 				"{\"code\":\"business\",\"message\":\"unknown-id\",\"parameters\":[\"parameter1\",\"parameter2\"],\"cause\":null}");
 	}

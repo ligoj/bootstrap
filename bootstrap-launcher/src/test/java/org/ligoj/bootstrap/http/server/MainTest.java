@@ -13,20 +13,20 @@ import org.junit.jupiter.api.Test;
  * Test class of {@link Main}
  *
  */
-public class MainTest {
+class MainTest {
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		MainTest.cleanup();
 	}
 
 	@AfterEach
-	public void cleanupInstance() {
+    void cleanupInstance() {
 		MainTest.cleanup();
 	}
 
 	@AfterAll
-	public static void cleanup() {
+    static void cleanup() {
 		System.clearProperty("jetty.properties");
 		System.clearProperty("jetty.xml");
 	}
@@ -35,9 +35,9 @@ public class MainTest {
 	 * Test invalid properties file.
 	 */
 	@Test
-	public void testNoPropertiesFile() throws Exception {
+    void testNoPropertiesFile() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/no.properties");
-		final Main main = new Main();
+		final var main = new Main();
 		Assertions.assertFalse(main.getServer().isStarting());
 		Assertions.assertFalse(main.getServer().isStopping());
 		Assertions.assertFalse(main.getServer().isStarted());
@@ -47,10 +47,10 @@ public class MainTest {
 	 * Test valid properties file.
 	 */
 	@Test
-	public void testCorrectConfiguration() throws Exception {
+    void testCorrectConfiguration() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-empty-test.properties");
 		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
-		final Main main = new Main();
+		final var main = new Main();
 		Assertions.assertFalse(main.getServer().isStarting());
 		Assertions.assertFalse(main.getServer().isStopping());
 		Assertions.assertFalse(main.getServer().isStarted());
@@ -60,14 +60,14 @@ public class MainTest {
 	 * Test invalid XML file.
 	 */
 	@Test
-	public void testInvalidXmlFile() throws Exception {
+    void testInvalidXmlFile() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-empty-test.properties");
 		System.setProperty("jetty.xml", "META-INF/jetty/jetty-fail-test.xml");
 		try {
 			Main.main();
-			Assertions.fail("Server should faild to start");
-		} catch (java.lang.NoSuchMethodException nsme) {
-			Assertions.assertEquals("class org.eclipse.jetty.server.Server.setUnknownProperty(class java.lang.Object)", nsme.getMessage());
+			Assertions.fail("Server should failed to start");
+		} catch (java.lang.NoSuchMethodException e) {
+			Assertions.assertEquals("class org.eclipse.jetty.server.Server.setUnknownProperty(class java.lang.Object)", e.getMessage());
 		}
 	}
 
@@ -76,19 +76,15 @@ public class MainTest {
 	 */
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testKillServer() throws Exception {
+    void testKillServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
 		System.setProperty("test.test2", "original");
 		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
-		final Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Main.main();
-				} catch (final Exception e) {
-					Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
-				}
+		final var thread = new Thread(() -> {
+			try {
+				Main.main();
+			} catch (final Exception e) {
+				Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
 			}
 		});
 		thread.start();
@@ -106,19 +102,15 @@ public class MainTest {
 	 * Test valid server start .
 	 */
 	@Test
-	public void testStartServer() throws Exception {
+    void testStartServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
 		System.setProperty("test.test2", "original");
 		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
-		final Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Main.main();
-				} catch (final Exception e) {
-					Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
-				}
+		final var thread = new Thread(() -> {
+			try {
+				Main.main();
+			} catch (final Exception e) {
+				Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
 			}
 		});
 		thread.start();

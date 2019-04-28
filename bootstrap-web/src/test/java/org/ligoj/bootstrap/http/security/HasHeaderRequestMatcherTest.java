@@ -12,18 +12,18 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link HasHeaderRequestMatcher}
  */
-public class HasHeaderRequestMatcherTest {
+class HasHeaderRequestMatcherTest {
 
 	@Test
-	public void testMatches() {
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testMatches() {
+        var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("header")).thenReturn("value");
 		Assertions.assertTrue(new HasHeaderRequestMatcher("header").matches(request));
 	}
 
 	@Test
-	public void testBlank() {
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testBlank() {
+        var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("header")).thenReturn(" ");
 		Assertions.assertFalse(new HasHeaderRequestMatcher("header").matches(request));
 	}

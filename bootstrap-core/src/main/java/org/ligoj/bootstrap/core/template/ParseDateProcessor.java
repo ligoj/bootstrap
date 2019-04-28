@@ -41,7 +41,7 @@ public class ParseDateProcessor extends Processor<String> {
 
 	@Override
 	public Date getValue(final String context) {
-		final String data = (String) super.getValue(context);
+		final var data = (String) super.getValue(context);
 		try {
 			return format.parse(data);
 		} catch (final ParseException e) {

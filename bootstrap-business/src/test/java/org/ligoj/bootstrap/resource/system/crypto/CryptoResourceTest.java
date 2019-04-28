@@ -20,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link CryptoResource}
  */
 @ExtendWith(SpringExtension.class)
-public class CryptoResourceTest extends AbstractBootTest {
+class CryptoResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private CryptoResource resource;
@@ -29,18 +29,18 @@ public class CryptoResourceTest extends AbstractBootTest {
 	private CryptoHelper cryptoHelper;
 
 	@BeforeAll
-	public static void init() {
+    static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 	}
 
 	@AfterAll
-	public static void clean() {
+    static void clean() {
 		System.clearProperty("app.crypto.file");
 	}
 
 	@BeforeEach
 	@AfterEach
-	public void reset() {
+	void reset() {
 		System.clearProperty("test.property");
 	}
 
@@ -48,8 +48,8 @@ public class CryptoResourceTest extends AbstractBootTest {
 	 * test find all service
 	 */
 	@Test
-	public void testFindAll() {
-		final String encrypted = resource.create("value");
+	void testFindAll() {
+		final var encrypted = resource.create("value");
 		Assertions.assertNotEquals(encrypted, "value");
 		Assertions.assertEquals("value", cryptoHelper.decrypt(encrypted));
 

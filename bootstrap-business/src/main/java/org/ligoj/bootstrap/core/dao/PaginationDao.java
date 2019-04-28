@@ -13,7 +13,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -22,7 +21,6 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.collections4.MapUtils;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
-import org.ligoj.bootstrap.core.json.jqgrid.UiSort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -104,8 +102,8 @@ public class PaginationDao {
 	 *            the JSON to SQL mapping. Property access is allowed using '.' separator.
 	 * @param fetch
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
-	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
-	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
+	 *            same identifier &lt;"contract.contract", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contracts.contract", JoinType.INNER&gt; is accepted.
 	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
 	public <T> Page<T> findAll(final Class<T> entityType, final UriInfo uriInfo, final Map<String, String> mapping,
@@ -128,8 +126,8 @@ public class PaginationDao {
 	 *            the optional custom specification mapping.
 	 * @param fetch
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
-	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
-	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
+	 *            same identifier &lt;"contract.contract", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contracts.contract", JoinType.INNER&gt; is accepted.
 	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
 	public <T> Page<T> findAll(final Class<T> entityType, final UriInfo uriInfo, final Map<String, String> mapping,
@@ -152,20 +150,20 @@ public class PaginationDao {
 	 *            the optional custom specification mapping.
 	 * @param fetch
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
-	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
-	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
+	 *            same identifier &lt;"contract.contract", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contracts.contract", JoinType.INNER&gt; is accepted.
 	 * @return a list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
 	public <T> Page<T> findAll(final Class<T> entityType, final UiPageRequest uiPageRequest,
 			final Map<String, String> mapping, final Map<String, CustomSpecification> specifications,
 			final Map<String, JoinType> fetch) {
 
-		final CriteriaBuilder builder = em.getCriteriaBuilder();
-		final CriteriaQuery<T> query = builder.createQuery(entityType);
+		final var builder = em.getCriteriaBuilder();
+		final var query = builder.createQuery(entityType);
 		final Specification<T> spec = newSpecification(uiPageRequest, mapping, specifications);
 
 		// Apply specification
-		final Root<T> root = query.from(entityType);
+		final var root = query.from(entityType);
 		if (!CollectionUtils.isEmpty(fetch)) {
 			fetchHelper.applyFetchedAssociations(fetch, root);
 		}
@@ -185,12 +183,12 @@ public class PaginationDao {
 		if (uiPageRequest.getUiSort() != null) {
 
 			// Need to order the result
-			final UiSort uiSort = uiPageRequest.getUiSort();
-			final String ormColumn = mapping.get(uiSort.getColumn());
+			final var uiSort = uiPageRequest.getUiSort();
+			final var ormColumn = mapping.get(uiSort.getColumn());
 			if (ormColumn != null) {
 
 				// ORM column is validated
-				final Sort sort = new Sort(uiSort.getDirection(), mapping.get(uiSort.getColumn()));
+				final var sort = new Sort(uiSort.getDirection(), mapping.get(uiSort.getColumn()));
 				query.orderBy(QueryUtils.toOrders(sort, root, builder));
 			}
 		}
@@ -201,7 +199,7 @@ public class PaginationDao {
 	 */
 	private <T> Page<T> pagedResult(final Class<T> entityType, final UiPageRequest uiPageRequest,
 			final CriteriaQuery<T> query, final Specification<T> spec) {
-		final TypedQuery<T> query2 = em.createQuery(query);
+		final var query2 = em.createQuery(query);
 		if (uiPageRequest.getPage() > 0 && uiPageRequest.getPageSize() > 0 || uiPageRequest.getUiSort() != null) {
 			// Build the main query
 			final Pageable pageable = PageRequest.of(Math.max(0, uiPageRequest.getPage() - 1),
@@ -248,7 +246,7 @@ public class PaginationDao {
 		query.setFirstResult((int) pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
 
-		final Long total = getCountQuery(entityType, spec).getSingleResult();
+		final var total = getCountQuery(entityType, spec).getSingleResult();
 
 		return new PageImpl<>(query.getResultList(), pageable, total);
 	}
@@ -258,10 +256,10 @@ public class PaginationDao {
 	 */
 	private <T> TypedQuery<Long> getCountQuery(final Class<T> entityType, final Specification<T> spec) {
 
-		final CriteriaBuilder builder = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> query = builder.createQuery(Long.class);
+		final var builder = em.getCriteriaBuilder();
+		final var query = builder.createQuery(Long.class);
 
-		final Root<T> root = query.from(entityType);
+		final var root = query.from(entityType);
 		applySpecificationToCriteria(root, spec, query);
 		query.select(builder.count(root));
 
@@ -278,8 +276,8 @@ public class PaginationDao {
 
 		if (spec != null) {
 			// There is at least one described filter
-			final CriteriaBuilder builder = em.getCriteriaBuilder();
-			final Predicate predicate = spec.toPredicate(root, query, builder);
+			final var builder = em.getCriteriaBuilder();
+			final var predicate = spec.toPredicate(root, query, builder);
 
 			// There is at least one validated filter
 			query.where(predicate);

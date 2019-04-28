@@ -15,15 +15,15 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 /**
  * Test class of {@link MapProcessor}
  */
-public class MapProcessorTest {
+class MapProcessorTest {
 
 	/**
 	 * Simple test of a valid property and a not null value.
 	 */
 	@Test
-	public void testGetValue() {
+    void testGetValue() {
 		final Deque<Object> contextData = new LinkedList<>();
-		final SystemUser systemUser = new SystemUser();
+		final var systemUser = new SystemUser();
 		systemUser.setLogin("any");
 		contextData.add(systemUser);
 		final Map<String, String> map = new HashMap<>();

@@ -28,8 +28,8 @@ public class JpaBenchDao implements ISystemPerformanceJpaDao {
 	@Override
 	public BenchResult initialize(final int nbEntries, final byte[] lobData) {
 		em.createQuery("DELETE FROM " + SystemBench.class.getName()).executeUpdate();
-		for (int i = nbEntries; i-- > 0;) {
-			final SystemBench perf = new SystemBench();
+		for (var i = nbEntries; i-- > 0;) {
+			final var perf = new SystemBench();
 			perf.setPrfBool(i % 2 == 0);
 			perf.setPrfChar("Performance JPA2 " + i);
 			perf.setPicture(lobData);
@@ -39,14 +39,14 @@ public class JpaBenchDao implements ISystemPerformanceJpaDao {
 			em.flush();
 			em.clear();
 		}
-		final BenchResult result = new BenchResult();
+		final var result = new BenchResult();
 		result.setEntries(nbEntries);
 		return result;
 	}
 
 	@Override
 	public byte[] getLastAvailableLob() {
-		final List<SystemBench> resultList = em
+		final var resultList = em
 				.createQuery("FROM " + SystemBench.class.getName() + " WHERE picture != null ORDER BY id DESC", SystemBench.class).setMaxResults(1)
 				.getResultList();
 		if (resultList.isEmpty()) {
@@ -57,26 +57,26 @@ public class JpaBenchDao implements ISystemPerformanceJpaDao {
 
 	@Override
 	public BenchResult benchRead() {
-		final List<Integer> entries = getEntries();
+		final var entries = getEntries();
 		for (final int prfId : entries) {
 			em.find(SystemBench.class, prfId);
 
 			// Free memory
 			em.clear();
 		}
-		final BenchResult benchResult = new BenchResult();
+		final var benchResult = new BenchResult();
 		benchResult.setEntries(entries.size());
 		return benchResult;
 	}
 
 	@Override
 	public BenchResult benchUpdate() {
-		final List<Integer> entries = getEntries();
+		final var entries = getEntries();
 		for (final int prfId : entries) {
 			em.createQuery("UPDATE " + SystemBench.class.getName() + " SET prfBool = false WHERE id = :prfId").setParameter("prfId", prfId)
 					.executeUpdate();
 		}
-		final BenchResult benchResult = new BenchResult();
+		final var benchResult = new BenchResult();
 		benchResult.setEntries(entries.size());
 		return benchResult;
 	}
@@ -90,19 +90,19 @@ public class JpaBenchDao implements ISystemPerformanceJpaDao {
 
 	@Override
 	public BenchResult benchDelete() {
-		final List<Integer> entries = getEntries();
+		final var entries = getEntries();
 		for (final int prfId : entries) {
 			em.createQuery("DELETE " + SystemBench.class.getName() + " WHERE id = :prfId").setParameter("prfId", prfId).executeUpdate();
 		}
-		final BenchResult benchResult = new BenchResult();
+		final var benchResult = new BenchResult();
 		benchResult.setEntries(entries.size());
 		return benchResult;
 	}
 
 	@Override
 	public BenchResult benchReadAll() {
-		final List<SystemBench> entries = em.createQuery("FROM " + SystemBench.class.getName(), SystemBench.class).getResultList();
-		final BenchResult benchResult = new BenchResult();
+		final var entries = em.createQuery("FROM " + SystemBench.class.getName(), SystemBench.class).getResultList();
+		final var benchResult = new BenchResult();
 		benchResult.setEntries(entries.size());
 		return benchResult;
 	}

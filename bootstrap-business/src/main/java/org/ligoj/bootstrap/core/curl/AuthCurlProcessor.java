@@ -71,7 +71,7 @@ public class AuthCurlProcessor extends CurlProcessor {
 		if (username != null) {
 
 			// Build the Basic authentication header
-			final String tmp = username + ':' + password;
+			final var tmp = username + ':' + password;
 
 			// Use the preempted authentication processor
 			request.getHeaders().put(AUTH.WWW_AUTH_RESP,

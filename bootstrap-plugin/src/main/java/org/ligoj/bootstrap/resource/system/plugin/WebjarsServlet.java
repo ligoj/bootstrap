@@ -7,12 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.FileTypeMap;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,8 +56,8 @@ public class WebjarsServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
-			throws ServletException, IOException {
-		final String webjarsResourceURI = "META-INF/resources"
+			throws IOException {
+		final var webjarsResourceURI = "META-INF/resources"
 				+ request.getRequestURI().replaceFirst(request.getContextPath(), "");
 		log.debug("Webjars resource requested: {}", webjarsResourceURI);
 
@@ -70,8 +68,7 @@ public class WebjarsServlet extends HttpServlet {
 		}
 
 		// Regular file, use the last resource instead of the first found
-		final Enumeration<URL> resources = Thread.currentThread().getContextClassLoader()
-				.getResources(webjarsResourceURI);
+		final var resources = Thread.currentThread().getContextClassLoader().getResources(webjarsResourceURI);
 		URL webjarsResourceURL = null;
 		while (resources.hasMoreElements()) {
 			webjarsResourceURL = resources.nextElement();
@@ -98,13 +95,11 @@ public class WebjarsServlet extends HttpServlet {
 	 */
 	protected void serveFile(final HttpServletResponse response, final String webjarsResourceURI,
 			final InputStream inputStream) throws IOException {
-		try {
-			final String filename = getFileName(webjarsResourceURI);
+		try (inputStream) {
+			final var filename = getFileName(webjarsResourceURI);
 			response.setContentType(guessMimeType(filename));
 			inputStream.transferTo(response.getOutputStream());
 			response.flushBuffer();
-		} finally {
-			inputStream.close();
 		}
 	}
 
@@ -117,7 +112,7 @@ public class WebjarsServlet extends HttpServlet {
 	 */
 	protected String guessMimeType(final String filename) {
 		// First, get the mime type provided by the Servlet container
-		String mimeType = this.getServletContext().getMimeType(filename);
+		var mimeType = this.getServletContext().getMimeType(filename);
 		if (mimeType == null) {
 			// Use the static extension based extension
 			mimeType = mimeTypes.get(FilenameUtils.getExtension(filename));

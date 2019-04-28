@@ -50,7 +50,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 	 * Default constructor overriding the default annotation introspector.
 	 */
 	public ObjectMapperTrim() {
-		final SimpleModule module = new SimpleModule("BootstrapModule", new Version(1, 0, 1, null, null, null));
+		final var module = new SimpleModule("BootstrapModule", new Version(1, 0, 1, null, null, null));
 		module.addDeserializer(Date.class, DateDeserializer.INSTANCE);
 		module.addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
 		module.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);

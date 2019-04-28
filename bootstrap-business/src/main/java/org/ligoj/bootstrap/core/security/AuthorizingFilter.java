@@ -6,9 +6,7 @@ package org.ligoj.bootstrap.core.security;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
@@ -17,7 +15,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
@@ -46,24 +43,24 @@ public class AuthorizingFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
 			throws IOException, ServletException {
-		final HttpServletRequest httpRequest = (HttpServletRequest) request;
+		final var httpRequest = (HttpServletRequest) request;
 
-		/**
+		/*
 		 * This is the most serious place of security check. If this filter is called, it means the previous security
 		 * checks granted access until there. So, it mean the current user is either anonymous either (but assumed) an
 		 * fully authenticated user. In case of anonymous user case, there is no role but ROLE_ANONYMOUS. So there is no
 		 * need to involve more role checking. We assume there is no way to grant access to ROLE_ANONYMOUS with this
 		 * filter.
 		 */
-		final Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext()
+		final var authorities = SecurityContextHolder.getContext()
 				.getAuthentication().getAuthorities();
 		if (!authorities.contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
 			// Not anonymous, so we need to check using RBAC strategy.
 
 			// Build the URL
-			final String fullRequest = getFullRequest(httpRequest);
+			final var fullRequest = getFullRequest(httpRequest);
 			// Check access
-			final HttpMethod method = HttpMethod
+			final var method = HttpMethod
 					.valueOf(StringUtils.upperCase(httpRequest.getMethod(), Locale.ENGLISH));
 			if (!isAuthorized(authorities, fullRequest, method)) {
 				// Forbidden access
@@ -80,7 +77,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 * Update response for a forbidden access.
 	 */
 	private void updateForbiddenAccess(final HttpServletResponse response) throws IOException {
-		final Response response2 = accessDeniedHelper.toResponse(new AccessDeniedException(""));
+		final var response2 = accessDeniedHelper.toResponse(new AccessDeniedException(""));
 		response.setStatus(response2.getStatus());
 		response.setContentType(response2.getMediaType().toString());
 		response.getOutputStream().write(((String) response2.getEntity()).getBytes(StandardCharsets.UTF_8));
@@ -100,13 +97,13 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 */
 	private boolean isAuthorized(final Collection<? extends GrantedAuthority> authorities, final String request,
 			final HttpMethod method) {
-		final Map<String, Map<HttpMethod, List<Pattern>>> authorizationsCache = authorizationResource
+		final var authorizationsCache = authorizationResource
 				.getAuthorizations().get(AuthorizationType.API);
 
 		// Check the authorization
 		if (authorizationsCache != null) {
 			for (final GrantedAuthority authority : authorities) {
-				final Map<HttpMethod, List<Pattern>> authorizations = authorizationsCache.get(authority.getAuthority());
+				final var authorizations = authorizationsCache.get(authority.getAuthority());
 				if (authorizations != null && match(authorizations.get(method), request)) {
 					// Granted access
 					return true;
@@ -120,7 +117,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 	private boolean match(final Collection<Pattern> patterns, final String toMatch) {
 		if (patterns != null) {
-			for (final Pattern pattern : patterns) {
+			for (final var pattern : patterns) {
 				if (pattern.matcher(toMatch).find()) {
 					// Granted access
 					return true;

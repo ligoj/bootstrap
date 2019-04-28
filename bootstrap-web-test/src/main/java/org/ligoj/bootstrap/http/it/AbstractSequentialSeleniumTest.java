@@ -21,7 +21,7 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 
 	@BeforeEach
 	@Override
-	public void setUpDriver() throws Exception { // NOPMD -- too much exception
+	void setUpDriver() throws Exception { // NOPMD -- too much exception
 		super.setUpDriver();
 		runSequential();
 	}
@@ -29,33 +29,32 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 	/**
 	 * Sequentially run the desired capabilities.
 	 */
-	protected void runSequential() { // NOPMD -- thread
-		final WebDriver[] drivers = new WebDriver[repeatedCapabilities.length];
-		final boolean[] success = new boolean[repeatedCapabilities.length];
-		for (int index = 0; index < repeatedCapabilities.length; index++) {
-			final int driverIndex = index;
-			final DesiredCapabilities capability = repeatedCapabilities[driverIndex];
-			success[driverIndex] = false;
-			runSequentialIndex(drivers, success, driverIndex, capability);
+    void runSequential() { // NOPMD -- thread
+		final var drivers = new WebDriver[repeatedCapabilities.length];
+		final var success = new boolean[repeatedCapabilities.length];
+		for (var index = 0; index < repeatedCapabilities.length; index++) {
+			final var capability = repeatedCapabilities[index];
+			success[index] = false;
+			runSequentialIndex(drivers, success, index, capability);
 		}
 
-		final List<String> faillures = checkResults(success);
-		Assertions.assertTrue(faillures.size() != success.length, "All browsers test failed");
-		Assertions.assertEquals(0, faillures.size(), "Some browsers test failed");
+		final var failures = checkResults(success);
+		Assertions.assertTrue(failures.size() != success.length, "All browsers test failed");
+		Assertions.assertEquals(0, failures.size(), "Some browsers test failed");
 	}
 
 	/**
 	 * Check the results.
 	 */
 	private List<String> checkResults(final boolean... success) {
-		final List<String> faillures = new ArrayList<>();
-		for (int index = 0; index < success.length; index++) {
+		final List<String> failures = new ArrayList<>();
+		for (var index = 0; index < success.length; index++) {
 			if (!success[index]) {
-				faillures.add(repeatedCapabilities[index].getBrowserName() + "[" + repeatedCapabilities[index].getVersion() + "]/"
+				failures.add(repeatedCapabilities[index].getBrowserName() + "[" + repeatedCapabilities[index].getVersion() + "]/"
 						+ repeatedCapabilities[index].getPlatform());
 			}
 		}
-		return faillures;
+		return failures;
 	}
 
 	/**
@@ -63,9 +62,9 @@ public abstract class AbstractSequentialSeleniumTest extends AbstractRepeatableS
 	 */
 	private void runSequentialIndex(final WebDriver[] drivers, final boolean[] success, final int driverIndex,
 			final DesiredCapabilities capability) {
-		AbstractSequentialSeleniumTest seleniumTest = this;
+		var seleniumTest = this;
 		try {
-			final WebDriver driver = getRemoteDriver(capability);
+			final var driver = getRemoteDriver(capability);
 			drivers[driverIndex] = driver;
 			seleniumTest = this.getClass().getDeclaredConstructor().newInstance();
 			cloneAndRun(seleniumTest, driver, capability);

@@ -36,7 +36,7 @@ public class JaxRsAnnotationParanamer extends AnnotationParanamer {
 
 	@Override
 	protected String getNamedValue(final Annotation ann) {
-		final String value = super.getNamedValue(ann);
+		final var value = super.getNamedValue(ann);
 		if (value == null && ANNOTATION_NAME_PROVIDERS.containsKey(ann.annotationType())) {
 			return ANNOTATION_NAME_PROVIDERS.get(ann.annotationType()).apply(ann);
 		}

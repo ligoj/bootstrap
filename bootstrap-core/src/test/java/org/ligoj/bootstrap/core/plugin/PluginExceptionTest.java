@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link PluginException}
  */
-public class PluginExceptionTest {
+class PluginExceptionTest {
 
 	@Test
-	public void getInstalledEntities() {
+    void getInstalledEntities() {
 		Assertions.assertEquals("plugin", new PluginException("plugin", "message").getPlugin());
 	}
 

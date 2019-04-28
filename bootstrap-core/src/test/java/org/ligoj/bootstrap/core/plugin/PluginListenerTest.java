@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Test class of {@link PluginListener}
  */
-public class PluginListenerTest {
+class PluginListenerTest {
 
 	@Test
-	public void installIsTrueByDefault() {
+    void installIsTrueByDefault() {
 		Assertions.assertTrue(new PluginListener() {
 
 			@Override
@@ -39,15 +39,15 @@ public class PluginListenerTest {
 	}
 
 	@Test
-	public void pluginVoSerialize() throws JsonProcessingException {
-		PluginVo pluginVo = new PluginVo();
+    void pluginVoSerialize() throws JsonProcessingException {
+        var pluginVo = new PluginVo();
 		pluginVo.setDeleted(false);
 		pluginVo.setLocation("L");
 		pluginVo.setLatestLocalVersion("1");
 		pluginVo.setNewVersion("2");
 		pluginVo.setName("N");
 		pluginVo.setId("I");
-		SystemPlugin plugin = new SystemPlugin();
+        var plugin = new SystemPlugin();
 		plugin.setKey("K");
 		plugin.setArtifact("A");
 		plugin.setType("T");

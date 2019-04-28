@@ -14,26 +14,26 @@ import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Basic Appication test support.
+ * Basic Application test support.
  */
 public abstract class AbstractAppTest extends AbstractJpaTest {
 
 	/**
 	 * Persist system user, role and assignment for user DEFAULT_USER.
 	 */
-	protected void persistSystemEntities() {
-		final SystemRole role = new SystemRole();
+	void persistSystemEntities() {
+		final var role = new SystemRole();
 		role.setName("some");
 		em.persist(role);
-		final SystemUser user = new SystemUser();
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		authorization.setType(AuthorizationType.API);
 		authorization.setPattern(".*");
 		authorization.setRole(role);
 		em.persist(authorization);
-		final SystemRoleAssignment assignment = new SystemRoleAssignment();
+		final var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);

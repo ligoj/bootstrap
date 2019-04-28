@@ -64,7 +64,7 @@ public class SessionResource {
 	@Transactional
 	public SessionSettings details() {
 		// Get the session scoped bean
-		final SessionSettings settings = applicationContext.getBean(SessionSettings.class);
+		final var settings = applicationContext.getBean(SessionSettings.class);
 
 		// Add user settings
 		settings.setUserSettings(userSettingResource.findAll());
@@ -82,11 +82,11 @@ public class SessionResource {
 	 * Add roles and authorizations.
 	 */
 	private void addAuthorizations(final SessionSettings settings) {
-		final List<String> rolesAsString = getRolesAsString();
+		final var rolesAsString = getRolesAsString();
 		settings.setRoles(rolesAsString);
 
 		// Add authorizations
-		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> cache = authorizationResource.getAuthorizations();
+		final var cache = authorizationResource.getAuthorizations();
 		settings.setUiAuthorizations(toPatterns(filterRoles(cache.get(AuthorizationType.UI), rolesAsString)));
 		settings.setApiAuthorizations(getApiAuthorizations(filterRoles(cache.get(AuthorizationType.API), rolesAsString)));
 	}
@@ -115,7 +115,7 @@ public class SessionResource {
 	 * Build and return the list of roles.
 	 */
 	private List<String> getRolesAsString() {
-		final Collection<? extends GrantedAuthority> roles = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		final var roles = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 		return roles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 	}
 
@@ -124,7 +124,7 @@ public class SessionResource {
 	 */
 	private List<SystemAuthorization> getApiAuthorizations(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
 		return authorizations.stream().map(Map::entrySet).flatMap(Collection::stream).flatMap(entry -> entry.getValue().stream().map(pattern -> {
-			final SystemAuthorization apiAuthorization = new SystemAuthorization();
+			final var apiAuthorization = new SystemAuthorization();
 			apiAuthorization.setMethod(entry.getKey());
 			apiAuthorization.setPattern(pattern.pattern());
 			return apiAuthorization;

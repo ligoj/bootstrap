@@ -232,8 +232,8 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	 *            entity's identifier.
 	 * @param fetchedAssociations
 	 *            A map of association to fetch. The map keys for composites associations should not have two times the
-	 *            same identifier &lt;"contrat.contrat", JoinType.INNER&gt; is not possible although
-	 *            &lt;"contrats.contrat", JoinType.INNER&gt; is accepted.
+	 *            same identifier &lt;"contract.contract", JoinType.INNER&gt; is not possible although
+	 *            &lt;"contracts.contract", JoinType.INNER&gt; is accepted.
 	 * @return the non <code>null</code> entity.
 	 */
 	T findOneExpected(K id, Map<String, JoinType> fetchedAssociations);

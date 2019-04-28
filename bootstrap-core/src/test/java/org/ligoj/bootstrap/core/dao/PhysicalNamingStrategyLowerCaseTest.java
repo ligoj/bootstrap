@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test non spring integration behaviors of {@link PhysicalNamingStrategyLowerCase} class.
  */
-public class PhysicalNamingStrategyLowerCaseTest {
+class PhysicalNamingStrategyLowerCaseTest {
 
 	private static final String ANY = "any";
 	private static final Identifier IDENTIFIER = new Identifier("ANY", false);
@@ -21,37 +21,37 @@ public class PhysicalNamingStrategyLowerCaseTest {
 	 * Dummy class only there to throw an {@link IllegalAccessException} for coverage test.
 	 */
 	@BeforeEach
-	public void prepare() {
+    void prepare() {
 		strategy = new PhysicalNamingStrategyLowerCase();
 	}
 
 	@Test
-	public void toPhysicalCatalogName() {
+    void toPhysicalCatalogName() {
 		Assertions.assertEquals(ANY, strategy.toPhysicalCatalogName(IDENTIFIER, null).getText());
 	}
 
 	@Test
-	public void toPhysicalColumnName() {
+    void toPhysicalColumnName() {
 		Assertions.assertEquals(ANY, strategy.toPhysicalColumnName(IDENTIFIER, null).getText());
 	}
 
 	@Test
-	public void toPhysicalSchemaName() {
+    void toPhysicalSchemaName() {
 		Assertions.assertEquals(ANY, strategy.toPhysicalSchemaName(IDENTIFIER, null).getText());
 	}
 
 	@Test
-	public void toPhysicalSequenceName() {
+    void toPhysicalSequenceName() {
 		Assertions.assertEquals(ANY, strategy.toPhysicalSequenceName(IDENTIFIER, null).getText());
 	}
 
 	@Test
-	public void toPhysicalTableName() {
+    void toPhysicalTableName() {
 		Assertions.assertEquals(ANY, strategy.toPhysicalTableName(IDENTIFIER, null).getText());
 	}
 
 	@Test
-	public void toPhysicalTableNameNull() {
+    void toPhysicalTableNameNull() {
 		Assertions.assertNull(strategy.toPhysicalTableName(null, null));
 	}
 

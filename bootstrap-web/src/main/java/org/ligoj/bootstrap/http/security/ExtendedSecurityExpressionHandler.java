@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExtendedSecurityExpressionHandler extends AbstractSecurityExpressionHandler<FilterInvocation> {
 
-	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
+	private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	@Override
 	protected SecurityExpressionOperations createSecurityExpressionRoot(final Authentication authentication, final FilterInvocation fi) {

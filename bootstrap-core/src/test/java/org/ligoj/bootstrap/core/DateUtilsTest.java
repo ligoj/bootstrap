@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.TimeZone;
 
@@ -22,7 +21,7 @@ public class DateUtilsTest {
 
 	@Test
 	public void setApplicationTimeZone() {
-		TimeZone timeZone = DateUtils.getApplicationTimeZone();
+        var timeZone = DateUtils.getApplicationTimeZone();
 		try {
 			DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("GMT"));
 			Assertions.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
@@ -34,7 +33,7 @@ public class DateUtilsTest {
 	@Test
 	public void testCoverage()
 			throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		Constructor<DateUtils> constructor = DateUtils.class.getDeclaredConstructor();
+        var constructor = DateUtils.class.getDeclaredConstructor();
 		constructor.setAccessible(true);
 		constructor.newInstance();
 	}

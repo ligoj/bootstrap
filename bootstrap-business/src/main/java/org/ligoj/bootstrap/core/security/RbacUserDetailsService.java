@@ -5,7 +5,6 @@ package org.ligoj.bootstrap.core.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ public class RbacUserDetailsService implements UserDetailsService {
 	@Override
 	@CacheResult(cacheName = "user-details")
 	public UserDetails loadUserByUsername(@CacheKey final String username) {
-		final Object[][] userAndRoles = userRepository.findByLoginFetchRoles(username);
+		final var userAndRoles = userRepository.findByLoginFetchRoles(username);
 		final SystemUser user;
 		final Collection<GrantedAuthority> authorities;
 		if (userAndRoles.length == 0) {
@@ -54,7 +53,7 @@ public class RbacUserDetailsService implements UserDetailsService {
 		}
 
 		// Update last connection information only as needed for performance, delta is one minute
-		final Date now = org.ligoj.bootstrap.core.DateUtils.newCalendar().getTime();
+		final var now = org.ligoj.bootstrap.core.DateUtils.newCalendar().getTime();
 		if (user.getLastConnection() == null || now.getTime() - user.getLastConnection().getTime() > DateUtils.MILLIS_PER_DAY) {
 			user.setLastConnection(now);
 			userRepository.saveAndFlush(user);
@@ -76,8 +75,8 @@ public class RbacUserDetailsService implements UserDetailsService {
 	 */
 	private Set<GrantedAuthority> toSimpleRoles(final Object[][] resultset, final int index) {
 		final Set<GrantedAuthority> result = new HashSet<>();
-		for (final Object[] object : resultset) {
-			final SystemRole role = (SystemRole) object[index];
+		for (final var object : resultset) {
+			final var role = (SystemRole) object[index];
 			if (role != null) {
 				result.add(new SimpleGrantedAuthority(role.getAuthority()));
 			}

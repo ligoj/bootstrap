@@ -109,10 +109,10 @@ public class UserSettingResource {
 	@PUT
 	@Path("{name}/{value}")
 	public void saveOrUpdate(@PathParam("name") final String name, @PathParam("value") final String value) {
-		final String user = SecurityContextHolder.getContext().getAuthentication().getName();
-		final SystemUserSetting setting = repository.findByLoginAndName(user, name);
+		final var user = SecurityContextHolder.getContext().getAuthentication().getName();
+		final var setting = repository.findByLoginAndName(user, name);
 		if (setting == null) {
-			final SystemUserSetting entity = new SystemUserSetting();
+			final var entity = new SystemUserSetting();
 			entity.setLogin(user);
 			entity.setName(name);
 			entity.setValue(value);

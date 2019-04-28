@@ -13,15 +13,15 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 /**
  * Test class of {@link BeanProcessor}
  */
-public class BeanProcessorTest {
+class BeanProcessorTest {
 
 	/**
 	 * Simple test of a valid property.
 	 */
 	@Test
-	public void getValue() {
+    void getValue() {
 		final Deque<Object> contextData = new LinkedList<>();
-		final SystemUser systemUser = new SystemUser();
+		final var systemUser = new SystemUser();
 		systemUser.setLogin("any");
 		contextData.add(systemUser);
 		Assertions.assertEquals("any", new BeanProcessor<>(SystemUser.class, "login").getValue(contextData));
@@ -31,7 +31,7 @@ public class BeanProcessorTest {
 	 * Simple test of a <code>null</code> valid property.
 	 */
 	@Test
-	public void getValueNull() {
+    void getValueNull() {
 		Assertions.assertNull(new BeanProcessor<>(SystemUser.class, "login").getValue((SystemUser) null));
 	}
 
@@ -39,21 +39,17 @@ public class BeanProcessorTest {
 	 * Simple test of a invalid property name.
 	 */
 	@Test
-	public void getValueInvalidProperty() {
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			new BeanProcessor<>(SystemUser.class, "_any").getClass();
-		});
+    void getValueInvalidProperty() {
+		Assertions.assertThrows(IllegalStateException.class, () -> new BeanProcessor<>(SystemUser.class, "_any"));
 	}
 
 	/**
 	 * Simple test of non compatible object.
 	 */
 	@Test
-	public void getValueInvalidBean() {
+    void getValueInvalidBean() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(3);
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			new BeanProcessor<>(SystemUser.class, "login").getValue(contextData);
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> new BeanProcessor<>(SystemUser.class, "login").getValue(contextData));
 	}
 }

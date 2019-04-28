@@ -15,20 +15,20 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-public class SystemEnvironmentAndFilePBEConfigResourceTest extends AbstractSystemEnvironmentAndFilePBEConfigTest {
+class SystemEnvironmentAndFilePBEConfigResourceTest extends AbstractSystemEnvironmentAndFilePBEConfigTest {
 
 	@BeforeAll
-	public static void init() {
+    static void init() {
 		System.setProperty("app.crypto.file", "security.key");
 	}
 
 	@Test
-	public void getPasswordFromFileClasspath() {
+    void getPasswordFromFileClasspath() {
 		Assertions.assertEquals("secret", new SystemEnvironmentAndFilePBEConfig().getPasswordFromFile("security.key"));
 	}
 
 	@Test
-	public void getPasswordFromFileClasspathFailed() {
+    void getPasswordFromFileClasspathFailed() {
 		Assertions.assertNull(new SystemEnvironmentAndFilePBEConfig().getPasswordFromFile("any.key"));
 	}
 }

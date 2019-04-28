@@ -16,7 +16,7 @@ public class BusinessException extends AbstractParameteredException {
 	/**
 	 * Unknown identifier. Ordered parameters are <code>type</code> and <code>id</code>.
 	 */
-	public static final String KEY_UNKNOW_ID = "unknown-id";
+	public static final String KEY_UNKNOWN_ID = "unknown-id";
 
 	/**
 	 * Constructor with a message.

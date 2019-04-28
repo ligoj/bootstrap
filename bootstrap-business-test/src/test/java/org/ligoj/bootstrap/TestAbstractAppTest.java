@@ -18,21 +18,21 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * Test class of {@link AbstractAppTest}
  */
-public class TestAbstractAppTest extends AbstractAppTest {
+class TestAbstractAppTest extends AbstractAppTest {
 
 	/**
 	 * Only there fore coverage, no Spring involved.
 	 */
 	@Test
-	public void coverage() {
+	void coverage() {
 		em = Mockito.mock(EntityManager.class);
 		persistSystemEntities();
 	}
 
 	@Test
-	public void testRegisterSingleton() {
-		final ConfigurableApplicationContext applicationContext = Mockito.mock(ConfigurableApplicationContext.class);
-		final DefaultListableBeanFactory registry = Mockito.mock(DefaultListableBeanFactory.class);
+	void testRegisterSingleton() {
+		final var applicationContext = Mockito.mock(ConfigurableApplicationContext.class);
+		final var registry = Mockito.mock(DefaultListableBeanFactory.class);
 		Mockito.when(applicationContext.getBeanFactory()).thenReturn(registry);
 		Mockito.when(applicationContext.getAutowireCapableBeanFactory()).thenReturn(registry);
 		this.applicationContext = applicationContext;
@@ -41,9 +41,9 @@ public class TestAbstractAppTest extends AbstractAppTest {
 	}
 
 	@Test
-	public void testDestroySingletonNotExist() {
-		final ConfigurableApplicationContext applicationContext = Mockito.mock(ConfigurableApplicationContext.class);
-		final DefaultListableBeanFactory registry = Mockito.mock(DefaultListableBeanFactory.class);
+	void testDestroySingletonNotExist() {
+		final var applicationContext = Mockito.mock(ConfigurableApplicationContext.class);
+		final var registry = Mockito.mock(DefaultListableBeanFactory.class);
 		Mockito.when(applicationContext.getBeanFactory()).thenReturn(registry);
 		Mockito.doThrow(NoSuchBeanDefinitionException.class).when(registry).destroySingleton("my_dynamical_bean");
 		this.applicationContext = applicationContext;
@@ -51,9 +51,9 @@ public class TestAbstractAppTest extends AbstractAppTest {
 	}
 
 	@Test
-	public void testClearAllCache() {
+	void testClearAllCache() {
 		cacheManager = Mockito.mock(org.springframework.cache.CacheManager.class);
-		final Cache cache = Mockito.mock(Cache.class);
+		final var cache = Mockito.mock(Cache.class);
 		final Collection<String> caches = Collections.singletonList("sample");
 		Mockito.doReturn(cache).when(cacheManager).getCache("sample");
 		Mockito.doReturn(caches).when(cacheManager).getCacheNames();

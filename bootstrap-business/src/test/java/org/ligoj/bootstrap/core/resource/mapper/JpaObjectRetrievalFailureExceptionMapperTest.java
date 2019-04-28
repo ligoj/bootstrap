@@ -12,11 +12,11 @@ import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 /**
  * Exception mapper test using {@link JpaObjectRetrievalFailureExceptionMapper}
  */
-public class JpaObjectRetrievalFailureExceptionMapperTest extends AbstractMapperTest {
+class JpaObjectRetrievalFailureExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final JpaObjectRetrievalFailureException exception = new JpaObjectRetrievalFailureException(new EntityNotFoundException("key"));
+	void toResponse() {
+		final var exception = new JpaObjectRetrievalFailureException(new EntityNotFoundException("key"));
 		check(mock(new JpaObjectRetrievalFailureExceptionMapper()).toResponse(exception), 404,
 				"{\"code\":\"entity\",\"message\":\"key\",\"parameters\":null,\"cause\":null}");
 	}

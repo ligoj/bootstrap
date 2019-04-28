@@ -72,13 +72,13 @@ public class Template<T> {
 	 */
 	private void write(final Writer writer, final Map<String, Processor<?>> tags, final int start, final int end, final Deque<Object> contextData)
 			throws IOException {
-		int cursor = start;
-		TagContext tagContext = getNextTag(tags, cursor, end);
+        var cursor = start;
+        var tagContext = getNextTag(tags, cursor, end);
 		while (tagContext != null) {
 			// New tag found
 			writer.write(input.substring(cursor, tagContext.cursor));
 			if (tagContext.collection) {
-				final int closingTag = input.indexOf("{{/" + tagContext.tag + "}}", tagContext.cursor);
+				final var closingTag = input.indexOf("{{/" + tagContext.tag + "}}", tagContext.cursor);
 				if (closingTag == -1 || closingTag >= end) {
 					throw new IllegalStateException("Closing tag {{/" + tagContext.tag + "}} not found");
 				}
@@ -111,21 +111,21 @@ public class Template<T> {
 	 */
 	private void writeCollection(final Writer writer, final Map<String, Processor<?>> tags, final TagContext tagContext, final int end,
 			final Deque<Object> contextData) throws IOException {
-		final Object parent = tagContext.processor.getValue(contextData);
+		final var parent = tagContext.processor.getValue(contextData);
 
 		// Check nullability -> empty list
 		if (parent != null) {
 			if (parent.getClass().isArray()) {
 				// Array case
-				int index = 0;
-				for (final Object value : (Object[]) parent) {
+                var index = 0;
+				for (final var value : (Object[]) parent) {
 					contextData.add(index++);
 					writeItem(writer, tags, tagContext, end, contextData, value);
 					contextData.removeLast();
 				}
 			} else if (parent instanceof Iterable<?>) {
 				// Collection case
-				int index = 0;
+                var index = 0;
 				for (final Object value : (Collection<?>) parent) {
 					contextData.add(index++);
 					writeItem(writer, tags, tagContext, end, contextData, value);
@@ -159,7 +159,7 @@ public class Template<T> {
 	 *            Bean context stack.
 	 */
 	private void writeData(final Writer writer, final TagContext tagContext, final Deque<Object> contextData) throws IOException {
-		final Object data = getRawData(tagContext, contextData);
+		final var data = getRawData(tagContext, contextData);
 		if (data != null) {
 			writer.write(data.toString());
 		}
@@ -177,12 +177,12 @@ public class Template<T> {
 	 * corresponding context of this match.Is <code>null</code> when no tag has been found.
 	 */
 	private TagContext getNextTag(final Map<String, Processor<?>> tags, final int start, final int end) {
-		final int nextTag = input.indexOf("{{", start);
+		final var nextTag = input.indexOf("{{", start);
 		if (nextTag == -1 || nextTag >= end) {
 			// End of template
 			return null;
 		}
-		final int nextEndTag = input.indexOf("}}", nextTag);
+		final var nextEndTag = input.indexOf("}}", nextTag);
 		if (nextEndTag == -1 || nextEndTag >= end) {
 			// Opening tag syntax
 			throw new IllegalStateException("Invalid opening tag syntax '{{' without '}}' at position " + nextTag);
@@ -192,13 +192,13 @@ public class Template<T> {
 			throw new IllegalStateException(
 					"Too long (max is " + MAX_TAG_LENGTH + " tag " + input.substring(nextTag + 2, nextTag + 30) + "...}} found at position " + start);
 		}
-		final String tag = input.substring(nextTag + 2, nextEndTag);
-		final String tagClean = StringUtils.removeEnd(tag, "/");
+		final var tag = input.substring(nextTag + 2, nextEndTag);
+		final var tagClean = StringUtils.removeEnd(tag, "/");
 		if (StringUtils.trimToEmpty(tagClean).length() == 0) {
 			// Empty tag
 			throw new IllegalStateException("Empty tag {{}} found at position " + start);
 		}
-		final Processor<?> processor = tags.get(tagClean);
+		final var processor = tags.get(tagClean);
 		if (processor == null) {
 			throw new IllegalStateException("Not mapped template tag {{" + tagClean + "}} found at position " + nextTag);
 		}

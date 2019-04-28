@@ -17,23 +17,20 @@ import org.springframework.boot.SpringApplication;
 /**
  * Test class of {@link PluginApplicationRunListener}
  */
-public class PluginApplicationRunListenerTest {
+class PluginApplicationRunListenerTest {
 
 	@Test
-	public void noPluginClassLoader() throws IOException {
-		final ThreadClassLoaderScope scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]));
-		try {
+	void noPluginClassLoader() throws IOException {
+		try (ThreadClassLoaderScope scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
 			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]).starting();
-		} finally {
-			scope.close();
 		}
 	}
 
 	@Test
-	public void pluginClassLoader() throws IOException {
-		final ThreadClassLoaderScope scope = new ThreadClassLoaderScope(new PluginsClassLoader());
+	void pluginClassLoader() throws IOException {
+		final var scope = new ThreadClassLoaderScope(new PluginsClassLoader());
 		try {
-			final PluginApplicationRunListener listener = new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]);
+			final var listener = new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]);
 			listener.starting();
 			Assertions.assertTrue(listener.getOrder() < 0);
 			listener.environmentPrepared(null);

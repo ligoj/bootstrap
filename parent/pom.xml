@@ -688,26 +688,6 @@
 						<artifactId>junit</artifactId>
 					</exclusion>
 					<exclusion>
-						<groupId>org.apache.httpcomponents</groupId>
-						<artifactId>httpclient</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.httpcomponents</groupId>
-						<artifactId>httpcore</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.fasterxml.jackson.core</groupId>
-						<artifactId>jackson-annotations</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.fasterxml.jackson.core</groupId>
-						<artifactId>jackson-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.fasterxml.jackson.core</groupId>
-						<artifactId>jackson-databind</artifactId>
-					</exclusion>
-					<exclusion>
 						<groupId>com.github.jknack</groupId>
 						<artifactId>handlebars</artifactId>
 					</exclusion>
@@ -741,6 +721,11 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>

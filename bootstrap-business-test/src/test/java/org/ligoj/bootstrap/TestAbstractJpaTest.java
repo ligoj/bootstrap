@@ -21,10 +21,10 @@ import org.mockito.Mockito;
 /**
  * Test of {@link AbstractJpaTest}
  */
-public class TestAbstractJpaTest extends AbstractJpaTest {
+class TestAbstractJpaTest extends AbstractJpaTest {
 
 	@Test
-	public void persistEntities() throws IOException {
+	void persistEntities() throws IOException {
 		em = Mockito.mock(EntityManager.class);
 		csvForJpa = Mockito.mock(CsvForJpa.class);
 		final List<SystemUser> entities = new ArrayList<>();
@@ -34,23 +34,23 @@ public class TestAbstractJpaTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void persistEntities2() throws IOException {
+	void persistEntities2() throws IOException {
 		csvForJpa = Mockito.mock(CsvForJpa.class);
 		super.persistEntities("log4j2.json");
 	}
 
 	@Test
-	public void isLazyInitializedFalse() {
+	void isLazyInitializedFalse() {
 		Assertions.assertFalse(super.isLazyInitialized(new PersistentBag()));
 	}
 
 	@Test
-	public void isLazyInitializedFalseArrayList() {
+	void isLazyInitializedFalseArrayList() {
 		Assertions.assertFalse(super.isLazyInitialized(new ArrayList<>()));
 	}
 
 	@Test
-	public void isLazyInitializedTrue() {
+	void isLazyInitializedTrue() {
 		final PersistentBag bag = new PersistentBag() {
 			private static final long serialVersionUID = 1L;
 

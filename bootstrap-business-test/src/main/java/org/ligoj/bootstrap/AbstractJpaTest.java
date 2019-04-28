@@ -38,7 +38,7 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	protected CacheManager cacheManager;
 
 	@BeforeAll
-	public static void init() {
+	static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 	}
 
@@ -87,10 +87,10 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	 * @param <T>
 	 *            The entity type.
 	 */
-	protected <T> List<T> persistEntities(final Class<T> clazz, final String resource, final String encoding)
+    private <T> List<T> persistEntities(final Class<T> clazz, final String resource, final String encoding)
 			throws IOException {
 		// Persist entities from CSV
-		final List<T> list = csvForJpa.toJpa(clazz,
+		final var list = csvForJpa.toJpa(clazz,
 				new InputStreamReader(new ClassPathResource(resource).getInputStream(), encoding), true, true);
 		em.flush();
 		em.clear();

@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	/**
 	 * Random instance.
 	 */
-	protected Random random = new SecureRandom();
+	protected final Random random = new SecureRandom();
 
 	/**
 	 * The {@link ApplicationContext} that was injected into this test instance via
@@ -138,7 +137,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 */
 	protected Date getDate(final int year, final int month, final int day, final int hour, final int minute,
 			final int second) {
-		final Calendar calendar = DateUtils.newCalendar();
+		final var calendar = DateUtils.newCalendar();
 		calendar.clear();
 		calendar.set(year, month - 1, day, hour, minute, second);
 		calendar.set(Calendar.MILLISECOND, 0);
@@ -168,7 +167,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * @return a date from a salt.
 	 */
 	protected Date getDate(final int salt) {
-		final Calendar manufacturingDate = DateUtils.newCalendar();
+		final var manufacturingDate = DateUtils.newCalendar();
 		manufacturingDate.set(Calendar.YEAR, getInt(salt, 1970, 1988));
 		manufacturingDate.set(Calendar.MONTH, getInt(salt, 0, 11));
 		manufacturingDate.set(Calendar.DAY_OF_MONTH, getInt(salt, 1, 28));
@@ -270,7 +269,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            the type of the items.
 	 */
 	protected <T> T getItemOrNull(final String salt, final List<T> items) {
-		final int index = getInt(salt, 0, items.size() + 1) - 1;
+		final var index = getInt(salt, 0, items.size() + 1) - 1;
 		if (index == -1) {
 			return null;
 		}
@@ -289,7 +288,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            the type of the items.
 	 */
 	protected <T> T getItemOrNull(final int salt, final List<T> items) {
-		final int index = getInt(salt, 0, items.size() + 1) - 1;
+		final var index = getInt(salt, 0, items.size() + 1) - 1;
 		if (index == -1) {
 			return null;
 		}
@@ -309,7 +308,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 */
 	@SafeVarargs
 	protected final <T> T getItemOrNull(final String salt, final T... items) {
-		final int index = getInt(salt, 0, items.length + 1) - 1;
+		final var index = getInt(salt, 0, items.length + 1) - 1;
 		if (index == -1) {
 			return null;
 		}
@@ -348,13 +347,13 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 */
 	protected <T> List<T> getItems(final String salt, final List<T> items, final int lower, final int upper) {
 		final List<T> result = new ArrayList<>(upper);
-		final int size = Math.min(items.size(), getInt(salt, lower, upper));
+		final var size = Math.min(items.size(), getInt(salt, lower, upper));
 		final Set<Integer> added = new HashSet<>(upper);
-		int counter = size;
-		int saltIncrement = 0;
+        var counter = size;
+        var saltIncrement = 0;
 		while (counter != 0) {
-			final int index = getInt(salt + counter + saltIncrement++, 0, items.size());
-			if (added.add(Integer.valueOf(index))) {
+			final var index = getInt(salt + counter + saltIncrement++, 0, items.size());
+			if (added.add(index)) {
 				counter--;
 				result.add(items.get(index));
 			}
@@ -390,8 +389,8 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * @return a new mocked {@link UriInfo} instance.
 	 */
 	protected UriInfo newUriInfo() {
-		final UriInfo uriInfo = Mockito.mock(UriInfo.class);
-		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<String, String>());
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<>());
 		return uriInfo;
 	}
 
@@ -403,7 +402,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * @return a new mocked {@link UriInfo} instance.
 	 */
 	protected UriInfo newUriInfo(final String search) {
-		final UriInfo uriInfo = newUriInfo();
+		final var uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().putSingle("search[value]", search);
 		return uriInfo;
 	}
@@ -419,7 +418,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *             When singleton operations cannot be performed.
 	 */
 	protected <T> void coverageSingleton(final Class<T> singletonClass) throws ReflectiveOperationException {
-		final Constructor<T> constructor = singletonClass.getDeclaredConstructor();
+		final var constructor = singletonClass.getDeclaredConstructor();
 		Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 		constructor.setAccessible(true);
 		constructor.newInstance();

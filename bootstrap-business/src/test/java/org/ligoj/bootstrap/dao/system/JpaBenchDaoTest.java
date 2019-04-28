@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.dao.system;
 
-import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
@@ -30,7 +29,7 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 	 * Test for transaction mode.
 	 */
 	@Test
-	public void testJpa() {
+	void testJpa() {
 		jpaDao.initialize(10, null);
 	}
 
@@ -38,11 +37,11 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 	 * Test for transaction mode with 3M LOB file.
 	 */
 	@Test
-	public void testJpaBlob() throws Exception {
-		final URL jarLocation = getBlobFile();
+	void testJpaBlob() throws Exception {
+		final var jarLocation = getBlobFile();
 		// Get the JAR input
-		try (InputStream openStream = jarLocation.openStream()) {
-			final byte[] byteArray = IOUtils.toByteArray(openStream);
+		try (var openStream = jarLocation.openStream()) {
+			final var byteArray = IOUtils.toByteArray(openStream);
 
 			// Proceed to the test
 			jpaDao.initialize(10, byteArray);
@@ -53,18 +52,18 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 	 * Test for transaction read mode with 3M LOB file.
 	 */
 	@Test
-	public void testJpaBlobRead() throws Exception {
+	void testJpaBlobRead() throws Exception {
 		// Create blob
-		final URL jarLocation = getBlobFile();
+		final var jarLocation = getBlobFile();
 		// Get the JAR input
-		try (InputStream openStream = jarLocation.openStream()) {
-			final byte[] byteArray = IOUtils.toByteArray(openStream);
+		try (var openStream = jarLocation.openStream()) {
+			final var byteArray = IOUtils.toByteArray(openStream);
 
 			// Push one entity with our blob
 			jpaDao.initialize(1, byteArray);
 
 			// Read and check size
-			final byte[] firstAvailableLob = jpaDao.getLastAvailableLob();
+			final var firstAvailableLob = jpaDao.getLastAvailableLob();
 			Assertions.assertNotNull(firstAvailableLob);
 			Assertions.assertEquals(byteArray.length, firstAvailableLob.length);
 		}
@@ -74,12 +73,12 @@ public class JpaBenchDaoTest extends AbstractBootTest {
 	 * Test for transaction read mode with no blob file.
 	 */
 	@Test
-	public void testJpaNoBlobRead() {
+	void testJpaNoBlobRead() {
 		// Push one entity without blob
 		jpaDao.initialize(1, null);
 
 		// Read and check size
-		final byte[] firstAvailableLob = jpaDao.getLastAvailableLob();
+		final var firstAvailableLob = jpaDao.getLastAvailableLob();
 		Assertions.assertNotNull(firstAvailableLob);
 		Assertions.assertEquals(0, firstAvailableLob.length);
 	}

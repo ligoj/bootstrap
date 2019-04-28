@@ -32,7 +32,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * {@link SessionResource} test class.
  */
 @ExtendWith(SpringExtension.class)
-public class SessionResourceTest extends AbstractBootTest {
+class SessionResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private CacheResource cacheResource;
@@ -40,24 +40,24 @@ public class SessionResourceTest extends AbstractBootTest {
 	private SessionResource resource;
 
 	@BeforeEach
-	public void mockApplicationContext() {
+	void mockApplicationContext() {
 		resource = new SessionResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		final SessionSettings settings = new SessionSettings();
+		final var settings = new SessionSettings();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
-		ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+        var applicationContext = Mockito.mock(ApplicationContext.class);
 		resource.applicationContext = applicationContext;
 		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
-		final ISessionSettingsProvider provider = Mockito.mock(ISessionSettingsProvider.class);
+		final var provider = Mockito.mock(ISessionSettingsProvider.class);
 		Mockito.when(resource.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
 				.thenReturn(Collections.singletonMap("provider", provider));
 	}
 
 	@Test
-	public void getUserSettings() {
-		final SessionSettings settings = resource.applicationContext.getBean(SessionSettings.class);
+	void getUserSettings() {
+		final var settings = resource.applicationContext.getBean(SessionSettings.class);
 		Assertions.assertEquals(DEFAULT_USER, settings.getUserName());
-		final ApplicationSettings applicationSettings = settings.getApplicationSettings();
+		final var applicationSettings = settings.getApplicationSettings();
 		Assertions.assertNotNull(applicationSettings.getBuildNumber());
 		Assertions.assertNotNull(applicationSettings.getBuildTimestamp());
 		Assertions.assertNotNull(applicationSettings.getBuildVersion());
@@ -68,15 +68,15 @@ public class SessionResourceTest extends AbstractBootTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void detailsUserSettings() {
-		final SystemUser user = new SystemUser();
+	void detailsUserSettings() {
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
-		final SystemRole role = new SystemRole();
+		final var role = new SystemRole();
 		role.setName(DEFAULT_ROLE);
 		em.persist(role);
 
-		final SystemUserSetting userSetting = new SystemUserSetting();
+		final var userSetting = new SystemUserSetting();
 		userSetting.setLogin(DEFAULT_USER);
 		userSetting.setName("k");
 		userSetting.setValue("v");
@@ -85,7 +85,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
 		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
 		authorities.add(role);
-		final SystemRoleAssignment assignment = new SystemRoleAssignment();
+		final var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
@@ -99,7 +99,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		em.clear();
 
 		// Get result
-		final SessionSettings settings = resource.details();
+		final var settings = resource.details();
 
 		// Check the application settings (session scope)
 		Assertions.assertNotNull(settings);
@@ -123,18 +123,18 @@ public class SessionResourceTest extends AbstractBootTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void detailsSoloRole() {
-		final SystemUser user = new SystemUser();
+	void detailsSoloRole() {
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
-		final SystemRole soloRole = new SystemRole();
+		final var soloRole = new SystemRole();
 		soloRole.setName("SOLO");
 		em.persist(soloRole);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
 		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
 		authorities.add(soloRole);
-		final SystemRoleAssignment assignmentSolo = new SystemRoleAssignment();
+		final var assignmentSolo = new SystemRoleAssignment();
 		assignmentSolo.setRole(soloRole);
 		assignmentSolo.setUser(user);
 		em.persist(assignmentSolo);
@@ -143,7 +143,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		cacheResource.invalidate("authorizations");
 
 		// Get result
-		final SessionSettings settings = resource.details();
+		final var settings = resource.details();
 
 		// Check the application settings (session scope)
 		Assertions.assertNotNull(settings);
@@ -161,8 +161,8 @@ public class SessionResourceTest extends AbstractBootTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void detailsNoRole() {
-		final SystemUser user = new SystemUser();
+	void detailsNoRole() {
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
@@ -173,7 +173,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		cacheResource.invalidate("authorizations");
 
 		// Get result
-		final SessionSettings settings = resource.details();
+		final var settings = resource.details();
 
 		// Check the application settings (session scope)
 		Assertions.assertNotNull(settings);
@@ -190,11 +190,11 @@ public class SessionResourceTest extends AbstractBootTest {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Test
-	public void detailsNoRoleButDefaultRole() {
-		final SystemUser user = new SystemUser();
+	void detailsNoRoleButDefaultRole() {
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
-		final SystemRole role = new SystemRole();
+		final var role = new SystemRole();
 		role.setName("SOLO");
 		em.persist(role);
 
@@ -202,7 +202,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		authorities.add(new SimpleGrantedAuthority(SystemRole.DEFAULT_ROLE));
 		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
 		authorities.add(role);
-		final SystemRoleAssignment assignment = new SystemRoleAssignment();
+		final var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
@@ -213,7 +213,7 @@ public class SessionResourceTest extends AbstractBootTest {
 		cacheResource.invalidate("authorizations");
 
 		// Get result
-		final SessionSettings settings = resource.details();
+		final var settings = resource.details();
 
 		// Check the application settings (session scope)
 		Assertions.assertNotNull(settings);
@@ -225,7 +225,7 @@ public class SessionResourceTest extends AbstractBootTest {
 	}
 
 	private void addSystemAuthorization(final HttpMethod method, SystemRole role, final String pattern, final AuthorizationType type) {
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		authorization.setRole(role);
 		authorization.setMethod(method);
 		authorization.setType(type);

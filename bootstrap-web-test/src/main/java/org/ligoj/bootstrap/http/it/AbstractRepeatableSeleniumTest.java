@@ -13,7 +13,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  */
 public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTest {
 
-	protected TestInfo testName;
+	TestInfo testName;
 
 	/**
 	 * Test name.
@@ -22,18 +22,18 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 *            Injected test context.
 	 */
 	@BeforeEach
-	public void initTestName(final TestInfo testInfo) {
+	void initTestName(final TestInfo testInfo) {
 		testName = testInfo;
 	}
 
 	// As default, Firefox, IE and Chrome navigators
-	protected static final DesiredCapabilities[] DEFAULT_CAPABILITIES = new DesiredCapabilities[] {
+	private static final DesiredCapabilities[] DEFAULT_CAPABILITIES = new DesiredCapabilities[] {
 			DesiredCapabilities.firefox(), DesiredCapabilities.internetExplorer(), DesiredCapabilities.chrome() };
 
 	/**
 	 * Repeated capabilities.
 	 */
-	protected DesiredCapabilities[] repeatedCapabilities = DEFAULT_CAPABILITIES;
+    DesiredCapabilities[] repeatedCapabilities = DEFAULT_CAPABILITIES;
 
 	/**
 	 * Copy environment to forked thread.
@@ -47,8 +47,8 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 * @throws Exception
 	 *             When text invoke fails.
 	 */
-	protected void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver,
-			final DesiredCapabilities capability) throws Exception { // NOSONAR -- Have to pause the thread
+    void cloneAndRun(final AbstractRepeatableSeleniumTest target, final WebDriver driver,
+                     final DesiredCapabilities capability) throws Exception { // NOSONAR -- Have to pause the thread
 		target.gridUrl = gridUrl;
 		target.baseDir = baseDir;
 		target.baseUrl = baseUrl;
@@ -61,12 +61,12 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 
 	@SuppressWarnings("all")
 	@Override
-	protected void prepareDriver() throws Exception { // NOPMD -- inheritance
+	void prepareDriver() throws Exception { // NOPMD -- inheritance
 		// Nothing to do locally
 	}
 
 	@Override
-	protected void prepareBrowser() {
+	void prepareBrowser() {
 		if (driver != null) {
 			// Forked process
 			super.prepareBrowser();
@@ -78,7 +78,7 @@ public abstract class AbstractRepeatableSeleniumTest extends AbstractSeleniumTes
 	 * 
 	 * @return <code>true</code> when the current thread is running in forked test.
 	 */
-	protected boolean isRepeatMode() {
+    boolean isRepeatMode() {
 		return testName == null || !testName.getTestMethod().isPresent();
 	}
 }

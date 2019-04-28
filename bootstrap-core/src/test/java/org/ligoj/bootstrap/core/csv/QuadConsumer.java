@@ -12,12 +12,16 @@ import java.util.function.Consumer;
  *
  * <p>
  * This is a <a href="package-summary.html">functional interface</a> whose functional method is
- * {@link #accept(Object, Object)}.
+ * {@link #accept(Object, Object, Object, Object)}.
  *
  * @param <T>
  *            the type of the first argument to the operation
- * @param <U>
+ * @param <P>
  *            the type of the second argument to the operation
+ * @param <Q>
+ *            the type of the third argument to the operation
+ * @param <R>
+ *            the type of the fourth argument to the operation
  *
  * @see Consumer
  */

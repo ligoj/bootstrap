@@ -26,7 +26,7 @@ public class AuthorizationCache implements CacheManagerAware {
 	@Override
 	public void onCreate(final HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
 		cacheManager.createCache("authorizations", provider.apply("authorizations"));
-		final CacheConfig<?, ?> details = provider.apply("user-details");
+		final var details = provider.apply("user-details");
 		details.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(HOURS, 1)));
 		details.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("user-details", details);

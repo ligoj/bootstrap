@@ -51,7 +51,7 @@ public class UiFilter implements UIRule {
 	/**
 	 * Rules to apply.
 	 */
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", defaultImpl = BasicRule.class)
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = BasicRule.class)
 	@JsonSubTypes({ @Type(name = "group", value = UiFilter.class), @Type(name = "rule", value = BasicRule.class) })
 	private List<UIRule> rules;
 

@@ -11,7 +11,6 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Function;
@@ -27,7 +26,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -119,11 +117,11 @@ public class CurlProcessor implements AutoCloseable {
 	 */
 	protected static Registry<ConnectionSocketFactory> newSslContext(final String protocol) {
 		// Initialize HTTPS scheme
-		final TrustManager[] allCerts = new TrustManager[] { new TrustedX509TrustManager() };
+		final var allCerts = new TrustManager[] { new TrustedX509TrustManager() };
 		try {
-			final SSLContext sslContext = SSLContext.getInstance(protocol);
+			final var sslContext = SSLContext.getInstance(protocol);
 			sslContext.init(null, allCerts, new SecureRandom());
-			final SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
+			final var sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
 					NoopHostnameVerifier.INSTANCE);
 			return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslSocketFactory)
 					.register("http", PlainConnectionSocketFactory.getSocketFactory()).build();
@@ -144,7 +142,7 @@ public class CurlProcessor implements AutoCloseable {
 	 *            I18N key of the validation message.
 	 */
 	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
-		try (final CurlProcessor curlProcessor = new CurlProcessor()) {
+		try (final var curlProcessor = new CurlProcessor()) {
 			curlProcessor.validate(url, propertyName, errorText);
 		}
 	}
@@ -181,7 +179,7 @@ public class CurlProcessor implements AutoCloseable {
 		this.clientBuilder = HttpClientBuilder.create();
 
 		// Initialize proxy
-		final String proxyHost = System.getProperty(HTTPS_PROXY_HOST);
+		final var proxyHost = System.getProperty(HTTPS_PROXY_HOST);
 		HttpHost proxy = null;
 		if (proxyHost != null) {
 			proxy = new HttpHost(proxyHost, Integer.parseInt(System.getProperty(HTTPS_PROXY_PORT)));
@@ -195,7 +193,7 @@ public class CurlProcessor implements AutoCloseable {
 
 		// Initialize cookie strategy
 		final CookieStore cookieStore = new BasicCookieStore();
-		final HttpClientContext context = HttpClientContext.create();
+		final var context = HttpClientContext.create();
 		context.setCookieStore(cookieStore);
 		clientBuilder.setDefaultCookieStore(cookieStore);
 
@@ -219,7 +217,7 @@ public class CurlProcessor implements AutoCloseable {
 		addSingleValuedHeader(request, httpRequest, "Accept-Charset", "utf-8");
 
 		// Add headers
-		for (final Entry<String, String> header : request.getHeaders().entrySet()) {
+		for (final var header : request.getHeaders().entrySet()) {
 			httpRequest.addHeader(header.getKey(), header.getValue());
 		}
 	}
@@ -257,7 +255,7 @@ public class CurlProcessor implements AutoCloseable {
 	 *             When process failed at protocol level or timeout.
 	 */
 	protected boolean call(final CurlRequest request, final String url) throws Exception { // NOSONAR - Many Exception
-		final HttpRequestBase httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod())
+		final var httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod())
 				.getConstructor(String.class).newInstance(url);
 		addHeaders(request, request.getContent(), httpRequest);
 
@@ -275,7 +273,7 @@ public class CurlProcessor implements AutoCloseable {
 		}
 
 		// Execute the request
-		try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
+		try (var response = httpClient.execute(httpRequest)) {
 			// Save the status
 			request.setStatus(response.getStatusLine().getStatusCode());
 
@@ -306,7 +304,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * @return the response if there is no error, or <code>null</code>/
 	 */
 	public String get(final String url, final String... headers) {
-		final CurlRequest curlRequest = new CurlRequest(HttpMethod.GET, url, null, headers);
+		final var curlRequest = new CurlRequest(HttpMethod.GET, url, null, headers);
 		curlRequest.setSaveResponse(true);
 		process(curlRequest);
 		return curlRequest.getResponse();
@@ -322,8 +320,8 @@ public class CurlProcessor implements AutoCloseable {
 	public boolean process(final CurlRequest... requests) {
 
 		// Log file base 0 counter
-		int counter = 0;
-		for (final CurlRequest request : requests) {
+        var counter = 0;
+		for (final var request : requests) {
 			// Update the counter
 			request.counter = counter++;
 
@@ -343,12 +341,12 @@ public class CurlProcessor implements AutoCloseable {
 	 * @return <code>true</code> when the call succeed.
 	 */
 	protected boolean process(final CurlRequest request) {
-		final String url = request.getUrl();
+		final var url = request.getUrl();
 
 		// Expose the current processor to this request
 		request.processor = this;
 		try {
-			boolean result = call(request, url);
+            var result = call(request, url);
 			if (!result && replay != null) {
 				// Replay as needed this request
 				result = replay.apply(request) && call(request, url);

@@ -32,39 +32,39 @@ public class SystemResource {
 	 */
 	@GET
 	public SystemVo getConfiguration() {
-		final SystemVo settings = new SystemVo();
+		final var settings = new SystemVo();
 
-		/**
+		/*
 		 * Date management
 		 */
-		final DateVo dateVo = new DateVo();
+		final var dateVo = new DateVo();
 		settings.setDate(dateVo);
 		dateVo.setDate(DateUtils.newCalendar().getTime());
 		dateVo.setDefaultTimeZone(TimeZone.getDefault().getID());
 		dateVo.setTimeZone(DateUtils.getApplicationTimeZone().getID());
 		dateVo.setOriginalDefaultTimeZone(DateUtils.ORIGINAL_DEFAULT_TIMEZONE.getID());
 
-		/**
+		/*
 		 * Memory management
 		 */
-		final MemoryVo memoryVo = new MemoryVo();
+		final var memoryVo = new MemoryVo();
 		settings.setMemory(memoryVo);
 		memoryVo.setFreeMemory(Runtime.getRuntime().freeMemory());
 		memoryVo.setMaxMemory(Runtime.getRuntime().maxMemory());
 		memoryVo.setTotalMemory(Runtime.getRuntime().totalMemory());
 
-		/**
+		/*
 		 * CPU management
 		 */
-		final CpuVo cpuVo = new CpuVo();
+		final var cpuVo = new CpuVo();
 		settings.setCpu(cpuVo);
 		cpuVo.setTotal(Runtime.getRuntime().availableProcessors());
 
-		/**
+		/*
 		 * FILE management
 		 */
 		settings.setFiles(Arrays.stream(File.listRoots()).map(root -> {
-			final FileVo fileVo = new FileVo();
+			final var fileVo = new FileVo();
 			fileVo.setAbsolutePath(root.getAbsolutePath());
 			fileVo.setTotalSpace(root.getTotalSpace());
 			fileVo.setFreeSpace(root.getFreeSpace());

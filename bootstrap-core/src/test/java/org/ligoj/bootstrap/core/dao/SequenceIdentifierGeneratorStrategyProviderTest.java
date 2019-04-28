@@ -27,19 +27,18 @@ import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.SequenceIdentifierGeneratorStrategyProvider.OptimizedSequenceStyleGenerator;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /**
  * Test of {@link SequenceIdentifierGeneratorStrategyProvider} implementation.
  */
-public class SequenceIdentifierGeneratorStrategyProviderTest {
+class SequenceIdentifierGeneratorStrategyProviderTest {
 	/**
 	 * Check strategy configuration. @throws SecurityException @throws NoSuchMethodException @throws
 	 * InvocationTargetException @throws
 	 */
 	@Test
-	public void testFactoryConfiguration() throws ReflectiveOperationException {
+    void testFactoryConfiguration() throws ReflectiveOperationException {
 		Assertions.assertEquals(OptimizedSequenceStyleGenerator.class, SequenceIdentifierGeneratorStrategyProvider.class
 				.getDeclaredConstructor().newInstance().getStrategies().get(SequenceStyleGenerator.class.getName()));
 	}
@@ -48,8 +47,8 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	 * Check strategy configuration.
 	 */
 	@Test
-	public void testConfiguration() {
-		final Properties params = new Properties();
+    void testConfiguration() {
+		final var params = new Properties();
 		params.put("identity_tables", "summy.seg");
 		params.put(PersistentIdentifierGenerator.IDENTIFIER_NORMALIZER, new ObjectNameNormalizer() {
 
@@ -59,7 +58,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 			}
 		});
 
-		OptimizedSequenceStyleGenerator optimizedSequenceStyleGenerator = newStyleGenerator();
+        var optimizedSequenceStyleGenerator = newStyleGenerator();
 		optimizedSequenceStyleGenerator.configure(StringType.INSTANCE, params, newServiceRegistry());
 	}
 
@@ -77,27 +76,23 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 
 	private JdbcEnvironment newJdbcEnvironment() {
 
-		JdbcEnvironment jdbcEnvironment = Mockito.mock(JdbcEnvironment.class);
-		IdentifierHelper identifierHelper = Mockito.mock(IdentifierHelper.class);
-		Mockito.when(identifierHelper.toIdentifier(ArgumentMatchers.anyString())).then(new Answer<Identifier>() {
-
-			@Override
-			public Identifier answer(InvocationOnMock invocation) {
-				if (invocation.getArguments()[0] == null)
-					return null;
-				return new Identifier((String) invocation.getArguments()[0], false);
-			}
+        var jdbcEnvironment = Mockito.mock(JdbcEnvironment.class);
+        var identifierHelper = Mockito.mock(IdentifierHelper.class);
+		Mockito.when(identifierHelper.toIdentifier(ArgumentMatchers.anyString())).then((Answer<Identifier>) invocation -> {
+			if (invocation.getArguments()[0] == null)
+				return null;
+			return new Identifier((String) invocation.getArguments()[0], false);
 		});
 		Mockito.when(jdbcEnvironment.getIdentifierHelper()).thenReturn(identifierHelper);
 		return jdbcEnvironment;
 	}
 
 	private ServiceRegistry newServiceRegistry() {
-		ConfigurationService mock = Mockito.mock(ConfigurationService.class);
+        var mock = Mockito.mock(ConfigurationService.class);
 		Mockito.doReturn(true).when(mock).getSetting(AvailableSettings.PREFER_GENERATOR_NAME_AS_DEFAULT_SEQUENCE_NAME,
 				StandardConverters.BOOLEAN, true);
-		JdbcEnvironment jdbcEnvironment = newJdbcEnvironment();
-		ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+        var jdbcEnvironment = newJdbcEnvironment();
+        var serviceRegistry = Mockito.mock(ServiceRegistry.class);
 		Mockito.when(serviceRegistry.getService(JdbcEnvironment.class)).thenReturn(jdbcEnvironment);
 		Mockito.when(jdbcEnvironment.getDialect()).thenReturn(new MySQL55Dialect());
 		Mockito.doReturn(mock).when(serviceRegistry).getService(ConfigurationService.class);
@@ -108,8 +103,8 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	 * Check the sequence name from identity table name.
 	 */
 	@Test
-	public void testSequenceName() {
-		final Properties params = new Properties();
+    void testSequenceName() {
+		final var params = new Properties();
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
 		Assertions.assertEquals("my_table_SEQ", newStyleGenerator()
@@ -121,8 +116,8 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	 * Check the sequence name from identity table name.
 	 */
 	@Test
-	public void testSequenceNameQuoted() {
-		final Properties params = new Properties();
+    void testSequenceNameQuoted() {
+		final var params = new Properties();
 		params.setProperty("identity_tables", "my_table");
 		System.setProperty("hibernate.new_sequence_naming", "true");
 		Assertions.assertEquals("my_table_SEQ", newStyleGenerator()
@@ -131,7 +126,7 @@ public class SequenceIdentifierGeneratorStrategyProviderTest {
 	}
 
 	@AfterEach
-	public void clearProperty() {
+    void clearProperty() {
 		System.clearProperty("hibernate.new_sequence_naming");
 	}
 }

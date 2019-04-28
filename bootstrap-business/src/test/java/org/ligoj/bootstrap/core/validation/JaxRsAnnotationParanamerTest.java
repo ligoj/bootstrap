@@ -21,9 +21,9 @@ import org.springframework.util.ClassUtils;
 /**
  * Test class of {@link JaxRsAnnotationParanamer}
  */
-public class JaxRsAnnotationParanamerTest {
+class JaxRsAnnotationParanamerTest {
 
-	public static class TestClass {
+	static class TestClass {
 
 		/**
 		 *
@@ -32,7 +32,7 @@ public class JaxRsAnnotationParanamerTest {
 		 * @param f1 A form parameter.
 		 * @param c1 A cookie parameter.
 		 * @param q1 A query parameter.
-		 * @param n A JSR-303 contraint parameter.
+		 * @param n A JSR-303 constraint parameter.
 		 */
 		public void test(final @PathParam("p") String p1, final @HeaderParam("h") String h1, final @FormParam("f") String f1,
 				final @CookieParam("c") String c1, @QueryParam("q") String q1, @NotNull String n, @Named("i") String i1) {
@@ -47,72 +47,72 @@ public class JaxRsAnnotationParanamerTest {
 	}
 
 	@Test
-	public void isNamedPathParam() {
+	void isNamedPathParam() {
 		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(PathParam.class)));
 	}
 
 	@Test
-	public void isNamedHeaderParam() {
+	void isNamedHeaderParam() {
 		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(HeaderParam.class)));
 	}
 
 	@Test
-	public void isNamedFormParam() {
+	void isNamedFormParam() {
 		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(FormParam.class)));
 	}
 
 	@Test
-	public void isNamedCookieParam() {
+	void isNamedCookieParam() {
 		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(CookieParam.class)));
 	}
 
 	@Test
-	public void isNamedQueryParam() {
+	void isNamedQueryParam() {
 		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(QueryParam.class)));
 	}
 
 	@Test
-	public void isNamedAny() {
+	void isNamedAny() {
 		Assertions.assertFalse(new JaxRsAnnotationParanamer().isNamed(fromClass(NotNull.class)));
 	}
 
 	@Test
-	public void isNamedInject() {
+	void isNamedInject() {
 		Assertions.assertTrue(new JaxRsAnnotationParanamer().isNamed(fromClass(Named.class)));
 	}
 
 	@Test
-	public void getNamedValuePathParam() {
+	void getNamedValuePathParam() {
 		Assertions.assertEquals("p", new JaxRsAnnotationParanamer().getNamedValue(fromClass(PathParam.class)));
 	}
 
 	@Test
-	public void getNamedValueHeaderParam() {
+	void getNamedValueHeaderParam() {
 		Assertions.assertEquals("h", new JaxRsAnnotationParanamer().getNamedValue(fromClass(HeaderParam.class)));
 	}
 
 	@Test
-	public void getNamedValueFormParam() {
+	void getNamedValueFormParam() {
 		Assertions.assertEquals("f", new JaxRsAnnotationParanamer().getNamedValue(fromClass(FormParam.class)));
 	}
 
 	@Test
-	public void getNamedValueInject() {
+	void getNamedValueInject() {
 		Assertions.assertEquals("i", new JaxRsAnnotationParanamer().getNamedValue(fromClass(Named.class)));
 	}
 
 	@Test
-	public void getNamedValueCookieParam() {
+	void getNamedValueCookieParam() {
 		Assertions.assertEquals("c", new JaxRsAnnotationParanamer().getNamedValue(fromClass(CookieParam.class)));
 	}
 
 	@Test
-	public void getNamedValueQueryParam() {
+	void getNamedValueQueryParam() {
 		Assertions.assertEquals("q", new JaxRsAnnotationParanamer().getNamedValue(fromClass(QueryParam.class)));
 	}
 
 	@Test
-	public void getNamedValueAny() {
+	void getNamedValueAny() {
 		Assertions.assertNull(new JaxRsAnnotationParanamer().getNamedValue(fromClass(NotNull.class)));
 	}
 

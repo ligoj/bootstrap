@@ -12,18 +12,18 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link HasParameterRequestMatcher}
  */
-public class HasParameterRequestMatcherTest {
+class HasParameterRequestMatcherTest {
 
 	@Test
-	public void testMatches() {
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testMatches() {
+        var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getParameter("parameter")).thenReturn("value");
 		Assertions.assertTrue(new HasParameterRequestMatcher("parameter").matches(request));
 	}
 
 	@Test
-	public void testBlank() {
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testBlank() {
+        var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getParameter("parameter")).thenReturn(" ");
 		Assertions.assertFalse(new HasParameterRequestMatcher("parameter").matches(request));
 	}

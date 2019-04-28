@@ -3,9 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,68 +25,68 @@ public class UserSettingResourceTest extends AbstractBootTest {
 	private SystemUserSettingRepository repository;
 
 	@Test
-	public void create() {
+	void create() {
 		resource.saveOrUpdate("k", "v");
 		em.clear();
-		final List<SystemUserSetting> all = repository.findAll();
+		final var all = repository.findAll();
 		Assertions.assertFalse(all.isEmpty());
-		final SystemUserSetting setting = all.get(0);
+		final var setting = all.get(0);
 		Assertions.assertEquals("k", setting.getName());
 		Assertions.assertEquals("v", setting.getValue());
 		Assertions.assertEquals(DEFAULT_USER, setting.getLogin());
 	}
 
 	@Test
-	public void findAll() {
+	void findAll() {
 		newSetting();
-		final Map<String, Object> all = resource.findAll();
+		final var all = resource.findAll();
 		Assertions.assertFalse(all.isEmpty());
 		Assertions.assertEquals("v", all.get("k"));
 	}
 
 	@Test
-	public void findByName() {
+	void findByName() {
 		newSetting();
 		Assertions.assertEquals("v", resource.findByName("k"));
 	}
 
 	@Test
-	public void findByNameNull() {
+	void findByNameNull() {
 		newSetting();
 		Assertions.assertNull(resource.findByName("any"));
 	}
 
 	@Test
-	public void update() {
+	void update() {
 		newSetting();
 		resource.saveOrUpdate("k", "w");
-		final Map<String, Object> all = resource.findAll();
+		final var all = resource.findAll();
 		Assertions.assertFalse(all.isEmpty());
 		Assertions.assertEquals("w", all.get("k"));
 	}
 
 	@Test
-	public void delete() {
+	void delete() {
 		newSetting();
 		resource.delete("k");
-		final Map<String, Object> all = resource.findAll();
+		final var all = resource.findAll();
 		Assertions.assertTrue(all.isEmpty());
 	}
 
 	@Test
-	public void findAllEmpty() {
-		final SystemUserSetting userSetting = new SystemUserSetting();
+	void findAllEmpty() {
+		final var userSetting = new SystemUserSetting();
 		userSetting.setLogin("any");
 		userSetting.setName("k");
 		userSetting.setValue("v");
 		repository.saveAndFlush(userSetting);
 		em.clear();
-		final Map<String, Object> all = resource.findAll();
+		final var all = resource.findAll();
 		Assertions.assertTrue(all.isEmpty());
 	}
 
 	private void newSetting() {
-		final SystemUserSetting userSetting = new SystemUserSetting();
+		final var userSetting = new SystemUserSetting();
 		userSetting.setLogin(DEFAULT_USER);
 		userSetting.setName("k");
 		userSetting.setValue("v");

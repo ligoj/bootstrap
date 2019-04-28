@@ -23,10 +23,10 @@ public class PluginCache implements CacheManagerAware {
 
 	@Override
 	public void onCreate(final HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
-		final CacheConfig<?, ?> central = provider.apply("authorizations");
+		final var central = provider.apply("authorizations");
 		central.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.ONE_DAY));
 		cacheManager.createCache("plugins-last-version-central", central);
-		final CacheConfig<?, ?> nexus = provider.apply("authorizations");
+		final var nexus = provider.apply("authorizations");
 		nexus.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(Duration.ONE_DAY));
 		cacheManager.createCache("plugins-last-version-nexus", nexus);
 	}

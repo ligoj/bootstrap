@@ -42,7 +42,7 @@ public abstract class AbstractSpecification {
 	/**
 	 * Spring data delimiters expressions.
 	 */
-	public static final String DELIMITERS = "[_\\.]";
+	public static final String DELIMITERS = "[_.]";
 
 	private final AtomicInteger aliasCounter = new AtomicInteger();
 
@@ -61,8 +61,8 @@ public abstract class AbstractSpecification {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <U, T> Path<T> getOrmPath(final Root<U> root, final String path) {
-		PathImplementor<?> currentPath = (PathImplementor<?>) root;
-		for (final String pathFragment : path.split(DELIMITERS)) {
+        var currentPath = (PathImplementor<?>) root;
+		for (final var pathFragment : path.split(DELIMITERS)) {
 			currentPath = getNextPath(pathFragment, (From<?, ?>) currentPath);
 		}
 
@@ -76,7 +76,7 @@ public abstract class AbstractSpecification {
 
 	@SuppressWarnings("unchecked")
 	private <X> PathImplementor<X> getNextPath(final String pathFragment, final From<?, ?> from) {
-		PathImplementor<?> currentPath = (PathImplementor<?>) from.get(pathFragment);
+        var currentPath = (PathImplementor<?>) from.get(pathFragment);
 		fixAlias(from, aliasCounter);
 
 		// Handle join. Does not manage many-to-many
@@ -107,7 +107,7 @@ public abstract class AbstractSpecification {
 	protected <U, T> PathImplementor<T> getJoinPath(final From<?, U> from, final Attribute<?, ?> attribute) {
 
 		// Search within current joins
-		for (final Join<U, ?> join : from.getJoins()) {
+		for (final var join : from.getJoins()) {
 			if (join.getAttribute().equals(attribute)) {
 				return fixAlias((Join<U, T>) join, aliasCounter);
 			}
@@ -137,9 +137,9 @@ public abstract class AbstractSpecification {
 	protected static <Y> Y toRawData(final String data, final Expression<Y> expression) {
 
 		// Guess the right compile time type, including generic type
-		final Field field = (Field) ((SingularAttributePath<?>) expression).getAttribute().getJavaMember();
+		final var field = (Field) ((SingularAttributePath<?>) expression).getAttribute().getJavaMember();
 		final Class<?> entity = ((SingularAttributePath<?>) expression).getPathSource().getJavaType();
-		final Class<?> expressionType = (Class<?>) GenericTypeReflector.getExactFieldType(field, entity);
+		final var expressionType = (Class<?>) GenericTypeReflector.getExactFieldType(field, entity);
 
 		// Bind the data to the correct type
 		final Y result;

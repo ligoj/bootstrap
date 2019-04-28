@@ -115,7 +115,7 @@ public class ConfigurationResource {
 	}
 
 	private String getRaw(final String name) {
-		String value = StringUtils.trimToNull(env.getProperty(name));
+        var value = StringUtils.trimToNull(env.getProperty(name));
 		if (value == null) {
 			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue)
 					.map(StringUtils::trimToNull).orElse(null);
@@ -135,9 +135,9 @@ public class ConfigurationResource {
 		// First add the system properties
 		env.getPropertySources().forEach(source -> {
 			if (source instanceof EnumerablePropertySource) {
-				final EnumerablePropertySource<?> eSource = (EnumerablePropertySource<?>) source;
+				final var eSource = (EnumerablePropertySource<?>) source;
 				Arrays.stream(eSource.getPropertyNames()).map(v -> {
-					final ConfigurationVo vo = new ConfigurationVo();
+					final var vo = new ConfigurationVo();
 					vo.setName(v);
 					vo.setSource(eSource.getName());
 					updateVo(String.valueOf(eSource.getProperty(v)), vo);
@@ -151,7 +151,7 @@ public class ConfigurationResource {
 			if (result.containsKey(c.getName())) {
 				result.get(c.getName()).setOverride(true);
 			} else {
-				final ConfigurationVo vo = new ConfigurationVo();
+				final var vo = new ConfigurationVo();
 				AuditedBean.copyAuditData(c, vo);
 				vo.setPersisted(true);
 				vo.setName(c.getName());
@@ -221,10 +221,10 @@ public class ConfigurationResource {
 	@CachePut(cacheName = "configuration")
 	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value,
 			@PathParam("system") final boolean system, @PathParam("secured") final boolean secured) {
-		final SystemConfiguration setting = repository.findByName(name);
-		final String storedValue = secured ? cryptoHelper.encrypt(value) : value;
+		final var setting = repository.findByName(name);
+		final var storedValue = secured ? cryptoHelper.encrypt(value) : value;
 		if (setting == null) {
-			final SystemConfiguration entity = new SystemConfiguration();
+			final var entity = new SystemConfiguration();
 			entity.setName(name);
 			entity.setValue(storedValue);
 			repository.saveAndFlush(entity);

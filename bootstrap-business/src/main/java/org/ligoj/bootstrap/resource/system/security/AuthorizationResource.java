@@ -28,7 +28,6 @@ import javax.ws.rs.core.SecurityContext;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
-import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -109,7 +108,7 @@ public class AuthorizationResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@CacheRemoveAll(cacheName = "authorizations")
 	public int create(final AuthorizationEditionVo entity) {
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		prepareCreate(authorization, entity);
 		return authorization.getId();
 	}
@@ -139,7 +138,7 @@ public class AuthorizationResource {
 	 *            New object to persist.
 	 */
 	private void prepareCreate(final SystemAuthorization authorization, final AuthorizationEditionVo entity) {
-		final SystemRole role = resource.findById(entity.getRole());
+		final var role = resource.findById(entity.getRole());
 		authorization.setRole(role);
 		authorization.setPattern(entity.getPattern());
 		authorization.setType(entity.getType());
@@ -156,7 +155,7 @@ public class AuthorizationResource {
 	 *            Element's identifier.
 	 */
 	private void prepareUpdate(final int id, final AuthorizationEditionVo entity) {
-		final SystemAuthorization authorization = repository.findOneExpected(id);
+		final var authorization = repository.findOneExpected(id);
 		prepareCreate(authorization, entity);
 	}
 
@@ -186,7 +185,7 @@ public class AuthorizationResource {
 	public Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> getAuthorizations() {
 		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache = new EnumMap<>(
 				AuthorizationType.class);
-		final List<SystemAuthorization> authorizations = repository.findAll();
+		final var authorizations = repository.findAll();
 		authorizations.forEach(a -> addAuthorization(newCacheRole(newCacheType(authorizationsCache, a), a), a));
 		return authorizationsCache;
 	}
@@ -214,7 +213,7 @@ public class AuthorizationResource {
 	private void addAuthorization(final Map<HttpMethod, List<Pattern>> existingAuthorizations, final SystemAuthorization authorization) {
 		if (authorization.getMethod() == null) {
 			// All methods
-			for (final HttpMethod method : methods) {
+			for (final var method : methods) {
 				addAuthorization(existingAuthorizations, method, authorization.getPattern());
 			}
 		} else {

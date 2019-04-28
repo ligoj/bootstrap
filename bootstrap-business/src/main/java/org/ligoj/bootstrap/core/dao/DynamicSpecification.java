@@ -52,17 +52,17 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * Mapper to build a {@link Predicate} from data, expression and criteria builder.
 	 */
-	private static final EnumMap<RuleOperator, RuleToPredicate> PREDIACATE_MAPPER = new EnumMap<>(RuleOperator.class);
+	private static final EnumMap<RuleOperator, RuleToPredicate> PREDICATE_MAPPER = new EnumMap<>(RuleOperator.class);
 	static {
-		PREDIACATE_MAPPER.put(RuleOperator.BW, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), d.toUpperCase(Locale.ENGLISH) + LIKE));
-		PREDIACATE_MAPPER.put(RuleOperator.CN, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH) + LIKE));
-		PREDIACATE_MAPPER.put(RuleOperator.EW, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH)));
-		PREDIACATE_MAPPER.put(RuleOperator.GT, (cb, d, e) -> cb.greaterThan(e, toRawData(d, e)));
-		PREDIACATE_MAPPER.put(RuleOperator.GTE, (cb, d, e) -> cb.greaterThanOrEqualTo(e, toRawData(d, e)));
-		PREDIACATE_MAPPER.put(RuleOperator.LT, (cb, d, e) -> cb.lessThan(e, toRawData(d, e)));
-		PREDIACATE_MAPPER.put(RuleOperator.LTE, (cb, d, e) -> cb.lessThanOrEqualTo(e, toRawData(d, e)));
-		PREDIACATE_MAPPER.put(RuleOperator.NE, (cb, d, e) -> cb.notEqual(e, toRawData(d, e)));
-		PREDIACATE_MAPPER.put(RuleOperator.EQ, (cb, d, e) -> cb.equal(e, toRawData(d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.BW, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), d.toUpperCase(Locale.ENGLISH) + LIKE));
+		PREDICATE_MAPPER.put(RuleOperator.CN, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH) + LIKE));
+		PREDICATE_MAPPER.put(RuleOperator.EW, (cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH)));
+		PREDICATE_MAPPER.put(RuleOperator.GT, (cb, d, e) -> cb.greaterThan(e, toRawData(d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.GTE, (cb, d, e) -> cb.greaterThanOrEqualTo(e, toRawData(d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.LT, (cb, d, e) -> cb.lessThan(e, toRawData(d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.LTE, (cb, d, e) -> cb.lessThanOrEqualTo(e, toRawData(d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.NE, (cb, d, e) -> cb.notEqual(e, toRawData(d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.EQ, (cb, d, e) -> cb.equal(e, toRawData(d, e)));
 	}
 
 	/**
@@ -100,7 +100,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 * Return a custom predicate.
 	 */
 	private Predicate getCustomPredicate(final Root<U> root, final CriteriaBuilder cb, final BasicRule rule, final CriteriaQuery<?> query) {
-		final CustomSpecification specification = specifications.get(rule.getField());
+		final var specification = specifications.get(rule.getField());
 		if (specification == null) {
 			// Invalid path
 			log.error("A CustomSpecification must be defined when custom operator type ('ct') is used");
@@ -115,13 +115,13 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 */
 	private Predicate getGroupPredicate(final UiFilter group, final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
 		// Build the predicates
-		final java.util.List<Predicate> predicates = getPredicates(group, root, query, cb);
+		final var predicates = getPredicates(group, root, query, cb);
 
 		// Build the specification
 		if (predicates.isEmpty()) {
 			return cb.conjunction();
 		}
-		final Predicate[] filteredPredicates = predicates.toArray(new Predicate[predicates.size()]);
+		final var filteredPredicates = predicates.toArray(new Predicate[0]);
 		if (group.getGroupOp() == FilterOperator.AND) {
 			return cb.and(filteredPredicates);
 		}
@@ -132,7 +132,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 * Return the ORM path from the given rule.
 	 */
 	private <T> Path<T> getOrmPath(final Root<U> root, final BasicRule rule) {
-		final String path = mapping.getOrDefault(rule.getField(), mapping.containsKey("*") ? rule.getField() : null);
+		final var path = mapping.getOrDefault(rule.getField(), mapping.containsKey("*") ? rule.getField() : null);
 		if (path == null) {
 			// Invalid path, coding issue or SQL injection attempt
 			log.error(String.format("Non mapped property '%s' found for entity class '%s'", rule.getField(), root.getJavaType().getName()));
@@ -145,7 +145,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 * Return the predicate corresponding to the given rule.
 	 */
 	private <X extends Comparable<Object>> Predicate getPredicate(final CriteriaBuilder cb, final BasicRule rule, final Expression<X> expression) {
-		return PREDIACATE_MAPPER.get(rule.getOp()).toPredicate(cb, rule.getData(), expression);
+		return PREDICATE_MAPPER.get(rule.getOp()).toPredicate(cb, rule.getData(), expression);
 	}
 
 	/**
@@ -184,8 +184,8 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	private java.util.List<Predicate> getPredicates(final UiFilter group, final Root<U> root, final CriteriaQuery<?> query,
 			final CriteriaBuilder cb) {
 		final java.util.List<Predicate> predicates = new ArrayList<>(filter.getRules().size());
-		for (final UIRule rule : group.getRules()) {
-			final Predicate predicate = getPredicate(root, query, cb, rule);
+		for (final var rule : group.getRules()) {
+			final var predicate = getPredicate(root, query, cb, rule);
 			if (predicate != null) {
 				predicates.add(predicate);
 			}

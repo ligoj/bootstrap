@@ -13,10 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -83,11 +80,11 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 * Find one with fetched associations.
 	 */
 	private T findOne(final K id, final Map<String, JoinType> fetchedAssociations) {
-		final CriteriaBuilder builder = em.getCriteriaBuilder();
-		final CriteriaQuery<T> query = builder.createQuery(getDomainClass());
+		final var builder = em.getCriteriaBuilder();
+		final var query = builder.createQuery(getDomainClass());
 
 		// Apply fetch
-		final Root<T> root = query.from(getDomainClass());
+		final var root = query.from(getDomainClass());
 		SpringUtils.getBean(FetchHelper.class).applyFetchedAssociations(fetchedAssociations, root);
 
 		// Apply specification
@@ -119,7 +116,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	@Override
 	@Transactional
 	public int deleteAllExpected(final Collection<K> identifiers) {
-		final int deleted = deleteAll(identifiers);
+		final var deleted = deleteAll(identifiers);
 		if (deleted != org.apache.commons.collections4.CollectionUtils.size(identifiers)) {
 			// At least one row has not been deleted
 			throw new EntityNotFoundException(identifiers.toString());
@@ -196,7 +193,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 */
 	private TypedQuery<T> newQuery(final String patternQuery, final String property, final Object value,
 			final String[] properties, final Object... values) {
-		final StringBuilder baseQuery = newQueryString(patternQuery, property, value, properties, values);
+		final var baseQuery = newQueryString(patternQuery, property, value, properties, values);
 		return addParameters(em.createQuery(baseQuery.toString(), ei.getJavaType()), value, values);
 	}
 
@@ -206,7 +203,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 */
 	private int update(final String patternQuery, final String property, final Object value, final String[] properties,
 			final Object... values) {
-		final StringBuilder baseQuery = newQueryString(patternQuery, property, value, properties, values);
+		final var baseQuery = newQueryString(patternQuery, property, value, properties, values);
 		return addParameters(em.createQuery(baseQuery.toString()), value, values).executeUpdate();
 	}
 
@@ -231,7 +228,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 			// "FROM WHERE property ... value
 			baseQuery = new StringBuilder(String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE + 0));
 		}
-		for (int index = 0; index < values.length; index++) {
+		for (var index = 0; index < values.length; index++) {
 			baseQuery.append(" AND ");
 			addFilter(baseQuery, properties[index], values[index], index + 1);
 		}
@@ -248,7 +245,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 		} else {
 			baseQuery.append("=:");
 			baseQuery.append(PARAM_VALUE);
-			baseQuery.append(String.valueOf(index));
+			baseQuery.append(index);
 		}
 	}
 
@@ -257,7 +254,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	 */
 	private <Q extends Query> Q addParameters(final Q query, final Object value, final Object... values) {
 		addParameter(query, value, 0);
-		for (int index = 0; index < values.length; index++) {
+		for (var index = 0; index < values.length; index++) {
 			addParameter(query, values[index], index + 1);
 		}
 		return query;

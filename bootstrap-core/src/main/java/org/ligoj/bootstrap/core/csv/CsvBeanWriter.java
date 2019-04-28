@@ -5,7 +5,6 @@ package org.ligoj.bootstrap.core.csv;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
@@ -40,7 +39,7 @@ public class CsvBeanWriter {
 	 *             Read issue occurred.
 	 */
 	public void write(final String[] headers, final Object... content) throws IOException {
-		for (final Object o : content) {
+		for (final var o : content) {
 			writeLine(headers, o);
 			writer.write('\n');
 			write(null);
@@ -51,9 +50,9 @@ public class CsvBeanWriter {
 	 * Write a line corresponding to the given object.
 	 */
 	private void writeLine(final String[] headers, final Object o) {
-		boolean first = true;
+        var first = true;
 		try {
-			for (final String header : headers) {
+			for (final var header : headers) {
 				writeSeparator(first);
 				first = false;
 				writeField(o, header);
@@ -67,8 +66,8 @@ public class CsvBeanWriter {
 	 * Write a field
 	 */
 	private void writeField(final Object o, final String header)
-			throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {
-		final Object value = BeanUtil.declaredSilent.getProperty(o, header);
+			throws IOException {
+		final var value = BeanUtil.declaredSilent.getProperty(o, header);
 		if (value != null) {
 			writer.write(StringEscapeUtils.escapeCsv(value.toString()));
 		}
@@ -92,8 +91,8 @@ public class CsvBeanWriter {
 	 *             Read issue occurred.
 	 */
 	public void writeHeader(final String... values) throws IOException {
-		boolean first = true;
-		for (final String header : values) {
+        var first = true;
+		for (final var header : values) {
 			writeSeparator(first);
 			first = false;
 			writer.write(header);

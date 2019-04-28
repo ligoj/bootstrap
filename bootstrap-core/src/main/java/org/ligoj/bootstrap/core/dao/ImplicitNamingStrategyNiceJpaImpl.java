@@ -48,7 +48,7 @@ public class ImplicitNamingStrategyNiceJpaImpl extends org.hibernate.boot.model.
 
 	@Override
 	public Identifier determineJoinTableName(final ImplicitJoinTableNameSource source) {
-		final String name = source.getOwningPhysicalTableName() + '_' + transformAttributePath(source.getAssociationOwningAttributePath());
+		final var name = source.getOwningPhysicalTableName() + '_' + transformAttributePath(source.getAssociationOwningAttributePath());
 		return toIdentifier(name, source.getBuildingContext());
 	}
 

@@ -5,9 +5,6 @@ package org.ligoj.bootstrap.resource.validation;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -30,7 +27,7 @@ import lombok.Setter;
  * 
  */
 @ExtendWith(SpringExtension.class)
-public class ValidationTest extends AbstractBootTest {
+class ValidationTest extends AbstractBootTest {
 
 	@Autowired
 	private ValidationTestResource wineResource;
@@ -42,39 +39,39 @@ public class ValidationTest extends AbstractBootTest {
 	private ValidatorBean validator;
 
 	@Test
-	public void testOk() {
+	void testOk() {
 		validator.validateCheck(newWine());
 	}
 
 	@Test
-	public void testPerformance() {
-		Wine newWine = newWine();
+	void testPerformance() {
+        var newWine = newWine();
 		Assertions.assertTimeout(Duration.ofSeconds(7), () -> {
-			for (int i = 10000; i-- > 0;) {
+			for (var i = 10000; i-- > 0;) {
 				validator.validateCheck(newWine);
 			}
 		});
 	}
 
 	@Test
-	public void testEmptyBean() {
+	void testEmptyBean() {
 		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(new Wine()));
 	}
 
 	@Test
-	public void testHibernateExtension() {
-		final Wine wine = newWine();
+	void testHibernateExtension() {
+		final var wine = newWine();
 		wine.setYear(1);
 		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(wine));
 	}
 
 	@Test
-	public void testValidateCheckArray() {
+	void testValidateCheckArray() {
 		validator.validateCheck(new Wine[] { newWine() });
 	}
 
 	@Test
-	public void testValidateCheckCollection() {
+	void testValidateCheckCollection() {
 		validator.validateCheck(Collections.singletonList(newWine()));
 	}
 
@@ -82,10 +79,10 @@ public class ValidationTest extends AbstractBootTest {
 	 * Check the upper case constraint feature.
 	 */
 	@Test
-	public void testUpperCase() {
-		final Wine wine = newWine();
+	void testUpperCase() {
+		final var wine = newWine();
 		wine.setName("c");
-		final Set<ConstraintViolation<Wine>> validate = validator.validate(wine);
+		final var validate = validator.validate(wine);
 		Assertions.assertEquals(1, validate.size());
 		final ConstraintViolation<?> constraintViolation = validate.iterator().next();
 		Assertions.assertEquals(wine.getName(), constraintViolation.getInvalidValue());
@@ -100,10 +97,10 @@ public class ValidationTest extends AbstractBootTest {
 	 * Check the upper case constraint feature.
 	 */
 	@Test
-	public void testLowerCase() {
-		final SampleBean wine = new SampleBean();
+	void testLowerCase() {
+		final var wine = new SampleBean();
 		wine.setLowerOnly("C");
-		final Set<ConstraintViolation<SampleBean>> validate = validator.validate(wine);
+		final var validate = validator.validate(wine);
 		Assertions.assertEquals(1, validate.size());
 		final ConstraintViolation<?> constraintViolation = validate.iterator().next();
 		Assertions.assertEquals(wine.getLowerOnly(), constraintViolation.getInvalidValue());
@@ -118,10 +115,10 @@ public class ValidationTest extends AbstractBootTest {
 	 * Check the upper case constraint feature.
 	 */
 	@Test
-	public void testLowerCase2() {
-		final SampleBean wine = new SampleBean();
+	void testLowerCase2() {
+		final var wine = new SampleBean();
 		wine.setLowerOnly(null);
-		final Set<ConstraintViolation<SampleBean>> validate = validator.validate(wine);
+		final var validate = validator.validate(wine);
 		Assertions.assertTrue(validate.isEmpty());
 	}
 
@@ -129,20 +126,20 @@ public class ValidationTest extends AbstractBootTest {
 	 * Check the upper case constraint feature.
 	 */
 	@Test
-	public void testLowerCase3() {
-		final SampleBean wine = new SampleBean();
+	void testLowerCase3() {
+		final var wine = new SampleBean();
 		wine.setLowerOnly("c");
-		final Set<ConstraintViolation<SampleBean>> validate = validator.validate(wine);
+		final var validate = validator.validate(wine);
 		Assertions.assertTrue(validate.isEmpty());
 	}
 
 	@Test
-	public void testServiceOk() {
+	void testServiceOk() {
 		wineResource.create(newWine());
 	}
 
 	@Test
-	public void testServiceOk2() {
+	void testServiceOk2() {
 		wineResource.update(newWine());
 	}
 
@@ -150,8 +147,8 @@ public class ValidationTest extends AbstractBootTest {
 	 * Test a dummy bean.
 	 */
 	@Test
-	public void testEmptyValidationDescription() throws ClassNotFoundException {
-		final Map<String, List<String>> constraints = validationResource.describe(String.class.getName());
+	void testEmptyValidationDescription() throws ClassNotFoundException {
+		final var constraints = validationResource.describe(String.class.getName());
 		Assertions.assertNotNull(constraints);
 		Assertions.assertTrue(constraints.isEmpty());
 	}
@@ -160,8 +157,8 @@ public class ValidationTest extends AbstractBootTest {
 	 * Test a constrained bean.
 	 */
 	@Test
-	public void testValidationDescription() throws ClassNotFoundException {
-		final Map<String, List<String>> constraints = validationResource.describe(Wine.class.getName());
+	void testValidationDescription() throws ClassNotFoundException {
+		final var constraints = validationResource.describe(Wine.class.getName());
 		Assertions.assertNotNull(constraints);
 		Assertions.assertFalse(constraints.isEmpty());
 		Assertions.assertEquals(1, constraints.get("picture").size());
@@ -185,7 +182,7 @@ public class ValidationTest extends AbstractBootTest {
 	 * Create a dummy, but filled wine.
 	 */
 	private Wine newWine() {
-		final Wine wine = new Wine();
+		final var wine = new Wine();
 		wine.setCountry("C");
 		wine.setDescription("C");
 		wine.setGrapes("C");

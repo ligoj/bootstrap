@@ -17,7 +17,7 @@ import com.thoughtworks.paranamer.DefaultParanamer;
 public class JaxRsParameterNameProvider extends ParanamerParameterNameProvider {
 
 	/**
-	 * Default constructor using a custom annotation paranmer as first-priority provider.
+	 * Default constructor using a custom annotation paranamer as first-priority provider.
 	 */
 	public JaxRsParameterNameProvider() {
 		super(new CachingParanamer(new AdaptiveParanamer(new JaxRsAnnotationParanamer(), new DefaultParanamer(), new BytecodeReadingParanamer())));

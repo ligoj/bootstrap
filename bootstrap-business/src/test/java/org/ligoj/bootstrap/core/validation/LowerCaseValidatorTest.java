@@ -9,19 +9,19 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link LowerCaseValidator}
  */
-public class LowerCaseValidatorTest {
+class LowerCaseValidatorTest {
 
 	@Test
-	public void testValidString() {
-		Assertions.assertTrue(new LowerCaseValidator().isValid("azerty1(]=", null));
-		Assertions.assertTrue(new LowerCaseValidator().isValid("azerty", null));
+	void testValidString() {
+		Assertions.assertTrue(new LowerCaseValidator().isValid("any1(]=", null));
+		Assertions.assertTrue(new LowerCaseValidator().isValid("any", null));
 		Assertions.assertTrue(new LowerCaseValidator().isValid("167.:", null));
 		Assertions.assertTrue(new LowerCaseValidator().isValid(null, null));
 	}
 
 	@Test
-	public void testInvalidString() {
-		Assertions.assertFalse(new LowerCaseValidator().isValid("azErty", null));
+	void testInvalidString() {
+		Assertions.assertFalse(new LowerCaseValidator().isValid("aNy", null));
 		Assertions.assertFalse(new LowerCaseValidator().isValid("A", null));
 	}
 }

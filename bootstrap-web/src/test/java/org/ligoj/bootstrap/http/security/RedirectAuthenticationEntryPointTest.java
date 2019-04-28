@@ -19,12 +19,12 @@ import org.springframework.security.web.RedirectStrategy;
 /**
  * Test {@link RedirectAuthenticationEntryPoint} implementation.
  */
-public class RedirectAuthenticationEntryPointTest {
+class RedirectAuthenticationEntryPointTest {
 
 	private RedirectAuthenticationEntryPoint entryPoint;
 
 	@BeforeEach
-	public void setup() {
+    void setup() {
 		entryPoint = new RedirectAuthenticationEntryPoint("http://h");
 		final Set<String> redirectUrls = new HashSet<>();
 		redirectUrls.add("/index.html");
@@ -32,20 +32,20 @@ public class RedirectAuthenticationEntryPointTest {
 	}
 
 	@Test
-	public void testNoRedirect() throws IOException, ServletException {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getServletPath()).thenReturn("/somethingelse");
-		final RedirectStrategy strategy = Mockito.mock(RedirectStrategy.class);
+    void testNoRedirect() throws IOException, ServletException {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getServletPath()).thenReturn("/something-else");
+		final var strategy = Mockito.mock(RedirectStrategy.class);
 		entryPoint.setRedirectStrategy(strategy);
 		entryPoint.commence(request, null, null);
 		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "");
 	}
 
 	@Test
-	public void testRedirect() throws IOException, ServletException {
-		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    void testRedirect() throws IOException, ServletException {
+		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getServletPath()).thenReturn("/index.html");
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.encodeRedirectURL("http://h")).thenReturn("encoded");
 		entryPoint.commence(request, response, null);
 		Mockito.verify(response, Mockito.atLeastOnce()).sendRedirect("encoded");

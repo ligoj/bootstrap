@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 /**
  * Test persistable entity.
  */
-public class PersistableTest {
+class PersistableTest {
 
 	@Test
-	public void testAudit() {
-		final Date now = new Date();
-		final PersistableEntity entity = new PersistableEntity();
+    void testAudit() {
+		final var now = new Date();
+		final var entity = new PersistableEntity();
 		entity.setCreatedBy("name1");
 		entity.setLastModifiedBy("name2");
 		entity.setCreatedDate(now);
@@ -32,13 +32,13 @@ public class PersistableTest {
 	}
 
 	@Test
-	public void testAuditNull() {
-		final PersistableEntity entity = new PersistableEntity();
+    void testAuditNull() {
+		final var entity = new PersistableEntity();
 		entity.setCreatedBy("name1");
 		entity.setLastModifiedBy("name2");
 		Assertions.assertEquals("name1", entity.getCreatedBy());
 		Assertions.assertEquals("name2", entity.getLastModifiedBy());
-		Assertions.assertEquals(null, entity.getCreatedDate());
-		Assertions.assertEquals(null, entity.getLastModifiedDate());
+		Assertions.assertNull(entity.getCreatedDate());
+		Assertions.assertNull(entity.getLastModifiedDate());
 	}
 }

@@ -53,28 +53,28 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 	 * {@link NotNull} descriptor
 	 */
 	private static final ConstraintDescriptorImpl<NotNull> NOT_NULL_DESCRIPTOR = new ConstraintDescriptorImpl<>(new ConstraintHelper(),
-			(Member) null, new ConstraintAnnotationDescriptor<NotNull>(new NotNull() {
-				@Override
-				public Class<? extends Annotation> annotationType() {
-					return NotNull.class;
-				}
+			(Member) null, new ConstraintAnnotationDescriptor<>(new NotNull() {
+		@Override
+		public Class<? extends Annotation> annotationType() {
+			return NotNull.class;
+		}
 
-				@Override
-				public String message() {
-					return "NotNull";
-				}
+		@Override
+		public String message() {
+			return "NotNull";
+		}
 
-				@Override
-				public Class<?>[] groups() {
-					return new Class<?>[0];
-				}
+		@Override
+		public Class<?>[] groups() {
+			return new Class<?>[0];
+		}
 
-				@SuppressWarnings("unchecked")
-				@Override
-				public Class<? extends Payload>[] payload() {
-					return new Class[0];
-				}
-			}), ElementType.PARAMETER);
+		@SuppressWarnings("unchecked")
+		@Override
+		public Class<? extends Payload>[] payload() {
+			return new Class[0];
+		}
+	}), ElementType.PARAMETER);
 
 	@Override
 	protected void handleValidation(final Message message, final Object resourceInstance, final Method method,
@@ -83,8 +83,8 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 
 		// Check each parameter
 		final Set<ConstraintViolation<?>> validationErrors = new HashSet<>();
-		for (int index = 0; index < arguments.size(); index++) {
-			final Parameter parameter = method.getParameters()[index];
+		for (var index = 0; index < arguments.size(); index++) {
+			final var parameter = method.getParameters()[index];
 			if (hasToBeValidated(parameter)) {
 				// This parameter is a not context, path or query parameter
 				validate(arguments.get(index), method, parameter, index, validationErrors);
@@ -114,14 +114,14 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 			// Parameter is null, is it manually checked of managed by CXF for
 			// multipart?
 			// All non-body parameters are required by default
-			final PathImpl propertyPath = PathImpl.createPathFromString(method.getName());
+			final var propertyPath = PathImpl.createPathFromString(method.getName());
 			propertyPath.addParameterNode(parameter.getName(), index);
 			validationErrors.add(ConstraintViolationImpl.forParameterValidation(NotNull.class.getName(), null, null, "interpolated", null,
 					null, null, null, propertyPath, NOT_NULL_DESCRIPTOR, null, null, null));
 			return;
 		}
 
-		final Class<?> clazz = bean.getClass();
+		final var clazz = bean.getClass();
 		if (Collection.class.isAssignableFrom(clazz)) {
 			validate((Collection<?>) bean, validationErrors);
 		} else if (clazz.isArray()) {

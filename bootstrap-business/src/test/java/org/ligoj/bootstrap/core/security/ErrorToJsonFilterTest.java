@@ -19,24 +19,24 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link ErrorToJsonFilter}
  */
-public class ErrorToJsonFilterTest {
+class ErrorToJsonFilterTest {
 
 	@Test
-	public void testOk() throws IOException {
-		final ServletRequest request = Mockito.mock(ServletRequest.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-		final FilterChain chain = Mockito.mock(FilterChain.class);
+	void testOk() throws IOException {
+		final var request = Mockito.mock(ServletRequest.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
+		final var chain = Mockito.mock(FilterChain.class);
 		new ErrorToJsonFilter().doFilter(request, response, chain);
 		Mockito.verify(response, Mockito.never()).setStatus(ArgumentMatchers.anyInt());
 	}
 
 	@Test
-	public void testKo() throws IOException, ServletException {
-		final ServletRequest request = Mockito.mock(ServletRequest.class);
-		final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-		final FilterChain chain = Mockito.mock(FilterChain.class);
+	void testKo() throws IOException, ServletException {
+		final var request = Mockito.mock(ServletRequest.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
+		final var chain = Mockito.mock(FilterChain.class);
 		Mockito.doThrow(new IOException()).when(chain).doFilter(request, response);
-		final ServletOutputStream outputStream = Mockito.mock(ServletOutputStream.class);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 
 		new ErrorToJsonFilter().doFilter(request, response, chain);

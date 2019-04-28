@@ -26,7 +26,7 @@ public abstract class AbstractCharValidator<A extends Annotation> implements Con
 	}
 
 	private boolean isValid(final String value) {
-		for (int i = 0; i < value.length(); i++) {
+		for (var i = 0; i < value.length(); i++) {
 			if (!isValidChar(value.charAt(i))) {
 				// This char is Upper
 				return false;

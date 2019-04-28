@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.core.resource.handler;
 
 import java.time.Instant;
-import java.util.Date;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,20 +16,20 @@ import org.ligoj.bootstrap.core.DateUtils;
 public class LocalDateParamConverterTest extends AbstractDataGeneratorTest {
 
 	@Test
-	public void fromStringNull() {
+	void fromStringNull() {
 		Assertions.assertNull(new LocalDateParamConverter().fromString(null));
 	}
 
 	@Test
-	public void fromString() {
-		final Date time = getDate(2016, 9, 8, 12, 52, 16);
+	void fromString() {
+		final var time = getDate(2016, 9, 8, 12, 52, 16);
 		Assertions.assertEquals("2016-09-08", new LocalDateParamConverter().fromString(String.valueOf(time.getTime())).toString());
 	}
 
 	@Test
-	public void dateToString() {
-		final Date time = getDate(2016, 9, 8, 12, 52, 16);
-		final Date date = getDate(2016, 9, 8);
+	void dateToString() {
+		final var time = getDate(2016, 9, 8, 12, 52, 16);
+		final var date = getDate(2016, 9, 8);
 
 		// Check only date is kept without time
 		Assertions.assertEquals(String.valueOf(date.getTime()), new LocalDateParamConverter()

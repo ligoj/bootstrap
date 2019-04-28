@@ -27,10 +27,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
-public class CsvForBeanTest {
+class CsvForBeanTest {
 
 	@BeforeAll
-	public static void init() {
+    static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 
 		// Fix UTC time zone for this test, since date are compared
@@ -41,9 +41,9 @@ public class CsvForBeanTest {
 	private CsvForBean csvForBean;
 
 	@Test
-	public void toCsvEmpty() throws IOException {
-		final StringWriter result = new StringWriter();
-		csvForBean.toCsv(new ArrayList<DummyEntity>(), DummyEntity.class, result);
+    void toCsvEmpty() throws IOException {
+		final var result = new StringWriter();
+		csvForBean.toCsv(new ArrayList<>(), DummyEntity.class, result);
 
 		// Check there is only the header
 		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n", result.toString());
@@ -54,16 +54,16 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toCsvEmptyObject() throws Exception {
-		final StringWriter result = new StringWriter();
+    void toCsvEmptyObject() throws Exception {
+		final var result = new StringWriter();
 		csvForBean.toCsv(new ArrayList<>(), Object.class, result);
 	}
 
 	@Test
-	public void toCsvNullProperty() throws IOException {
+    void toCsvNullProperty() throws IOException {
 		final List<DummyEntity> items = new ArrayList<>();
-		final StringWriter result = new StringWriter();
-		final DummyEntity newWine = newWine();
+		final var result = new StringWriter();
+		final var newWine = newWine();
 		newWine.setWneCnty(null);
 		items.add(newWine);
 		csvForBean.toCsv(items, DummyEntity.class, result);
@@ -74,10 +74,10 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toCsvSpecialChars() throws IOException {
+    void toCsvSpecialChars() throws IOException {
 		final List<DummyEntity> items = new ArrayList<>();
-		final StringWriter result = new StringWriter();
-		final DummyEntity newWine = newWine();
+		final var result = new StringWriter();
+		final var newWine = newWine();
 		newWine.setWneCnty("World, hold on;");
 		newWine.setName("Château d\"Yquem");
 		items.add(newWine);
@@ -90,10 +90,10 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toCsv() throws IOException {
+    void toCsv() throws IOException {
 		final List<DummyEntity> items = new ArrayList<>();
 		items.add(newWine());
-		final StringWriter result = new StringWriter();
+		final var result = new StringWriter();
 		csvForBean.toCsv(items, DummyEntity.class, result);
 
 		// Check there is the header and one data line
@@ -102,64 +102,64 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBean() throws IOException {
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class,
+    void toBean() throws IOException {
+		final var items = csvForBean.toBean(DummyEntity.class,
 				new StringReader("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
 		assertEquals(newWine(), items.get(0));
 	}
 
 	@Test
-	public void toBeanNull() throws IOException {
-		final DummyEntity item = csvForBean.toBean(new CsvBeanReader<>(new StringReader(""), DummyEntity.class));
+    void toBeanNull() throws IOException {
+		final var item = csvForBean.toBean(new CsvBeanReader<>(new StringReader(""), DummyEntity.class));
 		Assertions.assertNull(item);
 	}
 
 	@Test
-	public void toBeanPerformance() throws IOException {
-		final int count = 100;
-		for (int i = count; i-- > 0;) {
+    void toBeanPerformance() throws IOException {
+		final var count = 100;
+		for (var i = count; i-- > 0;) {
 			toBeanPerformanceP();
 		}
 	}
 
-	public void toBeanPerformanceP() throws IOException {
-		final StringBuilder buffer = new StringBuilder("name;name;name;name;name;name\n");
-		final int count = 1000;
-		for (int i = count; i-- > 0;) {
+	void toBeanPerformanceP() throws IOException {
+		final var buffer = new StringBuilder("name;name;name;name;name;name\n");
+		final var count = 1000;
+		for (var i = count; i-- > 0;) {
 			buffer.append("name;name;name;name;name;name\n");
 		}
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()));
+		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()));
 		Assertions.assertEquals(count, items.size());
 		Assertions.assertNotNull(items.get(0).getName());
 	}
 
 	@Test
-	public void toBeanPerformance2() throws IOException {
-		final int count = 100;
-		for (int i = count; i-- > 0;) {
+    void toBeanPerformance2() throws IOException {
+		final var count = 100;
+		for (var i = count; i-- > 0;) {
 			toBeanPerformanceP2();
 		}
 	}
 
-	public void toBeanPerformanceP2() throws IOException {
-		final StringBuilder buffer = new StringBuilder("name;name;name;name;name;name\n");
-		final int count = 1000;
-		for (int i = count; i-- > 0;) {
+	void toBeanPerformanceP2() throws IOException {
+		final var buffer = new StringBuilder("name;name;name;name;name;name\n");
+		final var count = 1000;
+		for (var i = count; i-- > 0;) {
 			buffer.append("name;name;name;name;name;name\n");
 		}
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()),
+		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()),
 				(item, p, v) -> item.setName(v));
 		Assertions.assertEquals(count, items.size());
 		Assertions.assertNotNull(items.get(0).getName());
 	}
 
 	@Test
-	public void toBeanNullHeader() throws Exception {
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class,
+    void toBeanNullHeader() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity.class,
 				new StringReader("name;;;   ;;;;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
-		DummyEntity wine2 = items.get(0);
+        var wine2 = items.get(0);
 		Assertions.assertEquals("4", wine2.getName());
 		Assertions.assertEquals(8, wine2.getWneYear().intValue());
 
@@ -172,17 +172,17 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanTrimHeader() throws Exception {
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader("name; wneYear \n4;1"));
+    void toBeanTrimHeader() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity.class, new StringReader("name; wneYear \n4;1"));
 		Assertions.assertEquals(1, items.size());
-		DummyEntity wine2 = items.get(0);
+        var wine2 = items.get(0);
 		Assertions.assertEquals("4", wine2.getName());
 		Assertions.assertEquals(1, wine2.getWneYear().intValue());
 	}
 
 	@Test
-	public void toBeanDouble() throws Exception {
-		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class,
+    void toBeanDouble() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity2.class,
 				new StringReader("dialDouble\n1\n1.1\n1,2\n1 000.3"));
 		Assertions.assertEquals(4, items.size());
 		Assertions.assertEquals(1d, items.get(0).getDialDouble());
@@ -192,8 +192,8 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanDate() throws Exception {
-		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class, new StringReader(
+    void toBeanDate() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity2.class, new StringReader(
 				"dialDate\n1556387665000\n2019-02-25T10:15:30\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assertions.assertEquals(8, items.size());
 		Assertions.assertEquals("Sat Apr 27 17:54:25 UTC 2019", items.get(0).getDialDate().toString());
@@ -207,8 +207,8 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanLocalDate() throws Exception {
-		final List<DummyEntity2> items = csvForBean.toBean(DummyEntity2.class, new StringReader(
+    void toBeanLocalDate() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity2.class, new StringReader(
 				"localDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assertions.assertEquals(6, items.size());
 		Assertions.assertEquals("2016-05-04", items.get(0).getLocalDate().toString());
@@ -220,14 +220,14 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanUnhandledDate() throws Exception {
+    void toBeanUnhandledDate() {
 		Assertions.assertThrows(TechnicalException.class,
 				() -> csvForBean.toBean(DummyEntity2.class, new StringReader("dialDate\nNOT_DATE")));
 	}
 
 	@Test
-	public void toBeanDateTime() throws Exception {
-		final List<DummyAuditedBean> items = csvForBean.toBean(DummyAuditedBean.class, new StringReader(
+    void toBeanDateTime() throws Exception {
+		final var items = csvForBean.toBean(DummyAuditedBean.class, new StringReader(
 				"createdDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assertions.assertEquals(6, items.size());
 		System.setProperty("user.timezone", "UTC");
@@ -240,21 +240,19 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanInvalidForeignKey() {
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForBean.toBean(DummyEntity2.class, "csv/demo/dummyentity2.csv");
-		});
+    void toBeanInvalidForeignKey() {
+		Assertions.assertThrows(TechnicalException.class, () -> csvForBean.toBean(DummyEntity2.class, "csv/demo/dummyentity2.csv"));
 	}
 
 	@Test
-	public void toJpaEmpty() throws Exception {
-		final List<DummyEntity> items = csvForBean.toBean(DummyEntity.class, new StringReader(""));
+    void toJpaEmpty() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(""));
 		Assertions.assertTrue(items.isEmpty());
 	}
 
 	@Test
-	public void toBeanMap() throws Exception {
-		final List<DummyEntity3> items = csvForBean.toBean(DummyEntity3.class,
+    void toBeanMap() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity3.class,
 				new StringReader("login;map$key1;map$key2\nfdaugan;value1;value2"));
 		Assertions.assertEquals(1, items.size());
 		Assertions.assertEquals(2, items.get(0).getMap().size());
@@ -263,8 +261,8 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanList() throws Exception {
-		final List<DummyEntity3> items = csvForBean.toBean(DummyEntity3.class,
+    void toBeanList() throws Exception {
+		final var items = csvForBean.toBean(DummyEntity3.class,
 				new StringReader("login;list;setEnum\nfdaugan;value1,value2;PERSIST,MERGE"));
 		Assertions.assertEquals(1, items.size());
 		Assertions.assertEquals(2, items.get(0).getList().size());
@@ -276,20 +274,16 @@ public class CsvForBeanTest {
 	}
 
 	@Test
-	public void toBeanMapDuplicateKey() {
-		final TechnicalException e = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForBean.toBean(DummyEntity3.class, new StringReader("login;map$key1;map$key1\nfdaugan;value1;value2"));
-		}, "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
+    void toBeanMapDuplicateKey() {
+		final var e = Assertions.assertThrows(TechnicalException.class, () -> csvForBean.toBean(DummyEntity3.class, new StringReader("login;map$key1;map$key1\nfdaugan;value1;value2")), "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
 		Assertions.assertTrue(e.getCause().getMessage().contains(
 				"Duplicate map entry key='key1' for map property map in class org.ligoj.bootstrap.core.csv.DummyEntity3"));
 	}
 
 	@Test
-	public void toBeanMapNotMapDuplicateKey() {
-		final TechnicalException e = Assertions.assertThrows(TechnicalException.class, () -> {
-			csvForBean.toBean(DummyEntity3.class,
-					new StringReader("login;lastConnection$key1;lastConnection$key1\nfdaugan;value1;value2"));
-		}, "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
+    void toBeanMapNotMapDuplicateKey() {
+		final var e = Assertions.assertThrows(TechnicalException.class, () -> csvForBean.toBean(DummyEntity3.class,
+				new StringReader("login;lastConnection$key1;lastConnection$key1\nfdaugan;value1;value2")), "Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
 		Assertions.assertTrue(e.getCause().getMessage().contains(
 				"Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection to java.util.LinkedHashMap"));
 	}
@@ -298,7 +292,7 @@ public class CsvForBeanTest {
 	 * Create a new dummy entity.
 	 */
 	private DummyEntity newWine() {
-		final DummyEntity wine = new DummyEntity();
+		final var wine = new DummyEntity();
 		wine.setWneCnty("1");
 		wine.setWneDesc("2");
 		wine.setWneGrpe("3");
@@ -317,7 +311,7 @@ public class CsvForBeanTest {
 		Assertions.assertEquals(newWine.getWneCnty(), wine2.getWneCnty());
 		Assertions.assertEquals(newWine.getWneDesc(), wine2.getWneDesc());
 		Assertions.assertEquals(newWine.getWneGrpe(), wine2.getWneGrpe());
-		Assertions.assertEquals(null, wine2.getId());
+		Assertions.assertNull(wine2.getId());
 		Assertions.assertEquals(newWine.getName(), wine2.getName());
 		Assertions.assertEquals(newWine.getWnePict(), wine2.getWnePict());
 		Assertions.assertEquals(newWine.getWneRegn(), wine2.getWneRegn());

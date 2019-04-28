@@ -3,8 +3,6 @@
  */
 package org.ligoj.bootstrap.core.resource.filter;
 
-import java.lang.annotation.Annotation;
-
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -24,7 +22,7 @@ public class NotFoundResponseFilter extends AbstractMapper implements ContainerR
 	public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
 		if (responseContext.getStatus() == Status.NO_CONTENT.getStatusCode()) {
 			// No entity returned
-			for (final Annotation annotation : responseContext.getEntityAnnotations()) {
+			for (final var annotation : responseContext.getEntityAnnotations()) {
 				if (annotation.annotationType() == OnNullReturn404.class) {
 					// Explicit management of null result -> return a 404 status code
 					replaceResponse(requestContext, responseContext);
@@ -38,7 +36,7 @@ public class NotFoundResponseFilter extends AbstractMapper implements ContainerR
 	 * Set the entity response to a 404 JSON entity.
 	 */
 	private void replaceResponse(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
-		final ServerError serverError = new ServerError();
+		final var serverError = new ServerError();
 		if (requestContext.getUriInfo().getPathParameters().size() == 1) {
 			// Single parameter ---> entity identifier or whatever identifying a data
 			serverError.setCode("entity");

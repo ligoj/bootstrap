@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -38,12 +36,12 @@ public class ValidationResource {
 	 */
 	@GET
 	public Map<String, List<String>> describe(final String className) throws ClassNotFoundException {
-		final Class<?> beanClass = Class.forName(className);
+		final var beanClass = Class.forName(className);
 		final Map<String, List<String>> result = new HashMap<>();
-		for (final PropertyDescriptor property : validator.getValidator().getConstraintsForClass(beanClass).getConstrainedProperties()) {
+		for (final var property : validator.getValidator().getConstraintsForClass(beanClass).getConstrainedProperties()) {
 			final List<String> list = new ArrayList<>();
 			result.put(property.getPropertyName(), list);
-			for (final ConstraintDescriptor<?> constraint : property.getConstraintDescriptors()) {
+			for (final var constraint : property.getConstraintDescriptors()) {
 				// Since constraints are annotation, get the annotation class (interface)
 				list.add(constraint.getAnnotation().getClass().getInterfaces()[0].getName());
 			}

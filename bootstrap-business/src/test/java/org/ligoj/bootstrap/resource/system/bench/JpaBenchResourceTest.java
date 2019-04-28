@@ -4,11 +4,8 @@
 package org.ligoj.bootstrap.resource.system.bench;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-
-import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Assertions;
@@ -38,8 +35,8 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 	 * Test for transaction mode with many data.
 	 */
 	@Test
-	public void testPrepareData() throws IOException {
-		final int nbEntries = 10;
+	void testPrepareData() throws IOException {
+		final var nbEntries = 10;
 		assertResult(new ObjectMapperTrim().readValue(resource.prepareData(null, nbEntries), BenchResult.class), nbEntries);
 		testCrud(nbEntries);
 	}
@@ -48,22 +45,22 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 	 * Test for transaction mode with 3M LOB file.
 	 */
 	@Test
-	public void testPrepareDataBlob() throws Exception {
-		final URL jarLocation = getBlobFile();
+	void testPrepareDataBlob() throws Exception {
+		final var jarLocation = getBlobFile();
 		// Get the JAR input
-		try (InputStream openStream = jarLocation.openStream()) {
+		try (var openStream = jarLocation.openStream()) {
 			// Proceed to the test
-			final int nbEntries = 10;
+			final var nbEntries = 10;
 			resource.prepareData(openStream, nbEntries);
 			testCrud(nbEntries);
 		}
 	}
 
 	@Test
-	public void testDownloadDataBlobEmpty() throws Exception {
-		final URL jarLocation = getBlobFile();
+	void testDownloadDataBlobEmpty() throws Exception {
+		final var jarLocation = getBlobFile();
 		// Get the JAR input
-		try (InputStream openStream = jarLocation.openStream()) {
+		try (var openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 0);
@@ -72,33 +69,31 @@ public class JpaBenchResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void testDownloadDataBlobError() throws Exception {
-		final URL jarLocation = getBlobFile();
+	void testDownloadDataBlobError() throws Exception {
+		final var jarLocation = getBlobFile();
 		// Get the JAR input
-		try (InputStream openStream = jarLocation.openStream()) {
+		try (var openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 1);
-			final StreamingOutput downloadLobFile = resource.downloadLobFile();
-			final OutputStream output = Mockito.mock(OutputStream.class);
+			final var downloadLobFile = resource.downloadLobFile();
+			final var output = Mockito.mock(OutputStream.class);
 			Mockito.doThrow(new IOException()).when(output).write(ArgumentMatchers.any(byte[].class));
 
-			Assertions.assertThrows(IllegalStateException.class, () -> {
-				downloadLobFile.write(output);
-			});
+			Assertions.assertThrows(IllegalStateException.class, () -> downloadLobFile.write(output));
 		}
 	}
 
 	@Test
-	public void testDownloadDataBlob() throws Exception {
-		final URL jarLocation = getBlobFile();
+	void testDownloadDataBlob() throws Exception {
+		final var jarLocation = getBlobFile();
 		// Get the JAR input
-		try (InputStream openStream = jarLocation.openStream()) {
+		try (var openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
 			resource.prepareData(openStream, 1);
-			final StreamingOutput downloadLobFile = resource.downloadLobFile();
-			final ByteArrayOutputStream output = new ByteArrayOutputStream();
+			final var downloadLobFile = resource.downloadLobFile();
+			final var output = new ByteArrayOutputStream();
 			downloadLobFile.write(output);
 			Assertions.assertTrue(output.toByteArray().length > 3000000);
 		}

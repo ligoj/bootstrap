@@ -16,7 +16,7 @@ import org.springframework.core.io.Resource;
 /**
  * Check Spring resource loader. Test class of {@link GlobalPropertyUtils}
  */
-public class GlobalPropertyUtilsTest {
+class GlobalPropertyUtilsTest {
 
 	/**
 	 * No provided locations.
@@ -25,7 +25,7 @@ public class GlobalPropertyUtilsTest {
 	 *             Read issue occurred.
 	 */
 	@Test
-	public void testNoLocations() throws IOException {
+    void testNoLocations() throws IOException {
 		new GlobalPropertyUtils().setLocations(new Resource[0]);
 		new GlobalPropertyUtils().loadProperties(new Properties());
 		Assertions.assertNull(GlobalPropertyUtils.getProperty("key"));
@@ -38,8 +38,8 @@ public class GlobalPropertyUtilsTest {
 	 *             Read issue occurred.
 	 */
 	@Test
-	public void testLocationNoInput() throws IOException {
-		final Resource[] resources = new Resource[] { Mockito.mock(Resource.class) };
+    void testLocationNoInput() throws IOException {
+		final var resources = new Resource[] { Mockito.mock(Resource.class) };
 		Mockito.when(resources[0].getInputStream()).thenReturn(null);
 		new GlobalPropertyUtils().setLocations(resources);
 		new GlobalPropertyUtils().loadProperties(new Properties());
@@ -53,9 +53,9 @@ public class GlobalPropertyUtilsTest {
 	 *             Read issue occurred.
 	 */
 	@Test
-	public void testLocationInputError() throws IOException {
-		final Resource[] resources = new Resource[1];
-		final Resource resource = Mockito.mock(Resource.class);
+    void testLocationInputError() throws IOException {
+		final var resources = new Resource[1];
+		final var resource = Mockito.mock(Resource.class);
 		resources[0] = resource;
 		Mockito.doThrow(new IOException()).when(resource).getInputStream();
 		new GlobalPropertyUtils().setLocations(resources);
@@ -68,14 +68,12 @@ public class GlobalPropertyUtilsTest {
 	 *             Read issue occurred.
 	 */
 	@Test
-	public void testLocationInputError2() throws IOException {
-		final Resource[] resources = new Resource[1];
-		final Resource resource = Mockito.mock(Resource.class);
+    void testLocationInputError2() throws IOException {
+		final var resources = new Resource[1];
+		final var resource = Mockito.mock(Resource.class);
 		resources[0] = resource;
 		Mockito.doThrow(new IllegalStateException()).when(resource).getInputStream();
-		Assertions.assertThrows(IllegalStateException.class, () -> {
-			new GlobalPropertyUtils().setLocations(resources);
-		});
+		Assertions.assertThrows(IllegalStateException.class, () -> new GlobalPropertyUtils().setLocations(resources));
 	}
 
 	/**
@@ -85,9 +83,9 @@ public class GlobalPropertyUtilsTest {
 	 *             Read issue occurred.
 	 */
 	@Test
-	public void testLocation() throws IOException {
-		final Resource[] resources = new Resource[1];
-		final Resource resource = Mockito.mock(Resource.class);
+    void testLocation() throws IOException {
+		final var resources = new Resource[1];
+		final var resource = Mockito.mock(Resource.class);
 		final InputStream input = new ByteArrayInputStream("key=value".getBytes());
 		Mockito.when(resource.getInputStream()).thenReturn(input);
 		resources[0] = resource;

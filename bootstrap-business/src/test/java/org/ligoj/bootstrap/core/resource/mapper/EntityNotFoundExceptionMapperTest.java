@@ -11,11 +11,11 @@ import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 /**
  * Exception mapper test using {@link EntityNotFoundExceptionMapper}
  */
-public class EntityNotFoundExceptionMapperTest extends AbstractMapperTest {
+class EntityNotFoundExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final EntityNotFoundException exception = new EntityNotFoundException("message-error");
+	void toResponse() {
+		final var exception = new EntityNotFoundException("message-error");
 		check(mock(new EntityNotFoundExceptionMapper()).toResponse(exception), 404,
 				"{\"code\":\"entity\",\"message\":\"message-error\",\"parameters\":null,\"cause\":null}");
 	}

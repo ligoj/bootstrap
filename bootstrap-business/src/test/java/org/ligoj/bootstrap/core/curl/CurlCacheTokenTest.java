@@ -16,48 +16,46 @@ import org.springframework.context.ApplicationContext;
 /**
  * Test class of {@link CurlCacheToken}
  */
-public class CurlCacheTokenTest {
+class CurlCacheTokenTest {
 
 	private CurlCacheToken cacheToken;
 
 	@BeforeEach
 	@AfterEach
-	public void clearCache() {
+	void clearCache() {
 		cacheToken = new CurlCacheToken();
 		cacheToken.applicationContext = Mockito.mock(ApplicationContext.class);
 		Mockito.when(cacheToken.applicationContext.getBean(CurlCacheToken.class)).thenReturn(cacheToken);
 	}
 
 	@Test
-	public void getTokenCacheFailed() {
-		final Object sync = new Object();
-		AtomicInteger counter = new AtomicInteger();
-		Assertions.assertThrows(ValidationJsonException.class, () -> {
-			Assertions.assertEquals("", cacheToken.getTokenCache(sync, "key", k -> {
-				counter.incrementAndGet();
-				return null;
-			}, 2, () -> new ValidationJsonException()));
-		});
+	void getTokenCacheFailed() {
+		final var sync = new Object();
+        var counter = new AtomicInteger();
+		Assertions.assertThrows(ValidationJsonException.class, () -> Assertions.assertEquals("", cacheToken.getTokenCache(sync, "key", k -> {
+			counter.incrementAndGet();
+			return null;
+		}, 2, ValidationJsonException::new)));
 		Assertions.assertEquals(2, counter.get());
 		Assertions.assertEquals("ok", cacheToken.getTokenCache(sync, "key", k -> {
 			if (counter.incrementAndGet() == 4) {
 				return "ok";
 			}
 			return null;
-		}, 2, () -> new ValidationJsonException()));
+		}, 2, ValidationJsonException::new));
 		Assertions.assertEquals(4, counter.get());
 	}
 
 	@Test
-	public void getTokenCache() {
-		final Object sync = new Object();
-		AtomicInteger counter = new AtomicInteger();
+	void getTokenCache() {
+		final var sync = new Object();
+        var counter = new AtomicInteger();
 		Assertions.assertEquals("ok", cacheToken.getTokenCache(sync, "key", k -> {
 			if (counter.incrementAndGet() == 2) {
 				return "ok";
 			}
 			return null;
-		}, 2, () -> new ValidationJsonException()));
+		}, 2, ValidationJsonException::new));
 		Assertions.assertEquals(2, counter.get());
 	}
 }

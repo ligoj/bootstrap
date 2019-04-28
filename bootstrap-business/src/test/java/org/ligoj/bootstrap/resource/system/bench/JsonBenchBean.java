@@ -30,7 +30,7 @@ public class JsonBenchBean {
 	 * @param beans
 	 *            the {@link #beans} to set.
 	 */
-	public void setBeans(final List<SimpleJsonBean> beans) {
+	void setBeans(final List<SimpleJsonBean> beans) {
 		this.beans = beans;
 	}
 

@@ -10,11 +10,11 @@ import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 /**
  * Exception mapper test using {@link ValidationJsonExceptionMapper}
  */
-public class ValidationJsonExceptionMapperTest extends AbstractMapperTest {
+class ValidationJsonExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final ValidationJsonException exception = new ValidationJsonException("message-error");
+	void toResponse() {
+		final var exception = new ValidationJsonException("message-error");
 		check(mock(new ValidationJsonExceptionMapper()).toResponse(exception), 400, "{\"errors\":{}}");
 	}
 

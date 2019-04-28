@@ -38,8 +38,8 @@ public final class Main {
 	 */
 	public Main() throws Exception {
 		server = new Server();
-		final String jettyPropertiesFile = System.getProperty("jetty.properties", SETTINGS);
-		try (InputStream propertiesInput = configure(jettyPropertiesFile)) {
+		final var jettyPropertiesFile = System.getProperty("jetty.properties", SETTINGS);
+		try (var propertiesInput = configure(jettyPropertiesFile)) {
 			// Load the properties file
 			log.debug("Loading Jetty Settings from {}", SETTINGS);
 		}
@@ -67,7 +67,7 @@ public final class Main {
 	 * Configure the server from properties and XML.
 	 */
 	private InputStream configure(final String jettyPropertiesFile) throws Exception {
-		final InputStream propertiesInput = Thread.currentThread().getContextClassLoader()
+		final var propertiesInput = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(jettyPropertiesFile);
 		if (propertiesInput == null) {
 			log.error("Unable to find jetty properties file : " + jettyPropertiesFile);
@@ -87,7 +87,7 @@ public final class Main {
 	 * Copy properties from the given input.
 	 */
 	private void copyProperties(final InputStream propertiesInput) throws IOException {
-		final Properties properties = new Properties();
+		final var properties = new Properties();
 		properties.load(propertiesInput);
 		properties.putAll(System.getProperties());
 		System.setProperties(properties);
@@ -104,7 +104,7 @@ public final class Main {
 	 */
 	public static void main(final String... args) throws Exception {
 		// CHECKSTYLE:ON
-		final Main main = new Main();
+		final var main = new Main();
 		main.server.start();
 
 		// Update the last started server instance.

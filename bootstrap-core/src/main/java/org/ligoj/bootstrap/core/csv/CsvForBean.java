@@ -24,14 +24,14 @@ public class CsvForBean extends AbstractCsvManager {
 	public <T> List<T> toBean(final Class<T> beanType, final Reader input, final TriConsumer<T, String, String> setter)
 			throws IOException {
 		final List<T> result = new ArrayList<>();
-		final Reader inputProxy = new BufferedReader(input);
-		final String line = ((BufferedReader) inputProxy).readLine();
+		final var inputProxy = new BufferedReader(input);
+		final var line = inputProxy.readLine();
 		if (line == null) {
 			// No content means no header, no items.
 			return result;
 		}
 
-		final CsvBeanReader<T> reader = new CsvBeanReader<>(inputProxy, beanType,
+		final var reader = new CsvBeanReader<T>(inputProxy, beanType,
 				StringUtils.splitPreserveAllTokens(line, CsvReader.DEFAULT_SEPARATOR));
 
 		// Build all instances
@@ -74,7 +74,7 @@ public class CsvForBean extends AbstractCsvManager {
 	private <T> void fillList(final List<T> result, final CsvBeanReader<T> reader,
 			final TriConsumer<T, String, String> setter) throws IOException {
 		// Build the first instance
-		T order = toBean(reader, setter);
+        var order = toBean(reader, setter);
 		while (order != null) {
 			result.add(order);
 

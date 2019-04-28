@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,7 @@ import com.hazelcast.spi.RemoteService;
  * Test class of {@link CacheResource}
  */
 @ExtendWith(SpringExtension.class)
-public class CacheResourceTest extends AbstractBootTest {
+class CacheResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private CacheResource cacheResource;
@@ -41,12 +40,12 @@ public class CacheResourceTest extends AbstractBootTest {
 	private CacheManager cacheManager;
 
 	@BeforeEach
-	public void cleanCache() {
+	void cleanCache() {
 		cacheManager.getCache("test-cache").clear();
 	}
 
 	@Test
-	public void invalidate() {
+	void invalidate() {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache");
 		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
@@ -69,7 +68,7 @@ public class CacheResourceTest extends AbstractBootTest {
 	 * Tested cache expires with 1 second after the last update.
 	 */
 	@Test
-	public void expirityModifyPolicy() throws InterruptedException {
+	void expirityModifyPolicy() throws InterruptedException {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache-1");
 		Assertions.assertEquals(1, dummyCacheBean.getHit1("entry-key"));
@@ -98,7 +97,7 @@ public class CacheResourceTest extends AbstractBootTest {
 	 * Tested cache expires with 1 second after the last update/access.
 	 */
 	@Test
-	public void expirityTouchedPolicy() throws InterruptedException {
+	void expirityTouchedPolicy() throws InterruptedException {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache-2");
 		Assertions.assertEquals(1, dummyCacheBean.getHit2("entry-key"));
@@ -128,25 +127,25 @@ public class CacheResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void getCaches() {
+	void getCaches() {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache");
 		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
 		doManyHits();
 
-		final List<CacheStatistics> caches = cacheResource.getCaches();
+		final var caches = cacheResource.getCaches();
 		Assertions.assertEquals(6, caches.size());
 		Assertions.assertTrue(caches.stream().filter(c -> "test-cache".equals(c.getId())).anyMatch(this::assertCache));
 	}
 
 	private void doManyHits() {
-		for (int i = 100000; i-- > 0;) {
+		for (var i = 100000; i-- > 0;) {
 			dummyCacheBean.getHit("entry-key" + i);
 		}
 	}
 
 	@Test
-	public void getCache() {
+	void getCache() {
 		dummyCacheBean.getHit("entry-key");
 		cacheResource.invalidate("test-cache");
 		dummyCacheBean.getHit("entry-key");
@@ -155,18 +154,17 @@ public class CacheResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void setStatistics() {
+	void setStatistics() {
 		dummyCacheBean.getHit("entry-key");
 		cacheResource.invalidate("test-cache");
 		dummyCacheBean.getHit("entry-key");
 		doManyHits();
 
-		final String policy = System.getProperty("java.security.policy");
+		final var policy = System.getProperty("java.security.policy");
 		try {
 			System.setProperty("java.security.policy", "path_to_policy");
-			final CacheStatistics result = new CacheStatistics();
-			final com.hazelcast.cache.CacheStatistics statistics = Mockito
-					.mock(com.hazelcast.cache.CacheStatistics.class);
+			final var result = new CacheStatistics();
+			final var statistics = Mockito.mock(com.hazelcast.cache.CacheStatistics.class);
 			Mockito.doReturn(1.1F).when(statistics).getCacheMissPercentage();
 			Mockito.doReturn(2.2F).when(statistics).getCacheHitPercentage();
 			Mockito.doReturn(3L).when(statistics).getCacheHits();
@@ -197,14 +195,14 @@ public class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertTrue(cache.getSize() > 100);
 
 		// Node check
-		final CacheNode node = cache.getNode();
+		final var node = cache.getNode();
 		Assertions.assertNotNull(node.getAddress());
 		Assertions.assertNotNull(node.getCluster());
 		Assertions.assertNotNull(node.getId());
 		Assertions.assertNotNull(node.getVersion());
 
 		// Cluster check
-		final CacheCluster cluster = node.getCluster();
+		final var cluster = node.getCluster();
 		Assertions.assertNotNull(cluster.getId());
 		Assertions.assertEquals(1, cluster.getMembers().size());
 		Assertions.assertNull(cluster.getMembers().get(0).getCluster());
@@ -220,18 +218,18 @@ public class CacheResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void onApplicationEventNotRunning() {
-		final ContextClosedEvent event = Mockito.mock(ContextClosedEvent.class);
-		final CacheResource resource = new CacheResource();
+	void onApplicationEventNotRunning() {
+		final var event = Mockito.mock(ContextClosedEvent.class);
+		final var resource = new CacheResource();
 		resource.cacheManager = Mockito.mock(CacheManager.class);
 
 		Mockito.when(resource.cacheManager.getCacheNames()).thenReturn(Collections.singletonList("my-cache"));
-		final Cache cache = Mockito.mock(Cache.class);
+		final var cache = Mockito.mock(Cache.class);
 		Mockito.when(resource.cacheManager.getCache("my-cache")).thenReturn(cache);
-		final NodeEngine node = Mockito.mock(NodeEngine.class);
-		final RemoteService rservice = Mockito.mock(RemoteService.class);
+		final var node = Mockito.mock(NodeEngine.class);
+		final var rService = Mockito.mock(RemoteService.class);
 		Mockito.when(node.isRunning()).thenReturn(true);
-		final AbstractDistributedObject<RemoteService> cacheProxy = new AbstractDistributedObject<>(node, rservice) {
+		final AbstractDistributedObject<RemoteService> cacheProxy = new AbstractDistributedObject<>(node, rService) {
 
 			@Override
 			public String getName() {
@@ -249,18 +247,18 @@ public class CacheResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void onApplicationEventRunning() {
-		final ContextClosedEvent event = Mockito.mock(ContextClosedEvent.class);
-		final CacheResource resource = new CacheResource();
+	void onApplicationEventRunning() {
+		final var event = Mockito.mock(ContextClosedEvent.class);
+		final var resource = new CacheResource();
 		resource.cacheManager = Mockito.mock(CacheManager.class);
 
 		Mockito.when(resource.cacheManager.getCacheNames()).thenReturn(Collections.singletonList("my-cache"));
-		final Cache cache = Mockito.mock(Cache.class);
+		final var cache = Mockito.mock(Cache.class);
 		Mockito.when(resource.cacheManager.getCache("my-cache")).thenReturn(cache);
-		final NodeEngine node = Mockito.mock(NodeEngine.class);
-		final RemoteService rservice = Mockito.mock(RemoteService.class);
+		final var node = Mockito.mock(NodeEngine.class);
+		final var rService = Mockito.mock(RemoteService.class);
 		Mockito.when(node.isRunning()).thenReturn(true);
-		final AbstractDistributedObject<RemoteService> cacheProxy = new AbstractDistributedObject<>(node, rservice) {
+		final AbstractDistributedObject<RemoteService> cacheProxy = new AbstractDistributedObject<>(node, rService) {
 
 			@Override
 			public String getName() {
@@ -273,9 +271,9 @@ public class CacheResourceTest extends AbstractBootTest {
 			}
 		};
 		Mockito.when(cache.getNativeCache()).thenReturn(cacheProxy);
-		final HazelcastInstance instance = Mockito.mock(HazelcastInstance.class);
+		final var instance = Mockito.mock(HazelcastInstance.class);
 		Mockito.when(node.getHazelcastInstance()).thenReturn(instance);
-		final LifecycleService service = Mockito.mock(LifecycleService.class);
+		final var service = Mockito.mock(LifecycleService.class);
 		Mockito.when(service.isRunning()).thenReturn(true);
 		Mockito.when(instance.getLifecycleService()).thenReturn(service);
 		resource.onApplicationEvent(event);

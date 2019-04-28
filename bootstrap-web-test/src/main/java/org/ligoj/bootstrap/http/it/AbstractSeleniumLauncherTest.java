@@ -29,37 +29,37 @@ import lombok.extern.slf4j.Slf4j;
  * Common Selenium test class, provides convenient methods to interact with browsers.
  */
 @Slf4j
-public abstract class AbstractSeleniumLauncherTest {
+abstract class AbstractSeleniumLauncherTest {
 
 	/**
 	 * UI timeout for availability.
 	 */
-	protected int timeout = 10;
+    int timeout = 10;
 
 	/**
 	 * Default capability.
 	 */
-	protected static final DesiredCapabilities DEFAULT_CAPABILITY = DesiredCapabilities.firefox();
+	private static final DesiredCapabilities DEFAULT_CAPABILITY = DesiredCapabilities.firefox();
 
 	/**
 	 * Default local driver.
 	 */
-	protected static final String DEFAULT_LOCAL_DRIVER = "org.openqa.selenium.firefox.FirefoxDriver";
+	private static final String DEFAULT_LOCAL_DRIVER = "org.openqa.selenium.firefox.FirefoxDriver";
 
 	/**
 	 * Default remote driver.
 	 */
-	protected static final String DEFAULT_REMOTE_DRIVER = "org.openqa.selenium.remote.RemoteWebDriver";
+	private static final String DEFAULT_REMOTE_DRIVER = "org.openqa.selenium.remote.RemoteWebDriver";
 
 	/**
 	 * Validation error : cannot be empty
 	 */
-	public static final String ERROR_CANNOT_BE_EMPTY = "Ne peut pas être vide";
+	public static final String ERROR_CANNOT_BE_EMPTY = "Cannot be empty";
 
 	/**
 	 * Validation error : lower case
 	 */
-	public static final String ERROR_LOWERCASE = "Doit être en minuscule";
+	public static final String ERROR_LOWERCASE = "Must be in lower case";
 
 	/**
 	 * Validation error : no error
@@ -69,40 +69,40 @@ public abstract class AbstractSeleniumLauncherTest {
 	/**
 	 * Selenium Hub URL
 	 */
-	protected static final String GRID_URL = System.getProperty("test.selenium.hub.url",
+	private static final String GRID_URL = System.getProperty("test.selenium.hub.url",
 			ObjectUtils.defaultIfNull(System.getenv("SELENIUM_GRID"), "http://localhost:4444/wd/hub"));
 
-	protected String baseDir = "c:\\tmp\\";
+	String baseDir = "c:\\tmp\\";
 
 	/**
 	 * The local driver class used only for local mode tests.
 	 */
-	protected String localDriverClass = DEFAULT_LOCAL_DRIVER;
+    String localDriverClass = DEFAULT_LOCAL_DRIVER;
 
 	/**
 	 * The remote driver class used only for remote mode tests.
 	 */
-	protected String remoteDriverClass = DEFAULT_REMOTE_DRIVER;
+    String remoteDriverClass = DEFAULT_REMOTE_DRIVER;
 
-	protected WebDriver driver;
+	WebDriver driver;
 
-	protected DesiredCapabilities capability = DEFAULT_CAPABILITY;
+	DesiredCapabilities capability = DEFAULT_CAPABILITY;
 
-	protected String scenario;
+	String scenario;
 
-	protected String baseUrl;
+	String baseUrl;
 
-	protected URL gridUrl;
+	URL gridUrl;
 
 	/**
 	 * Screenshot counter.
 	 */
-	protected int screenshotCounter = 0;
+    private int screenshotCounter = 0;
 
 	/**
 	 * @return <code>true</code> for local test. <code>false</code> other wise : Grid test
 	 */
-	protected boolean isLocalTest() {
+    private boolean isLocalTest() {
 		return System.getProperty("test.selenium.remote") == null;
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOSONAR -- too many
+    WebDriver getRemoteDriver(final DesiredCapabilities capability) throws Exception { // NOSONAR -- too many
 																									// exception
 		log.info("Asking for " + capability + " to " + gridUrl);
 		return new Augmenter().augment((WebDriver) Class.forName(remoteDriverClass)
@@ -129,7 +129,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected WebDriver getLocalDriver() throws Exception { // NOSONAR -- too many exception
+    private WebDriver getLocalDriver() throws Exception { // NOSONAR -- too many exception
 		return (WebDriver) Class.forName(localDriverClass).getDeclaredConstructor().newInstance();
 	}
 
@@ -140,7 +140,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 *             from driver loader and many lock management.
 	 */
 	@BeforeEach
-	public void setUpDriver() throws Exception { // NOSONAR -- too many exception
+	void setUpDriver() throws Exception { // NOSONAR -- too many exception
 		gridUrl = new URL(GRID_URL);
 		baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("log4j2.json").toURI())
 				.getParent();
@@ -161,7 +161,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws Exception
 	 *             from driver loader and many lock management.
 	 */
-	protected void prepareDriver() throws Exception { // NOSONAR -- too many exception
+    void prepareDriver() throws Exception { // NOSONAR -- too many exception
 		if (isLocalTest()) {
 			driver = getLocalDriver();
 		} else {
@@ -194,13 +194,13 @@ public abstract class AbstractSeleniumLauncherTest {
 	/**
 	 * Prepare the driver for the launch
 	 */
-	protected void prepareBrowser() {
+    void prepareBrowser() {
 		driver.manage().deleteAllCookies();
 		driver.manage().window().maximize();
 	}
 
-	protected String extractScreenShot(final WebDriverException e) {
-		final Throwable cause = e.getCause();
+	String extractScreenShot(final WebDriverException e) {
+		final var cause = e.getCause();
 		if (cause instanceof ScreenshotException) {
 			return ((ScreenshotException) cause).getBase64EncodedScreenshot();
 		}
@@ -213,7 +213,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @param to
 	 *            Simple file name where the screenshot will be saved.
 	 */
-	protected void screenshot(final String to) {
+    void screenshot(final String to) {
 		try {
 			sleep(750);
 			screenshotNow(to);
@@ -230,13 +230,13 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws IOException
 	 *             When screenshot cannot be saved.
 	 */
-	protected void screenshotNow(final String to) throws IOException {
-		final File directory = new File(new File(baseDir, scenario), capability.getBrowserName());
+    private void screenshotNow(final String to) throws IOException {
+		final var directory = new File(new File(baseDir, scenario), capability.getBrowserName());
 		FileUtils.forceMkdir(directory);
 		try {
 			// Copy the received screenshot to the target directory
-			final File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-			final File targetFile = new File(directory,
+			final var scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			final var targetFile = new File(directory,
 					StringUtils.leftPad(String.valueOf(++screenshotCounter), 3, '0') + "-" + to);
 			log.info("Screenshot received : '" + scrFile + ", copying to " + targetFile);
 			FileUtils.copyFile(scrFile, targetFile);
@@ -249,7 +249,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	/**
 	 * Connect to the application until the login page
 	 */
-	protected void connect() {
+    void connect() {
 		driver.get(baseUrl);
 	}
 
@@ -258,7 +258,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws InterruptedException
 	 *             From {@link Thread#sleep(long)}
 	 */
-	protected void smallSleep() throws InterruptedException {
+    void smallSleep() throws InterruptedException {
 		sleep(1000);
 	}
 
@@ -270,7 +270,7 @@ public abstract class AbstractSeleniumLauncherTest {
 	 * @throws InterruptedException
 	 *             From {@link Thread#sleep(long)}
 	 */
-	protected void sleep(final long milli) throws InterruptedException {
+    private void sleep(final long milli) throws InterruptedException {
 		Thread.sleep(milli); // NOSONAR -- Have to pause the thread
 	}
 }

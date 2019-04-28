@@ -24,52 +24,45 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /**
  * Test class of {@link ImplicitNamingStrategyNiceJpaImpl}
  */
-public class ImplicitNamingStrategyNiceJpaImplTest {
+class ImplicitNamingStrategyNiceJpaImplTest {
 
 	@Test
-	public void determineUniqueKeyName() {
-		final ImplicitUniqueKeyNameSource source = Mockito.mock(ImplicitUniqueKeyNameSource.class);
+    void determineUniqueKeyName() {
+		final var source = Mockito.mock(ImplicitUniqueKeyNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final List<Identifier> columnsIdentifier = new ArrayList<>();
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn1"));
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn2"));
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
 
 		Assertions.assertEquals("UK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
 	}
 
 	@Test
-	public void determineAnyKeyColumnName() {
-		final ImplicitAnyKeyColumnNameSource source = Mockito.mock(ImplicitAnyKeyColumnNameSource.class);
+    void determineAnyKeyColumnName() {
+		final var source = Mockito.mock(ImplicitAnyKeyColumnNameSource.class);
 		mockContext(source);
-		final AttributePath attributePath= Mockito.mock(AttributePath.class);
+		final var attributePath= Mockito.mock(AttributePath.class);
 		Mockito.when(attributePath.getProperty()).thenReturn("myProperty");
 		Mockito.when(source.getAttributePath()).thenReturn(attributePath);
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineAnyKeyColumnName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineAnyKeyColumnName(source);
 		Assertions.assertEquals("my_property", identifier.getText());
 	}
 
 	private void mockContext(final ImplicitNameSource source) {
-		final MetadataBuildingContext context = Mockito.mock(MetadataBuildingContext.class);
-		final InFlightMetadataCollector collector = Mockito.mock(InFlightMetadataCollector.class);
-		final Database database = Mockito.mock(Database.class);
-		final JdbcEnvironment jdbcEnvironment = Mockito.mock(JdbcEnvironment.class);
-		final IdentifierHelper identifierHelper = Mockito.mock(IdentifierHelper.class);
-		Mockito.when(identifierHelper.toIdentifier(ArgumentMatchers.anyString())).then(new Answer<Identifier>() {
-
-			@Override
-			public Identifier answer(final InvocationOnMock invocation) {
-				return DatabaseIdentifier.toIdentifier((String)invocation.getArguments()[0]) ;
-			}
-		});
+		final var context = Mockito.mock(MetadataBuildingContext.class);
+		final var collector = Mockito.mock(InFlightMetadataCollector.class);
+		final var database = Mockito.mock(Database.class);
+		final var jdbcEnvironment = Mockito.mock(JdbcEnvironment.class);
+		final var identifierHelper = Mockito.mock(IdentifierHelper.class);
+		Mockito.when(identifierHelper.toIdentifier(ArgumentMatchers.anyString())).then((Answer<Identifier>) invocation -> DatabaseIdentifier.toIdentifier((String)invocation.getArguments()[0]));
 		Mockito.when(jdbcEnvironment.getIdentifierHelper()).thenReturn(identifierHelper);
 		Mockito.when(database.getJdbcEnvironment()).thenReturn(jdbcEnvironment);
 		Mockito.when(collector.getDatabase()).thenReturn(database);
@@ -79,59 +72,59 @@ public class ImplicitNamingStrategyNiceJpaImplTest {
 
 	
 	@Test
-	public void determineJoinColumnNameCollection() {
-		final ImplicitJoinColumnNameSource source = Mockito.mock(ImplicitJoinColumnNameSource.class);
+    void determineJoinColumnNameCollection() {
+		final var source = Mockito.mock(ImplicitJoinColumnNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ELEMENT_COLLECTION);
 		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
 		Assertions.assertEquals("MyTa_ble", identifier.getText());
 	}
 	
 	@Test
-	public void determineJoinColumnNameNoAttribute() {
-		final ImplicitJoinColumnNameSource source = Mockito.mock(ImplicitJoinColumnNameSource.class);
+    void determineJoinColumnNameNoAttribute() {
+		final var source = Mockito.mock(ImplicitJoinColumnNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ENTITY);
 		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
 		Assertions.assertEquals("MyTa_ble", identifier.getText());
 	}
 	
 	@Test
-	public void determineJoinColumnName() {
-		final ImplicitJoinColumnNameSource source = Mockito.mock(ImplicitJoinColumnNameSource.class);
+    void determineJoinColumnName() {
+		final var source = Mockito.mock(ImplicitJoinColumnNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getNature()).thenReturn(ImplicitJoinColumnNameSource.Nature.ENTITY);
-		final AttributePath attributePath= Mockito.mock(AttributePath.class);
+		final var attributePath= Mockito.mock(AttributePath.class);
 		Mockito.when(attributePath.getProperty()).thenReturn("myProperty");
 		Mockito.when(source.getAttributePath()).thenReturn(attributePath);
 		Mockito.when(source.getReferencedTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinColumnName(source);
 		Assertions.assertEquals("my_property", identifier.getText());
 	}
 	
 	@Test
-	public void determineJoinTableName() {
-		final ImplicitJoinTableNameSource source = Mockito.mock(ImplicitJoinTableNameSource.class);
+    void determineJoinTableName() {
+		final var source = Mockito.mock(ImplicitJoinTableNameSource.class);
 		mockContext(source);
-		final AttributePath attributePath= Mockito.mock(AttributePath.class);
+		final var attributePath= Mockito.mock(AttributePath.class);
 		Mockito.when(attributePath.getProperty()).thenReturn("myProperty");
 		Mockito.when(source.getAssociationOwningAttributePath()).thenReturn(attributePath);
 		Mockito.when(source.getOwningPhysicalTableName()).thenReturn("Table1");
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinTableName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineJoinTableName(source);
 		Assertions.assertEquals("Table1_my_property", identifier.getText());
 	}
 	@Test
-	public void determineForeignKeyName() {
-		final ImplicitForeignKeyNameSource source = Mockito.mock(ImplicitForeignKeyNameSource.class);
+    void determineForeignKeyName() {
+		final var source = Mockito.mock(ImplicitForeignKeyNameSource.class);
 		mockContext(source);
 		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
 		final List<Identifier> columnsIdentifier = new ArrayList<>();
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn1"));
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn2"));
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
-		final Identifier identifier = new ImplicitNamingStrategyNiceJpaImpl().determineForeignKeyName(source);
+		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineForeignKeyName(source);
 		Assertions.assertEquals("FK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
 	}
 	

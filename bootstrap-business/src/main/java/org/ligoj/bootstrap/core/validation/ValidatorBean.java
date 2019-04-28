@@ -62,7 +62,7 @@ public class ValidatorBean {
 	public <T> Set<ConstraintViolation<T>> validate(final Collection<T> objects, final Class<?>... groups) {
 		final Set<ConstraintViolation<T>> errors = new HashSet<>();
 		// Validate the beans
-		for (T object : objects) {
+		for (var object : objects) {
 			errors.addAll(validate(object, groups));
 		}
 		return errors;

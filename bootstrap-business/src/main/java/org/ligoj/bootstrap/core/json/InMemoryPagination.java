@@ -5,7 +5,6 @@ package org.ligoj.bootstrap.core.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,7 +14,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
-import org.ligoj.bootstrap.core.json.jqgrid.UiPageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,11 +43,11 @@ public class InMemoryPagination {
 	 */
 	public <T> Page<T> newPage(final Collection<T> result, final Pageable pageable) {
 		// Check bounds
-		final int start = Math.min(Math.max(pageable.getPageNumber() * pageable.getPageSize(), 0), result.size());
-		final int end = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
-		int index = 0;
+		final var start = Math.min(Math.max(pageable.getPageNumber() * pageable.getPageSize(), 0), result.size());
+		final var end = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
+        var index = 0;
 		final List<T> page = new ArrayList<>(end - start);
-		final Iterator<T> iterator = result.iterator();
+		final var iterator = result.iterator();
 
 		// Skip the previous page
 		while (index < start) {
@@ -82,8 +80,8 @@ public class InMemoryPagination {
 	 */
 	public <E, T> TableItem<T> applyPagination(final UriInfo uriInfo, final Collection<E> items,
 			final Function<E, T> transformer) {
-		final UiPageRequest uiPageRequest = paginationJson.getUiPageRequest(uriInfo);
-		final PageRequest pageRequest = PageRequest.of(uiPageRequest.getPage() - 1, uiPageRequest.getPageSize());
+		final var uiPageRequest = paginationJson.getUiPageRequest(uriInfo);
+		final var pageRequest = PageRequest.of(uiPageRequest.getPage() - 1, uiPageRequest.getPageSize());
 		return paginationJson.applyPagination(uriInfo, newPage(items, pageRequest), transformer);
 	}
 

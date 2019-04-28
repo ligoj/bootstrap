@@ -9,7 +9,6 @@ import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.expiry.AccessedExpiryPolicy;
 import javax.cache.expiry.Duration;
-import javax.cache.spi.CachingProvider;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -27,7 +26,7 @@ import com.hazelcast.config.EvictionPolicy;
  * Factory of {@link EhCacheManagerFactoryBean} with modular {@link CacheConfig} creation delegate to
  * {@link CacheManagerAware} implementors.
  */
-public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {
+public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {
 
 	protected CacheManager cacheManager;
 
@@ -36,8 +35,8 @@ public class MergedHazelCacheManagerFactoryBean implements FactoryBean<CacheMana
 
 	@Override
 	public void afterPropertiesSet() {
-		final CachingProvider provider = Caching.getCachingProvider();
-		final HazelcastCacheManager manager = (HazelcastCacheManager) provider
+		final var provider = Caching.getCachingProvider();
+		final var manager = (HazelcastCacheManager) provider
 				.getCacheManager(URI.create("bootstrap-cache-manager"), null);
 		context.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this::newCacheConfig));
 		this.cacheManager = manager;

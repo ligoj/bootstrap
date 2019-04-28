@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class ArtifactVo implements Artifact {
 	/**
 	 * SID
@@ -22,20 +24,12 @@ public class ArtifactVo implements Artifact {
 	private String version;
 
 	/**
-	 * Default constructor.
-	 */
-	public ArtifactVo() {
-		// Default constructor
-	}
-
-	/**
 	 * Constructor for a copy of the given artifact
 	 * 
 	 * @param artifact
 	 *            The artifact to clone.
 	 */
 	public ArtifactVo(final Artifact artifact) {
-		this();
 		setArtifact(artifact.getArtifact());
 		setVersion(artifact.getVersion());
 	}

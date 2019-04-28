@@ -16,11 +16,11 @@ import lombok.Getter;
 /**
  * Test class of {@link ToIdSerializer}
  */
-public class ToIdSerializerTest {
+class ToIdSerializerTest {
 
 	@Getter
 	@AllArgsConstructor
-	public static class Bean {
+    static class Bean {
 		@JsonSerialize(using = ToIdSerializer.class)
 		private BeanA asIdInt;
 
@@ -28,24 +28,24 @@ public class ToIdSerializerTest {
 		private BeanB asIdString;
 	}
 
-	public class BeanA extends AbstractPersistable<Integer> {
+	class BeanA extends AbstractPersistable<Integer> {
 		// Only a template class implementation
 	}
 
-	public class BeanB extends AbstractPersistable<String> {
+	class BeanB extends AbstractPersistable<String> {
 		// Only a template class implementation
 	}
 
 	@Test
-	public void serializeInt() throws JsonProcessingException {
-		final BeanA bean = new BeanA();
+    void serializeInt() throws JsonProcessingException {
+		final var bean = new BeanA();
 		bean.setId(1);
 		Assertions.assertEquals("{\"asIdInt\":1,\"asIdString\":null}", new ObjectMapper().writeValueAsString(new Bean(bean, null)));
 	}
 
 	@Test
-	public void serializeString() throws JsonProcessingException {
-		final BeanB bean = new BeanB();
+    void serializeString() throws JsonProcessingException {
+		final var bean = new BeanB();
 		bean.setId("key");
 		Assertions.assertEquals("{\"asIdInt\":null,\"asIdString\":\"key\"}", new ObjectMapper().writeValueAsString(new Bean(null, bean)));
 	}

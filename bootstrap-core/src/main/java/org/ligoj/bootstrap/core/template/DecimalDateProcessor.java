@@ -36,13 +36,13 @@ public class DecimalDateProcessor extends Processor<String> {
 
 	@Override
 	public Date getValue(final String context) {
-		final String data = (String) super.getValue(context);
+		final var data = (String) super.getValue(context);
 
 		try {
-			final double date = Double.parseDouble(data.replace(',', '.'));
+			final var date = Double.parseDouble(data.replace(',', '.'));
 			final Calendar calendar = new GregorianCalendar(); // using default time-zone
-			final int wholeDays = (int) Math.floor(date);
-			final int millisecondsInDay = (int) Math.round((date - wholeDays) * DateUtils.MILLIS_PER_DAY);
+			final var wholeDays = (int) Math.floor(date);
+			final var millisecondsInDay = (int) Math.round((date - wholeDays) * DateUtils.MILLIS_PER_DAY);
 
 			// Excel thinks 2/29/1900 is a valid date, which it isn't
 			calendar.set(1900, 0, wholeDays - 1, 0, 0, 0);

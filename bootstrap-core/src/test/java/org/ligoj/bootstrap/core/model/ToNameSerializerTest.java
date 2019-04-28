@@ -18,17 +18,17 @@ import lombok.Setter;
 /**
  * Test class of {@link ToNameSerializer}
  */
-public class ToNameSerializerTest {
+class ToNameSerializerTest {
 
 	@Getter
 	@Setter
 	@AllArgsConstructor
-	public static class Bean {
+    static class Bean {
 		@JsonSerialize(using = ToNameSerializer.class)
 		private BeanA entity;
 	}
 
-	public class BeanA extends NamedBean<Integer> {
+	class BeanA extends NamedBean<Integer> {
 
 		/**
 		 * SID
@@ -38,8 +38,8 @@ public class ToNameSerializerTest {
 	}
 
 	@Test
-	public void serialize() throws JsonProcessingException {
-		final BeanA bean = new BeanA();
+    void serialize() throws JsonProcessingException {
+		final var bean = new BeanA();
 		bean.setName("john");
 		Assertions.assertEquals("{\"entity\":\"john\"}", new ObjectMapper().writeValueAsString(new Bean(bean)));
 	}

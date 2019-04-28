@@ -48,7 +48,7 @@ public class ClassPathResourceMultiple {
 	 * Add combinations of resource names of given entity class.
 	 */
 	private void addCombinations(final String csvRoot, final Class<?> entityClass) {
-		final String name = entityClass.getSimpleName();
+		final var name = entityClass.getSimpleName();
 		addCombination(csvRoot + "/" + name.toLowerCase(Locale.ENGLISH) + ".csv");
 		addCombination(csvRoot + "/" + StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(name), '-').toLowerCase(Locale.ENGLISH) + ".csv");
 	}
@@ -69,11 +69,11 @@ public class ClassPathResourceMultiple {
 	 *             No resource has been found.
 	 */
 	public InputStream getInputStream() throws IOException {
-		for (final String path : multiplePath) {
+		for (final var path : multiplePath) {
 			try {
 				return new ClassPathResource(path).getInputStream();
-			} catch (final FileNotFoundException fnfe) { // NOSONAR - Ignore this error, continue
-				log.info(path + " resource has not been found, try next one : {}", fnfe.getMessage());
+			} catch (final FileNotFoundException e) { // NOSONAR - Ignore this error, continue
+				log.info(path + " resource has not been found, try next one : {}", e.getMessage());
 			}
 		}
 		return new ClassPathResource(lastPath).getInputStream();

@@ -26,7 +26,7 @@ public class InsensitiveEnumParameterHandler implements ParamConverterProvider {
 	public <T> ParamConverter<T> getConverter(final Class<T> rawType, final Type genericType, final Annotation[] annotations) { // NOSONAR
 		if (rawType.isEnum()) {
 			@SuppressWarnings("rawtypes")
-			final Class<Enum> enumType = (Class<Enum>) rawType;
+			final var enumType = (Class<Enum>) rawType;
 			return new ParamConverter<>() {
 
 				@Override

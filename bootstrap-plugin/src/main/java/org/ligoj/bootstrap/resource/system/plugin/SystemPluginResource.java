@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -129,21 +128,19 @@ public class SystemPluginResource {
 	/**
 	 * Return all plug-ins with details.
 	 *
-	 * @param repository
-	 *            The repository identifier to query.
+	 * @param repository The repository identifier to query.
 	 * @return All plug-ins with details.
-	 * @throws IOException
-	 *             When the last version index file cannot be be retrieved.
+	 * @throws IOException When the last version index file cannot be be retrieved.
 	 */
 	@GET
 	public List<PluginVo> findAll(@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository)
 			throws IOException {
 		// Get the available plug-ins
-		final Map<String, Artifact> lastVersion = getLastPluginVersions(repository);
-		final Map<String, FeaturePlugin> enabledFeatures = context.getBeansOfType(FeaturePlugin.class);
+		final var lastVersion = getLastPluginVersions(repository);
+		final var enabledFeatures = context.getBeansOfType(FeaturePlugin.class);
 
 		// Get the enabled plug-in features
-		final Map<String, PluginVo> enabled = this.repository.findAll().stream()
+		final var enabled = this.repository.findAll().stream()
 				.map(p -> toVo(lastVersion, p,
 						enabledFeatures.values().stream().filter(f -> p.getKey().equals(f.getKey())).findFirst()
 								.orElse(null)))
@@ -151,28 +148,28 @@ public class SystemPluginResource {
 				.collect(Collectors.toMap(p -> p.getPlugin().getArtifact(), Function.identity()));
 
 		// Add pending installation: available but not yet enabled plug-ins
-		getPluginClassLoader().getInstalledPlugins().entrySet().forEach(i -> {
-			enabled.computeIfPresent(i.getKey(), (k, p) -> {
+		getPluginClassLoader().getInstalledPlugins().forEach((id, v) -> {
+			enabled.computeIfPresent(id, (k, p) -> {
 				// Check if it's an update
-				if (!p.getPlugin().getVersion().equals(toTrimmedVersion(i.getValue()))) {
+				if (!p.getPlugin().getVersion().equals(toTrimmedVersion(v))) {
 					// Corresponds to a different version
-					p.setLatestLocalVersion(toTrimmedVersion(i.getValue()));
+					p.setLatestLocalVersion(toTrimmedVersion(v));
 				}
 				p.setDeleted(isDeleted(p));
 				return p;
 			});
 
 			// Add new plug-ins
-			enabled.computeIfAbsent(i.getKey(), k -> {
-				final SystemPlugin plugin = new SystemPlugin();
+			enabled.computeIfAbsent(id, k -> {
+				final var plugin = new SystemPlugin();
 				plugin.setArtifact(k);
 				plugin.setKey("?:" + Arrays.stream(k.split("-")).skip(1).collect(Collectors.joining("-")));
 
-				final PluginVo p = new PluginVo();
+				final var p = new PluginVo();
 				p.setId(k);
 				p.setName(k);
 				p.setPlugin(plugin);
-				p.setLatestLocalVersion(toTrimmedVersion(i.getValue()));
+				p.setLatestLocalVersion(toTrimmedVersion(v));
 				return p;
 			});
 		});
@@ -184,8 +181,7 @@ public class SystemPluginResource {
 	/**
 	 * Indicate the plug-in is deleted or not.
 	 *
-	 * @param plugin
-	 *            The plug-in to check.
+	 * @param plugin The plug-in to check.
 	 * @return <code>true</code> when the plug-in is deleted locally from the FS.
 	 */
 	protected boolean isDeleted(final PluginVo plugin) {
@@ -205,12 +201,11 @@ public class SystemPluginResource {
 	 * <li><code>0.1.2.3</code> will be <code>0.1.2.3</code></li>
 	 * </ul>
 	 *
-	 * @param extendedVersion
-	 *            The extended version. Trim version is also accepted.
+	 * @param extendedVersion The extended version. Trim version is also accepted.
 	 * @return Trim version.
 	 */
 	protected String toTrimmedVersion(final String extendedVersion) {
-		String trim = Arrays.stream(StringUtils.split(extendedVersion, "-Z.")).dropWhile(s -> !s.matches("^(Z?\\d+.*)"))
+        var trim = Arrays.stream(StringUtils.split(extendedVersion, "-Z.")).dropWhile(s -> !s.matches("^(Z?\\d+.*)"))
 				.map(s -> StringUtils.defaultIfBlank(RegExUtils.replaceFirst(s, "^0+", ""), "0"))
 				.collect(Collectors.joining(".")).replace(".SNAPSHOT", "-SNAPSHOT")
 				.replaceFirst("([^-])SNAPSHOT", "$1-SNAPSHOT");
@@ -229,10 +224,10 @@ public class SystemPluginResource {
 			return null;
 		}
 
-		final Optional<PluginListener> extension = context.getBeansOfType(PluginListener.class).values().stream()
+		final var extension = context.getBeansOfType(PluginListener.class).values().stream()
 				.findFirst();
 		// Plug-in implementation is available
-		final PluginVo vo = extension.map(PluginListener::toVo).orElse(PluginVo::new).get();
+		final var vo = extension.map(PluginListener::toVo).orElse(PluginVo::new).get();
 		vo.setId(p.getKey());
 		vo.setName(StringUtils.removeStart(feature.getName(), "Ligoj - Plugin "));
 		vo.setLocation(getPluginLocation(feature).getPath());
@@ -252,13 +247,10 @@ public class SystemPluginResource {
 	/**
 	 * Search plug-ins in repository which can be installed.
 	 *
-	 * @param query
-	 *            The optional searched term..
-	 * @param repository
-	 *            The repository identifier to query.
+	 * @param query      The optional searched term..
+	 * @param repository The repository identifier to query.
 	 * @return All plug-ins artifacts name.
-	 * @throws IOException
-	 *             When the last version index file cannot be be retrieved.
+	 * @throws IOException When the last version index file cannot be be retrieved.
 	 */
 	@GET
 	@Path("search")
@@ -271,8 +263,7 @@ public class SystemPluginResource {
 	/**
 	 * Return the {@link RepositoryManager} with the given identifier.
 	 *
-	 * @param repository
-	 *            The repository identifier.
+	 * @param repository The repository identifier.
 	 * @return The {@link RepositoryManager} with the given identifier or {@link #EMPTY_REPOSITORY}
 	 */
 	protected RepositoryManager getRepositoryManager(final String repository) {
@@ -286,7 +277,7 @@ public class SystemPluginResource {
 	@PUT
 	@Path("restart")
 	public void restart() {
-		final Thread restartThread = new Thread(() -> restartEndpoint.restart(), "Restart"); // NOPMD
+		final var restartThread = new Thread(() -> restartEndpoint.restart(), "Restart"); // NOPMD
 		restartThread.setDaemon(false);
 		restartThread.start();
 	}
@@ -294,8 +285,7 @@ public class SystemPluginResource {
 	/**
 	 * Request a reset of plug-in cache meta-data
 	 *
-	 * @param repository
-	 *            The repository identifier to reset.
+	 * @param repository The repository identifier to reset.
 	 */
 	@PUT
 	@Path("cache")
@@ -307,10 +297,8 @@ public class SystemPluginResource {
 	/**
 	 * Remove all versions the specified plug-in and the related (by name) plug-ins.
 	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @throws IOException
-	 *             When the file cannot be read or deleted from the file system.
+	 * @param artifact The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @throws IOException When the file cannot be read or deleted from the file system.
 	 */
 	@DELETE
 	@Path("{artifact:[\\w-]+}")
@@ -322,12 +310,9 @@ public class SystemPluginResource {
 	/**
 	 * Remove the specific version of a plug-in.
 	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @param version
-	 *            The specific version.
-	 * @throws IOException
-	 *             When the file cannot be read or deleted from the file system.
+	 * @param artifact The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @param version  The specific version.
+	 * @throws IOException When the file cannot be read or deleted from the file system.
 	 */
 	@DELETE
 	@Path("{artifact:[\\w-]+}/{version}")
@@ -338,7 +323,7 @@ public class SystemPluginResource {
 	}
 
 	private void removeFilter(final String artifact, final String filter) throws IOException {
-		try (Stream<java.nio.file.Path> list = Files.list(getPluginClassLoader().getPluginDirectory())) {
+		try (var list = Files.list(getPluginClassLoader().getPluginDirectory())) {
 			list.filter(p -> p.getFileName().toString().matches("^" + artifact + filter + "\\.jar$"))
 					.forEach(p -> p.toFile().delete());
 		}
@@ -347,37 +332,31 @@ public class SystemPluginResource {
 	/**
 	 * Upload a file of entries to create or update users. The whole entry is replaced.
 	 *
-	 * @param input
-	 *            The Maven artifact file.
-	 * @param pluginId
-	 *            The Maven <code>artifactId</code>.
-	 * @param version
-	 *            The Maven <code>version</code>.
+	 * @param input    The Maven artifact file.
+	 * @param pluginId The Maven <code>artifactId</code>.
+	 * @param version  The Maven <code>version</code>.
 	 */
 	@PUT
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("upload")
-	public void upload(@Multipart(required = true, value = "plugin-file") final InputStream input,
-			@Multipart(required = true, value = "plugin-id") final String pluginId,
-			@Multipart(required = true, value = "plugin-version") final String version) {
+	public void upload(@Multipart(value = "plugin-file") final InputStream input,
+			@Multipart(value = "plugin-id") final String pluginId,
+			@Multipart(value = "plugin-version") final String version) {
 		install(input, pluginId, version, "(local)");
 	}
 
 	/**
 	 * Install or update to the last available version of given plug-in from the remote server.
 	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @param repository
-	 *            The repository identifier to query.
-	 * @throws IOException
-	 *             When install failed.
+	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @param repository The repository identifier to query.
+	 * @throws IOException When install failed.
 	 */
 	@POST
 	@Path("{artifact:[\\w-]+}")
 	public void install(@PathParam("artifact") final String artifact,
 			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) throws IOException {
-		final Artifact resultItem = getLastPluginVersions(repository).get(artifact);
+		final var resultItem = getLastPluginVersions(repository).get(artifact);
 		if (resultItem == null) {
 			// Plug-in not found, or not the last version
 			throw new ValidationJsonException("artifact",
@@ -390,12 +369,9 @@ public class SystemPluginResource {
 	 * Install the specific version of given plug-in from the remote server. The previous version is not deleted. The
 	 * downloaded version will be used only if it is a most recent version than the locally ones.
 	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @param version
-	 *            The version to install.
-	 * @param repository
-	 *            The repository identifier to query.
+	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @param version    The version to install.
+	 * @param repository The repository identifier to query.
 	 */
 	@POST
 	@Path("{artifact:[\\w-]+}/{version:[\\w-]+}")
@@ -406,12 +382,12 @@ public class SystemPluginResource {
 
 	private void install(final InputStream input, final String artifact, final String version,
 			final String repository) {
-		final PluginsClassLoader classLoader = getPluginClassLoader();
-		final java.nio.file.Path target = classLoader.getPluginDirectory().resolve(artifact + "-" + version + ".jar");
+		final var classLoader = getPluginClassLoader();
+		final var target = classLoader.getPluginDirectory().resolve(artifact + "-" + version + ".jar");
 		log.info("Download plug-in {} v{} from {}", artifact, version, repository);
 		try {
 			// Get the right input
-			final InputStream input2 = input == null
+			final var input2 = input == null
 					? getRepositoryManager(repository).getArtifactInputStream(artifact, version)
 					: input;
 			// Download and copy the file, note the previous version is not removed
@@ -425,7 +401,7 @@ public class SystemPluginResource {
 	}
 
 	private Map<String, Artifact> getLastPluginVersions(final String repository) throws IOException {
-		final Map<String, Artifact> versions = getRepositoryManager(repository).getLastPluginVersions();
+		final var versions = getRepositoryManager(repository).getLastPluginVersions();
 
 		// Remove ignored plug-ins
 		Arrays.stream(configuration.get(PLUGIN_IGNORE, "").split(",")).map(String::trim).forEach(versions::remove);
@@ -447,17 +423,15 @@ public class SystemPluginResource {
 	 * Note the transactional behavior of this process : if one plug-in failed to be configured, then the entire process
 	 * is cancelled. The previously and the not processed discovered plug-ins are not configured.
 	 *
-	 * @param event
-	 *            The Spring event.
-	 * @throws Exception
-	 *             When the context can not be refreshed because of plug-in updates or configurations..
+	 * @param event The Spring event.
+	 * @throws Exception When the context can not be refreshed because of plug-in updates or configurations..
 	 */
 	@EventListener
 	public void refreshPlugins(final ContextRefreshedEvent event) throws Exception {
 		// Auto update plug-ins
 		if (Boolean.valueOf(configuration.get(PLUGIN_UPDATE, "false"))) {
 			// Update the plug-ins
-			final int counter = autoUpdate();
+			final var counter = autoUpdate();
 			if (counter > 0) {
 				log.info("{} plug-ins have been downloaded for update, context will be restarted", counter);
 				restart();
@@ -471,7 +445,7 @@ public class SystemPluginResource {
 
 	private void refreshPlugins(final ApplicationContext context) throws Exception {
 		// Get the existing plug-in features
-		final Map<String, SystemPlugin> plugins = repository.findAll().stream()
+		final var plugins = repository.findAll().stream()
 				.collect(Collectors.toMap(SystemPlugin::getKey, Function.identity()));
 
 		// Changes, order by the related feature's key
@@ -480,8 +454,8 @@ public class SystemPluginResource {
 		final Set<SystemPlugin> removedPlugins = new HashSet<>(plugins.values());
 
 		// Compare with the available plug-in implementing ServicePlugin
-		context.getBeansOfType(FeaturePlugin.class).values().stream().forEach(s -> {
-			final SystemPlugin plugin = plugins.get(s.getKey());
+		context.getBeansOfType(FeaturePlugin.class).values().forEach(s -> {
+			final var plugin = plugins.get(s.getKey());
 			if (plugin == null) {
 				// New plug-in case
 				newFeatures.put(s.getKey(), s);
@@ -499,8 +473,8 @@ public class SystemPluginResource {
 		});
 
 		// First install the data of new plug-ins
-		updateFeatures.values().stream().forEach(s -> configurePluginUpdate(s, plugins.get(s.getKey())));
-		newFeatures.values().stream().forEach(this::configurePluginInstall);
+		updateFeatures.values().forEach(s -> configurePluginUpdate(s, plugins.get(s.getKey())));
+		newFeatures.values().forEach(this::configurePluginInstall);
 
 		// Then install/update the plug-in
 		update(updateFeatures, plugins);
@@ -515,14 +489,13 @@ public class SystemPluginResource {
 	 * Auto update the installed plug-ins.
 	 *
 	 * @return The amount of updated plug-ins.
-	 * @throws IOException
-	 *             When plug-ins cannot be updated.
+	 * @throws IOException When plug-ins cannot be updated.
 	 */
 	public int autoUpdate() throws IOException {
-		final Map<String, String> plugins = getPluginClassLoader().getInstalledPlugins();
-		final String repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
-		int counter = 0;
-		for (final Artifact artifact : getLastPluginVersions(repositoryName).values().stream()
+		final var plugins = getPluginClassLoader().getInstalledPlugins();
+		final var repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
+        var counter = 0;
+		for (final var artifact : getLastPluginVersions(repositoryName).values().stream()
 				.filter(a -> plugins.containsKey(a.getArtifact()))
 				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
 						.compareTo(StringUtils.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
@@ -537,7 +510,7 @@ public class SystemPluginResource {
 	 * Install all ordered plug-ins.
 	 */
 	private void installInternal(final Map<String, FeaturePlugin> newFeatures) throws Exception {
-		for (final FeaturePlugin feature : newFeatures.values()) {
+		for (final var feature : newFeatures.values()) {
 			// Do not trigger the install event when corresponding node is already there
 			if (context.getBeansOfType(PluginListener.class).values().stream().allMatch(l -> l.install(feature))) {
 				feature.install();
@@ -550,7 +523,7 @@ public class SystemPluginResource {
 	 */
 	private void update(final Map<String, FeaturePlugin> updateFeatures, final Map<String, SystemPlugin> plugins)
 			throws Exception {
-		for (Entry<String, FeaturePlugin> feature : updateFeatures.entrySet()) {
+		for (var feature : updateFeatures.entrySet()) {
 			feature.getValue().update(plugins.get(feature.getKey()).getVersion());
 		}
 	}
@@ -558,14 +531,11 @@ public class SystemPluginResource {
 	/**
 	 * Returns a plug-in's last modified time.
 	 *
-	 * @param plugin
-	 *            The plug-in class. Will be used to find the related container archive or class file.
+	 * @param plugin The plug-in class. Will be used to find the related container archive or class file.
 	 * @return a {@code String} representing the time the file was last modified, or a default time stamp to indicate
 	 *         the time of last modification is not supported by the file system
-	 * @throws URISyntaxException
-	 *             if an I/O error occurs
-	 * @throws IOException
-	 *             if an I/O error occurs
+	 * @throws URISyntaxException if an I/O error occurs
+	 * @throws IOException        if an I/O error occurs
 	 */
 	protected String getLastModifiedTime(final FeaturePlugin plugin) throws IOException, URISyntaxException {
 		return Files
@@ -582,13 +552,11 @@ public class SystemPluginResource {
 	 * <li>The entity {@link SystemPlugin} is updated to reflect the new version.</li>
 	 * </ul>
 	 *
-	 * @param plugin
-	 *            The newly updated plug-in.
-	 * @param entity
-	 *            The current plug-in entity to update.
+	 * @param plugin The newly updated plug-in.
+	 * @param entity The current plug-in entity to update.
 	 */
 	protected void configurePluginUpdate(final FeaturePlugin plugin, final SystemPlugin entity) {
-		final String newVersion = getVersion(plugin);
+		final var newVersion = getVersion(plugin);
 		log.info("Updating the plugin {} v{} -> v{}", plugin.getKey(), entity.getVersion(), newVersion);
 		entity.setVersion(newVersion);
 	}
@@ -601,15 +569,14 @@ public class SystemPluginResource {
 	 * <li>A new {@link SystemPlugin} is inserted to maintain the validated plug-in and version</li>
 	 * </ul>
 	 *
-	 * @param plugin
-	 *            The newly discovered plug-in.
+	 * @param plugin The newly discovered plug-in.
 	 */
 	protected void configurePluginInstall(final FeaturePlugin plugin) {
-		final String newVersion = getVersion(plugin);
+		final var newVersion = getVersion(plugin);
 		log.info("Installing the new plugin {} v{}", plugin.getKey(), newVersion);
 		try {
 			// Build and persist the SystemPlugin entity
-			final SystemPlugin entity = new SystemPlugin();
+			final var entity = new SystemPlugin();
 			entity.setArtifact(toArtifactId(plugin));
 			entity.setKey(plugin.getKey());
 			entity.setVersion(newVersion);
@@ -630,8 +597,7 @@ public class SystemPluginResource {
 	 * Guess the Maven artifactId from plug-in artifact name. Use the key and replace the "service" or "feature" part by
 	 * "plugin".
 	 *
-	 * @param plugin
-	 *            The plugin class.
+	 * @param plugin The plugin class.
 	 * @return The Maven "artifactId" as it should be be when naming convention is respected. Required to detect the new
 	 *         version.
 	 */
@@ -643,23 +609,20 @@ public class SystemPluginResource {
 	 * Insert the configuration entities of the plug-in. This function can be called multiple times : a check prevent
 	 * duplicate entries.
 	 *
-	 * @param plugin
-	 *            The related plug-in
-	 * @param csvEntities
-	 *            The managed entities where CSV data need to be persisted with this plug-in.
-	 * @throws IOException
-	 *             When the CSV management failed.
+	 * @param plugin      The related plug-in
+	 * @param csvEntities The managed entities where CSV data need to be persisted with this plug-in.
+	 * @throws IOException When the CSV management failed.
 	 */
 	protected void configurePluginEntities(final FeaturePlugin plugin, final List<Class<?>> csvEntities)
 			throws IOException {
 		//
-		final ClassLoader classLoader = plugin.getClass().getClassLoader();
+		final var classLoader = plugin.getClass().getClassLoader();
 
 		// Compute the location of this plug-in, ensuring the
-		final String pluginLocation = getPluginLocation(plugin).toString();
-		for (final Class<?> entityClass : csvEntities) {
+		final var pluginLocation = getPluginLocation(plugin).toString();
+		for (final var entityClass : csvEntities) {
 			// Build the required CSV file
-			final String csv = "csv/"
+			final var csv = "csv/"
 					+ StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(entityClass.getSimpleName()), '-')
 							.toLowerCase(Locale.ENGLISH)
 					+ ".csv";
@@ -671,8 +634,7 @@ public class SystemPluginResource {
 	/**
 	 * Return the file system location corresponding to the given plug-in.
 	 *
-	 * @param plugin
-	 *            The related plug-in
+	 * @param plugin The related plug-in
 	 * @return The URL corresponding to the location.
 	 */
 	protected URL getPluginLocation(final FeaturePlugin plugin) {
@@ -682,7 +644,7 @@ public class SystemPluginResource {
 	protected <T> void configurePluginEntity(final Stream<URL> csv, final Class<T> entityClass,
 			final String pluginLocation) throws IOException {
 		// Accept the CSV file only from the JAR/folder where the plug-in is installed from
-		try (InputStreamReader input = new InputStreamReader(
+		try (var input = new InputStreamReader(
 				csv.filter(u -> u.getPath().startsWith(pluginLocation) || u.toString().startsWith(pluginLocation))
 						.findFirst()
 						.orElseThrow(() -> new TechnicalException(
@@ -704,12 +666,9 @@ public class SystemPluginResource {
 	/**
 	 * Persist the given entity only if it is not yet persisted. This is not an update mode.
 	 *
-	 * @param entityClass
-	 *            The entity class to persist.
-	 * @param entity
-	 *            The entity read from the CSV, and to persist.
-	 * @param <T>
-	 *            The entity type.
+	 * @param entityClass The entity class to persist.
+	 * @param entity      The entity read from the CSV, and to persist.
+	 * @param <T>         The entity type.
 	 */
 	protected <T> void persistAsNeeded(final Class<T> entityClass, T entity) {
 		if (entity instanceof AbstractBusinessEntity) {
@@ -738,8 +697,7 @@ public class SystemPluginResource {
 	/**
 	 * Return a fail-safe computed version of the given {@link FeaturePlugin}
 	 *
-	 * @param plugin
-	 *            The plug-in instance
+	 * @param plugin The plug-in instance
 	 * @return The version from the MANIFEST or the timestamp. <code>?</code> when an error occurs.
 	 */
 	protected String getVersion(final FeaturePlugin plugin) {

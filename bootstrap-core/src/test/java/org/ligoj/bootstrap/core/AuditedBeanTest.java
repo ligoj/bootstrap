@@ -23,7 +23,7 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testCopyAuditData() {
-		final Auditable<String, Integer, Date> from = newAuditable();
+		final var from = newAuditable();
 		final AbstractNamedAuditedEntity<Integer> to = new AbstractNamedAuditedEntity<>() {
 
 			/**
@@ -46,7 +46,7 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testToString() {
-		final AuditedBean<Serializable, Serializable> auditedBean = new AuditedBean<>();
+		final var auditedBean = new AuditedBean<Serializable, Serializable>();
 		auditedBean.setId(0);
 		Assertions.assertEquals("AuditedBean(id=0)", auditedBean.toString());
 	}
@@ -67,7 +67,7 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testCopyAuditDataInstanceFromNull() {
-		final AuditedBean<String, Integer> audited = newAuditedVo();
+		final var audited = newAuditedVo();
 		audited.copyAuditData(null);
 		assertData(audited);
 	}
@@ -81,7 +81,7 @@ public class AuditedBeanTest {
 		final Auditable<String, Integer, Date> from = new AbstractAudited<>() {
 			// Nothing
 		};
-		final AuditedBean<String, Integer> audited = new AuditedBean<>();
+		final var audited = new AuditedBean<String, Integer>();
 		audited.copyAuditData(from);
 		Assertions.assertNull(audited.getCreatedDate());
 		Assertions.assertNull(audited.getLastModifiedDate());
@@ -92,14 +92,14 @@ public class AuditedBeanTest {
 	 */
 	@Test
 	public void testCopyAuditDataInstance() {
-		final Auditable<String, Integer, Date> from = newAuditable();
-		final AuditedBean<String, Integer> audited = new AuditedBean<>();
+		final var from = newAuditable();
+		final var audited = new AuditedBean<String, Integer>();
 		audited.copyAuditData(from);
 		assertData(audited);
 	}
 
 	private AuditedBean<String, Integer> newAuditedVo() {
-		final AuditedBean<String, Integer> audited = new AuditedBean<>();
+		final var audited = new AuditedBean<String, Integer>();
 		audited.setCreatedBy("any");
 		audited.setLastModifiedBy("one");
 		audited.setCreatedDate(new Date(0));

@@ -7,9 +7,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -43,7 +42,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	private JAXRSBeanValidationImplicitInInterceptor validationInInterceptor;
 
 	public static class TestClass {
-		public void empty() {
+		void empty() {
 			//
 		}
 
@@ -151,39 +150,39 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 
 	private static final TestClass INSTANCE = new TestClass();
 	private static final Message MESSAGE = Mockito.mock(Message.class);
-	{
+	static {
 		Mockito.when(MESSAGE.getExchange()).thenReturn(Mockito.mock(Exchange.class));
 	}
 
 	@Test
-	public void excluded() {
-		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("excluded"), Arrays.asList("p"));
+	void excluded() {
+		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("excluded"), Collections.singletonList("p"));
 	}
 
 	@Test
-	public void excludedNull() {
+	void excludedNull() {
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("excluded"),
 				Arrays.asList(new Object[] { null }));
 	}
 
 	@Test
-	public void jsr349Simple() {
-		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Simple"), Arrays.asList("p"));
+	void jsr349Simple() {
+		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Simple"), Collections.singletonList("p"));
 	}
 
 	@Test
-	public void jsr349SimpleInvalid() {
-		final ConstraintViolationException cve = Assertions.assertThrows(ConstraintViolationException.class,
+	void jsr349SimpleInvalid() {
+		final var cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Simple"),
 						Arrays.asList(new Object[] { null })));
 
 		// Check all expected errors are there.
-		final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+		final var constraintViolations = cve.getConstraintViolations();
 		Assertions.assertNotNull(constraintViolations);
 		Assertions.assertEquals(1, constraintViolations.size());
 
 		// Check expected errors
-		final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
+		final var error1 = constraintViolations.iterator().next();
 		Assertions.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
 		Assertions.assertEquals("jsr349Simple.param", error1.getPropertyPath().toString());
 	}
@@ -192,7 +191,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check no parameter and not web service operation passes.
 	 */
 	@Test
-	public void empty() {
+	void empty() {
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("empty"), new ArrayList<>());
 	}
 
@@ -200,7 +199,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check <code>null</code> parameter operation passes.
 	 */
 	@Test
-	public void queryObject() {
+	void queryObject() {
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("queryObject"),
 				Arrays.asList(new Object[] { null }));
 	}
@@ -209,7 +208,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check <code>null</code> parameter operation passes.
 	 */
 	@Test
-	public void multipart() {
+	void multipart() {
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("multipart"),
 				Arrays.asList(new Object[] { null }));
 	}
@@ -218,25 +217,25 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check <code>null</code> parameter operation passes.
 	 */
 	@Test
-	public void simple() {
-		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("simple"), Arrays.asList(""));
+	void simple() {
+		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("simple"), Collections.singletonList(""));
 	}
 
 	/**
 	 * Check validation errors success.
 	 */
 	@Test
-	public void object() {
-		final SystemUser userDto = new SystemUser();
+	void object() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
-		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"), Arrays.asList(userDto));
+		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"), Collections.singletonList(userDto));
 	}
 
 	/**
 	 * Check validation will <code>null</code> context object -> still valid.
 	 */
 	@Test
-	public void jsr349Context() {
+	void jsr349Context() {
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Context"),
 				Arrays.asList(new Object[] { null }));
 	}
@@ -245,20 +244,20 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check not valid parameter operation failed.
 	 */
 	@Test
-	public void objectInvalid() {
-		final SystemUser userDto = new SystemUser();
+	void objectInvalid() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("");
-		final ConstraintViolationException cve = Assertions.assertThrows(ConstraintViolationException.class,
+		final var cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"),
-						Arrays.asList(userDto)));
+						Collections.singletonList(userDto)));
 
 		// Check all expected errors are there.
-		final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+		final var constraintViolations = cve.getConstraintViolations();
 		Assertions.assertNotNull(constraintViolations);
 		Assertions.assertEquals(1, constraintViolations.size());
 
 		// Check expected errors
-		final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
+		final var error1 = constraintViolations.iterator().next();
 		Assertions.assertEquals(NotEmpty.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
 		Assertions.assertEquals("", error1.getInvalidValue());
 		Assertions.assertEquals("login", error1.getPropertyPath().toString());
@@ -268,19 +267,19 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check not valid parameter operation failed.
 	 */
 	@Test
-	public void objectNull() {
+	void objectNull() {
 		final SystemUser userDto = null;
-		final ConstraintViolationException cve = Assertions.assertThrows(ConstraintViolationException.class,
+		final var cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"),
-						Arrays.asList(userDto)));
+						Collections.singletonList(userDto)));
 
 		// Check all expected errors are there.
-		final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+		final var constraintViolations = cve.getConstraintViolations();
 		Assertions.assertNotNull(constraintViolations);
 		Assertions.assertEquals(1, constraintViolations.size());
 
 		// Check expected errors
-		final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
+		final var error1 = constraintViolations.iterator().next();
 		Assertions.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
 		Assertions.assertEquals("object.param", error1.getPropertyPath().toString());
 	}
@@ -289,8 +288,8 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check validation errors success for arrays.
 	 */
 	@Test
-	public void array() {
-		final SystemUser userDto = new SystemUser();
+	void array() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("object"),
 				Arrays.asList(new Object[] { new Object[] { userDto } }));
@@ -300,52 +299,52 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check validation errors success for arrays.
 	 */
 	@Test
-	public void collection() {
-		final SystemUser userDto = new SystemUser();
+	void collection() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("collection"),
-				Arrays.asList(Arrays.asList(userDto)));
+				Collections.singletonList(Collections.singletonList(userDto)));
 	}
 
 	/**
 	 * Check validation errors success for collections.
 	 */
 	@Test
-	public void jsr349Collection() {
-		final SystemUser userDto = new SystemUser();
+	void jsr349Collection() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
 		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Collection"),
-				Arrays.asList(Arrays.asList(userDto)));
+				Collections.singletonList(Collections.singletonList(userDto)));
 	}
 
 	/**
 	 * Check validation errors success for collections.
 	 */
 	@Test
-	public void jsr349Object() {
-		final SystemUser userDto = new SystemUser();
+	void jsr349Object() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
-		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Object"), Arrays.asList(userDto));
+		validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Object"), Collections.singletonList(userDto));
 	}
 
 	/**
 	 * Check validation errors success for collections.
 	 */
 	@Test
-	public void jsr349ObjectInvalid() {
-		final SystemUser userDto = new SystemUser();
+	void jsr349ObjectInvalid() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
-		final ConstraintViolationException cve = Assertions.assertThrows(ConstraintViolationException.class,
+		final var cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Object"),
 						Arrays.asList(new Object[] { null })));
 
 		// Check all expected errors are there.
-		final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+		final var constraintViolations = cve.getConstraintViolations();
 		Assertions.assertNotNull(constraintViolations);
 		Assertions.assertEquals(1, constraintViolations.size());
 
 		// Check expected errors
-		final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
+		final var error1 = constraintViolations.iterator().next();
 		Assertions.assertEquals(NotNull.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
 		Assertions.assertEquals("jsr349Object.p", error1.getPropertyPath().toString());
 	}
@@ -354,20 +353,20 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	 * Check validation errors success for collections.
 	 */
 	@Test
-	public void jsr349CollectionInvalid() {
-		final SystemUser userDto = new SystemUser();
+	void jsr349CollectionInvalid() {
+		final var userDto = new SystemUser();
 		userDto.setLogin("junit");
-		final ConstraintViolationException cve = Assertions.assertThrows(ConstraintViolationException.class,
+		final var cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, fromName("jsr349Collection"),
-						Arrays.asList(Arrays.asList(userDto, userDto, userDto))));
+						Collections.singletonList(Arrays.asList(userDto, userDto, userDto))));
 
 		// Check all expected errors are there.
-		final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+		final var constraintViolations = cve.getConstraintViolations();
 		Assertions.assertNotNull(constraintViolations);
 		Assertions.assertEquals(1, constraintViolations.size());
 
 		// Check expected errors
-		final ConstraintViolation<?> error1 = constraintViolations.iterator().next();
+		final var error1 = constraintViolations.iterator().next();
 		Assertions.assertEquals(Size.class, error1.getConstraintDescriptor().getAnnotation().annotationType());
 		Assertions.assertEquals("jsr349Collection.params", error1.getPropertyPath().toString());
 	}

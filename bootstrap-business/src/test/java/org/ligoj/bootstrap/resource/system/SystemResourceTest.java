@@ -17,14 +17,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link SystemResource}
  */
 @ExtendWith(SpringExtension.class)
-public class SystemResourceTest extends AbstractBootTest {
+class SystemResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemResource resource;
 
 	@Test
-	public void getConfiguration() {
-		final SystemVo systemVo = resource.getConfiguration();
+	void getConfiguration() {
+		final var systemVo = resource.getConfiguration();
 		Assertions.assertTrue(systemVo.getCpu().getTotal() > 0);
 		Assertions.assertTrue(systemVo.getMemory().getFreeMemory() > 0);
 		Assertions.assertTrue(systemVo.getMemory().getMaxMemory() > 0);
@@ -42,8 +42,8 @@ public class SystemResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void setApplicationTimeZone() {
-		TimeZone timeZone = DateUtils.getApplicationTimeZone();
+	void setApplicationTimeZone() {
+        var timeZone = DateUtils.getApplicationTimeZone();
 		try {
 			resource.setApplicationTimeZone("GMT");
 			Assertions.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
@@ -53,8 +53,8 @@ public class SystemResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	public void setTimeZone() {
-		TimeZone timeZone = TimeZone.getDefault();
+	void setTimeZone() {
+        var timeZone = TimeZone.getDefault();
 		try {
 			resource.setTimeZone("GMT");
 			Assertions.assertEquals("GMT", TimeZone.getDefault().getID());

@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 /**
  * Exception mapper test using {@link UnrecognizedPropertyExceptionMapper}
  */
-public class UnrecognizedPropertyExceptionMapperTest extends AbstractMapperTest {
+class UnrecognizedPropertyExceptionMapperTest extends AbstractMapperTest {
 
 	@Test
-	public void toResponse() {
-		final UnrecognizedPropertyException exception = new UnrecognizedPropertyException(null, "", null, String.class, "property",
+	void toResponse() {
+		final var exception = new UnrecognizedPropertyException(null, "", null, String.class, "property",
 				Collections.emptyList());
 		exception.prependPath(null, "property");
 		exception.prependPath("property", "property2");

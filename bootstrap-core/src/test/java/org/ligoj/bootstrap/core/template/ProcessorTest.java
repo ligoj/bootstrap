@@ -14,37 +14,37 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 /**
  * Test class of {@link Processor}
  */
-public class ProcessorTest {
+class ProcessorTest {
 
 	/**
 	 * Simple test of null valued data.
 	 */
 	@Test
-	public void testGetNullValue() {
+    void testGetNullValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(3);
-		Assertions.assertEquals(Integer.valueOf(3), new Processor<>().getValue(contextData));
+		Assertions.assertEquals(3, new Processor<>().getValue(contextData));
 	}
 
 	/**
 	 * Simple test of not null valued data.
 	 */
 	@Test
-	public void testGetValue() {
+    void testGetValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(4);
-		Assertions.assertEquals(Integer.valueOf(3), new Processor<>(3).getValue(contextData));
+		Assertions.assertEquals(3, new Processor<>(3).getValue(contextData));
 	}
 
 	/**
 	 * Simple wrapping test of not null valued data.
 	 */
 	@Test
-	public void testGetWrappedValue() {
-		final SystemUser systemUser = new SystemUser();
+    void testGetWrappedValue() {
+		final var systemUser = new SystemUser();
 		systemUser.setLogin("any");
 
-		final SystemRoleAssignment roleAssignment = new SystemRoleAssignment();
+		final var roleAssignment = new SystemRoleAssignment();
 		roleAssignment.setUser(systemUser);
 
 		final Deque<Object> contextData = new LinkedList<>();
@@ -57,7 +57,7 @@ public class ProcessorTest {
 	 * Simple wrapping test of not null valued data.
 	 */
 	@Test
-	public void testGetWrappedSimpleValue() {
-		Assertions.assertEquals(Integer.valueOf(8), new Processor<>(new Processor<>(2)).getValue(8));
+    void testGetWrappedSimpleValue() {
+		Assertions.assertEquals(8, new Processor<>(new Processor<>(2)).getValue(8));
 	}
 }

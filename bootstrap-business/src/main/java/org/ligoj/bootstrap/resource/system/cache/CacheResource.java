@@ -51,7 +51,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	@GET
 	public List<CacheStatistics> getCaches() {
 		final List<CacheStatistics> result = new ArrayList<>();
-		for (final String cache : cacheManager.getCacheNames()) {
+		for (final var cache : cacheManager.getCacheNames()) {
 			result.add(getCache(cache));
 		}
 		return result;
@@ -68,11 +68,11 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	@GET
 	@Path("{name:[\\w\\-]+}")
 	public CacheStatistics getCache(@PathParam("name") final String name) {
-		final CacheStatistics result = new CacheStatistics();
+		final var result = new CacheStatistics();
 		@SuppressWarnings("unchecked")
-		final CacheProxy<Object, Object> cache = (CacheProxy<Object, Object>) cacheManager.getCache(name)
+		final var cache = (CacheProxy<Object, Object>) cacheManager.getCache(name)
 				.getNativeCache();
-		final CacheNode node = newCacheNode(cache.getNodeEngine().getLocalMember());
+		final var node = newCacheNode(cache.getNodeEngine().getLocalMember());
 		node.setCluster(newCacheCluster(cache.getNodeEngine().getClusterService()));
 		result.setId(name);
 		result.setNode(node);
@@ -101,7 +101,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	}
 
 	private CacheNode newCacheNode(Member member) {
-		final CacheNode node = new CacheNode();
+		final var node = new CacheNode();
 		node.setAddress(Objects.toString(member.getAddress()));
 		node.setId(member.getUuid());
 		node.setVersion(Objects.toString(member.getVersion()));
@@ -109,18 +109,18 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	}
 
 	private CacheCluster newCacheCluster(ClusterService clusterService) {
-		final CacheCluster cluser = new CacheCluster();
-		cluser.setId(clusterService.getClusterId());
-		cluser.setState(clusterService.getClusterState().toString());
-		cluser.setMembers(clusterService.getMembers().stream().map(this::newCacheNode).collect(Collectors.toList()));
-		return cluser;
+		final var cluster = new CacheCluster();
+		cluster.setId(clusterService.getClusterId());
+		cluster.setState(clusterService.getClusterState().toString());
+		cluster.setMembers(clusterService.getMembers().stream().map(this::newCacheNode).collect(Collectors.toList()));
+		return cluster;
 	}
 
 	/**
 	 * Invalidate a specific cache.
 	 *
 	 * @param name
-	 *            the cache's anme to invalidate.
+	 *            the cache's name to invalidate.
 	 */
 	@POST
 	@Path("{name:[\\w\\-]+}")
@@ -142,8 +142,8 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	public void onApplicationEvent(final ContextClosedEvent event) {
 		log.info("Stopping context detected, shutdown the Hazelcast instance");
 		// Get any cache to retrieve the Hazelcast instance
-		final String name = cacheManager.getCacheNames().iterator().next();
-		final AbstractDistributedObject<?> cache = (AbstractDistributedObject<?>) cacheManager.getCache(name)
+		final var name = cacheManager.getCacheNames().iterator().next();
+		final var cache = (AbstractDistributedObject<?>) cacheManager.getCache(name)
 				.getNativeCache();
 		try {
 			cache.getNodeEngine().getHazelcastInstance().getLifecycleService().terminate();

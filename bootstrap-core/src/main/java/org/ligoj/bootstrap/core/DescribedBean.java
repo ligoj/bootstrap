@@ -60,7 +60,7 @@ public class DescribedBean<K extends Serializable> extends NamedBean<K> implemen
 		if (from == null) {
 			return null;
 		}
-		final DescribedBean<T> bean = new DescribedBean<>();
+		final var bean = new DescribedBean<T>();
 		copy(from, bean);
 		return bean;
 	}

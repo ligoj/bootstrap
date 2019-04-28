@@ -19,8 +19,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class UnixTimestampParameterHandler implements ParamConverterProvider {
 
-	private DateParamConverter converter = new DateParamConverter();
-	private LocalDateParamConverter localDateconverter = new LocalDateParamConverter();
+	private final DateParamConverter converter = new DateParamConverter();
+	private final LocalDateParamConverter localDateConverter = new LocalDateParamConverter();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -33,7 +33,7 @@ public class UnixTimestampParameterHandler implements ParamConverterProvider {
 		
 		// LocalDate handler
 		if (rawType.equals(LocalDate.class)) {
-			return (ParamConverter<T>) localDateconverter;
+			return (ParamConverter<T>) localDateConverter;
 		}
 		return null;
 	}

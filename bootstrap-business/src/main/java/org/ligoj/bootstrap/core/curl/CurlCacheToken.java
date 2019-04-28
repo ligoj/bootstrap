@@ -69,7 +69,7 @@ public class CurlCacheToken {
 			final UnaryOperator<String> function, final int retries,
 			final Supplier<? extends RuntimeException> exceptionSupplier) {
 		synchronized (synchronizeObject) {
-			// Use the jcache API to get the token
+			// Use the JCache API to get the token
 			return self.getTokenCache(key, function, retries, exceptionSupplier);
 		}
 	}

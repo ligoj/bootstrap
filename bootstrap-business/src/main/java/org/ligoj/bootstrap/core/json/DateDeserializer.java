@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.core.json;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.ligoj.bootstrap.core.DateUtils;
@@ -33,14 +32,14 @@ public class DateDeserializer extends StdDeserializer<Date> {
 	public Date deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
 		// Timestamp epoch milliseconds long support
 		if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
-			final Calendar newCalendar = DateUtils.newCalendar();
+			final var newCalendar = DateUtils.newCalendar();
 			newCalendar.setTimeInMillis(parser.getLongValue());
 			return newCalendar.getTime();
 		}
 		
 		// Timestamp epoch milliseconds "double" type support
 		if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
-			final Calendar newCalendar = DateUtils.newCalendar();
+			final var newCalendar = DateUtils.newCalendar();
 			newCalendar.setTimeInMillis((long)parser.getDoubleValue());
 			return newCalendar.getTime();
 		}

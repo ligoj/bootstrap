@@ -54,12 +54,12 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * @return The configured {@link SecurityContext}.
 	 */
 	@SuppressWarnings("unchecked")
-	protected SecurityContext initSpringSecurityContext(final String user, final GrantedAuthority... authorities) {
+    private SecurityContext initSpringSecurityContext(final String user, final GrantedAuthority... authorities) {
 		SecurityContextHolder.clearContext();
-		final SecurityContext context = Mockito.mock(SecurityContext.class);
-		final Authentication authentication = Mockito.mock(Authentication.class);
-		final List<GrantedAuthority> authoritiesAsList = Arrays.asList(authorities);
-		final User userDetails = new User(user, USER_DETAILS_NA, authoritiesAsList);
+		final var context = Mockito.mock(SecurityContext.class);
+		final var authentication = Mockito.mock(Authentication.class);
+		final var authoritiesAsList = Arrays.asList(authorities);
+		final var userDetails = new User(user, USER_DETAILS_NA, authoritiesAsList);
 		Mockito.when((List<GrantedAuthority>) authentication.getAuthorities()).thenReturn(authoritiesAsList);
 		Mockito.when(context.getAuthentication()).thenReturn(authentication);
 		Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
@@ -81,7 +81,7 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * 
 	 * @return the user name used for Spring Security mocking.
 	 */
-	protected String getAuthenticationName() {
+    String getAuthenticationName() {
 		return DEFAULT_USER;
 	}
 
@@ -93,8 +93,8 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * @return a mock of {@link javax.ws.rs.core.SecurityContext} with a defined {@link Principal}
 	 */
 	protected javax.ws.rs.core.SecurityContext getJaxRsSecurityContext(final String user) {
-		final javax.ws.rs.core.SecurityContext context = Mockito.mock(javax.ws.rs.core.SecurityContext.class);
-		final Principal principal = Mockito.mock(Principal.class);
+		final var context = Mockito.mock(javax.ws.rs.core.SecurityContext.class);
+		final var principal = Mockito.mock(Principal.class);
 		Mockito.when(principal.getName()).thenReturn(user);
 		Mockito.when(context.getUserPrincipal()).thenReturn(principal);
 		return context;

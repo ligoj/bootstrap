@@ -33,7 +33,7 @@ public class SimpleJsonBean {
 	 * @param key
 	 *            the {@link #key} to set.
 	 */
-	public void setKey(final String key) {
+	void setKey(final String key) {
 		this.key = key;
 	}
 
@@ -52,7 +52,7 @@ public class SimpleJsonBean {
 	 * @param value
 	 *            the {@link #value} to set.
 	 */
-	public void setValue(final Integer value) {
+	void setValue(final Integer value) {
 		this.value = value;
 	}
 

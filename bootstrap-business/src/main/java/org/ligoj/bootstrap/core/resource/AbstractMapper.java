@@ -31,7 +31,7 @@ public abstract class AbstractMapper {
 	 * @return the response containing JSON entity.
 	 */
 	protected Response toResponse(final Response.StatusType status, final String errorKey, final Throwable ex) {
-		final ServerError serverError = new ServerError();
+		final var serverError = new ServerError();
 		serverError.setCode(errorKey);
 		if (ex != null) {
 			serverError.setThrowable(ex);

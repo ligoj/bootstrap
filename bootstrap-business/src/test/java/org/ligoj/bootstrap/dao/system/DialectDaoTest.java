@@ -21,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * JDBC bench test.
  */
 @ExtendWith(SpringExtension.class)
-public class DialectDaoTest extends AbstractBootTest {
+class DialectDaoTest extends AbstractBootTest {
 
 	/**
 	 * Entity manager.
@@ -30,12 +30,12 @@ public class DialectDaoTest extends AbstractBootTest {
 	private EntityManager em;
 
 	@Test
-	public void testJavaTypes() {
+	void testJavaTypes() {
 		// create an entity with multiple java types
-		final SystemDialect dial = new SystemDialect();
+		final var dial = new SystemDialect();
 		dial.setDialBool(true);
 		dial.setDialChar("char");
-		dial.setDialDate(new GregorianCalendar(2012, 02, 10).getTime());
+		dial.setDialDate(new GregorianCalendar(2012, 2, 10).getTime());
 		dial.setDialDouble(15.0);
 		dial.setDialEnum(CascadeType.PERSIST);
 		dial.setDialLong(15L);
@@ -45,7 +45,7 @@ public class DialectDaoTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		// read entity from database and test values
-		final SystemDialect dialFromDb = em.find(SystemDialect.class, dial.getId());
+		final var dialFromDb = em.find(SystemDialect.class, dial.getId());
 		Assertions.assertEquals(dial.getDialChar(), dialFromDb.getDialChar());
 		Assertions.assertEquals(dial.getDialBool(), dialFromDb.getDialBool());
 		Assertions.assertEquals(dial.getDialDate(), dialFromDb.getDialDate());

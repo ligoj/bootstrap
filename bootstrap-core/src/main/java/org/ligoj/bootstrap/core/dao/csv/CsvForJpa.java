@@ -19,7 +19,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.apache.commons.lang3.StringUtils;
@@ -241,7 +240,7 @@ public class CsvForJpa extends AbstractCsvManager {
 		final Reader inputProxy;
 		if (hasHeader) {
 			inputProxy = new BufferedReader(input);
-			final String line = ((BufferedReader) inputProxy).readLine();
+			final var line = ((BufferedReader) inputProxy).readLine();
 			if (line == null) {
 				// No content means no header, no items.
 				return result;
@@ -255,10 +254,10 @@ public class CsvForJpa extends AbstractCsvManager {
 		}
 
 		// Read data
-		final CsvJpaReader<T> reader = new CsvJpaReader<>(inputProxy, em, beanType, headers);
+		final var reader = new CsvJpaReader<T>(inputProxy, em, beanType, headers);
 
 		// Build all instances
-		T order = reader.read();
+        var order = reader.read();
 		while (order != null) {
 			result.add(order);
 			if ((filter == null || filter.test(order)) && persist) {
@@ -286,9 +285,9 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	public <T> void toCsvEntity(final List<T> items, final Class<T> beanType, final Writer result) throws IOException {
-		final CsvBeanWriter writer = new CsvBeanWriter(result);
-		final String[] headers = getJpaHeaders(beanType);
-		for (final T item : items) {
+		final var writer = new CsvBeanWriter(result);
+		final var headers = getJpaHeaders(beanType);
+		for (final var item : items) {
 			writer.write(headers, item);
 		}
 	}
@@ -320,15 +319,15 @@ public class CsvForJpa extends AbstractCsvManager {
 	 */
 	public <T> String[] getJpaHeaders(final Class<T> beanType) {
 		// Build descriptor list respecting the declaration order
-		final OrderedFieldCallback fieldCallBack = new OrderedFieldCallback();
+		final var fieldCallBack = new OrderedFieldCallback();
 		ReflectionUtils.doWithFields(beanType, fieldCallBack);
-		final List<String> orderedDescriptors = fieldCallBack.descriptorsOrdered;
+		final var orderedDescriptors = fieldCallBack.descriptorsOrdered;
 
 		// Now filter the properties
 		final List<String> descriptorsFiltered = new ArrayList<>();
-		final ManagedType<T> managedType = transactionManager.getEntityManagerFactory().getMetamodel()
+		final var managedType = transactionManager.getEntityManagerFactory().getMetamodel()
 				.managedType(beanType);
-		for (final String propertyDescriptor : orderedDescriptors) {
+		for (final var propertyDescriptor : orderedDescriptors) {
 			for (final Attribute<?, ?> attribute : managedType.getAttributes()) {
 				// Match only basic attributes
 				if (attribute instanceof SingularAttribute<?, ?> && propertyDescriptor.equals(attribute.getName())) {
@@ -339,7 +338,7 @@ public class CsvForJpa extends AbstractCsvManager {
 		}
 
 		// Initialize the CSV reader
-		return descriptorsFiltered.toArray(new String[descriptorsFiltered.size()]);
+		return descriptorsFiltered.toArray(new String[0]);
 	}
 
 	/**
@@ -351,9 +350,9 @@ public class CsvForJpa extends AbstractCsvManager {
 	public void cleanup(final Class<?>... beanTypes) {
 
 		// Clean the data
-		for (int i = beanTypes.length; i-- > 0;) {
-			final Class<?> entityClass = beanTypes[i];
-			final String update = em.getMetamodel().managedType(entityClass).getAttributes().stream()
+		for (var i = beanTypes.length; i-- > 0;) {
+			final var entityClass = beanTypes[i];
+			final var update = em.getMetamodel().managedType(entityClass).getAttributes().stream()
 					.filter(a -> a.getJavaType().equals(entityClass)).map(Attribute::getName)
 					.map(name -> name + "=NULL").collect(Collectors.joining(", "));
 			if (update.length() > 0) {
@@ -402,8 +401,8 @@ public class CsvForJpa extends AbstractCsvManager {
 			final Consumer<?> consumer) throws IOException {
 
 		// Replace referential
-		int insertedCount = 0;
-		for (final Class<?> beanType : beanTypes) {
+        var insertedCount = 0;
+		for (final var beanType : beanTypes) {
 			insertedCount += insert(csvRoot, (Class<Object>) beanType, encoding, (Consumer<Object>) consumer).size();
 		}
 

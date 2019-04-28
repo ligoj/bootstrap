@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.resource.system.security;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.api.Assertions;
@@ -42,7 +41,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	private Integer authorizationId;
 
 	@BeforeEach
-	public void setUp2() throws IOException {
+	void setUp2() throws IOException {
 		persistEntities(SystemRole.class, "csv/system-test/role.csv");
 		persistEntities(SystemUser.class, "csv/system-test/user.csv");
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
@@ -55,8 +54,8 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test find by id service
 	 */
 	@Test
-	public void testFindById() {
-		final SystemAuthorization result = resource.findById(authorizationId);
+	void testFindById() {
+		final var result = resource.findById(authorizationId);
 
 		// Also check the lazy lading issue
 		em.clear();
@@ -69,28 +68,28 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test find by user for UI authorization.
 	 */
 	@Test
-	public void testFindByUserLoginUI() {
-		final SystemRole role = new SystemRole();
+	void testFindByUserLoginUI() {
+		final var role = new SystemRole();
 		role.setName(DEFAULT_ROLE);
 		em.persist(role);
-		final SystemRole role2 = new SystemRole();
+		final var role2 = new SystemRole();
 		role2.setName(DEFAULT_ROLE + 2);
 		em.persist(role2);
-		final SystemUser user = new SystemUser();
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
-		final SystemRoleAssignment assignment1 = new SystemRoleAssignment();
+		final var assignment1 = new SystemRoleAssignment();
 		assignment1.setRole(role);
 		assignment1.setUser(user);
 		em.persist(assignment1);
 
-		final SystemRoleAssignment assignment2 = new SystemRoleAssignment();
+		final var assignment2 = new SystemRoleAssignment();
 		assignment2.setRole(role2);
 		assignment2.setUser(user);
 		em.persist(assignment2);
 
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		authorization.setType(AuthorizationType.UI);
 		authorization.setRole(role);
 		authorization.setPattern("pattern");
@@ -99,7 +98,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		final List<SystemAuthorization> result = resource.findAuthorizationsUi(getJaxRsSecurityContext(DEFAULT_USER));
+		final var result = resource.findAuthorizationsUi(getJaxRsSecurityContext(DEFAULT_USER));
 
 		// Also check the lazy lading issue
 		em.clear();
@@ -114,28 +113,28 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test find by user for API authorization.
 	 */
 	@Test
-	public void testFindByUserLoginBusiness() {
-		final SystemRole role = new SystemRole();
+	void testFindByUserLoginBusiness() {
+		final var role = new SystemRole();
 		role.setName(DEFAULT_ROLE);
 		em.persist(role);
-		final SystemRole role2 = new SystemRole();
+		final var role2 = new SystemRole();
 		role2.setName(DEFAULT_ROLE + 2);
 		em.persist(role2);
-		final SystemUser user = new SystemUser();
+		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
-		final SystemRoleAssignment assignment1 = new SystemRoleAssignment();
+		final var assignment1 = new SystemRoleAssignment();
 		assignment1.setRole(role);
 		assignment1.setUser(user);
 		em.persist(assignment1);
 
-		final SystemRoleAssignment assignment2 = new SystemRoleAssignment();
+		final var assignment2 = new SystemRoleAssignment();
 		assignment2.setRole(role2);
 		assignment2.setUser(user);
 		em.persist(assignment2);
 
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		authorization.setType(AuthorizationType.API);
 		authorization.setRole(role);
 		authorization.setPattern("pattern");
@@ -144,7 +143,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		final List<SystemAuthorization> result = resource.findAuthorizationsApi(getJaxRsSecurityContext(DEFAULT_USER));
+		final var result = resource.findAuthorizationsApi(getJaxRsSecurityContext(DEFAULT_USER));
 
 		// Also check the lazy lading issue
 		em.clear();
@@ -159,22 +158,22 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test create service
 	 */
 	@Test
-	public void testCreateBusiness() {
-		final SystemRole role = new SystemRole();
+	void testCreateBusiness() {
+		final var role = new SystemRole();
 		role.setName(DEFAULT_ROLE);
 		em.persist(role);
 		em.flush();
 		em.clear();
-		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
+		final var authorization = new AuthorizationEditionVo();
 		authorization.setType(AuthorizationType.UI);
 		authorization.setRole(role.getId());
 		authorization.setPattern("pattern");
-		final int resultId = resource.create(authorization);
+		final var resultId = resource.create(authorization);
 
 		// check result
 		em.flush();
 		em.clear();
-		final SystemAuthorization result = em.find(SystemAuthorization.class, resultId);
+		final var result = em.find(SystemAuthorization.class, resultId);
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(role.getId(), result.getRole().getId());
 		Assertions.assertEquals(AuthorizationType.UI, result.getType());
@@ -185,8 +184,8 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test create service without a valid role.
 	 */
 	@Test
-	public void testCreateNoRole() {
-		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
+	void testCreateNoRole() {
+		final var authorization = new AuthorizationEditionVo();
 		authorization.setRole(-1);
 		authorization.setPattern("any");
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> resource.create(authorization));
@@ -196,14 +195,14 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test update service
 	 */
 	@Test
-	public void testUpdateBusiness() {
-		final SystemRole role2 = new SystemRole();
+	void testUpdateBusiness() {
+		final var role2 = new SystemRole();
 		role2.setName(DEFAULT_ROLE + "2");
 		em.persist(role2);
 		em.flush();
 		em.clear();
 
-		final AuthorizationEditionVo authorizationUpdate = new AuthorizationEditionVo();
+		final var authorizationUpdate = new AuthorizationEditionVo();
 		authorizationUpdate.setType(AuthorizationType.API);
 		authorizationUpdate.setRole(role2.getId());
 		authorizationUpdate.setPattern("pattern");
@@ -212,7 +211,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 		// check result
 		em.flush();
 		em.clear();
-		final SystemAuthorization result = em.find(SystemAuthorization.class, authorizationId);
+		final var result = em.find(SystemAuthorization.class, authorizationId);
 		Assertions.assertNotNull(result);
 		Assertions.assertEquals(role2.getName(), result.getRole().getName());
 		Assertions.assertEquals("pattern", result.getPattern());
@@ -222,8 +221,8 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test update service without a valid role.
 	 */
 	@Test
-	public void testUpdateNoRole() {
-		final AuthorizationEditionVo authorization = new AuthorizationEditionVo();
+	void testUpdateNoRole() {
+		final var authorization = new AuthorizationEditionVo();
 		authorization.setRole(-1);
 		authorization.setPattern("pattern");
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class,
@@ -234,7 +233,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test update service without a valid identifier.
 	 */
 	@Test
-	public void testUpdateInvalidId() {
+	void testUpdateInvalidId() {
 		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> resource.update(-1, null));
 	}
 
@@ -242,7 +241,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * Synchronized/invalid pattern test
 	 */
 	@Test
-	public void testInvalidPatternFromDb() {
+	void testInvalidPatternFromDb() {
 		addSystemAuthorization(HttpMethod.GET, "role1", "^(my\\(url");
 		em.flush();
 		em.clear();
@@ -251,13 +250,13 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	}
 
 	private void addSystemAuthorization(final HttpMethod method, final String roleName, final String pattern) {
-		SystemRole role = systemRoleRepository.findByName(roleName);
+        var role = systemRoleRepository.findByName(roleName);
 		if (role == null) {
 			role = new SystemRole();
 			role.setName(roleName);
 			em.persist(role);
 		}
-		final SystemAuthorization authorization = new SystemAuthorization();
+		final var authorization = new SystemAuthorization();
 		authorization.setRole(role);
 		authorization.setMethod(method);
 		authorization.setType(AuthorizationType.API);
@@ -269,7 +268,7 @@ public class AuthorizationResourceTest extends AbstractBootTest {
 	 * test remove service
 	 */
 	@Test
-	public void testRemove() {
+	void testRemove() {
 		resource.remove(authorizationId);
 
 		// check result
