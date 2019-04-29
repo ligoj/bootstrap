@@ -322,13 +322,6 @@
 				<version>${spring-security.version}</version>
 				<scope>runtime</scope>
 			</dependency>
-
-			<!-- JSR-245 -->
-			<dependency>
-				<groupId>javax.el</groupId>
-				<artifactId>javax.el-api</artifactId>
-				<version>3.0.0</version>
-			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
