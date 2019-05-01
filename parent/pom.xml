@@ -13,7 +13,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.7.2-SNAPSHOT</version>
+	<version>2.7.3</version>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Ligoj Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
@@ -39,8 +39,8 @@
 		</license>
 	</licenses>
 	<properties>
-		<bootstrap.version>2.7.2-SNAPSHOT</bootstrap.version>
-		<revision>2.7.2-SNAPSHOT</revision>
+		<bootstrap.version>2.7.3</bootstrap.version>
+		<revision>2.7.3</revision>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
 		<apacheds.version>1.5.5</apacheds.version>
