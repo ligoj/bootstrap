@@ -18,13 +18,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.ligoj.bootstrap.core.csv.AbstractCsvReader;
 
 /**
  * CSV reader implementation based on Camel implementation (see BindyCsvDataFormat) where some issues have been fixed.
  *
- * @param <T>
- *            Bean type.
+ * @param <T> Bean type.
  */
 public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 
@@ -46,14 +46,10 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Simple override.
 	 *
-	 * @param reader
-	 *            Input reader.
-	 * @param clazz
-	 *            Class of bean to build.
-	 * @param headers
-	 *            Headers, an ordered property list.
-	 * @param em
-	 *            The {@link EntityManager} used to get properties and foreign keys.
+	 * @param reader  Input reader.
+	 * @param clazz   Class of bean to build.
+	 * @param headers Headers, an ordered property list.
+	 * @param em      The {@link EntityManager} used to get properties and foreign keys.
 	 */
 	public CsvJpaReader(final Reader reader, final EntityManager em, final Class<T> clazz, final String... headers) {
 		super(reader, clazz, headers);
@@ -76,7 +72,10 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, fkeyName, new ArrayList<>()));
 		} else {
 			// Simple property
-			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field, field.getType(), fkeyName));
+			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field,
+					TypeUtils.getRawType(field.getGenericType(), bean.getClass()), fkeyName));
+//			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field,
+//					field.getType(), fkeyName));
 		}
 	}
 
