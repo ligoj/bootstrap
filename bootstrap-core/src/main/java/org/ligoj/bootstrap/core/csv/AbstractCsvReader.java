@@ -221,7 +221,7 @@ public abstract class AbstractCsvReader<T> {
 	 */
 	protected void fillInstance(final T bean, final List<String> values, final TriConsumer<T, String, String> setter)
 			throws ReflectiveOperationException {
-        var index = 0;
+		var index = 0;
 		for (final var property : headers) {
 			if (index >= values.size()) {
 				// Trailing null data are ignored
@@ -273,9 +273,8 @@ public abstract class AbstractCsvReader<T> {
 	 * @param fkeyIndex Foreign key index.
 	 * @throws ReflectiveOperationException When bean reflection failed.
 	 */
-	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex)
-			throws ReflectiveOperationException {
-		throw new ReflectiveOperationException("Foreign key management is not supported in bean mode");
+	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex) {
+		throw new TechnicalException("Foreign key management is not supported in bean mode");
 	}
 
 	Map<Class<?>, Map<String, Field>> fields = new WeakHashMap<>();
@@ -311,7 +310,7 @@ public abstract class AbstractCsvReader<T> {
 
 		// Get/initialize the Map
 		@SuppressWarnings("unchecked")
-        var map = (Map<String, String>) mapField.get(bean);
+		var map = (Map<String, String>) mapField.get(bean);
 		if (map == null) {
 			map = new LinkedHashMap<>();
 			mapField.set(bean, map);
@@ -330,10 +329,10 @@ public abstract class AbstractCsvReader<T> {
 	 * @param bean     the target bean.
 	 * @param property the bean property to set.
 	 * @param rawValue the raw value to set.
-	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
+	 * @throws IllegalAccessException When bean cannot be built with reflection.
 	 */
 	private void setSimpleProperty(final T bean, final String property, final String rawValue)
-			throws ReflectiveOperationException {
+			throws IllegalAccessException {
 		final var mapIndex = property.indexOf('$');
 		if (mapIndex == -1) {
 			setSimpleRawProperty(bean, property, rawValue);
@@ -351,7 +350,8 @@ public abstract class AbstractCsvReader<T> {
 	 * @param <E>      Enumeration type.
 	 */
 	@SuppressWarnings("unchecked")
-	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property, final String rawValue) {
+	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property,
+			final String rawValue) {
 		final var field = getField(clazz, property);
 
 		// Update the property

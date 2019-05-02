@@ -57,8 +57,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	@Override
-	protected void setForeignProperty(final T bean, final String fqname, final String rawValue, final int fkeyIndex)
-			throws ReflectiveOperationException {
+	protected void setForeignProperty(final T bean, final String fqname, final String rawValue, final int fkeyIndex) {
 		final var name = fqname.substring(0, fkeyIndex);
 		final var field = getField(clazz, name);
 		final var fkeyName = fqname.substring(fkeyIndex + 1);
@@ -74,13 +73,11 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 			// Simple property
 			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field,
 					TypeUtils.getRawType(field.getGenericType(), bean.getClass()), fkeyName));
-//			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field,
-//					field.getType(), fkeyName));
 		}
 	}
 
 	private Object getForeignProperty(final String rawValue, final String name, final Field field, final Class<?> type,
-			final String fkName) throws ReflectiveOperationException {
+			final String fkName) {
 		final Object foreignEntity;
 		if (fkName.charAt(fkName.length() - 1) == '!') {
 			foreignEntity = readFromEm(rawValue, type, fkName.substring(0, fkName.length() - 1));
@@ -95,7 +92,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	private Collection<Object> newCollection(final String rawValue, final String masterPropertyName, final Field field,
-			String propertyName, final Collection<Object> arrayList) throws ReflectiveOperationException {
+			String propertyName, final Collection<Object> arrayList) {
 		final var generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 		for (final var item : rawValue.split(",")) {
 			arrayList.add(getForeignProperty(item, masterPropertyName, field, generic, propertyName));
@@ -134,8 +131,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Read from already read entities.
 	 */
-	private Object readFromCache(final String rawValue, final Class<?> type, final String propertyName)
-			throws ReflectiveOperationException {
+	private Object readFromCache(final String rawValue, final Class<?> type, final String propertyName) {
 		// Special fetching mode
 		if (isRowNumber(type, propertyName)) {
 			// search referenced entity with a filter on row number
@@ -149,8 +145,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Read from already read row index
 	 */
-	private Object readFromJoinCache(final String rawValue, final Class<?> type, final String propertyName)
-			throws ReflectiveOperationException {
+	private Object readFromJoinCache(final String rawValue, final Class<?> type, final String propertyName) {
 		ensureCache(type, propertyName);
 		return foreignCache.get(type).get(rawValue);
 	}
@@ -173,7 +168,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	/**
 	 * Initialize or update cache.
 	 */
-	private void ensureCache(final Class<?> type, final String propertyName) throws ReflectiveOperationException {
+	private void ensureCache(final Class<?> type, final String propertyName) {
 		if (!foreignCache.containsKey(type) || type == clazz) {
 			foreignCache.put(type, buildMap(readAll(type), propertyName));
 		}
