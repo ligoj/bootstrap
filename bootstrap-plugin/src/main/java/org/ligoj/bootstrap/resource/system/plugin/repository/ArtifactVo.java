@@ -30,6 +30,7 @@ public class ArtifactVo implements Artifact {
 	 *            The artifact to clone.
 	 */
 	public ArtifactVo(final Artifact artifact) {
+		this();
 		setArtifact(artifact.getArtifact());
 		setVersion(artifact.getVersion());
 	}
