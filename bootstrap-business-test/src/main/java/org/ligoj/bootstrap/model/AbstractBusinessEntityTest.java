@@ -129,9 +129,10 @@ public abstract class AbstractBusinessEntityTest {
 	 * Simple POJO utility getter/setter for POJO compliance.
 	 * 
 	 * @param pojo The POJO class.
+	 * @return The POJO instance with all setters called.
 	 * @throws ReflectiveOperationException When reflects fails.
 	 */
-	protected void testPojo(Class<?> pojo) throws ReflectiveOperationException {
+	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {
 		var bean = pojo.getConstructor().newInstance();
 		for (final Field field : FieldUtils.getAllFields(pojo)) {
 			if (field.getName().contains("$") || Modifier.isStatic(field.getModifiers())) {
@@ -151,5 +152,6 @@ public abstract class AbstractBusinessEntityTest {
 			pojo.getMethod(setter, type).invoke(bean, param);
 			pojo.getMethod(getter).invoke(bean);
 		}
+		return bean;
 	}
 }
