@@ -3,9 +3,13 @@
  */
 package org.ligoj.bootstrap.model;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
@@ -24,12 +28,9 @@ public abstract class AbstractBusinessEntityTest {
 	/**
 	 * Test equals and hash code operation with all possible combinations
 	 *
-	 * @param modelClass
-	 *            the entity to test.
-	 * @throws ReflectiveOperationException
-	 *             Due to reflection.
-	 * @param <T>
-	 *            The type of the entity to test.
+	 * @param modelClass the entity to test.
+	 * @throws ReflectiveOperationException Due to reflection.
+	 * @param <T> The type of the entity to test.
 	 */
 	protected <T> void testEqualsAndHash(final Class<T> modelClass) throws ReflectiveOperationException {
 		testEqualsAndHash(modelClass, "id");
@@ -38,14 +39,10 @@ public abstract class AbstractBusinessEntityTest {
 	/**
 	 * Test equals and hash code operation with all possible combinations
 	 *
-	 * @param modelClass
-	 *            the entity to test.
-	 * @param idProperties
-	 *            the list of business key parts.
-	 * @param <T>
-	 *            The type of the entity to test.
-	 * @throws ReflectiveOperationException
-	 *             due to reflection.
+	 * @param modelClass   the entity to test.
+	 * @param idProperties the list of business key parts.
+	 * @param <T>          The type of the entity to test.
+	 * @throws ReflectiveOperationException due to reflection.
 	 */
 	protected <T> void testEqualsAndHash(final Class<T> modelClass, final String... idProperties)
 			throws ReflectiveOperationException {
@@ -125,6 +122,34 @@ public abstract class AbstractBusinessEntityTest {
 			if ((i & (1 << j)) != 0) {
 				combinations.add(array[j]);
 			}
+		}
+	}
+
+	/**
+	 * Simple POJO utility getter/setter for POJO compliance.
+	 * 
+	 * @param pojo The POJO class.
+	 * @throws ReflectiveOperationException When reflects fails.
+	 */
+	protected void testPojo(Class<?> pojo) throws ReflectiveOperationException {
+		var bean = pojo.getConstructor().newInstance();
+		for (final Field field : FieldUtils.getAllFields(pojo)) {
+			if (field.getName().contains("$") || Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+			final var setter = "set" + StringUtils.capitalize(field.getName());
+			var getter = "get" + StringUtils.capitalize(field.getName());
+			Object param = null;
+			var type = field.getType();
+			if (type.equals(double.class)) {
+				param = 0D;
+			} else if (type.equals(boolean.class)) {
+				getter = "is" + StringUtils.capitalize(field.getName());
+				param = false;
+			}
+
+			pojo.getMethod(setter, type).invoke(bean, param);
+			pojo.getMethod(getter).invoke(bean);
 		}
 	}
 }

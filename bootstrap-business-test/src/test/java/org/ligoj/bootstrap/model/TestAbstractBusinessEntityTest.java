@@ -4,7 +4,9 @@
 package org.ligoj.bootstrap.model;
 
 import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.model.system.SystemUserSetting;
 
 /**
  * Test business keyed entities basic ORM operations : hash code and equals.
@@ -25,6 +27,13 @@ class TestAbstractBusinessEntityTest extends AbstractBusinessEntityTest {
 	@Test
 	void testEqualsAndHashId() throws Exception {
 		testEqualsAndHash(DummyBusinessEntity.class);
+	}
+
+	@Test
+	void testSystemDialect() throws ReflectiveOperationException {
+		testPojo(SystemDialect.class);
+		testPojo(SystemUserSetting.class);
+		testPojo(SystemUser.class);
 	}
 
 }
