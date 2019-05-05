@@ -16,19 +16,19 @@ import org.junit.jupiter.api.Test;
 public class BeanTest {
 
 	@Test
-	void testSystemDialect() throws ReflectiveOperationException {
-		testPojo(SystemDialect.class);
-		testPojo(SystemApiToken.class);
-		testPojo(SystemBench.class);
-		testPojo(SystemUserSetting.class);
-		testPojo(SystemConfiguration.class);
-		testPojo(SystemRoleAssignment.class);
-		testPojo(SystemAuthorization.class);
-		testPojo(SystemRole.class);
-		testPojo(SystemUser.class);
+	void beans() throws ReflectiveOperationException {
+		testPojo(SystemDialect.class).toString();
+		testPojo(SystemApiToken.class).toString();
+		testPojo(SystemBench.class).toString();
+		testPojo(SystemUserSetting.class).toString();
+		testPojo(SystemConfiguration.class).toString();
+		testPojo(SystemRoleAssignment.class).toString();
+		testPojo(SystemAuthorization.class).toString();
+		testPojo(SystemRole.class).toString();
+		testPojo(SystemUser.class).toString();
 	}
 
-	protected void testPojo(Class<?> pojo) throws ReflectiveOperationException {
+	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {
 		var bean = pojo.getConstructor().newInstance();
 		for (final Field field : FieldUtils.getAllFields(pojo)) {
 			if (field.getName().contains("$") || Modifier.isStatic(field.getModifiers())) {
@@ -48,6 +48,7 @@ public class BeanTest {
 			pojo.getMethod(setter, type).invoke(bean, param);
 			pojo.getMethod(getter).invoke(bean);
 		}
+		return bean;
 	}
 
 }
