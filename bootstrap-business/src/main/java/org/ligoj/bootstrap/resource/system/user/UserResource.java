@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheRemove;
 import javax.persistence.criteria.JoinType;
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
@@ -32,6 +34,7 @@ import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 /**
@@ -54,6 +57,10 @@ public class UserResource {
 
 	@Autowired
 	private SystemRoleAssignmentRepository roleAssignmentRepository;
+
+	@Autowired
+	protected CacheManager cacheManager;
+
 	/**
 	 * Ordered columns.
 	 */
@@ -190,12 +197,12 @@ public class UserResource {
 	}
 
 	/**
-	 * Create role assignment
+	 * Create role assignment.
 	 * 
 	 * @param roleIds
-	 *            the role identifiers
+	 *            The role identifiers.
 	 * @param user
-	 *            the user
+	 *            The user to assign.
 	 */
 	private void createRoleAssignment(final List<Integer> roleIds, final SystemUser user) {
 		for (final var roleId : roleIds) {
@@ -206,6 +213,7 @@ public class UserResource {
 			roleAssignment.setUser(user);
 			roleAssignmentRepository.save(roleAssignment);
 		}
+		cacheManager.getCache("user-details").evict(user.getLogin());
 	}
 
 	/**
@@ -216,7 +224,8 @@ public class UserResource {
 	 */
 	@DELETE
 	@Path("{login}")
-	public void delete(@PathParam("login") final String login) {
+	@CacheRemove(cacheName = "user-details")
+	public void delete(@PathParam("login") @CacheKey final String login) {
 		repository.deleteById(login);
 	}
 }
