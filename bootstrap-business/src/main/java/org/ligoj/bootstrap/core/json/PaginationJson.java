@@ -86,17 +86,17 @@ public class PaginationJson {
 	 *
 	 * @param sortColumn
 	 *            the optional ordered column.
-	 * @param sorDirection
+	 * @param sortDirection
 	 *            the optional sort order. Default is {@link Direction#ASC}.
 	 * @return <code>null</code> or sort object.
 	 */
-	private UiSort buildSort(final String sortColumn, final String sorDirection) {
+	private UiSort buildSort(final String sortColumn, final String sortDirection) {
 		if (sortColumn == null) {
 			return null;
 		}
 		final var sort = new UiSort();
 		sort.setColumn(sortColumn);
-		sort.setDirection(Optional.ofNullable(sorDirection).map(d -> Direction.valueOf(d.toUpperCase(Locale.ENGLISH)))
+		sort.setDirection(Optional.ofNullable(sortDirection).map(d -> Direction.valueOf(d.toUpperCase(Locale.ENGLISH)))
 				.orElse(Direction.ASC));
 		return sort;
 	}
