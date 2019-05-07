@@ -271,7 +271,6 @@ public abstract class AbstractCsvReader<T> {
 	 * @param property  Target property.
 	 * @param rawValue  Source value.
 	 * @param fkeyIndex Foreign key index.
-	 * @throws ReflectiveOperationException When bean reflection failed.
 	 */
 	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex) {
 		throw new TechnicalException("Foreign key management is not supported in bean mode");

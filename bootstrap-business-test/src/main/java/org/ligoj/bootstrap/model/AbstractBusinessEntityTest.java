@@ -130,6 +130,7 @@ public abstract class AbstractBusinessEntityTest {
 	 * 
 	 * @param pojo The POJO class.
 	 * @return The POJO instance with all setters called.
+	 * @param <T> POJO type.
 	 * @throws ReflectiveOperationException When reflects fails.
 	 */
 	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {
