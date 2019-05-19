@@ -7,7 +7,6 @@ import java.io.Serializable;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.core.INamableBean;
 
@@ -39,7 +38,6 @@ public abstract class AbstractNamedAuditedEntity<K extends Serializable> extends
 	 * Object name
 	 */
 	@NotBlank
-	@NotNull
 	private String name;
 
 }

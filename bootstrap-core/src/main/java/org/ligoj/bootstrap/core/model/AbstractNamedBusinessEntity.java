@@ -7,7 +7,6 @@ import java.io.Serializable;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.core.INamableBean;
 
@@ -32,7 +31,6 @@ public abstract class AbstractNamedBusinessEntity<K extends Serializable> extend
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
 	@NotBlank
 	private String name;
 

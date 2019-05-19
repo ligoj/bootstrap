@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.core;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +30,6 @@ public class NamedAuditedBean<U extends Serializable, K extends Serializable> ex
 	private static final long serialVersionUID = 1L;
 
 	@NotBlank
-	@NotNull
 	private String name;
 
 }

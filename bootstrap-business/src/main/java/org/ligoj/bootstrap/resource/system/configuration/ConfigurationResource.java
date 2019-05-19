@@ -17,7 +17,6 @@ import javax.cache.annotation.CacheResult;
 import javax.cache.annotation.CacheValue;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -185,7 +184,7 @@ public class ConfigurationResource {
 	@PUT
 	@Path("{name}")
 	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value) {
+	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank final String value) {
 		put(name, value, false);
 	}
 
@@ -201,7 +200,7 @@ public class ConfigurationResource {
 	@PUT
 	@Path("{name}/{system}")
 	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value,
+	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank final String value,
 			@PathParam("system") final boolean system) {
 		put(name, value, system, false);
 	}
@@ -219,7 +218,7 @@ public class ConfigurationResource {
 	@PUT
 	@Path("{name}/{system}/{secured}")
 	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank @NotNull final String value,
+	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank final String value,
 			@PathParam("system") final boolean system, @PathParam("secured") final boolean secured) {
 		final var setting = repository.findByName(name);
 		final var storedValue = secured ? cryptoHelper.encrypt(value) : value;

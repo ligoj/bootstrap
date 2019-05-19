@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.core;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +37,6 @@ public class NamedBean<K extends Serializable> implements INamableBean<K> {
 	private K id;
 
 	@NotBlank
-	@NotNull
 	private String name;
 
 	/**
