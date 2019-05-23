@@ -33,4 +33,10 @@ public class ApplicationSettings {
 	@Value("${project.version}")
 	private String buildVersion;
 
+	/**
+	 * Build version of the application as defined in the build configuration (Maven).
+	 */
+	@Value("${project.digestVersion}")
+	private String digestVersion;
+
 }

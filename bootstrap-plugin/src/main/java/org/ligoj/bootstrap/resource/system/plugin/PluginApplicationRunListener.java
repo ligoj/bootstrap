@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.plugin;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.springframework.boot.SpringApplication;
@@ -23,14 +24,13 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 	/**
 	 * Required Spring-Boot constructor to be compliant to {@link SpringApplicationRunListener}
 	 *
-	 * @param application
-	 *            The current application.
-	 * @param args
-	 *            The application arguments.
-	 * @throws IOException
-	 *             When reading plug-ins directory
+	 * @param application The current application.
+	 * @param args        The application arguments.
+	 * @throws IOException              When reading plug-ins directory
+	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
-	public PluginApplicationRunListener(final SpringApplication application, final String... args) throws IOException {
+	public PluginApplicationRunListener(final SpringApplication application, final String... args)
+			throws IOException, NoSuchAlgorithmException {
 		if (PluginsClassLoader.getInstance() == null) {
 			// Replace the main class loader
 			log.info("Install the plugin classloader for application {}({})", application, args);
@@ -41,10 +41,10 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 	/**
 	 * Replace the current classloader by a {@link PluginsClassLoader} instance.
 	 *
-	 * @throws IOException
-	 *             When the stup failed.
+	 * @throws IOException              When the setup failed.
+	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
-	protected void replaceClassLoader() throws IOException {
+	protected void replaceClassLoader() throws IOException, NoSuchAlgorithmException {
 		Thread.currentThread().setContextClassLoader(new PluginsClassLoader());
 	}
 

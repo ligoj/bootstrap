@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
@@ -32,7 +33,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void getInstalledPlugins() throws IOException {
+	public void getInstalledPlugins() throws IOException, NoSuchAlgorithmException {
 		final var oldHome = System.getProperty("user.home");
 		try {
 			System.setProperty("user.home", USER_HOME_DIRECTORY);
@@ -43,6 +44,7 @@ public class PluginsClassLoaderTest {
 				Assertions.assertEquals("plugin-foo-Z0000001Z0000000Z0000001Z0000000", plugins.get("plugin-foo"));
 				Assertions.assertEquals("plugin-bar-Z0000001Z0000000Z0000000Z0000000", plugins.get("plugin-bar"));
 				Assertions.assertEquals("plugin-sample-Z0000002Z0000000Z0000000Z0000000", plugins.get("plugin-sample"));
+				Assertions.assertEquals("wMxLd+H9uVdM4fRKRhOQpA==", classLoader.getDigestVersion());
 			}
 		} finally {
 			System.setProperty("user.home", oldHome);
@@ -50,7 +52,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void safeMode() throws IOException {
+	public void safeMode() throws IOException, NoSuchAlgorithmException {
 		final var old = System.getProperty("ligoj.plugin.enabled");
 		try {
 			System.setProperty("ligoj.plugin.enabled", "false");
@@ -74,7 +76,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void forcedHome() throws IOException {
+	public void forcedHome() throws IOException, NoSuchAlgorithmException {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			try (var classLoader = checkClassLoader()) {
@@ -103,7 +105,7 @@ public class PluginsClassLoaderTest {
 
 	@Test
 	public void getInstance() {
-        var old = Thread.currentThread().getContextClassLoader();
+		var old = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread()
 					.setContextClassLoader(new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class)));
@@ -127,7 +129,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void toFile() throws IOException {
+	public void toFile() throws IOException, NoSuchAlgorithmException {
 		final var file = new File(USER_HOME_DIRECTORY, ".ligoj/service-id/foo/bar.log");
 		final var subscriptionParent = new File(USER_HOME_DIRECTORY, ".ligoj/service-id");
 		FileUtils.deleteQuietly(subscriptionParent);
@@ -171,7 +173,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void copyAlreadyExists() throws IOException {
+	public void copyAlreadyExists() throws IOException, NoSuchAlgorithmException {
 		final var refError = new AtomicReference<PluginsClassLoader>();
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
@@ -185,7 +187,7 @@ public class PluginsClassLoaderTest {
 			}) {
 				classLoader.copyExportedResources("plugin-foo",
 						new File(USER_HOME_DIRECTORY, ".ligoj/plugins/plugin-foo-1.0.1.jar").toPath());
-                var exported = new File(USER_HOME_DIRECTORY, ".ligoj/export/export.txt");
+				var exported = new File(USER_HOME_DIRECTORY, ".ligoj/export/export.txt");
 				Assertions.assertTrue(exported.exists());
 				FileUtils.write(exported, "value", StandardCharsets.UTF_8);
 
@@ -205,7 +207,7 @@ public class PluginsClassLoaderTest {
 		}
 	}
 
-	private PluginsClassLoader checkClassLoader() throws IOException {
+	private PluginsClassLoader checkClassLoader() throws IOException, NoSuchAlgorithmException {
 		final var classLoader = new PluginsClassLoader();
 		Assertions.assertEquals(4, classLoader.getURLs().length);
 

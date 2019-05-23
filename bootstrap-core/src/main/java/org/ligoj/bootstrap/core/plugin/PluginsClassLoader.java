@@ -10,7 +10,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +74,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	private final Path pluginDirectory;
 
+	@Getter
+	private final String digestVersion;
+
 	/**
 	 * Read only plug-in safe mode. When <code>false</code>, external plug-ins are not participating to the classpath.
 	 */
@@ -80,10 +86,10 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Initialize the plug-in {@link URLClassLoader} and the related directories.
 	 *
-	 * @throws IOException
-	 *             exception when reading plug-ins directory
+	 * @throws IOException              exception when reading plug-ins directory
+	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
-	public PluginsClassLoader() throws IOException {
+	public PluginsClassLoader() throws IOException, NoSuchAlgorithmException {
 		super(new URL[0], Thread.currentThread().getContextClassLoader());
 		this.enabled = Boolean.valueOf(System.getProperty(ENABLED_PROPERTY, "true"));
 		this.homeDirectory = computeHome();
@@ -99,16 +105,20 @@ public class PluginsClassLoader extends URLClassLoader {
 		if (!isEnabled()) {
 			// Ignore this refresh keep original class-path
 			log.info("SAFE MODE - Plugins classloader is disabled");
+			this.digestVersion = Base64.getEncoder().encodeToString(String.valueOf(Math.random()).getBytes());
 			return;
 		}
 
-		completeClasspath();
+		this.digestVersion = completeClasspath();
 	}
 
 	/**
 	 * Complete the class-path with plug-ins jars
+	 * 
+	 * @return The version digest.
+	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
-	private void completeClasspath() throws IOException {
+	private String completeClasspath() throws IOException, NoSuchAlgorithmException {
 		// Mapping from "version file" to Path
 		// Key : The filename without extension and with extended comparable version
 		// Value : The resolved Path
@@ -116,6 +126,7 @@ public class PluginsClassLoader extends URLClassLoader {
 
 		// Ordered last version (to be enabled) plug-ins.
 		final var enabledPlugins = getInstalledPlugins(versionFileToPath);
+		final StringBuilder buffer = new StringBuilder();
 
 		// Add the filtered plug-in files to the class-path
 		for (final var plugin : enabledPlugins.entrySet()) {
@@ -123,22 +134,29 @@ public class PluginsClassLoader extends URLClassLoader {
 			log.debug("Add plugin {}", uri);
 			copyExportedResources(plugin.getKey(), versionFileToPath.get(plugin.getValue()));
 			addURL(uri.toURL());
+			buffer.append(plugin.getValue());
 		}
-		log.info("Plugins ClassLoader has added {} plug-ins and ignored {} old plug-ins", enabledPlugins.size(),
-				versionFileToPath.size() - enabledPlugins.size());
+		
+		// Build a digestion version
+		final MessageDigest mDigest = MessageDigest.getInstance("MD5");
+		mDigest.update(buffer.toString().getBytes());
+		final String digest = Base64.getEncoder().encodeToString(mDigest.digest());
+		System.setProperty("project.digestVersion", digest);
+
+		log.info("Plugins ClassLoader has added {} plug-ins and ignored {} old plug-ins, digest {}",
+				enabledPlugins.size(), versionFileToPath.size() - enabledPlugins.size(), digest);
+		return digest;
 	}
 
 	/**
 	 * Return the mapping of the elected last plug-in name to the corresponding version file.
 	 *
-	 * @param versionFileToPath
-	 *            The mapping filled by this method. Key : The filename without extension and with extended comparable
-	 *            version. Value : The resolved Path.
+	 * @param versionFileToPath The mapping filled by this method. Key : The filename without extension and with
+	 *                          extended comparable version. Value : The resolved Path.
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
 	 *         artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
 	 *         version.
-	 * @throws IOException
-	 *             When file list failed.
+	 * @throws IOException When file list failed.
 	 */
 	private Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath) throws IOException {
 		final Map<String, String> versionFiles = new TreeMap<>();
@@ -160,8 +178,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
 	 *         artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
 	 *         version.
-	 * @throws IOException
-	 *             When file list failed.
+	 * @throws IOException When file list failed.
 	 */
 	public Map<String, String> getInstalledPlugins() throws IOException {
 		return getInstalledPlugins(new HashMap<>());
@@ -180,8 +197,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Return the plug-in class loader from the given class loader's hierarchy.
 	 *
-	 * @param cl
-	 *            The {@link ClassLoader} to inspect.
+	 * @param cl The {@link ClassLoader} to inspect.
 	 * @return the closest {@link PluginsClassLoader} instance from the current thread's {@link ClassLoader}. May be
 	 *         <code>null</code>.
 	 */
@@ -204,12 +220,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Copy resources needed to be exported from the JAR plug-in to the home.
 	 *
-	 * @param plugin
-	 *            The plug-in identifier.
-	 * @param pluginFile
-	 *            The target plug-in file.
-	 * @throws IOException
-	 *             When plug-in file cannot be read.
+	 * @param plugin     The plug-in identifier.
+	 * @param pluginFile The target plug-in file.
+	 * @throws IOException When plug-in file cannot be read.
 	 */
 	protected void copyExportedResources(final String plugin, final Path pluginFile) throws IOException {
 		try (var fileSystem = FileSystems.newFileSystem(pluginFile, this)) {
@@ -242,12 +255,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Copy a resource needed to be exported from the JAR plug-in to the home.
 	 *
-	 * @param from
-	 *            The source file to the destination file. Directories are not supported.
-	 * @param dest
-	 *            The destination file.
-	 * @throws IOException
-	 *             When plug-in file cannot be copied.
+	 * @param from The source file to the destination file. Directories are not supported.
+	 * @param dest The destination file.
+	 * @throws IOException When plug-in file cannot be copied.
 	 */
 	protected void copy(final Path from, final Path dest) throws IOException {
 		if (Files.isDirectory(from)) {
@@ -283,8 +293,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Convert a version to a comparable string and following the semver specification. Maximum 4 version ranges are
 	 * accepted.
 	 *
-	 * @param version
-	 *            The version string to convert. May be <code>null</code>
+	 * @param version The version string to convert. May be <code>null</code>
 	 * @return The given version to be comparable with another version. Handle the 'SNAPSHOT' case considered has oldest
 	 *         than the one without this suffix.
 	 * @see PluginsClassLoader#toExtendedVersion(String)
@@ -324,11 +333,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Convert a fragment list to a {@link Path} inside the home directory. The intermediate directories are also
 	 * created.
 	 *
-	 * @param fragments
-	 *            The file fragments within the home directory.
+	 * @param fragments The file fragments within the home directory.
 	 * @return The {@link Path} reference.
-	 * @throws IOException
-	 *             When the parent directories creation failed.
+	 * @throws IOException When the parent directories creation failed.
 	 * @since 2.2.4
 	 */
 	public Path toPath(final String... fragments) throws IOException {
@@ -338,16 +345,13 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Get a file reference inside the given parent path. The parent directories are created as needed.
 	 *
-	 * @param parent
-	 *            The parent path.
-	 * @param fragments
-	 *            The file fragments within the given parent.
+	 * @param parent    The parent path.
+	 * @param fragments The file fragments within the given parent.
 	 * @return The {@link Path} reference.
-	 * @throws IOException
-	 *             When the parent directories creation failed.
+	 * @throws IOException When the parent directories creation failed.
 	 */
 	protected Path toPath(final Path parent, final String... fragments) throws IOException {
-        var parentR = parent;
+		var parentR = parent;
 		for (var fragment : fragments) {
 			parentR = parentR.resolve(fragment);
 		}
