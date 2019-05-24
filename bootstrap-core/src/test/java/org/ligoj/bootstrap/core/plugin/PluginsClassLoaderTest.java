@@ -30,6 +30,7 @@ public class PluginsClassLoaderTest {
 	public void cleanHome() throws IOException {
 		FileUtils.deleteDirectory(new File(new File(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER),
 				PluginsClassLoader.EXPORT_DIR));
+		System.clearProperty("project.digestVersion");
 	}
 
 	@Test
@@ -45,6 +46,8 @@ public class PluginsClassLoaderTest {
 				Assertions.assertEquals("plugin-bar-Z0000001Z0000000Z0000000Z0000000", plugins.get("plugin-bar"));
 				Assertions.assertEquals("plugin-sample-Z0000002Z0000000Z0000000Z0000000", plugins.get("plugin-sample"));
 				Assertions.assertEquals("wMxLd+H9uVdM4fRKRhOQpA==", classLoader.getDigestVersion());
+				Assertions.assertEquals("wMxLd+H9uVdM4fRKRhOQpA==", System.getProperty("project.digestVersion"));
+
 			}
 		} finally {
 			System.setProperty("user.home", oldHome);
