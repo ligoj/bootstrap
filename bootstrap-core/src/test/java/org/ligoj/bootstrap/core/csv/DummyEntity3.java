@@ -20,6 +20,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Simple basic entity.
+ */
 @Entity
 @Getter
 @Setter

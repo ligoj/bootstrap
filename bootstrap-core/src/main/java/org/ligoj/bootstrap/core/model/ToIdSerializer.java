@@ -20,6 +20,9 @@ public class ToIdSerializer extends StdSerializer<Persistable<?>> {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * JAX-RS serializer instance.
+	 */
 	public static final ToIdSerializer INSTANCE = new ToIdSerializer();
 
 	protected ToIdSerializer() {

@@ -16,10 +16,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class DummyCacheBean {
 
-	public static int hit = 0;
+	static int hit = 0;
 
 	/**
 	 * Cache efficiency test.
+	 * 
+	 * @param entry Key.
 	 * 
 	 * @return the last #hit counter known by the cache.
 	 */
@@ -39,6 +41,7 @@ public class DummyCacheBean {
 	/**
 	 * Cache efficiency test for "test-cache-1"
 	 * 
+	 * @param entry Key.
 	 * @return the last #hit counter known by the cache.
 	 */
 	@CacheResult(cacheName = "test-cache-1")
@@ -57,6 +60,7 @@ public class DummyCacheBean {
 	/**
 	 * Cache efficiency test for "test-cache-2"
 	 * 
+	 * @param entry Key.
 	 * @return the last #hit counter known by the cache.
 	 */
 	@CacheResult(cacheName = "test-cache-2")
@@ -71,7 +75,5 @@ public class DummyCacheBean {
 	void updateHit2(@CacheKey final String entry, @CacheValue int value) {
 		hit = value;
 	}
-
-
 
 }

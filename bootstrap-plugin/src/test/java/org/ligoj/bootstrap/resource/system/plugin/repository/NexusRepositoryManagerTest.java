@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-public class NexusRepositoryManagerTest extends AbstractServerTest {
+class NexusRepositoryManagerTest extends AbstractServerTest {
 
 	protected static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
@@ -40,12 +40,12 @@ public class NexusRepositoryManagerTest extends AbstractServerTest {
 	private NexusRepositoryManager resource;
 
 	@BeforeEach
-	public void prepareData() throws IOException {
+	void prepareData() throws IOException {
 		persistEntities("csv-test", new Class[] { SystemConfiguration.class }, StandardCharsets.UTF_8.name());
 	}
 
 	@Test
-	public void invalidateLastPluginVersions() throws IOException {
+	void invalidateLastPluginVersions() throws IOException {
 		httpServer.stubFor(get(urlEqualTo(
 				"/service/local/lucene/search?g=org.ligoj.plugin&collapseresults=true&repositoryId=releases&p=jar&c=sources"))
 						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)

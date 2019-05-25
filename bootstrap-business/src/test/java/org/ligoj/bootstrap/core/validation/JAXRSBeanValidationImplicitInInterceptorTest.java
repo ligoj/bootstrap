@@ -41,7 +41,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 	@Autowired
 	private JAXRSBeanValidationImplicitInInterceptor validationInInterceptor;
 
-	public static class TestClass {
+	static class TestClass {
 		void empty() {
 			//
 		}

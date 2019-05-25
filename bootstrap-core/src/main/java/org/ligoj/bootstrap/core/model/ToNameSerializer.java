@@ -20,6 +20,9 @@ public class ToNameSerializer extends StdSerializer<INamableBean<?>> {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * JAX-RS serializer instance.
+	 */
 	public static final ToNameSerializer INSTANCE = new ToNameSerializer();
 
 	protected ToNameSerializer() {

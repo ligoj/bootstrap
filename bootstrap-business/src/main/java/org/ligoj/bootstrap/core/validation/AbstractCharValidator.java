@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Char based validator.
+ * 
+ * @param <A> Annotation type.
  */
 public abstract class AbstractCharValidator<A extends Annotation> implements ConstraintValidator<A, String> {
 
@@ -39,8 +41,7 @@ public abstract class AbstractCharValidator<A extends Annotation> implements Con
 	/**
 	 * Indicates the specified char is valid or not.
 	 *
-	 * @param c
-	 *            The char to validate.
+	 * @param c The char to validate.
 	 * @return <code>true</code> when the specified char is valid.
 	 */
 	protected abstract boolean isValidChar(char c);

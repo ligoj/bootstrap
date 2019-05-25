@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.Assertions;
@@ -12,16 +11,16 @@ import org.junit.jupiter.api.Test;
 /**
  * Check dare utilities of DateUtils.
  */
-public class DateUtilsTest {
+class DateUtilsTest {
 
 	@Test
-	public void newCalendar() {
+	void newCalendar() {
 		Assertions.assertEquals(DateUtils.newCalendar().getTimeZone(), DateUtils.getApplicationTimeZone());
 	}
 
 	@Test
-	public void setApplicationTimeZone() {
-        var timeZone = DateUtils.getApplicationTimeZone();
+	void setApplicationTimeZone() {
+		var timeZone = DateUtils.getApplicationTimeZone();
 		try {
 			DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("GMT"));
 			Assertions.assertEquals("GMT", DateUtils.getApplicationTimeZone().getID());
@@ -31,9 +30,8 @@ public class DateUtilsTest {
 	}
 
 	@Test
-	public void testCoverage()
-			throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        var constructor = DateUtils.class.getDeclaredConstructor();
+	void testCoverage() throws ReflectiveOperationException {
+		var constructor = DateUtils.class.getDeclaredConstructor();
 		constructor.setAccessible(true);
 		constructor.newInstance();
 	}

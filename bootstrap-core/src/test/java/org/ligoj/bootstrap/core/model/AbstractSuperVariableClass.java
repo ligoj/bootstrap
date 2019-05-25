@@ -11,6 +11,8 @@ import lombok.Setter;
 
 /**
  * Simple entity with a variable type field.
+ * 
+ * @param <U> The tested many-to-one type.
  */
 @Getter
 @Setter
@@ -22,7 +24,7 @@ public abstract class AbstractSuperVariableClass<U extends AbstractNamedEntity<I
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@ManyToOne
 	private U child;
 }

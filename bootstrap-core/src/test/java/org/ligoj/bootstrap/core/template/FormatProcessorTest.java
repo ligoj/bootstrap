@@ -16,13 +16,13 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 /**
  * Test class of {@link FormatProcessor}
  */
-public class FormatProcessorTest {
+class FormatProcessorTest {
 
 	/**
 	 * Simple date format of static context.
 	 */
 	@Test
-	public void testGetValue() throws ParseException {
+	void testGetValue() throws ParseException {
 		final Deque<Object> contextData = new LinkedList<>();
 		final var systemUser = new SystemUser();
 		contextData.add(systemUser);
@@ -34,7 +34,7 @@ public class FormatProcessorTest {
 	 * Simple date format of dynamic context.
 	 */
 	@Test
-	public void testGetItemValue() throws ParseException {
+	void testGetItemValue() throws ParseException {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(DateUtils.parseDate("2014/05/30", "yyyy/MM/dd"));
 		final var df = FastDateFormat.getInstance("yyyy/MM/dd", null, null);

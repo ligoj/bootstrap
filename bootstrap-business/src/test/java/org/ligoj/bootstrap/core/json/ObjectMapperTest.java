@@ -62,7 +62,7 @@ public class ObjectMapperTest extends AbstractDataGeneratorTest {
 	@Test
 	void deserializationDateDecimal() throws IOException {
 		Assertions.assertEquals(getDate(2016, 8, 2),
-				mapper.readValue(String.valueOf(Double.valueOf((double) getDate(2016, 8, 2).getTime())), Date.class));
+				mapper.readValue(String.valueOf(Double.valueOf(getDate(2016, 8, 2).getTime())), Date.class));
 		// Non assertable value, depends on the system timezone
 		mapper.readValue("\"2016-08-02\"", Date.class);
 	}

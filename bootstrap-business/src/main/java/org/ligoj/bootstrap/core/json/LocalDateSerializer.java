@@ -21,6 +21,9 @@ public class LocalDateSerializer extends StdSerializer<LocalDate> {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * JAX-RS serializer instance.
+	 */
 	public static final LocalDateSerializer INSTANCE = new LocalDateSerializer();
 
 	protected LocalDateSerializer() {

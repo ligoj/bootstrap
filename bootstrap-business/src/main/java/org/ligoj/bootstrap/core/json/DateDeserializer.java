@@ -22,6 +22,9 @@ public class DateDeserializer extends StdDeserializer<Date> {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * JAX-RS serializer instance.
+	 */
 	public static final DateDeserializer INSTANCE = new DateDeserializer();
 
 	protected DateDeserializer() {
@@ -36,11 +39,11 @@ public class DateDeserializer extends StdDeserializer<Date> {
 			newCalendar.setTimeInMillis(parser.getLongValue());
 			return newCalendar.getTime();
 		}
-		
+
 		// Timestamp epoch milliseconds "double" type support
 		if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
 			final var newCalendar = DateUtils.newCalendar();
-			newCalendar.setTimeInMillis((long)parser.getDoubleValue());
+			newCalendar.setTimeInMillis((long) parser.getDoubleValue());
 			return newCalendar.getTime();
 		}
 		return _parseDate(parser, context);

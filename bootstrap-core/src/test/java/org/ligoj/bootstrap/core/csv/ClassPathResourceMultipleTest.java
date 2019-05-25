@@ -13,10 +13,10 @@ import org.ligoj.bootstrap.core.dao.csv.ClassPathResourceMultiple;
 /**
  * Test class of {@link ClassPathResourceMultiple}
  */
-public class ClassPathResourceMultipleTest {
+class ClassPathResourceMultipleTest {
 
 	@Test
-	public void testGetInputStream2Paths() throws IOException {
+	void testGetInputStream2Paths() throws IOException {
 		final var resource = new ClassPathResourceMultiple("csv/demo", DummyEntity.class);
 		try (var stream = resource.getInputStream()) {
 			Assertions.assertNotNull(stream);
@@ -24,7 +24,7 @@ public class ClassPathResourceMultipleTest {
 	}
 
 	@Test
-	public void testGetInputStream1Path() throws IOException {
+	void testGetInputStream1Path() throws IOException {
 		final var resource = new ClassPathResourceMultiple("csv/demo", dummyminus.class);
 		try (var stream = resource.getInputStream()) {
 			Assertions.assertNotNull(stream);
@@ -32,7 +32,7 @@ public class ClassPathResourceMultipleTest {
 	}
 
 	@Test
-	public void testGetInputStreamNotFound() {
+	void testGetInputStreamNotFound() {
 		final var resource = new ClassPathResourceMultiple("csv/demo", DummyEntity3.class);
 		Assertions.assertThrows(FileNotFoundException.class, () -> {
 			try (var stream = resource.getInputStream()) {

@@ -24,6 +24,9 @@ public class DateSerializer extends StdSerializer<Date> {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * JAX-RS serializer instance.
+	 */
 	public static final DateSerializer INSTANCE = new DateSerializer();
 
 	protected DateSerializer() {

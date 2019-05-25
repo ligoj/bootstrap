@@ -17,6 +17,9 @@ import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 
+/**
+ * Configuration cache used for tests.
+ */
 @Component
 public class ConfigurationTestCache implements CacheManagerAware {
 

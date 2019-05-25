@@ -5,6 +5,9 @@ package org.ligoj.bootstrap.resource.system.plugin;
 
 import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 
+/**
+ * Sample tool for test.
+ */
 public class SampleTool2 implements FeaturePlugin {
 
 	@Override

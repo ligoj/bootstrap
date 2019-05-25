@@ -29,8 +29,8 @@ public abstract class AbstractBusinessEntityTest {
 	 * Test equals and hash code operation with all possible combinations
 	 *
 	 * @param modelClass the entity to test.
-	 * @throws ReflectiveOperationException Due to reflection.
 	 * @param <T> The type of the entity to test.
+	 * @throws ReflectiveOperationException Due to reflection.
 	 */
 	protected <T> void testEqualsAndHash(final Class<T> modelClass) throws ReflectiveOperationException {
 		testEqualsAndHash(modelClass, "id");

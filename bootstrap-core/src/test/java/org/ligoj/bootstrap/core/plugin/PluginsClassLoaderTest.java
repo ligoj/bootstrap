@@ -22,19 +22,19 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link PluginsClassLoader}
  */
-public class PluginsClassLoaderTest {
+class PluginsClassLoaderTest {
 
 	protected static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
 	@BeforeEach
-	public void cleanHome() throws IOException {
+	void cleanHome() throws IOException {
 		FileUtils.deleteDirectory(new File(new File(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER),
 				PluginsClassLoader.EXPORT_DIR));
 		System.clearProperty("project.digestVersion");
 	}
 
 	@Test
-	public void getInstalledPlugins() throws IOException, NoSuchAlgorithmException {
+	void getInstalledPlugins() throws IOException, NoSuchAlgorithmException {
 		final var oldHome = System.getProperty("user.home");
 		try {
 			System.setProperty("user.home", USER_HOME_DIRECTORY);
@@ -55,7 +55,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void safeMode() throws IOException, NoSuchAlgorithmException {
+	void safeMode() throws IOException, NoSuchAlgorithmException {
 		final var old = System.getProperty("ligoj.plugin.enabled");
 		try {
 			System.setProperty("ligoj.plugin.enabled", "false");
@@ -79,7 +79,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void forcedHome() throws IOException, NoSuchAlgorithmException {
+	void forcedHome() throws IOException, NoSuchAlgorithmException {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			try (var classLoader = checkClassLoader()) {
@@ -91,12 +91,12 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void getInstanceNull() {
+	void getInstanceNull() {
 		Assertions.assertNull(PluginsClassLoader.getInstance());
 	}
 
 	@Test
-	public void toExtendedVersion() {
+	void toExtendedVersion() {
 		Assertions.assertEquals("Z0000000Z0000000Z0000000Z0000000", PluginsClassLoader.toExtendedVersion(null));
 		Assertions.assertEquals("Z0000000Z0000000Z0000000Z0000000", PluginsClassLoader.toExtendedVersion(""));
 		Assertions.assertEquals("Z0000001Z0000000Z0000000Z0000000", PluginsClassLoader.toExtendedVersion("1.0"));
@@ -107,7 +107,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void getInstance() {
+	void getInstance() {
 		var old = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread()
@@ -119,7 +119,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void forcedHomeTwice() throws Exception {
+	void forcedHomeTwice() throws Exception {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			try (var classLoader = checkClassLoader()) {
@@ -132,7 +132,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void toFile() throws IOException, NoSuchAlgorithmException {
+	void toFile() throws IOException, NoSuchAlgorithmException {
 		final var file = new File(USER_HOME_DIRECTORY, ".ligoj/service-id/foo/bar.log");
 		final var subscriptionParent = new File(USER_HOME_DIRECTORY, ".ligoj/service-id");
 		FileUtils.deleteQuietly(subscriptionParent);
@@ -153,7 +153,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void copyFailed() {
+	void copyFailed() {
 		final var refError = new AtomicReference<PluginsClassLoader>();
 		Assertions.assertThrows(PluginException.class, () -> {
 			try {
@@ -176,7 +176,7 @@ public class PluginsClassLoaderTest {
 	}
 
 	@Test
-	public void copyAlreadyExists() throws IOException, NoSuchAlgorithmException {
+	void copyAlreadyExists() throws IOException, NoSuchAlgorithmException {
 		final var refError = new AtomicReference<PluginsClassLoader>();
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");

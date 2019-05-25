@@ -14,6 +14,11 @@ import org.springframework.context.annotation.Bean;
 @TestConfiguration
 public class AppTestConfiguration {
 
+	/**
+	 * Tested spring boot bean with a restart endpoint access.
+	 * 
+	 * @return A spring boot bean with a restart endpoint access.
+	 */
 	@Bean
 	public RestartEndpoint mockRestartEndpoint() {
 		return Mockito.mock(RestartEndpoint.class);

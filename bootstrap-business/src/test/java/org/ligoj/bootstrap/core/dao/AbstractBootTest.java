@@ -9,6 +9,9 @@ import org.ligoj.bootstrap.AbstractJpaTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 
+/**
+ * Base Spring-boot test class.
+ */
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional

@@ -5,6 +5,9 @@ package org.ligoj.bootstrap.resource.system.plugin;
 
 import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 
+/**
+ * Sample service for test.
+ */
 public class SampleService implements FeaturePlugin {
 
 	@Override

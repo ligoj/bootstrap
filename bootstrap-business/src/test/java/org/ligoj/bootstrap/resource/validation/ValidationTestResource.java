@@ -14,7 +14,7 @@ import org.ligoj.bootstrap.core.validation.Wine;
 import org.springframework.stereotype.Service;
 
 /**
- * Wine Business Layer
+ * Test Business Layer
  */
 @Path("/test/validation")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,22 +22,24 @@ import org.springframework.stereotype.Service;
 public class ValidationTestResource {
 	/**
 	 * Simple POST validation.
+	 * 
+	 * @param entity The entity to pass to JAX service.
+	 * @return The persisted identifier.
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public int create(final Wine wine) {
-		return wine.getId();
+	public int create(final Wine entity) {
+		return entity.getId();
 	}
 
 	/**
-	 * Update wine from its ID.
+	 * Simple PUT validation.
 	 * 
-	 * @param wine
-	 *            data that will be updated
+	 * @param entity The entity to pass to JAX service.
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	void update(final Wine wine) {
+	void update(final Wine entity) {
 		// Nothing to do;
 	}
 

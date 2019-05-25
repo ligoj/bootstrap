@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-public class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTest {
+class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	protected static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
@@ -39,12 +39,12 @@ public class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractSe
 	private CentralRepositoryManager resource;
 
 	@BeforeEach
-	public void prepareData() throws IOException {
+	void prepareData() throws IOException {
 		persistEntities("csv-test", new Class[] { SystemConfiguration.class }, StandardCharsets.UTF_8.name());
 	}
 
 	@Test
-	public void invalidateLastPluginVersions() throws IOException {
+	void invalidateLastPluginVersions() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(

@@ -16,6 +16,9 @@ public abstract class AbstractServerTest extends AbstractAppTest {
 
 	protected WireMockServer httpServer;
 
+	/**
+	 * Prepare a Wiremock server.
+	 */
 	@BeforeEach
 	public void prepareMockServer() {
 		if (httpServer != null) {
@@ -25,6 +28,9 @@ public abstract class AbstractServerTest extends AbstractAppTest {
 		System.setProperty("http.keepAlive", "false");
 	}
 
+	/**
+	 * Ensure the Wiremock server is stopped.
+	 */
 	@AfterEach
 	public void shutDownMockServer() {
 		System.clearProperty("http.keepAlive");

@@ -12,20 +12,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * {@link SecurityHelper} test class.
  */
-public class SecurityHelperTest {
+class SecurityHelperTest {
 
 	/**
 	 * The system user name.
 	 */
-	public static final String SYSTEM_USERNAME = "_system";
+	static final String SYSTEM_USERNAME = "_system";
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		SecurityContextHolder.clearContext();
 	}
 
 	@AfterEach
-	public void cleanup() {
+	void cleanup() {
 		SecurityContextHolder.clearContext();
 	}
 
@@ -33,7 +33,7 @@ public class SecurityHelperTest {
 	 * Test null user name.
 	 */
 	@Test
-	public void setUserNameNull() {
+	void setUserNameNull() {
 		Assertions.assertNull(new SecurityHelper().setUserName(null));
 	}
 
@@ -41,7 +41,7 @@ public class SecurityHelperTest {
 	 * Test user name.
 	 */
 	@Test
-	public void setUserName() {
+	void setUserName() {
 		final var sc = new SecurityHelper().setUserName("name");
 		Assertions.assertEquals("name", sc.getAuthentication().getName());
 		Assertions.assertEquals("name", new SecurityHelper().getLogin());
@@ -51,7 +51,7 @@ public class SecurityHelperTest {
 	 * Test no login.
 	 */
 	@Test
-	public void getLogin() {
+	void getLogin() {
 		Assertions.assertNull(new SecurityHelper().getLogin());
 	}
 
