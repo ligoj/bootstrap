@@ -53,11 +53,11 @@
 		<commons-io.version>2.6</commons-io.version>
 		<commons-lang3.version>3.9</commons-lang3.version>
 		<commons-text.version>1.6</commons-text.version>
-		<cxf.version>3.3.1</cxf.version>
+		<cxf.version>3.3.2</cxf.version>
 		<dbcp.version>2.6.0</dbcp.version>
 		<guava.version>27.1-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
-		<hazelcast.version>3.11.3</hazelcast.version>
+		<hazelcast.version>3.12</hazelcast.version>
 		<hibernate.version>5.4.2.Final</hibernate.version>
 		<hibernate-validator.version>6.0.16.Final</hibernate-validator.version>
 		<httpclient.version>4.5.8</httpclient.version>
