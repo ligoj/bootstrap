@@ -84,7 +84,7 @@
 		<spring-data.version>2.1.8.RELEASE</spring-data.version>
 		<spring.version>5.1.7.RELEASE</spring.version>
 		<spring-security.version>5.1.5.RELEASE</spring-security.version>
-		<spring-security-rsa>1.0.7.RELEASE</spring-security-rsa>
+		<spring-security-rsa>1.0.8.RELEASE</spring-security-rsa>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<wiremock.version>2.23.2</wiremock.version>
 	</properties>
