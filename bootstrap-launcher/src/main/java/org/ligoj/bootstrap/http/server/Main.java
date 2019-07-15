@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
 import lombok.extern.slf4j.Slf4j;
@@ -77,8 +78,8 @@ public final class Main {
 			copyProperties(propertiesInput);
 
 			// Configure the server
-			new XmlConfiguration(Thread.currentThread().getContextClassLoader()
-					.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml"))).configure(server);
+			new XmlConfiguration(Resource.newResource(Thread.currentThread().getContextClassLoader()
+					.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml")))).configure(server);
 		}
 		return propertiesInput;
 	}
