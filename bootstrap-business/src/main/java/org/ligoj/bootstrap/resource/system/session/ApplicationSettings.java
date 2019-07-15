@@ -39,4 +39,11 @@ public class ApplicationSettings {
 	 */
 	@Value("${project.version.digest}")
 	private String digestVersion;
+
+	/**
+	 * Code the plug-ins need to contribute at session successful time. Used generally to contribute to the top
+	 * level menu.
+	 */
+	@Value("${project.bootstrap.private}")
+	private String bootstrapPrivateCode;
 }

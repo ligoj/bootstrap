@@ -61,6 +61,11 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String EXPORT_DIR = "export";
 
 	/**
+	 * Optional file containing the code to execute when the private zone is being loaded.
+	 */
+	public static final String BOOTSTRAP_PRIVATE_FILE = "META-INF/resources/webjars/bootstrap.private.js";
+
+	/**
 	 * Pattern used to extract the version from a JAR plug-in file name.
 	 */
 	private static final Pattern VERSION_PATTERN = Pattern
@@ -146,6 +151,13 @@ public class PluginsClassLoader extends URLClassLoader {
 		final var digest = Base64.getEncoder().encodeToString(mDigest.digest());
 		System.setProperty("project.version.digest", digest);
 
+		// Expose the bootstrap code compiled from all plug-ins
+		final var boots = new StringBuilder();
+		for (final URL bootUrl : Collections.list(getResources(BOOTSTRAP_PRIVATE_FILE))) {
+			boots.append(getBootstrapCode(bootUrl)).append('\n');
+		}
+		System.setProperty("project.bootstrap.private", boots.toString());
+
 		log.info("Plugins ClassLoader has added {} plug-ins and ignored {} old plug-ins, digest {}",
 				enabledPlugins.size(), versionFileToPath.size() - enabledPlugins.size(), digest);
 		return digest;
@@ -218,6 +230,20 @@ public class PluginsClassLoader extends URLClassLoader {
 
 		// Try the parent
 		return getInstance(cl.getParent());
+	}
+
+	/**
+	 * The content of the bootstrap file.
+	 *
+	 * @param file The bootstrap code URL of a plug-in.
+	 * @return The content of the file.
+	 * @throws IOException When plug-in file cannot be read.
+	 * @see #BOOTSTRAP_PRIVATE_FILE
+	 */
+	protected String getBootstrapCode(final URL file) throws IOException {
+		try (var in = file.openStream()) {
+			return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+		}
 	}
 
 	/**
