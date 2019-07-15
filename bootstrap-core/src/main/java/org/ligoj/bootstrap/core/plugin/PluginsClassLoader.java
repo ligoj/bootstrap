@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.core.plugin;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +61,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String EXPORT_DIR = "export";
 
 	/**
-	 * Pattern used to extract the version from a JAR plugin file name.
+	 * Pattern used to extract the version from a JAR plug-in file name.
 	 */
 	private static final Pattern VERSION_PATTERN = Pattern
 			.compile("(-(\\d[\\da-zA-Z]*(\\.[\\da-zA-Z]+){1,3}(-SNAPSHOT)?))\\.jar$");
@@ -126,22 +128,23 @@ public class PluginsClassLoader extends URLClassLoader {
 
 		// Ordered last version (to be enabled) plug-ins.
 		final var enabledPlugins = getInstalledPlugins(versionFileToPath);
-		final StringBuilder buffer = new StringBuilder();
+		final var buffer = new StringBuilder();
 
-		// Add the filtered plug-in files to the class-path
+		// Add the filtered plug-in files to the class-path and deploy them
 		for (final var plugin : enabledPlugins.entrySet()) {
-			final var uri = versionFileToPath.get(plugin.getValue()).toUri();
+			final var pluginPath = versionFileToPath.get(plugin.getValue());
+			final var uri = pluginPath.toUri();
 			log.debug("Add plugin {}", uri);
-			copyExportedResources(plugin.getKey(), versionFileToPath.get(plugin.getValue()));
+			copyExportedResources(plugin.getKey(), pluginPath);
 			addURL(uri.toURL());
 			buffer.append(plugin.getValue());
 		}
-		
+
 		// Build a digestion version
-		final MessageDigest mDigest = MessageDigest.getInstance("MD5");
+		final var mDigest = MessageDigest.getInstance("MD5");
 		mDigest.update(buffer.toString().getBytes());
-		final String digest = Base64.getEncoder().encodeToString(mDigest.digest());
-		System.setProperty("project.digestVersion", digest);
+		final var digest = Base64.getEncoder().encodeToString(mDigest.digest());
+		System.setProperty("project.version.digest", digest);
 
 		log.info("Plugins ClassLoader has added {} plug-ins and ignored {} old plug-ins, digest {}",
 				enabledPlugins.size(), versionFileToPath.size() - enabledPlugins.size(), digest);

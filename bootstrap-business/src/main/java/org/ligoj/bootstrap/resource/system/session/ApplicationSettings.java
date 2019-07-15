@@ -34,9 +34,9 @@ public class ApplicationSettings {
 	private String buildVersion;
 
 	/**
-	 * Build version of the application as defined in the build configuration (Maven).
+	 * Application version digest used as hash. Represent a version identifier considering the application sersion and
+	 * the enabled plugins. Used for cached resources.
 	 */
-	@Value("${project.digestVersion}")
+	@Value("${project.version.digest}")
 	private String digestVersion;
-
 }
