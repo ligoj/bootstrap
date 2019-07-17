@@ -61,6 +61,8 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(applicationSettings.getBuildNumber());
 		Assertions.assertNotNull(applicationSettings.getBuildTimestamp());
 		Assertions.assertNotNull(applicationSettings.getBuildVersion());
+		Assertions.assertNotNull(applicationSettings.getDigestVersion());
+		Assertions.assertNotNull(applicationSettings.getBootstrapPrivateCode());
 	}
 
 	/**

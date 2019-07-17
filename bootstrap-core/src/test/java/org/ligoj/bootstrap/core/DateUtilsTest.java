@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Check dare utilities of DateUtils.
+ * Check date utilities of DateUtils.
  */
 class DateUtilsTest {
 
@@ -30,7 +30,7 @@ class DateUtilsTest {
 	}
 
 	@Test
-	void testCoverage() throws ReflectiveOperationException {
+	void testCoverageOnly() throws ReflectiveOperationException {
 		var constructor = DateUtils.class.getDeclaredConstructor();
 		constructor.setAccessible(true);
 		constructor.newInstance();
