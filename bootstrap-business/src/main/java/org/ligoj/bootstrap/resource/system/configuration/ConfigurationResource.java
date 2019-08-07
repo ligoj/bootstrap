@@ -94,8 +94,7 @@ public class ConfigurationResource {
 	 * @return A specific configuration. May be <code>null</code> when undefined.
 	 */
 	@CacheResult(cacheName = "configuration")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String get(@CacheKey @PathParam("name") final String name) {
+	public String get(@CacheKey final String name) {
 		return Optional.ofNullable(getRaw(name)).map(cryptoHelper::decryptAsNeeded).orElse(null);
 	}
 
