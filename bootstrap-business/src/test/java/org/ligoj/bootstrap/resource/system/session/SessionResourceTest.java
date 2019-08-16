@@ -39,16 +39,18 @@ class SessionResourceTest extends AbstractBootTest {
 
 	private SessionResource resource;
 
+	private ISessionSettingsProvider provider;
+
 	@BeforeEach
 	void mockApplicationContext() {
 		resource = new SessionResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		final var settings = new SessionSettings();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
-        var applicationContext = Mockito.mock(ApplicationContext.class);
+		var applicationContext = Mockito.mock(ApplicationContext.class);
 		resource.applicationContext = applicationContext;
 		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
-		final var provider = Mockito.mock(ISessionSettingsProvider.class);
+		provider = Mockito.mock(ISessionSettingsProvider.class);
 		Mockito.when(resource.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
 				.thenReturn(Collections.singletonMap("provider", provider));
 	}
@@ -63,6 +65,15 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(applicationSettings.getBuildVersion());
 		Assertions.assertNotNull(applicationSettings.getDigestVersion());
 		Assertions.assertNotNull(applicationSettings.getBootstrapPrivateCode());
+		Assertions.assertNull(applicationSettings.getPlugins());
+
+		Mockito.doAnswer(i -> {
+			final var s = (SessionSettings) i.getArgument(0);
+			s.getApplicationSettings().setPlugins(Collections.singletonList("test"));
+			return null;
+		}).when(provider).decorate(settings);
+		resource.details();
+		Assertions.assertEquals("test", applicationSettings.getPlugins().get(0));
 	}
 
 	/**
@@ -85,7 +96,8 @@ class SessionResourceTest extends AbstractBootTest {
 		em.persist(userSetting);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
+		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+				.thenReturn(authorities);
 		authorities.add(role);
 		final var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
@@ -134,7 +146,8 @@ class SessionResourceTest extends AbstractBootTest {
 		em.persist(soloRole);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
+		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+				.thenReturn(authorities);
 		authorities.add(soloRole);
 		final var assignmentSolo = new SystemRoleAssignment();
 		assignmentSolo.setRole(soloRole);
@@ -169,7 +182,8 @@ class SessionResourceTest extends AbstractBootTest {
 		em.persist(user);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
+		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+				.thenReturn(authorities);
 
 		// Invalidate cache of previous test
 		cacheResource.invalidate("authorizations");
@@ -202,7 +216,8 @@ class SessionResourceTest extends AbstractBootTest {
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(SystemRole.DEFAULT_ROLE));
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
+		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+				.thenReturn(authorities);
 		authorities.add(role);
 		final var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
@@ -226,7 +241,8 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("^myurl2", settings.getUiAuthorizations().iterator().next());
 	}
 
-	private void addSystemAuthorization(final HttpMethod method, SystemRole role, final String pattern, final AuthorizationType type) {
+	private void addSystemAuthorization(final HttpMethod method, SystemRole role, final String pattern,
+			final AuthorizationType type) {
 		final var authorization = new SystemAuthorization();
 		authorization.setRole(role);
 		authorization.setMethod(method);

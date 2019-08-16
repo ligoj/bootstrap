@@ -60,8 +60,9 @@ import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.plugin.repository.Artifact;
 import org.ligoj.bootstrap.resource.system.plugin.repository.EmptyRepositoryManager;
 import org.ligoj.bootstrap.resource.system.plugin.repository.RepositoryManager;
+import org.ligoj.bootstrap.resource.system.session.ISessionSettingsProvider;
+import org.ligoj.bootstrap.resource.system.session.SessionSettings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -83,7 +84,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Transactional
 @Produces(MediaType.APPLICATION_JSON)
-public class SystemPluginResource {
+public class SystemPluginResource implements ISessionSettingsProvider {
 
 	private static final String REPO_CENTRAL = "central";
 
@@ -103,9 +104,6 @@ public class SystemPluginResource {
 	private static final String PLUGIN_REPOSITORY = "ligoj.plugin.repository";
 
 	private static final RepositoryManager EMPTY_REPOSITORY = new EmptyRepositoryManager();
-
-	@Autowired
-	protected CacheManager cacheManager;
 
 	@Autowired
 	private SystemPluginRepository repository;
@@ -205,7 +203,7 @@ public class SystemPluginResource {
 	 * @return Trim version.
 	 */
 	protected String toTrimmedVersion(final String extendedVersion) {
-        var trim = Arrays.stream(StringUtils.split(extendedVersion, "-Z.")).dropWhile(s -> !s.matches("^(Z?\\d+.*)"))
+		var trim = Arrays.stream(StringUtils.split(extendedVersion, "-Z.")).dropWhile(s -> !s.matches("^(Z?\\d+.*)"))
 				.map(s -> StringUtils.defaultIfBlank(RegExUtils.replaceFirst(s, "^0+", ""), "0"))
 				.collect(Collectors.joining(".")).replace(".SNAPSHOT", "-SNAPSHOT")
 				.replaceFirst("([^-])SNAPSHOT", "$1-SNAPSHOT");
@@ -224,8 +222,7 @@ public class SystemPluginResource {
 			return null;
 		}
 
-		final var extension = context.getBeansOfType(PluginListener.class).values().stream()
-				.findFirst();
+		final var extension = context.getBeansOfType(PluginListener.class).values().stream().findFirst();
 		// Plug-in implementation is available
 		final var vo = extension.map(PluginListener::toVo).orElse(PluginVo::new).get();
 		vo.setId(p.getKey());
@@ -494,7 +491,7 @@ public class SystemPluginResource {
 	public int autoUpdate() throws IOException {
 		final var plugins = getPluginClassLoader().getInstalledPlugins();
 		final var repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
-        var counter = 0;
+		var counter = 0;
 		for (final var artifact : getLastPluginVersions(repositoryName).values().stream()
 				.filter(a -> plugins.containsKey(a.getArtifact()))
 				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
@@ -712,6 +709,16 @@ public class SystemPluginResource {
 				return "?";
 			}
 		});
+	}
+
+	@Override
+	public void decorate(final SessionSettings settings) {
+		// Add the enabled plug-ins
+		if (settings.getApplicationSettings().getPlugins() == null) {
+			settings.getApplicationSettings().setPlugins(context.getBeansOfType(FeaturePlugin.class).values().stream()
+					.map(FeaturePlugin::getKey).collect(Collectors.toList()));
+		}
+
 	}
 
 }

@@ -56,6 +56,8 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.plugin.repository.Artifact;
+import org.ligoj.bootstrap.resource.system.session.ApplicationSettings;
+import org.ligoj.bootstrap.resource.system.session.SessionSettings;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,12 +96,15 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Autowired
 	private RestartEndpoint restartEndpoint;
+	
+	@Autowired
+	private ApplicationSettings applicationSettings;
 
 	@Autowired
 	private ConfigurationResource configuration;
 
 	@BeforeEach
-    void prepareData() throws IOException {
+	void prepareData() throws IOException {
 		FileUtils.deleteQuietly(TEMP_FILE);
 		persistEntities("csv-test", SystemConfiguration.class);
 		clearAllCache();
@@ -110,19 +115,19 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@AfterEach
-    void cleanIngleton() {
+	void cleanIngleton() {
 		destroySingleton("restartEndpoint");
 	}
 
 	@Test
-    void findAllCentralOnline() throws IOException {
+	void findAllCentralOnline() throws IOException {
 		configuration.delete("plugins.repository-manager.central.search.url");
 		Assertions.assertTrue("1.0.0".compareTo(resource.getRepositoryManager("central").getLastPluginVersions()
 				.get("plugin-iam-node").getVersion()) <= 0);
 	}
 
 	@Test
-    void getRepositoryManager() throws IOException {
+	void getRepositoryManager() throws IOException {
 		Assertions.assertTrue(resource.getRepositoryManager("not-exist").getLastPluginVersions().isEmpty());
 		Assertions.assertNull(resource.getRepositoryManager("not-exist").getArtifactInputStream("any", "1.2.3"));
 		resource.getRepositoryManager("not-exist").invalidateLastPluginVersions();
@@ -130,7 +135,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllNewVersion() throws IOException {
+	void findAllNewVersion() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
@@ -153,7 +158,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllInstalledNextSameVersion() throws IOException {
+	void findAllInstalledNextSameVersion() throws IOException {
 		final var resource = mockCentral("search.json");
 		final var currentVersion = filter(resource.findAll("central")).stream()
 				.filter(p -> "plugin-foo".equals(p.getPlugin().getArtifact())).findFirst().get().getPlugin()
@@ -171,7 +176,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllInstalledNextNewPlugin() throws IOException {
+	void findAllInstalledNextNewPlugin() throws IOException {
 		final var resource = mockCentral("search.json");
 		resource.getPluginClassLoader().getInstalledPlugins().put("plugin-sample",
 				"plugin-sample-Z0000001Z0000002Z0000003Z0000004");
@@ -186,7 +191,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllInstalledNextUpdate() throws IOException {
+	void findAllInstalledNextUpdate() throws IOException {
 		final var resource = mockCentral("search.json");
 		resource.getPluginClassLoader().getInstalledPlugins().put("plugin-bar",
 				"plugin-bar-Z0000123Z0000004Z0000005Z0000000");
@@ -201,7 +206,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllSameVersion() throws IOException {
+	void findAllSameVersion() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
@@ -219,21 +224,21 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void isDeleted() {
+	void isDeleted() {
 		final var plugin = new PluginVo();
 		plugin.setLocation("any");
 		Assertions.assertTrue(resource.isDeleted(plugin));
 	}
 
 	@Test
-    void isDeletedExist() {
+	void isDeletedExist() {
 		final var plugin = new PluginVo();
 		plugin.setLocation(USER_HOME_DIRECTORY);
 		Assertions.assertFalse(resource.isDeleted(plugin));
 	}
 
 	@Test
-    void toTrimmedVersion() {
+	void toTrimmedVersion() {
 		Assertions.assertEquals("1.2.3.4", resource.toTrimmedVersion("plugin-sample-Z0000001Z0000002Z0000003Z0000004"));
 		Assertions.assertEquals("1.2.3", resource.toTrimmedVersion("plugin-sample-Z0000001Z0000002Z0000003Z0000000"));
 		Assertions.assertEquals("1.2.3", resource.toTrimmedVersion("plugin-sample-Z0000001Z0000002Z0000003"));
@@ -252,17 +257,17 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void autoUpdateNoPluginMatch() throws IOException {
+	void autoUpdateNoPluginMatch() throws IOException {
 		Assertions.assertEquals(0, mockCentral("search.json").autoUpdate());
 	}
 
 	@Test
-    void autoUpdateNoNewVersion() throws IOException {
+	void autoUpdateNoNewVersion() throws IOException {
 		Assertions.assertEquals(0, mockCentral("search-foo.json").autoUpdate());
 	}
 
 	@Test
-    void autoUpdateNewVersion() throws IOException {
+	void autoUpdateNewVersion() throws IOException {
 		Assertions.assertEquals(1, mockCentral("search-bar.json").autoUpdate());
 	}
 
@@ -331,8 +336,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllOrphan() throws IOException, ClassNotFoundException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException {
+	void findAllOrphan() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, SecurityException {
 		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
@@ -356,7 +361,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void findAllJustInstalled() throws IOException, ClassNotFoundException, InstantiationException,
+	void findAllJustInstalled() throws IOException, ClassNotFoundException, InstantiationException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException {
 		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
@@ -441,7 +446,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void configurePluginInstall() {
+	void configurePluginInstall() {
 		// The class-loader of this mock corresponds to the one related to SampleService
 		// So corresponds to API jar and not this project
 		final var service1 = new SampleService();
@@ -465,7 +470,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void configurePluginEntities() throws IOException {
+	void configurePluginEntities() throws IOException {
 		// The class-loader of this mock corresponds to the one related to SampleService
 		// So corresponds to API jar and not this project
 		final var service1 = new SampleService();
@@ -488,10 +493,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		}
 	}
 
-
-
 	@Test
-    void configurePluginInstallManagedEntitiesNotSameClassloader() {
+	void configurePluginInstallManagedEntitiesNotSameClassloader() {
 		final var service1 = Mockito.mock(FeaturePlugin.class);
 		Mockito.when(service1.getKey()).thenReturn("service:sample");
 		Mockito.when(service1.getInstalledEntities()).thenReturn(Collections.singletonList(SystemBench.class));
@@ -499,20 +502,20 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void configurePluginInstallError() {
+	void configurePluginInstallError() {
 		final var service1 = Mockito.mock(FeaturePlugin.class);
 		Mockito.when(service1.getInstalledEntities()).thenThrow(ValidationJsonException.class);
 		Assertions.assertThrows(TechnicalException.class, () -> resource.configurePluginInstall(service1));
 	}
 
 	@Test
-    void manifestData() {
+	void manifestData() {
 		Assertions.assertTrue(Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+\\.\\d+\\..*"));
 		Assertions.assertEquals("java.base", Integer.class.getModule().getName());
 	}
 
 	@Test
-    void configurePluginUpdate() {
+	void configurePluginUpdate() {
 		final var service1 = new SampleService();
 		final var plugin = new SystemPlugin();
 		plugin.setVersion("old version");
@@ -521,13 +524,13 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void getVersion() {
+	void getVersion() {
 		// Version is resolved from the date
 		Assertions.assertTrue(resource.getVersion(new SampleService()).startsWith("20"));
 	}
 
 	@Test
-    void getVersionIOException() {
+	void getVersionIOException() {
 		Assertions.assertEquals("?", new SystemPluginResource() {
 			@Override
 			protected String getLastModifiedTime(final FeaturePlugin plugin) throws IOException {
@@ -537,7 +540,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void getVersionURISyntaxException() {
+	void getVersionURISyntaxException() {
 		Assertions.assertEquals("?", new SystemPluginResource() {
 			@Override
 			protected String getLastModifiedTime(final FeaturePlugin plugin) throws URISyntaxException {
@@ -547,7 +550,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void refreshPlugins() throws Exception {
+	void refreshPlugins() throws Exception {
 		final var event = Mockito.mock(ContextRefreshedEvent.class);
 		Mockito.when(event.getApplicationContext()).thenReturn(applicationContext);
 		registerSingleton("mockPluginListener", new MockPluginListener());
@@ -559,10 +562,10 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void refreshPluginsVetoInstall() throws Exception {
+	void refreshPluginsVetoInstall() throws Exception {
 		final var event = Mockito.mock(ContextRefreshedEvent.class);
 		Mockito.when(event.getApplicationContext()).thenReturn(applicationContext);
-        var listener = Mockito.mock(PluginListener.class);
+		var listener = Mockito.mock(PluginListener.class);
 		Mockito.when(listener.install(ArgumentMatchers.any())).thenReturn(false);
 		registerSingleton("mockPluginListener", listener);
 		// Add a plug-in is an initial version
@@ -583,7 +586,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void refreshPluginsAutoUpdate() throws Exception {
+	void refreshPluginsAutoUpdate() throws Exception {
 		configuration.put("ligoj.plugin.update", "true");
 		final var check = new AtomicBoolean(false);
 		final SystemPluginResource resource = new SystemPluginResource() {
@@ -605,7 +608,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void refreshPluginsAutoUpdateNoUpdate() throws Exception {
+	void refreshPluginsAutoUpdateNoUpdate() throws Exception {
 		configuration.put("ligoj.plugin.update", "true");
 		final var check = new AtomicBoolean(false);
 		final SystemPluginResource resource = new SystemPluginResource() {
@@ -627,7 +630,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void refreshPluginsUpdate() throws Exception {
+	void refreshPluginsUpdate() throws Exception {
 		try {
 			// Precondition
 			Assertions.assertNull(repository.findBy("key", "service:sample"));
@@ -662,13 +665,13 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void configurePluginEntityNotFound() {
-		Assertions.assertThrows(TechnicalException.class, () -> new SystemPluginResource().configurePluginEntity(Arrays.stream(new URL[] { new URL("file://tmp") }),
-				SystemUser.class, "---"));
+	void configurePluginEntityNotFound() {
+		Assertions.assertThrows(TechnicalException.class, () -> new SystemPluginResource()
+				.configurePluginEntity(Arrays.stream(new URL[] { new URL("file://tmp") }), SystemUser.class, "---"));
 	}
 
 	@Test
-    void configurePluginEntityFromJar() throws MalformedURLException, IOException {
+	void configurePluginEntityFromJar() throws MalformedURLException, IOException {
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
 				new URL[] { Thread.currentThread().getContextClassLoader()
 						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar") },
@@ -684,7 +687,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void configurePluginEntityFromProject() throws MalformedURLException, IOException {
+	void configurePluginEntityFromProject() throws MalformedURLException, IOException {
 		final var url = Thread.currentThread().getContextClassLoader()
 				.getResource("csv-test/sample-business-entity.csv");
 		final var pluginResource = new SystemPluginResource();
@@ -695,17 +698,21 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void installNotExists() {
-		Assertions.assertThrows(ValidationJsonException.class, () -> newPluginResourceInstall().install("any", "central"));
+	void installNotExists() {
+		Assertions.assertThrows(ValidationJsonException.class,
+				() -> newPluginResourceInstall().install("any", "central"));
 	}
 
 	@Test
-    void installNotExistsVersion() {
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> newPluginResourceInstall().install("any", "dummy", "central")), "artifact", "cannot-be-installed");
+	void installNotExistsVersion() {
+		MatcherUtil.assertThrows(
+				Assertions.assertThrows(ValidationJsonException.class,
+						() -> newPluginResourceInstall().install("any", "dummy", "central")),
+				"artifact", "cannot-be-installed");
 	}
 
 	@Test
-    void installCentralOnline() throws IOException {
+	void installCentralOnline() throws IOException {
 		configuration.delete("plugins.repository-manager.central.artifact.url");
 		configuration.delete("plugins.repository-manager.central.search.url");
 		newPluginResourceInstall().install("plugin-iam-node", "central");
@@ -713,7 +720,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void upload() throws IOException {
+	void upload() throws IOException {
 		final InputStream input = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
 		newPluginResourceInstall().upload(input, "plugin-sample", "1.2.9");
 		Assertions.assertTrue(TEMP_FILE.exists());
@@ -721,7 +728,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void installCentral() throws IOException {
+	void installCentral() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/maven2/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toByteArray(
 						new ClassPathResource("mock-server/maven-repo/plugin-sample-0.0.1.jar").getInputStream()))));
@@ -737,7 +744,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void installNexusOnline() throws IOException {
+	void installNexusOnline() throws IOException {
 		configuration.delete("plugins.repository-manager.nexus.artifact.url");
 		configuration.delete("plugins.repository-manager.nexus.search.url");
 		newPluginResourceInstall().install("plugin-iam-node", "nexus");
@@ -745,7 +752,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void installNexus() throws IOException {
+	void installNexus() throws IOException {
 		httpServer.stubFor(get(urlEqualTo(
 				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
 						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
@@ -765,12 +772,12 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void getPluginClassLoaderOutOfClassLoader() {
+	void getPluginClassLoaderOutOfClassLoader() {
 		Assertions.assertNull(new SystemPluginResource().getPluginClassLoader());
 	}
 
 	@Test
-    void restart() throws InterruptedException {
+	void restart() throws InterruptedException {
 		// Difficult to test...
 		resource.restart();
 		Thread.sleep(100);
@@ -778,10 +785,9 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void getPluginClassLoader() {
+	void getPluginClassLoader() {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		try (var scope = new ThreadClassLoaderScope(
-				new URLClassLoader(new URL[0], pluginsClassLoader))) {
+		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertNotNull(resource.getPluginClassLoader());
 		}
 	}
@@ -821,8 +827,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	private SystemPluginResource newPluginResourceDelete() {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		try (var scope = new ThreadClassLoaderScope(
-				new URLClassLoader(new URL[0], pluginsClassLoader))) {
+		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
 			Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 					Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));
@@ -839,7 +844,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@AfterEach
-    void cleanArtifacts() {
+	void cleanArtifacts() {
 		FileUtils.deleteQuietly(TEMP_FILE);
 	}
 
@@ -847,7 +852,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * Remove a non existing plugin : no error
 	 */
 	@Test
-    void removeNotExists() throws IOException {
+	void removeNotExists() throws IOException {
 		newPluginResourceDelete("any");
 	}
 
@@ -856,7 +861,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * feature works only for plug-ins that are not loaded in the classloader. Need an {@link URLClassLoader#close()}
 	 */
 	@Test
-    void removeWidest() throws IOException {
+	void removeWidest() throws IOException {
 		Assertions.assertFalse(TEMP_FILE.exists());
 		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
@@ -868,7 +873,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * Remove the exact plug-in, and only it.
 	 */
 	@Test
-    void removeExact() throws IOException {
+	void removeExact() throws IOException {
 		Assertions.assertFalse(TEMP_FILE.exists());
 		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
@@ -880,7 +885,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * Remove the exact plug-in + version, and only it.
 	 */
 	@Test
-    void removeExactVersion() throws IOException {
+	void removeExactVersion() throws IOException {
 		Assertions.assertFalse(TEMP_FILE.exists());
 		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
@@ -889,13 +894,13 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void searchPluginsInMavenRepoNoResult() throws IOException {
+	void searchPluginsInMavenRepoNoResult() throws IOException {
 		final var result = searchPluginsInMavenRepo("no-result");
 		Assertions.assertTrue(result.isEmpty(), "Search result should be empty.");
 	}
 
 	@Test
-    void searchPluginsOnMavenRepoOneResult() throws IOException {
+	void searchPluginsOnMavenRepoOneResult() throws IOException {
 		final var result = searchPluginsInMavenRepo("samp");
 		Assertions.assertEquals(1, result.size());
 		Assertions.assertEquals("plugin-sample", result.get(0).getArtifact());
@@ -913,7 +918,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void invalidateLastPluginVersions() throws IOException {
+	void invalidateLastPluginVersions() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
@@ -927,7 +932,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void persistAsNeeded() {
+	void persistAsNeeded() {
 		final var role = new SystemRole();
 		role.setName("any");
 		em.persist(role);
@@ -943,7 +948,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void persistAsNeededNamed() {
+	void persistAsNeededNamed() {
 		final var project = new SystemUserSetting();
 		project.setName("foo");
 		project.setLogin("any");
@@ -963,7 +968,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-    void persistAsBusinessEntity() {
+	void persistAsBusinessEntity() {
 		final var user = new SampleBusinessEntity();
 		user.setId("foo");
 		resource.persistAsNeeded(SampleBusinessEntity.class, user);
@@ -978,4 +983,14 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertSame(user1, em.find(SampleBusinessEntity.class, "foo"));
 	}
 
+	@Test
+	void decorate() {
+		final var settings = Mockito.mock(SessionSettings.class);
+		Mockito.when(settings.getApplicationSettings()).thenReturn(applicationSettings);
+		Assertions.assertNull(applicationSettings.getPlugins());
+		resource.decorate(settings);
+		Assertions.assertNotNull(settings.getApplicationSettings().getPlugins());
+		resource.decorate(settings);
+		Assertions.assertNotNull(settings.getApplicationSettings().getPlugins());
+	}
 }
