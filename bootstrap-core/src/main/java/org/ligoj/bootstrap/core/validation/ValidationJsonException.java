@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.validation;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,8 +79,7 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Constructor with message context.
 	 *
-	 * @param message
-	 *            the raw validation error message.
+	 * @param message the raw validation error message.
 	 */
 	public ValidationJsonException(final String message) {
 		super(message);
@@ -88,8 +88,7 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Constructor from mapping exception : invalid type conversion.
 	 *
-	 * @param mappingException
-	 *            validation exception containing errors.
+	 * @param mappingException validation exception containing errors.
 	 */
 	public ValidationJsonException(final MismatchedInputException mappingException) {
 		this(mappingException, String.valueOf(mappingException.getMessage()), parseRule(mappingException));
@@ -98,26 +97,25 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Constructor from errors.
 	 *
-	 * @param validation
-	 *            validation exception containing errors.
+	 * @param validation validation exception containing errors.
 	 */
 	public ValidationJsonException(final ConstraintViolationException validation) {
 		this(validation.getMessage());
-		validation.getConstraintViolations()
-				.forEach(e -> errors.computeIfAbsent(getPropertyPath(e), k -> new ArrayList<>()).add(serializeHibernateValidationError(e)));
+		validation.getConstraintViolations().forEach(e -> errors
+				.computeIfAbsent(getPropertyPath(e), k -> new ArrayList<>()).add(serializeHibernateValidationError(e)));
 	}
 
 	/**
 	 * Constructor from mapping exception : invalid property.
 	 *
-	 * @param mappingException
-	 *            validation exception containing errors.
+	 * @param mappingException validation exception containing errors.
 	 */
 	public ValidationJsonException(final UnrecognizedPropertyException mappingException) {
 		this(mappingException, mappingException.getPropertyName(), "Mapping");
 	}
 
-	private ValidationJsonException(final JsonMappingException mappingException, final String message, final String rule) {
+	private ValidationJsonException(final JsonMappingException mappingException, final String message,
+			final String rule) {
 		this(message);
 		final var propertyPath = buildPropertyPath(mappingException.getPath());
 		if (propertyPath.length() > 0) {
@@ -132,46 +130,51 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Constructor for a single error.
 	 *
-	 * @param propertyName
-	 *            Name of the JSon property
-	 * @param errorText
-	 *            I18N key of the message.
-	 * @param parametersKeyValue
-	 *            Optional key and value pairs.
+	 * @param propertyName       Name of the JSon property
+	 * @param errorText          I18N key of the message.
+	 * @param parametersKeyValue Optional key and value pairs.
 	 */
-	public ValidationJsonException(final String propertyName, final Serializable errorText, final Serializable... parametersKeyValue) {
-		this(propertyName + ":" + errorText + (parametersKeyValue.length > 0 ? ArrayUtils.toString(parametersKeyValue) : ""));
+	public ValidationJsonException(final String propertyName, final Serializable errorText,
+			final Serializable... parametersKeyValue) {
+		this(propertyName + ":" + errorText
+				+ (parametersKeyValue.length > 0 ? ArrayUtils.toString(parametersKeyValue) : ""));
 		addError(propertyName, errorText, parametersKeyValue);
 	}
 
 	/**
 	 * Helper method to add an error on property with a single message error
 	 *
-	 * @param propertyName
-	 *            Name of the JSon property
-	 * @param errorText
-	 *            I18N key of the message.
-	 * @param parametersKeyValue
-	 *            optional parameter, key and value pairs.
+	 * @param propertyName       Name of the JSon property
+	 * @param errorText          I18N key of the message.
+	 * @param parametersKeyValue optional parameter, key and value pairs.
 	 */
-	public void addError(final String propertyName, final Serializable errorText, final Serializable... parametersKeyValue) {
+	public void addError(final String propertyName, final Serializable errorText,
+			final Serializable... parametersKeyValue) {
 		final Map<String, Serializable> error = new HashMap<>();
 		error.put("rule", errorText);
 		errors.put(propertyName, Collections.singletonList(error));
 
+		final Serializable[] params;
+		if (parametersKeyValue.length == 1 && parametersKeyValue[0].getClass().isArray()
+				&& Array.getLength(parametersKeyValue[0]) > 0) {
+			params = (Serializable[]) parametersKeyValue[0];
+		} else {
+			params = parametersKeyValue;
+		}
+
 		// Add parameters
-		if (parametersKeyValue.length > 1) {
-			error.put("parameters", (Serializable) toMap(parametersKeyValue));
+		if (params.length > 1) {
+			error.put("parameters", (Serializable) toMap(params));
 		}
 	}
 
 	/**
 	 * Transform a K,V values list to a Map.
 	 */
-	private Map<String, Serializable> toMap(final Serializable... parametersKeyValue) {
+	private Map<String, Serializable> toMap(final Serializable... params) {
 		final Map<String, Serializable> parameters = new HashMap<>();
-		for (var i = 0; i < parametersKeyValue.length; i += 2) {
-			parameters.put(parametersKeyValue[i].toString(), parametersKeyValue[i + 1]);
+		for (var i = 0; i < params.length; i += 2) {
+			parameters.put(params[i].toString(), params[i + 1]);
 		}
 		return parameters;
 	}
@@ -205,7 +208,8 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build nested property path.
 	 */
-	private void buildNestedPropertyPath(final StringBuilder propertyPath, final InvalidFormatException.Reference reference) {
+	private void buildNestedPropertyPath(final StringBuilder propertyPath,
+			final InvalidFormatException.Reference reference) {
 		if (reference.getIndex() > -1) {
 			propertyPath.append('[');
 			propertyPath.append(reference.getIndex());
@@ -240,8 +244,7 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * serialize a violation from Hibernate validation
 	 *
-	 * @param violation
-	 *            The validation error
+	 * @param violation The validation error
 	 * @return serialized error
 	 */
 	private Map<String, Serializable> serializeHibernateValidationError(final ConstraintViolation<?> violation) {
@@ -254,18 +257,18 @@ public class ValidationJsonException extends RuntimeException {
 				error.put("parameters", (Serializable) parameters);
 			}
 		}
-		error.put("rule", ClassUtils.getShortClassName(
-				StringUtils.removeEnd(StringUtils.removeEnd(StringUtils.removeStart(violation.getMessageTemplate(), "{"), "}"), ".message")));
+		error.put("rule",
+				ClassUtils.getShortClassName(StringUtils.removeEnd(
+						StringUtils.removeEnd(StringUtils.removeStart(violation.getMessageTemplate(), "{"), "}"),
+						".message")));
 		return error;
 	}
 
 	/**
 	 * Check the value is null for given fields.
 	 *
-	 * @param value
-	 *            Is the nullable value to check.
-	 * @param fields
-	 *            Are the fields to report as error. When zero-size, {@value #DEFAULT_FIELD} field name is used.
+	 * @param value  Is the nullable value to check.
+	 * @param fields Are the fields to report as error. When zero-size, {@value #DEFAULT_FIELD} field name is used.
 	 */
 	public static void assertNull(final Object value, final String... fields) {
 		if (value != null) {
@@ -276,10 +279,8 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Check the value is not null for given fields.
 	 *
-	 * @param value
-	 *            Is the nullable value to check.
-	 * @param fields
-	 *            Are the fields to report as error. When zero-size, "value" field name is used.
+	 * @param value  Is the nullable value to check.
+	 * @param fields Are the fields to report as error. When zero-size, "value" field name is used.
 	 */
 	public static void assertNotnull(final Object value, final String... fields) {
 		if (value == null) {
@@ -290,10 +291,8 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build a validation exception.
 	 *
-	 * @param error
-	 *            the error code to throw.
-	 * @param fields
-	 *            Are the fields to report as error.When zero-size, {@value #DEFAULT_FIELD} field name is used.
+	 * @param error  the error code to throw.
+	 * @param fields Are the fields to report as error.When zero-size, {@value #DEFAULT_FIELD} field name is used.
 	 * @return a validation exception containing given errors.
 	 */
 	public static ValidationJsonException newValidationJsonException(final String error, final String... fields) {
@@ -311,12 +310,9 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Throw a validation error when the given value is false.
 	 *
-	 * @param assertTrue
-	 *            the boolean to check.
-	 * @param error
-	 *            the error code to throw.
-	 * @param params
-	 *            the optional parameter of error.
+	 * @param assertTrue the boolean to check.
+	 * @param error      the error code to throw.
+	 * @param params     the optional parameter of error.
 	 */
 	public static void assertTrue(final boolean assertTrue, final String error, final Object... params) {
 		if (!assertTrue) {
