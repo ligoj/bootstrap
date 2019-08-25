@@ -42,14 +42,14 @@ import lombok.Setter;
 class ValidationJsonExceptionTest {
 
 	@Test
-	void testValidationJsonExceptionEmpty() {
+	void validationJsonExceptionEmpty() {
 		final var format = new InvalidFormatException(null, "", "", String.class);
 		final var validationJsonException = new ValidationJsonException(format);
 		Assertions.assertTrue(validationJsonException.getErrors().isEmpty());
 	}
 
 	@Test
-	void testValidationJsonException() {
+	void validationJsonException() {
 		final var format = new InvalidFormatException(null, "", "", String.class);
 		format.prependPath(null, "property");
 		format.prependPath("property", "property2");
@@ -59,7 +59,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testUnrecognizedPropertyException() {
+	void unrecognizedPropertyException() {
 		final var format = new UnrecognizedPropertyException(null, "", null, String.class, "property",
 				Collections.emptyList());
 		format.prependPath(null, "property");
@@ -71,7 +71,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testValidationJsonExceptionInteger() {
+	void validationJsonExceptionInteger() {
 		final var format = new InvalidFormatException(null, "", "", int.class);
 		format.prependPath(null, "property");
 		format.prependPath("property", "property2");
@@ -94,7 +94,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testValidationJsonExceptionCollection() {
+	void validationJsonExceptionCollection() {
 		final var mapper = new ObjectMapper();
 		final var e = Assertions.assertThrows(InvalidFormatException.class,
 				() -> mapper.readValue("{\"items\":[{\"value\":\"A\"}]}", CollectionBean.class));
@@ -104,7 +104,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testValidationJsonExceptionCollectionNotFound() {
+	void validationJsonExceptionCollectionNotFound() {
 		final var collectionBean = new CollectionBean();
 		final List<ItemBean> items = new ArrayList<>();
 		items.add(new ItemBean());
@@ -120,7 +120,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddError() {
+	void addError() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -128,7 +128,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddErrorRawArray() {
+	void addErrorRawArray() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", "param1", "value1");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -137,7 +137,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddErrorRawArray2() {
+	void addErrorRawArray2() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", "param1", "value1", "param2", "value2");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -146,7 +146,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddErrorUnwrapArray() {
+	void addErrorUnwrapArray() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", new Serializable[] { new String[] { "param1", "value1" } });
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -155,7 +155,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddErrorUnwrapArray2() {
+	void addErrorUnwrapArray2() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text",
 				new Serializable[] { new String[] { "param1", "value1" }, new String[] { "param2", "value2" } });
@@ -165,7 +165,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddErrorUnwrapArrayIncomplete() {
+	void addErrorUnwrapArrayIncomplete() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", new Serializable[] { "param1" });
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -173,7 +173,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testSoloError() {
+	void soloError() {
 		final var validationJsonException = new ValidationJsonException("p1", "text");
 		validationJsonException.addError("p1", "text");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -182,7 +182,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testSoloErrorParameter() {
+	void soloErrorParameter() {
 		final var validationJsonException = new ValidationJsonException("p1", "text", "param1", "param2");
 		validationJsonException.addError("p1", "text");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -191,7 +191,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAddErrorWithParameters() {
+	void addErrorWithParameters() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text", "key", 5);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -200,32 +200,32 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testAssertNotNullError() {
+	void assertNotNullError() {
 		Assertions.assertThrows(ValidationJsonException.class, () -> ValidationJsonException.assertNotnull(null));
 	}
 
 	@Test
-	void testAssertNotNull() {
+	void assertNotNull() {
 		ValidationJsonException.assertNotnull("");
 	}
 
 	@Test
-	void testAssertNullError() {
+	void assertNullError() {
 		Assertions.assertThrows(ValidationJsonException.class, () -> ValidationJsonException.assertNull("", "x", "y"));
 	}
 
 	@Test
-	void testAssertNull() {
+	void assertNull() {
 		ValidationJsonException.assertNull(null);
 	}
 
 	@Test
-	void testAssertTrue() {
+	void assertTrue() {
 		ValidationJsonException.assertTrue(true, "x");
 	}
 
 	@Test
-	void testAssertTrueError() {
+	void assertTrueError() {
 		Assertions.assertEquals("{value=[{rule=y}]}", Assertions
 				.assertThrows(ValidationJsonException.class, () -> ValidationJsonException.assertTrue(false, "y"))
 				.getErrors().toString());
@@ -238,7 +238,18 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testConstraintViolationException() {
+	void assertTrueErrorObject() {
+		Assertions.assertEquals("{value=[{rule=y, parameters={param1=value1, param2=NAME}}]}", Assertions.assertThrows(
+				ValidationJsonException.class,
+				() -> ValidationJsonException.assertTrue(false, "y", "param1", "value1", "param2", new Object() {
+					public String toString() {
+						return "NAME";
+					}
+				})).getErrors().toString());
+	}
+
+	@Test
+	void constraintViolationException() {
 		final var bean = new SampleEntity();
 		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
 
@@ -271,7 +282,7 @@ class ValidationJsonExceptionTest {
 	}
 
 	@Test
-	void testConstraintViolationExceptionParameter() {
+	void constraintViolationExceptionParameter() {
 		final var bean = new SampleEntity();
 		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
 

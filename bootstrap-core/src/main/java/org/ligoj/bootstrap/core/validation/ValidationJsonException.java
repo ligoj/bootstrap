@@ -157,7 +157,7 @@ public class ValidationJsonException extends RuntimeException {
 		final Serializable[] params;
 		if (parametersKeyValue.length == 1 && parametersKeyValue[0].getClass().isArray()
 				&& Array.getLength(parametersKeyValue[0]) > 0) {
-			params = (Serializable[]) parametersKeyValue[0];
+			params = toArray((Object[]) parametersKeyValue[0]);
 		} else {
 			params = parametersKeyValue;
 		}
@@ -166,6 +166,19 @@ public class ValidationJsonException extends RuntimeException {
 		if (params.length > 1) {
 			error.put("parameters", (Serializable) toMap(params));
 		}
+	}
+
+	protected Serializable[] toArray(final Object[] raw) {
+		final var result = new Serializable[raw.length];
+		for (var i = 0; i < raw.length; i++) {
+			final var obj = raw[i];
+			if (obj instanceof Serializable) {
+				result[i] = (Serializable) obj;
+			} else {
+				result[i] = obj.toString();
+			}
+		}
+		return result;
 	}
 
 	/**
