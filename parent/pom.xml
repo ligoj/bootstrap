@@ -63,8 +63,8 @@
 		<httpclient.version>4.5.10</httpclient.version>
 		<httpcore.version>4.4.12</httpcore.version>
 		<hsqldb.version>2.4.1</hsqldb.version>
-		<jackson.version>2.9.9</jackson.version>
-		<jackson.databind.version>2.9.9.3</jackson.databind.version>
+		<jackson.version>2.9.10</jackson.version>
+		<jackson.databind.version>2.9.10</jackson.databind.version>
 		<jasypt.version>1.9.2</jasypt.version>
 		<jaxb.version>2.3.2</jaxb.version>
 		<jetty.version>9.4.19.v20190610</jetty.version>
