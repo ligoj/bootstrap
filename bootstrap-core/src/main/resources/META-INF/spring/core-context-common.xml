@@ -41,7 +41,6 @@
 		<property name="stringEncryptor" ref="configurationEncryptor" />
 		<property name="ignoreResourceNotFound" value="true" />
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
-		<property name="systemPropertiesMode" value="2" />
 		<property name="fileEncoding" value="UTF-8" />
 	</bean>
 

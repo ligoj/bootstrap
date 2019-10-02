@@ -65,7 +65,7 @@
 		<hsqldb.version>2.4.1</hsqldb.version>
 		<jackson.version>2.9.10</jackson.version>
 		<jackson.databind.version>2.9.10</jackson.databind.version>
-		<jasypt.version>1.9.2</jasypt.version>
+		<jasypt.version>1.9.3</jasypt.version>
 		<jaxb.version>2.3.2</jaxb.version>
 		<jetty.version>9.4.20.v20190813</jetty.version>
 		<jodd-bean.version>5.0.12</jodd-bean.version>
@@ -83,8 +83,8 @@
 		<spring-boot.version>2.1.7.RELEASE</spring-boot.version>
 		<spring-cloud.version>2.1.2.RELEASE</spring-cloud.version>
 		<spring-data.version>2.1.10.RELEASE</spring-data.version>
-		<spring.version>5.1.9.RELEASE</spring.version>
-		<spring-security.version>5.1.6.RELEASE</spring-security.version>
+		<spring.version>5.2.0.RELEASE</spring.version>
+		<spring-security.version>5.2.0.RELEASE</spring-security.version>
 		<spring-security-rsa>1.0.8.RELEASE</spring-security-rsa>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<wiremock.version>2.23.2</wiremock.version>
@@ -236,7 +236,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jasypt</groupId>
-				<artifactId>jasypt-spring31</artifactId>
+				<artifactId>jasypt-spring4</artifactId>
 				<version>${jasypt.version}</version>
 			</dependency>
 			<dependency>

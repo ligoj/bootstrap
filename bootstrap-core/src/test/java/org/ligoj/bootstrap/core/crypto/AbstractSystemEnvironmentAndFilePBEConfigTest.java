@@ -60,6 +60,8 @@ abstract class AbstractSystemEnvironmentAndFilePBEConfigTest {
 		encryptor.encrypt("secret");
 		Assertions.assertEquals("Simple Value", simpleValue);
 		Assertions.assertEquals("Simple Value-cascaded", simpleCascaded);
+		
+		// Check encrypted data is read
 		Assertions.assertEquals("secret", simpleEncrypted);
 	}
 

@@ -11,15 +11,17 @@ import java.util.Properties;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringValueResolver;
 
 import lombok.Setter;
 
 /**
  * Share all non localized properties loaded by Spring.
  */
-public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
+public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 
 	/**
 	 * Global properties.
@@ -85,8 +87,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 	/**
 	 * Set the global locations.
 	 *
-	 * @param locations
-	 *            The global resources.
+	 * @param locations The global resources.
 	 */
 	public static void setGlobalLocations(final Resource... locations) {
 		GlobalPropertyUtils.locations = locations;
@@ -95,8 +96,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 	/**
 	 * Set the global properties.
 	 *
-	 * @param props
-	 *            The global properties.
+	 * @param props The global properties.
 	 */
 	public static void setGlobalProperties(final Properties props) {
 		GlobalPropertyUtils.props = props;
@@ -105,8 +105,7 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 	/**
 	 * Return a property loaded by the place holder.
 	 *
-	 * @param name
-	 *            the property name.
+	 * @param name the property name.
 	 * @return the property value.
 	 */
 	public static String getProperty(final String name) {
@@ -121,8 +120,9 @@ public class GlobalPropertyUtils extends PropertyPlaceholderConfigurer {
 		return PropertyValueEncryptionUtils.decrypt(originalValue, GlobalPropertyUtils.stringEncryptor);
 	}
 
-	@Override
-	protected String resolveSystemProperty(final String key) {
-		return convertPropertyValue(super.resolveSystemProperty(key));
+	protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
+			StringValueResolver valueResolver) {
+		super.doProcessProperties(beanFactoryToProcess,
+				strVal -> convertPropertyValue(valueResolver.resolveStringValue(strVal)));
 	}
 }
