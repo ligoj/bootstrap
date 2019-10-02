@@ -70,7 +70,7 @@
 		<jetty.version>9.4.20.v20190813</jetty.version>
 		<jodd-bean.version>5.0.12</jodd-bean.version>
 		<jsoup.version>1.12.1</jsoup.version>
-		<log4j.version>2.11.2</log4j.version>
+		<log4j.version>2.12.1</log4j.version>
 		<lombok.version>1.18.10</lombok.version>
 		<mail.version>1.6.1</mail.version>
 		<mockito.version>3.0.0</mockito.version>
