@@ -188,7 +188,7 @@ public class PaginationDao {
 			if (ormColumn != null) {
 
 				// ORM column is validated
-				final var sort = new Sort(uiSort.getDirection(), mapping.get(uiSort.getColumn()));
+				final var sort = Sort.by(uiSort.getDirection(), mapping.get(uiSort.getColumn()));
 				query.orderBy(QueryUtils.toOrders(sort, root, builder));
 			}
 		}
