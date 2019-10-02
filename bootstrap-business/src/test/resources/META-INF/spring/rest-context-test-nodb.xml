@@ -3,7 +3,7 @@
 	xmlns:jaxrs="http://cxf.apache.org/jaxrs"
 	xsi:schemaLocation="
 		http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<import resource="classpath:META-INF/spring/rest-context-common.xml" />
 
