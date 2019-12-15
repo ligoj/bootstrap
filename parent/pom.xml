@@ -45,7 +45,7 @@
 
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.9.4</aspectj.version>
-		<byte-buddy.version>1.10.1</byte-buddy.version>
+		<byte-buddy.version>1.10.5</byte-buddy.version>
 		<cache.version>1.1.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
 		<commons-codec>1.13</commons-codec>
