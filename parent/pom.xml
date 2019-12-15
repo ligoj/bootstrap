@@ -57,7 +57,7 @@
 		<dbcp.version>2.7.0</dbcp.version>
 		<guava.version>27.1-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
-		<hazelcast.version>3.12.2</hazelcast.version>
+		<hazelcast.version>3.12.5</hazelcast.version>
 		<hibernate.version>5.4.6.Final</hibernate.version>
 		<hibernate-validator.version>6.0.17.Final</hibernate-validator.version>
 		<httpclient.version>4.5.10</httpclient.version>
