@@ -120,6 +120,7 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 		return PropertyValueEncryptionUtils.decrypt(originalValue, GlobalPropertyUtils.stringEncryptor);
 	}
 
+	@Override
 	protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
 			StringValueResolver valueResolver) {
 		super.doProcessProperties(beanFactoryToProcess,

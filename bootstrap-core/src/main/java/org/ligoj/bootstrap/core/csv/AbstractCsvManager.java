@@ -42,7 +42,7 @@ public abstract class AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	public <T> List<T> toBean(final Class<T> beanType, final String resource) throws IOException {
-		try (Reader input = new InputStreamReader(new ClassPathResource(resource).getInputStream(), DEFAULT_ENCODING)) {
+		try (var input = new InputStreamReader(new ClassPathResource(resource).getInputStream(), DEFAULT_ENCODING)) {
 			return toBean(beanType, input);
 		}
 	}
@@ -60,7 +60,7 @@ public abstract class AbstractCsvManager {
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
-	public <T> List<T> toBean(Class<T> beanType, Reader input) throws IOException {
+	public <T> List<T> toBean(final Class<T> beanType, final Reader input) throws IOException {
 		return toBean(beanType, input, null);
 	}
 
@@ -79,7 +79,7 @@ public abstract class AbstractCsvManager {
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
-	public <T> List<T> toBean(Class<T> beanType, Reader input, final TriConsumer<T, String, String> setter)
+	public <T> List<T> toBean(final Class<T> beanType, final Reader input, final TriConsumer<T, String, String> setter)
 			throws IOException {
 		return Collections.emptyList();
 	}

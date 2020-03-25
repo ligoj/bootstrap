@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
@@ -195,9 +194,9 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build and return a property path of given exception.
 	 */
-	private StringBuilder buildPropertyPath(final List<InvalidFormatException.Reference> path) {
+	private StringBuilder buildPropertyPath(final List<JsonMappingException.Reference> path) {
 		final var propertyPath = new StringBuilder();
-		InvalidFormatException.Reference parent = null;
+		JsonMappingException.Reference parent = null;
 		for (final var reference : path) {
 			buildPropertyPath(propertyPath, reference, parent);
 			parent = reference;
@@ -208,8 +207,8 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build and return a property path of given exception.
 	 */
-	private void buildPropertyPath(final StringBuilder propertyPath, final InvalidFormatException.Reference reference,
-			final InvalidFormatException.Reference parent) {
+	private void buildPropertyPath(final StringBuilder propertyPath, final JsonMappingException.Reference reference,
+			final JsonMappingException.Reference parent) {
 		if (parent != null) {
 			buildNestedPropertyPath(propertyPath, reference);
 		}
@@ -222,7 +221,7 @@ public class ValidationJsonException extends RuntimeException {
 	 * Build nested property path.
 	 */
 	private void buildNestedPropertyPath(final StringBuilder propertyPath,
-			final InvalidFormatException.Reference reference) {
+			final JsonMappingException.Reference reference) {
 		if (reference.getIndex() > -1) {
 			propertyPath.append('[');
 			propertyPath.append(reference.getIndex());
