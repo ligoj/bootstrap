@@ -41,6 +41,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
@@ -426,7 +427,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	@EventListener
 	public void refreshPlugins(final ContextRefreshedEvent event) throws Exception {
 		// Auto update plug-ins
-		if (Boolean.valueOf(configuration.get(PLUGIN_UPDATE, "false"))) {
+		if (BooleanUtils.toBoolean(configuration.get(PLUGIN_UPDATE, "false"))) {
 			// Update the plug-ins
 			final var counter = autoUpdate();
 			if (counter > 0) {
