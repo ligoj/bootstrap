@@ -19,6 +19,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -96,7 +98,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Autowired
 	private RestartEndpoint restartEndpoint;
-	
+
 	@Autowired
 	private ApplicationSettings applicationSettings;
 
@@ -695,6 +697,20 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		pluginResource.csvForJpa = csvForJpa;
 		pluginResource.configurePluginEntity(Arrays.stream(new URL[] { url }), SampleBusinessEntity.class,
 				url.toString());
+	}
+
+	@Test
+	void configurePluginEntitySystemUser() throws MalformedURLException, IOException {
+		final var url = Thread.currentThread().getContextClassLoader().getResource("csv-test/sample-system-user.csv");
+		final var pluginResource = new SystemPluginResource();
+		pluginResource.em = Mockito.mock(EntityManager.class);
+		var query = Mockito.mock(Query.class);
+		Mockito.doReturn(query).when(pluginResource.em).createQuery(Mockito.anyString());
+		Mockito.doReturn(query).when(query).setParameter(Mockito.eq("value"), Mockito.anyString());
+		Mockito.doReturn(new ArrayList<SystemUser>()).when(query).getResultList();
+
+		pluginResource.csvForJpa = csvForJpa;
+		pluginResource.configurePluginEntity(Arrays.stream(new URL[] { url }), SystemUser.class, url.toString());
 	}
 
 	@Test

@@ -57,6 +57,7 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
+import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.plugin.repository.Artifact;
 import org.ligoj.bootstrap.resource.system.plugin.repository.EmptyRepositoryManager;
@@ -672,7 +673,9 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		if (entity instanceof AbstractBusinessEntity) {
 			persistAsNeeded(entityClass, (AbstractBusinessEntity<?>) entity);
 		} else if (entity instanceof INamableBean) {
-			persistAsNeeded(entityClass, (INamableBean<?>) entity);
+			persistAsNeeded(entityClass, entity, "name", ((INamableBean<?>) entity).getName());
+		} else if (entity instanceof SystemUser) {
+			persistAsNeeded(entityClass, entity, "login", ((SystemUser) entity).getLogin());
 		} else {
 			em.persist(entity);
 		}
@@ -685,9 +688,10 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		}
 	}
 
-	private <T> void persistAsNeeded(final Class<T> entityClass, INamableBean<?> entity) {
-		if (em.createQuery("SELECT 1 FROM " + entityClass.getName() + " WHERE name = :name")
-				.setParameter("name", entity.getName()).getResultList().isEmpty()) {
+	private <T> void persistAsNeeded(final Class<T> entityClass, Object entity, final String property,
+			final String value) {
+		if (em.createQuery("SELECT 1 FROM " + entityClass.getName() + " WHERE " + property + " = :value")
+				.setParameter("value", value).getResultList().isEmpty()) {
 			em.persist(entity);
 		}
 	}
