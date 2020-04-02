@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -94,6 +95,11 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * Property identifying an array of plug-ins to ignore.
 	 */
 	private static final String PLUGIN_IGNORE = "ligoj.plugin.ignore";
+
+	/**
+	 * Plug-ins auto install flag.
+	 */
+	private static final String PLUGIN_INSTALL = "ligoj.plugin.install";
 
 	/**
 	 * Plug-ins auto update flag.
@@ -427,17 +433,22 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 */
 	@EventListener
 	public void refreshPlugins(final ContextRefreshedEvent event) throws Exception {
+		// Auto install plug-ins
+		final var install = Arrays.stream(configuration.get(PLUGIN_INSTALL, "").split(",")).map(StringUtils::trimToNull)
+				.filter(p -> p != null).collect(Collectors.toSet());
+		var counter = install.isEmpty() ? 0 : autoInstall(install);
+
 		// Auto update plug-ins
 		if (BooleanUtils.toBoolean(configuration.get(PLUGIN_UPDATE, "false"))) {
 			// Update the plug-ins
-			final var counter = autoUpdate();
-			if (counter > 0) {
-				log.info("{} plug-ins have been downloaded for update, context will be restarted", counter);
-				restart();
-				return;
-			}
-			log.info("No plug-ins have been automatically downloaded for update");
+			counter += autoUpdate();
 		}
+		if (counter > 0) {
+			log.info("{} plug-ins have been updated/installed, context will be restarted", counter);
+			restart();
+			return;
+		}
+		log.info("No plug-ins have been automatically downloaded for update");
 
 		refreshPlugins(event.getApplicationContext());
 	}
@@ -448,9 +459,9 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 				.collect(Collectors.toMap(SystemPlugin::getKey, Function.identity()));
 
 		// Changes, order by the related feature's key
-		final Map<String, FeaturePlugin> newFeatures = new TreeMap<>();
-		final Map<String, FeaturePlugin> updateFeatures = new TreeMap<>();
-		final Set<SystemPlugin> removedPlugins = new HashSet<>(plugins.values());
+		final var newFeatures = new TreeMap<String, FeaturePlugin>();
+		final var updateFeatures = new TreeMap<String, FeaturePlugin>();
+		final var removedPlugins = new HashSet<SystemPlugin>(plugins.values());
 
 		// Compare with the available plug-in implementing ServicePlugin
 		context.getBeansOfType(FeaturePlugin.class).values().forEach(s -> {
@@ -482,6 +493,26 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 
 		// And remove the old plug-in no more installed
 		repository.deleteAll(removedPlugins.stream().map(Persistable::getId).collect(Collectors.toList()));
+	}
+
+	/**
+	 * Auto install the required plug-ins.
+	 *
+	 * @param plugins The plug-ins to install.
+	 * @return The amount of updated plug-ins.
+	 * @throws IOException When plug-ins cannot be updated.
+	 */
+	public int autoInstall(final Set<String> plugins) throws IOException {
+		final var currentPlugins = getPluginClassLoader().getInstalledPlugins();
+		final var repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
+		var counter = 0;
+		for (final var artifact : getLastPluginVersions(repositoryName).values().stream().map(Artifact::getArtifact)
+				.filter(plugins::contains).filter(Predicate.not(currentPlugins::containsKey))
+				.collect(Collectors.toList())) {
+			install(artifact, repositoryName);
+			counter++;
+		}
+		return counter;
 	}
 
 	/**

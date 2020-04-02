@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -259,6 +261,104 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void autoUpdateNoPluginMatch() throws IOException {
 		Assertions.assertEquals(0, mockCentral("search.json").autoUpdate());
+	}
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	@Test
+	void refreshPluginsAutoInstall() throws Exception {
+		configuration.put("ligoj.plugin.install", "plugin-sample");
+		final var check = new AtomicBoolean(false);
+		final var resource = new SystemPluginResource() {
+			@Override
+			public int autoUpdate() {
+				return 0;
+			}
+			@Override
+			public int autoInstall(Set<String> plugins) {
+				Assertions.assertEquals("plugin-sample", plugins.iterator().next());
+				return plugins.size();
+			}
+
+			@Override
+			public void restart() {
+				check.set(true);
+			}
+		};
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
+		resource.refreshPlugins(null);
+
+		//1 install, restart needed
+		Assertions.assertTrue(check.get());
+	}
+
+	@Test
+	void refreshPluginsAutoInstallAlreadyInstalled() throws Exception {
+		configuration.put("ligoj.plugin.install", "plugin-foo");
+		final var check = new AtomicBoolean(false);
+		final var resource = new SystemPluginResource() {
+			@Override
+			public int autoUpdate() {
+				return 0;
+			}
+			@Override
+			public int autoInstall(Set<String> plugins) {
+				Assertions.assertEquals("plugin-foo", plugins.iterator().next());
+				return 0;
+			}
+
+			@Override
+			public void restart() {
+				check.set(true);
+			}
+		};
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
+		resource.refreshPlugins(new ContextRefreshedEvent(applicationContext));
+
+		// No update, no restart needed
+		Assertions.assertFalse(check.get());
+	}
+
+
+	@Test
+	void autoInstallNoPlugin() throws IOException {
+		Assertions.assertEquals(0, mockCentral("search.json").autoInstall(Collections.emptySet()));
+	}
+
+	@Test
+	void autoInstallNotExists() throws IOException {
+		final var plugins = new HashSet<String>();
+		plugins.add("plugin-unknown");
+		Assertions.assertEquals(0, mockCentral("search.json").autoInstall(plugins));
+	}
+
+	@Test
+	void autoInstall() throws IOException {
+		final var plugins = new HashSet<String>();
+		plugins.add("plugin-sample");
+		Assertions.assertEquals(1, mockCentral("search.json").autoInstall(plugins));
+	}
+
+	@Test
+	void autoInstallAlreadyInstalled() throws IOException {
+		final var plugins = new HashSet<String>();
+		plugins.add("plugin-foo");
+		Assertions.assertEquals(0, mockCentral("search-foo.json").autoInstall(plugins));
 	}
 
 	@Test
