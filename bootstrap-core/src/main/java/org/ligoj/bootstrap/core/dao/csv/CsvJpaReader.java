@@ -189,8 +189,8 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Return a map where key is the foreign key and value is the entity.
 	 */
 	private Map<String, Object> buildMap(final List<?> list, final String property) {
-		final Map<String, Object> result = new HashMap<>();
-		for (final Object item : list) {
+		final var result = new HashMap<String, Object>();
+		for (final var item : list) {
 			final var value = beanUtilsBean.getProperty(item, property);
 			if (value != null) {
 				result.put(String.valueOf(value), item);

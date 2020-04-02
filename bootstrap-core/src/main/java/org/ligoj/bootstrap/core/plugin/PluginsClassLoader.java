@@ -129,7 +129,7 @@ public class PluginsClassLoader extends URLClassLoader {
 		// Mapping from "version file" to Path
 		// Key : The filename without extension and with extended comparable version
 		// Value : The resolved Path
-		final Map<String, Path> versionFileToPath = new HashMap<>();
+		final var versionFileToPath = new HashMap<String, Path>();
 
 		// Ordered last version (to be enabled) plug-ins.
 		final var enabledPlugins = getInstalledPlugins(versionFileToPath);
@@ -153,7 +153,7 @@ public class PluginsClassLoader extends URLClassLoader {
 
 		// Expose the bootstrap code compiled from all plug-ins
 		final var boots = new StringBuilder();
-		for (final URL bootUrl : Collections.list(getResources(BOOTSTRAP_PRIVATE_FILE))) {
+		for (final var bootUrl : Collections.list(getResources(BOOTSTRAP_PRIVATE_FILE))) {
 			boots.append(getBootstrapCode(bootUrl)).append('\n');
 		}
 		System.setProperty("project.bootstrap.private", boots.toString());

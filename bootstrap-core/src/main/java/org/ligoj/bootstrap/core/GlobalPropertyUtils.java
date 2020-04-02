@@ -5,7 +5,6 @@ package org.ligoj.bootstrap.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -60,7 +59,7 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 		}
 
 		// Cleanup resources to avoid useless WAR
-		final List<Resource> newLocations = new ArrayList<>(locations.length);
+		final var newLocations = new ArrayList<Resource>(locations.length);
 		for (final var location : locations) {
 			try (var inputStream = location.getInputStream()) {
 				if (inputStream != null) {

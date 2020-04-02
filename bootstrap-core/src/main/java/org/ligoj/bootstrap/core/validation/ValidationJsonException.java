@@ -120,7 +120,7 @@ public class ValidationJsonException extends RuntimeException {
 		if (propertyPath.length() > 0) {
 
 			// Add the error.
-			final Map<String, Serializable> error = new HashMap<>();
+			final var error = new HashMap<String, Serializable>();
 			error.put("rule", rule);
 			errors.put(propertyPath.toString(), Collections.singletonList(error));
 		}
@@ -149,7 +149,7 @@ public class ValidationJsonException extends RuntimeException {
 	 */
 	public void addError(final String propertyName, final Serializable errorText,
 			final Serializable... parametersKeyValue) {
-		final Map<String, Serializable> error = new HashMap<>();
+		final var error = new HashMap<String, Serializable>();
 		error.put("rule", errorText);
 		errors.put(propertyName, Collections.singletonList(error));
 
@@ -184,7 +184,7 @@ public class ValidationJsonException extends RuntimeException {
 	 * Transform a K,V values list to a Map.
 	 */
 	private Map<String, Serializable> toMap(final Serializable... params) {
-		final Map<String, Serializable> parameters = new HashMap<>();
+		final var parameters = new HashMap<String, Serializable>();
 		for (var i = 0; i < params.length; i += 2) {
 			parameters.put(params[i].toString(), params[i + 1]);
 		}

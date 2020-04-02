@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -140,7 +139,7 @@ public abstract class AbstractCsvReader<T> {
 				return dateConverter.convert(value);
 			} catch (DateTimeParseException | TypeConversionException tce) {
 				for (final var pattern : DATE_PATTERNS) {
-					final DateFormat format = new SimpleDateFormat(pattern);
+					final var format = new SimpleDateFormat(pattern);
 					format.setTimeZone(DateUtils.getApplicationTimeZone());
 					format.setLenient(false);
 					try {

@@ -235,7 +235,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 */
 	public <T> List<T> toJpa(final Class<T> beanType, final Reader input, final boolean hasHeader,
 			final boolean persist, final Predicate<T> filter) throws IOException {
-		final List<T> result = new ArrayList<>();
+		final var result = new ArrayList<T>();
 		final String[] headers;
 		final Reader inputProxy;
 		if (hasHeader) {
@@ -324,7 +324,7 @@ public class CsvForJpa extends AbstractCsvManager {
 		final var orderedDescriptors = fieldCallBack.descriptorsOrdered;
 
 		// Now filter the properties
-		final List<String> descriptorsFiltered = new ArrayList<>();
+		final var descriptorsFiltered = new ArrayList<String>();
 		final var managedType = transactionManager.getEntityManagerFactory().getMetamodel()
 				.managedType(beanType);
 		for (final var propertyDescriptor : orderedDescriptors) {

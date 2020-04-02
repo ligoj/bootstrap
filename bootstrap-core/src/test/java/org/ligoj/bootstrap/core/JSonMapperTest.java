@@ -148,7 +148,7 @@ class JSonMapperTest {
 	@Test
     void testWriteStringList() throws IOException {
 		final var lastObject = new TestStringArray();
-		final List<String> array = new ArrayList<>();
+		final var array = new ArrayList<String>();
 		for (var i = 100; i-- > 0;) {
 			array.add("value" + i);
 		}
@@ -196,7 +196,7 @@ class JSonMapperTest {
 	@Test
     void testWriteGenericArray() throws IOException {
 		final var lastObject = new TestGenericArray();
-		final List<TestLong> array = new ArrayList<>();
+		final var array = new ArrayList<TestLong>();
 		for (var i = 100; i-- > 0;) {
 			final var object = new TestLong();
 			object.setNumberLong(6L);

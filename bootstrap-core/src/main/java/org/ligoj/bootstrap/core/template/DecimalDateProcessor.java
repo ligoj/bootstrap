@@ -40,7 +40,7 @@ public class DecimalDateProcessor extends Processor<String> {
 
 		try {
 			final var date = Double.parseDouble(data.replace(',', '.'));
-			final Calendar calendar = new GregorianCalendar(); // using default time-zone
+			final var calendar = new GregorianCalendar(); // using default time-zone
 			final var wholeDays = (int) Math.floor(date);
 			final var millisecondsInDay = (int) Math.round((date - wholeDays) * DateUtils.MILLIS_PER_DAY);
 

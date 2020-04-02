@@ -10,7 +10,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -24,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -286,11 +284,11 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 				.thenReturn(Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER));
 		Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 				Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));
-		final Map<String, String> map = new HashMap<>();
+		final var map = new HashMap<String, String>();
 		map.put("plugin-foo", "plugin-foo-Z0000001Z0000000Z0000001Z0000000");
 		map.put("plugin-bar", "plugin-bar-Z0000001Z0000000Z0000000Z0000000");
 		Mockito.when(pluginsClassLoader.getInstalledPlugins()).thenReturn(map);
-		final SystemPluginResource pluginResource = new SystemPluginResource() {
+		final var pluginResource = new SystemPluginResource() {
 			@Override
 			protected PluginsClassLoader getPluginClassLoader() {
 				return pluginsClassLoader;
@@ -591,7 +589,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	void refreshPluginsAutoUpdate() throws Exception {
 		configuration.put("ligoj.plugin.update", "true");
 		final var check = new AtomicBoolean(false);
-		final SystemPluginResource resource = new SystemPluginResource() {
+		final var resource = new SystemPluginResource() {
 			@Override
 			public int autoUpdate() {
 				return 1;
@@ -613,7 +611,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	void refreshPluginsAutoUpdateNoUpdate() throws Exception {
 		configuration.put("ligoj.plugin.update", "true");
 		final var check = new AtomicBoolean(false);
-		final SystemPluginResource resource = new SystemPluginResource() {
+		final var resource = new SystemPluginResource() {
 			@Override
 			public int autoUpdate() {
 				return 0;
@@ -737,7 +735,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void upload() throws IOException {
-		final InputStream input = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
+		final var input = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
 		newPluginResourceInstall().upload(input, "plugin-sample", "1.2.9");
 		Assertions.assertTrue(TEMP_FILE.exists());
 		Assertions.assertEquals("test", FileUtils.readFileToString(TEMP_FILE, "UTF-8"));
@@ -817,7 +815,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 						.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR)
 						.resolve("plugin-iam-node-test.jar"));
 		Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(directory);
-		final SystemPluginResource pluginResource = new SystemPluginResource() {
+		final var pluginResource = new SystemPluginResource() {
 			@Override
 			protected PluginsClassLoader getPluginClassLoader() {
 				return pluginsClassLoader;
@@ -847,7 +845,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
 			Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 					Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));
-			final SystemPluginResource resource = new SystemPluginResource() {
+			final var resource = new SystemPluginResource() {
 				@Override
 				protected PluginsClassLoader getPluginClassLoader() {
 					return pluginsClassLoader;
