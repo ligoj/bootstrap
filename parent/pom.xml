@@ -55,7 +55,7 @@
 		<commons-text.version>1.6</commons-text.version>
 		<cxf.version>3.3.5</cxf.version>
 		<dbcp.version>2.7.0</dbcp.version>
-		<guava.version>27.1-jre</guava.version>
+		<guava.version>28.2-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.12.6</hazelcast.version>
 		<hibernate.version>5.4.13.Final</hibernate.version>
