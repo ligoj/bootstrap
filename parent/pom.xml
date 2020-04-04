@@ -67,7 +67,7 @@
 		<jackson.databind.version>2.10.1</jackson.databind.version>
 		<jasypt.version>1.9.3</jasypt.version>
 		<jaxb.version>2.3.2</jaxb.version>
-		<jetty.version>9.4.24.v20191120</jetty.version>
+		<jetty.version>9.4.27.v20200227</jetty.version>
 		<jodd-bean.version>5.0.12</jodd-bean.version>
 		<jsoup.version>1.12.1</jsoup.version>
 		<log4j.version>2.12.1</log4j.version>
