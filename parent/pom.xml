@@ -68,7 +68,7 @@
 		<jasypt.version>1.9.3</jasypt.version>
 		<jaxb.version>2.3.2</jaxb.version>
 		<jetty.version>9.4.27.v20200227</jetty.version>
-		<jodd-bean.version>5.0.12</jodd-bean.version>
+		<jodd-bean.version>5.1.4</jodd-bean.version>
 		<jsoup.version>1.12.1</jsoup.version>
 		<log4j.version>2.12.1</log4j.version>
 		<lombok.version>1.18.10</lombok.version>
