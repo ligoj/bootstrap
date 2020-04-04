@@ -64,6 +64,22 @@ class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(100, DummyCacheBean.hit);
 	}
 
+	@Test
+	void invalidateAll() {
+		DummyCacheBean.hit = 0;
+		cacheResource.invalidate();
+		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(1, dummyCacheBean.getHit("entry-key"));
+
+		dummyCacheBean.updateHit("entry-key", 99);
+		Assertions.assertEquals(99, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(99, dummyCacheBean.getHit("entry-key"));
+
+		cacheResource.invalidate();
+		Assertions.assertEquals(100, dummyCacheBean.getHit("entry-key"));
+		Assertions.assertEquals(100, dummyCacheBean.getHit("entry-key"));
+	}
+
 	/**
 	 * Tested cache expires with 1 second after the last update.
 	 */

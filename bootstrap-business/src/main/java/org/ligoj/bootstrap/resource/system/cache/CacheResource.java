@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,6 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -60,8 +62,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	/**
 	 * Return the information of given cache.
 	 *
-	 * @param name
-	 *            the cache's name to display.
+	 * @param name the cache's name to display.
 	 *
 	 * @return the cache's configuration.
 	 */
@@ -70,8 +71,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	public CacheStatistics getCache(@PathParam("name") final String name) {
 		final var result = new CacheStatistics();
 		@SuppressWarnings("unchecked")
-		final var cache = (CacheProxy<Object, Object>) cacheManager.getCache(name)
-				.getNativeCache();
+		final var cache = (CacheProxy<Object, Object>) cacheManager.getCache(name).getNativeCache();
 		final var node = newCacheNode(cache.getNodeEngine().getLocalMember());
 		node.setCluster(newCacheCluster(cache.getNodeEngine().getClusterService()));
 		result.setId(name);
@@ -83,10 +83,8 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	/**
 	 * Update the statistics.
 	 *
-	 * @param result
-	 *            The target result.
-	 * @param statistics
-	 *            The source statistics.
+	 * @param result     The target result.
+	 * @param statistics The source statistics.
 	 */
 	protected void setStatistics(final CacheStatistics result, final com.hazelcast.cache.CacheStatistics statistics) {
 		result.setSize(statistics.getOwnedEntryCount());
@@ -119,13 +117,21 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	/**
 	 * Invalidate a specific cache.
 	 *
-	 * @param name
-	 *            the cache's name to invalidate.
+	 * @param name the cache's name to invalidate.
 	 */
 	@POST
+	@DELETE
 	@Path("{name:[\\w\\-]+}")
 	public void invalidate(@PathParam("name") final String name) {
 		cacheManager.getCache(name).clear();
+	}
+
+	/**
+	 * Invalidate all caches.
+	 */
+	@DELETE
+	public void invalidate() {
+		cacheManager.getCacheNames().stream().map(cacheManager::getCache).forEach(Cache::clear);
 	}
 
 	/**
@@ -143,8 +149,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 		log.info("Stopping context detected, shutdown the Hazelcast instance");
 		// Get any cache to retrieve the Hazelcast instance
 		final var name = cacheManager.getCacheNames().iterator().next();
-		final var cache = (AbstractDistributedObject<?>) cacheManager.getCache(name)
-				.getNativeCache();
+		final var cache = (AbstractDistributedObject<?>) cacheManager.getCache(name).getNativeCache();
 		try {
 			cache.getNodeEngine().getHazelcastInstance().getLifecycleService().terminate();
 		} catch (HazelcastInstanceNotActiveException he) {
