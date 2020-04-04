@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.core.validation;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -24,6 +23,7 @@ import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
+import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -255,21 +255,21 @@ class ValidationJsonExceptionTest {
 
 		final var helper = new ConstraintHelper();
 
-		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper,
-				(Member) null, getAnnotation("name", NotEmpty.class), ElementType.FIELD);
-		final ConstraintDescriptor<NotEmpty> notEmptyGrapesDescriptor = new ConstraintDescriptorImpl<>(helper,
-				(Member) null, getAnnotation("grapes", NotEmpty.class), ElementType.FIELD);
-		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, (Member) null,
-				getAnnotation("name", Length.class), ElementType.FIELD);
+		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
+				getAnnotation("name", NotEmpty.class), ConstraintLocationKind.FIELD);
+		final ConstraintDescriptor<NotEmpty> notEmptyGrapesDescriptor = new ConstraintDescriptorImpl<>(helper, null,
+				getAnnotation("grapes", NotEmpty.class), ConstraintLocationKind.FIELD);
+		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
+				getAnnotation("name", Length.class), ConstraintLocationKind.FIELD);
 		violations.add(ConstraintViolationImpl.forBeanValidation("name-Empty", null, null, "interpolated",
 				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("name"),
-				notEmptyNameDescriptor, ElementType.FIELD, null));
+				notEmptyNameDescriptor, ElementType.FIELD));
 		violations.add(ConstraintViolationImpl.forBeanValidation("name-length", null, null, "interpolated",
 				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("name"),
-				lengthNameDescriptor, ElementType.FIELD, null));
+				lengthNameDescriptor, ConstraintLocationKind.FIELD));
 		violations.add(ConstraintViolationImpl.forBeanValidation("grapes-Empty", null, null, "interpolated",
 				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("grapes"),
-				notEmptyGrapesDescriptor, ElementType.FIELD, null));
+				notEmptyGrapesDescriptor, ElementType.FIELD));
 
 		final var violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
@@ -288,12 +288,12 @@ class ValidationJsonExceptionTest {
 
 		final var helper = new ConstraintHelper();
 
-		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper,
-				(Member) null, getAnnotation("name", NotEmpty.class), ElementType.FIELD);
+		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
+				getAnnotation("name", NotEmpty.class), ConstraintLocationKind.FIELD);
 		var path = PathImpl.createPathFromString("name");
 		violations.add(ConstraintViolationImpl.forParameterValidation("name-Empty", null, null, "interpolated",
-				SampleEntity.class, bean, new Object(), "value", path, notEmptyNameDescriptor, ElementType.PARAMETER,
-				null, null));
+				SampleEntity.class, bean, new Object(), "value", path, notEmptyNameDescriptor, null,
+				ElementType.PARAMETER));
 		path.addParameterNode("parameter1", 0);
 
 		final var violationException = Mockito.mock(ConstraintViolationException.class);
