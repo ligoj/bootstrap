@@ -32,7 +32,7 @@ A Spring based front/back architecture
 - JUnit 5
 
 Requirements
-- Java-11
+- Java-14
 - Maven 3.6
 
 TODO :
