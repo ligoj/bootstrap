@@ -11,6 +11,7 @@
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:showSql="false">
 				<property name="generateDdl" value="true" />
 				<property name="database" value="HSQL" />
+				<property name="databasePlatform" value="org.ligoj.bootstrap.core.dao.HSQLDialect25" />
 			</bean>
 		</property>
 		<property name="jpaProperties">
