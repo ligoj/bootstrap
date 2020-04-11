@@ -8,10 +8,8 @@ import java.io.Serializable;
 import javax.persistence.MappedSuperclass;
 
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.SafeHtml;
-import org.hibernate.validator.constraints.SafeHtml.Attribute;
-import org.hibernate.validator.constraints.SafeHtml.Tag;
 import org.ligoj.bootstrap.core.IDescribableBean;
+import org.ligoj.bootstrap.core.validation.SafeHtml;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +35,7 @@ public abstract class AbstractDescribedBusinessEntity<K extends Serializable> ex
 	 * Human readable description. Accepting safe HTML content.
 	 */
 	@Length(max = 250)
-	@SafeHtml(additionalTagsWithAttributes = @Tag(name = "a", attributesWithProtocols = @Attribute(name = "href", protocols = "#")))
+	@SafeHtml
 	private String description;
 
 }

@@ -34,12 +34,9 @@ public class ValidatorBean {
 	/**
 	 * Validates all constraints on <code>object</code> and return a set of {@link ConstraintViolation}.
 	 * 
-	 * @param <T>
-	 *            Bean type to validate.
-	 * @param object
-	 *            object to validate
-	 * @param groups
-	 *            group or list of groups targeted for validation.
+	 * @param <T>    Bean type to validate.
+	 * @param object object to validate
+	 * @param groups group or list of groups targeted for validation.
 	 * 
 	 * @return constraint violations or an empty Set if none
 	 */
@@ -50,17 +47,14 @@ public class ValidatorBean {
 	/**
 	 * Validates all constraints on <code>objects</code> and return a set of {@link ConstraintViolation}.
 	 * 
-	 * @param <T>
-	 *            Bean type to validate.
-	 * @param objects
-	 *            objects to validate
-	 * @param groups
-	 *            group or list of groups targeted for validation.
+	 * @param <T>     Bean type to validate.
+	 * @param objects objects to validate
+	 * @param groups  group or list of groups targeted for validation.
 	 * 
 	 * @return constraint violations or an empty Set if none
 	 */
 	public <T> Set<ConstraintViolation<T>> validate(final Collection<T> objects, final Class<?>... groups) {
-		final Set<ConstraintViolation<T>> errors = new HashSet<>();
+		final var errors = new HashSet<ConstraintViolation<T>>();
 		// Validate the beans
 		for (var object : objects) {
 			errors.addAll(validate(object, groups));
@@ -72,12 +66,9 @@ public class ValidatorBean {
 	 * Validates all constraints on <code>object</code> and generate an exception containing {@link ConstraintViolation}
 	 * objects when there is an error.
 	 * 
-	 * @param <T>
-	 *            Bean type to validate.
-	 * @param object
-	 *            object to validate
-	 * @param groups
-	 *            group or list of groups targeted for validation.
+	 * @param <T>    Bean type to validate.
+	 * @param object object to validate
+	 * @param groups group or list of groups targeted for validation.
 	 */
 	public <T> void validateCheck(final T object, final Class<?>... groups) {
 
@@ -89,12 +80,9 @@ public class ValidatorBean {
 	 * Validates all constraints on <code>objects</code> and generate an exception containing
 	 * {@link ConstraintViolation} objects when there is an error.
 	 * 
-	 * @param <T>
-	 *            Bean type to validate.
-	 * @param objects
-	 *            object to validate
-	 * @param groups
-	 *            group or list of groups targeted for validation.
+	 * @param <T>     Bean type to validate.
+	 * @param objects object to validate
+	 * @param groups  group or list of groups targeted for validation.
 	 */
 	public <T> void validateCheck(final T[] objects, final Class<?>... groups) {
 		validateCheck(Arrays.asList(objects), groups);
@@ -104,15 +92,12 @@ public class ValidatorBean {
 	 * Validates all constraints on <code>objects</code> and generate an exception containing
 	 * {@link ConstraintViolation} objects when there is an error.
 	 * 
-	 * @param <T>
-	 *            Bean type to validate.
-	 * @param objects
-	 *            object to validate
-	 * @param groups
-	 *            group or list of groups targeted for validation.
+	 * @param <T>     Bean type to validate.
+	 * @param objects object to validate
+	 * @param groups  group or list of groups targeted for validation.
 	 */
 	public <T> void validateCheck(final Collection<T> objects, final Class<?>... groups) {
-		final Set<ConstraintViolation<T>> errors = new HashSet<>();
+		final var errors = new HashSet<ConstraintViolation<T>>();
 		// Validate the beans
 		errors.addAll(validate(objects, groups));
 		if (!errors.isEmpty()) {
