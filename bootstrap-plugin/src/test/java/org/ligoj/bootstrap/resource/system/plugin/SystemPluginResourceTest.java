@@ -610,7 +610,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void manifestData() {
-		Assertions.assertTrue(Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+\\.\\d+\\..*"));
+		Assertions.assertTrue(Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+(\\.\\d+\\..*)?$"));
 		Assertions.assertEquals("java.base", Integer.class.getModule().getName());
 	}
 

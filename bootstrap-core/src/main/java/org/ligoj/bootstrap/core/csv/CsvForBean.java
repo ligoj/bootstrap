@@ -31,7 +31,7 @@ public class CsvForBean extends AbstractCsvManager {
 			return result;
 		}
 
-		final var reader = new CsvBeanReader<T>(inputProxy, beanType,
+		final var reader = new CsvBeanReader<>(inputProxy, beanType,
 				StringUtils.splitPreserveAllTokens(line, CsvReader.DEFAULT_SEPARATOR));
 
 		// Build all instances

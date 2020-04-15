@@ -27,7 +27,7 @@ public class CurlCacheToken {
 	protected ApplicationContext applicationContext;
 
 	@Autowired
-	private CurlCacheToken self = this;
+	private final CurlCacheToken self = this;
 
 	/**
 	 * Return a cache token.

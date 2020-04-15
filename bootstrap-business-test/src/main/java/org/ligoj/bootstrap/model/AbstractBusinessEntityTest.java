@@ -135,7 +135,7 @@ public abstract class AbstractBusinessEntityTest {
 	 */
 	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {
 		var bean = pojo.getConstructor().newInstance();
-		for (final Field field : FieldUtils.getAllFields(pojo)) {
+		for (final var field : FieldUtils.getAllFields(pojo)) {
 			if (field.getName().contains("$") || Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}

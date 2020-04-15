@@ -24,7 +24,7 @@ import org.jsoup.safety.Whitelist;
  * @author Fabrice Daugan
  */
 public class SafeHtmlValidator implements ConstraintValidator<SafeHtml, CharSequence> {
-	private Whitelist whitelist = Whitelist.relaxed().addProtocols("a", "href", "#");
+	private final Whitelist whitelist = Whitelist.relaxed().addProtocols("a", "href", "#");
 	private static final String BASE_URI = "https://h.o.s.t";
 
 	@Override

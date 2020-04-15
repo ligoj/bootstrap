@@ -254,7 +254,7 @@ public class CsvForJpa extends AbstractCsvManager {
 		}
 
 		// Read data
-		final var reader = new CsvJpaReader<T>(inputProxy, em, beanType, headers);
+		final var reader = new CsvJpaReader<>(inputProxy, em, beanType, headers);
 
 		// Build all instances
         var order = reader.read();

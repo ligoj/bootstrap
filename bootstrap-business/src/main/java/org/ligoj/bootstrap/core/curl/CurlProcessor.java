@@ -262,7 +262,7 @@ public class CurlProcessor implements AutoCloseable {
 		// Timeout management
 		if (request.getTimeout() != null) {
 			// Hard timeout has been set
-			final TimerTask task = new TimerTask() {
+			final var task = new TimerTask() {
 				@Override
 				public void run() {
 					// Abort the query if not yet completed...

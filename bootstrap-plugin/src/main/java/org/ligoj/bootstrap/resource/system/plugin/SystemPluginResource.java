@@ -435,7 +435,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	public void refreshPlugins(final ContextRefreshedEvent event) throws Exception {
 		// Auto install plug-ins
 		final var install = Arrays.stream(configuration.get(PLUGIN_INSTALL, "").split(",")).map(StringUtils::trimToNull)
-				.filter(p -> p != null).collect(Collectors.toSet());
+				.filter(Objects::nonNull).collect(Collectors.toSet());
 		var counter = install.isEmpty() ? 0 : autoInstall(install);
 
 		// Auto update plug-ins
@@ -461,7 +461,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		// Changes, order by the related feature's key
 		final var newFeatures = new TreeMap<String, FeaturePlugin>();
 		final var updateFeatures = new TreeMap<String, FeaturePlugin>();
-		final var removedPlugins = new HashSet<SystemPlugin>(plugins.values());
+		final var removedPlugins = new HashSet<>(plugins.values());
 
 		// Compare with the available plug-in implementing ServicePlugin
 		context.getBeansOfType(FeaturePlugin.class).values().forEach(s -> {

@@ -345,8 +345,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	@Override
 	protected Set<String> findConnectionHeaders(final HttpServletRequest clientRequest) {
-		final Set<String> ignoreRequestHeader = new HashSet<>();
-		ignoreRequestHeader.addAll(CollectionUtils.emptyIfNull(super.findConnectionHeaders(clientRequest)));
+		final var ignoreRequestHeader = new HashSet<>(CollectionUtils.emptyIfNull(super.findConnectionHeaders(clientRequest)));
 
 		// Drop cookie headers forward from FRONT to BACK by default, only filtered ones will be added
 		ignoreRequestHeader.add(HEADER_COOKIE);

@@ -98,7 +98,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	public PluginsClassLoader() throws IOException, NoSuchAlgorithmException {
 		super(new URL[0], Thread.currentThread().getContextClassLoader());
-		this.enabled = Boolean.valueOf(System.getProperty(ENABLED_PROPERTY, "true"));
+		this.enabled = Boolean.parseBoolean(System.getProperty(ENABLED_PROPERTY, "true"));
 		this.homeDirectory = computeHome();
 		this.pluginDirectory = this.homeDirectory.resolve(PLUGINS_DIR);
 

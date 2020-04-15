@@ -52,7 +52,7 @@ public class Template<T> {
 	 *             Unable to write the data.
 	 */
 	public void write(final Writer writer, final Map<String, Processor<?>> tags, final T rootContext) throws IOException {
-		final var contextData = new LinkedList<Object>();
+		final var contextData = new LinkedList<>();
 		contextData.add(rootContext);
 		write(writer, tags, 0, input.length(), contextData);
 		writer.flush();

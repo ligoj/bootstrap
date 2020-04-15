@@ -181,11 +181,11 @@ public class UserResource {
 	@PUT
 	public void update(final SystemUserEditionVo userVo) {
 		final var user = repository.findOneExpected(userVo.getLogin());
-		final List<SystemRoleAssignment> roleToDelete = new ArrayList<>();
+		final var roleToDelete = new ArrayList<SystemRoleAssignment>();
 		// remove roles deleted by the user
 		for (final var role : user.getRoles()) {
 			if (userVo.getRoles().contains(role.getRole().getId())) {
-				userVo.getRoles().remove(userVo.getRoles().indexOf(role.getRole().getId()));
+				userVo.getRoles().remove(role.getRole().getId());
 			} else {
 				roleToDelete.add(role);
 			}

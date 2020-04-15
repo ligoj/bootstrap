@@ -67,15 +67,15 @@ public class RbacUserDetailsService implements UserDetailsService {
 	/**
 	 * Extract fetched elements from a multi-select.
 	 * 
-	 * @param resultset
+	 * @param results
 	 *            the ResultSet of multi-select.
 	 * @param index
 	 *            data index to extract.
 	 * @return the collected role names.
 	 */
-	private Set<GrantedAuthority> toSimpleRoles(final Object[][] resultset, final int index) {
+	private Set<GrantedAuthority> toSimpleRoles(final Object[][] results, final int index) {
 		final Set<GrantedAuthority> result = new HashSet<>();
-		for (final var object : resultset) {
+		for (final var object : results) {
 			final var role = (SystemRole) object[index];
 			if (role != null) {
 				result.add(new SimpleGrantedAuthority(role.getAuthority()));
