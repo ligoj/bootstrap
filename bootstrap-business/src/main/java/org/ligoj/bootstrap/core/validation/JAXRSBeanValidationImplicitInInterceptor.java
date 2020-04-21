@@ -29,7 +29,6 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
-import org.hibernate.validator.internal.properties.Constrainable;
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
