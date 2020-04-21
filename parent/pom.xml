@@ -55,6 +55,7 @@
 		<commons-text.version>1.6</commons-text.version>
 		<cxf.version>3.3.5</cxf.version>
 		<dbcp.version>2.7.0</dbcp.version>
+		<dom4j.version>2.1.3</dom4j.version>
 		<guava.version>28.2-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.12.6</hazelcast.version>
@@ -91,6 +92,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>${dom4j.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.jodd</groupId>
 				<artifactId>jodd-bean</artifactId>
