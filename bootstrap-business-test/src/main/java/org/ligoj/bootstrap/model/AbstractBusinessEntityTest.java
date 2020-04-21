@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.model;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
