@@ -253,7 +253,7 @@ class ValidationJsonExceptionTest {
 		final var bean = new SampleEntity();
 		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
 
-		final var helper = new ConstraintHelper();
+		final var helper = ConstraintHelper.forAllBuiltinConstraints();
 
 		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
 				getAnnotation("name", NotEmpty.class), ConstraintLocationKind.FIELD);
@@ -286,7 +286,7 @@ class ValidationJsonExceptionTest {
 		final var bean = new SampleEntity();
 		final Set<ConstraintViolation<?>> violations = new LinkedHashSet<>();
 
-		final var helper = new ConstraintHelper();
+		final var helper = ConstraintHelper.forAllBuiltinConstraints();
 
 		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
 				getAnnotation("name", NotEmpty.class), ConstraintLocationKind.FIELD);
