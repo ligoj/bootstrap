@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 /**
  * Test class of {@link ObjectMapperTrim}
  */
-public class ObjectMapperTest extends AbstractDataGeneratorTest {
+class ObjectMapperTest extends AbstractDataGeneratorTest {
 
 	private final ObjectMapper mapper = new ObjectMapperTrim();
 	private final ObjectMapper vanillaMapper = new ObjectMapper();

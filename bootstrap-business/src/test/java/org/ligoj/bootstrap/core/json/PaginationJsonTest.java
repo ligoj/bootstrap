@@ -30,7 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * JSon pagination test of {@link PaginationJson}.
  */
 @ExtendWith(SpringExtension.class)
-public class PaginationJsonTest extends AbstractBootTest {
+class PaginationJsonTest extends AbstractBootTest {
 
 	@Autowired
 	private PaginationJson paginationJson;
