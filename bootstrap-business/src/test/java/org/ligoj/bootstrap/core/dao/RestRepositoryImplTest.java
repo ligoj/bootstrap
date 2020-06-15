@@ -53,9 +53,9 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	@BeforeEach
 	void setup() {
 		final var loremIpsum = new LoremIpsum();
-        var dial1 = new SystemDialect();
+		var dial1 = new SystemDialect();
 		for (var i = 0; i < 10; i++) {
-            var dial2 = new SystemDialect();
+			var dial2 = new SystemDialect();
 			dial2.setDialLong((long) i);
 			dial2.setDialChar(loremIpsum.getWords(1, i % 50));
 			dial2.setDialDate(new Date(System.currentTimeMillis() + i));
@@ -141,7 +141,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	@Test
 	void findByName() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("name");
 		em.persist(role);
 		em.flush();
@@ -154,7 +154,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void findByMoreProperties() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
 		em.flush();
@@ -182,14 +182,14 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void findByDeepPathMoreProperties() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
-        var user = new SystemUser();
+		var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
-        var assignment = new SystemRoleAssignment();
+		var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
@@ -204,7 +204,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void countBy() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("john");
 		em.persist(role);
 		em.flush();
@@ -219,16 +219,16 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	@Test
 	void findAllByName() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("value2");
 		em.persist(role);
-        var role2 = new SystemRole();
+		var role2 = new SystemRole();
 		role2.setName("value1");
 		em.persist(role2);
 		em.flush();
 		em.clear();
 
-        var roles = roleRepository.findAllBy("name", "value1");
+		var roles = roleRepository.findAllBy("name", "value1");
 		Assertions.assertNotNull(roles);
 		Assertions.assertEquals(1, roles.size());
 		Assertions.assertEquals("value1", roles.get(0).getName());
@@ -247,7 +247,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	@Test
 	void findByNameExpected() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("name");
 		em.persist(role);
 		em.flush();
@@ -263,12 +263,13 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	 */
 	@Test
 	void findByNameExpectedError() {
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> roleRepository.findByNameExpected("any"));
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class,
+				() -> roleRepository.findByNameExpected("any"));
 	}
 
 	@Test
 	void deleteAllNoFetch() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertTrue(repository.deleteAllNoFetch() > 2);
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
@@ -280,7 +281,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteAllIdentifiers() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		final List<Integer> list = new ArrayList<>();
 		list.add(systemDialect.getId());
@@ -294,7 +295,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteAllBy() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId()));
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
@@ -305,7 +306,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteAllByMoreProperties() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertEquals(0,
 				repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" }, "some"));
@@ -318,7 +319,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		em.clear();
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
 		em.flush();
@@ -331,14 +332,14 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteAllByDeepPathMoreProperties() {
-        var role = new SystemRole();
+		var role = new SystemRole();
 		role.setName("role");
 		em.persist(role);
-        var user = new SystemUser();
+		var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
 		em.persist(user);
 
-        var assignment = new SystemRoleAssignment();
+		var assignment = new SystemRoleAssignment();
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
@@ -377,7 +378,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteAllIdentifiersEmpty() {
-        var size = repository.findAll().size();
+		var size = repository.findAll().size();
 		Assertions.assertEquals(0, repository.deleteAll(new ArrayList<Integer>()));
 		Assertions.assertEquals(size, repository.findAll().size());
 		em.flush();
@@ -387,7 +388,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteAllIdentifiersNull() {
-        var size = repository.findAll().size();
+		var size = repository.findAll().size();
 		Assertions.assertEquals(0, repository.deleteAll((Collection<Integer>) null));
 		Assertions.assertEquals(size, repository.findAll().size());
 		em.flush();
@@ -397,7 +398,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteExpected() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		repository.deleteById(systemDialect.getId());
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
@@ -412,7 +413,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteNoFetch() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
@@ -422,15 +423,15 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteNoFetchError() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		repository.deleteNoFetch(systemDialect.getId());
-		Assertions.assertThrows(JpaObjectRetrievalFailureException.class,
-				() -> repository.deleteNoFetch(systemDialect.getId()));
+		final var id = systemDialect.getId();
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.deleteNoFetch(id));
 	}
 
 	@Test
 	void existExpected() {
-        var systemDialect = repository.findAll().get(1);
+		var systemDialect = repository.findAll().get(1);
 		repository.existExpected(systemDialect.getId());
 	}
 

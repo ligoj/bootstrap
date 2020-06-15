@@ -36,7 +36,8 @@ class ResourceScannerTest {
 			}
 
 		};
-		Assertions.assertThrows(IllegalStateException.class, () -> scanner.scan(newScanEnvironment(), null, null));
+		final var scan = newScanEnvironment();
+		Assertions.assertThrows(IllegalStateException.class, () -> scanner.scan(scan, null, null));
 	}
 
 	/**
@@ -51,11 +52,12 @@ class ResourceScannerTest {
 			}
 
 		};
-		Assertions.assertThrows(IllegalStateException.class, () -> scanner.scan(newScanEnvironment(), null, null));
+		final var scan = newScanEnvironment();
+		Assertions.assertThrows(IllegalStateException.class, () -> scanner.scan(scan, null, null));
 	}
 
 	private ScanEnvironment newScanEnvironment() {
-        var environment = Mockito.mock(ScanEnvironment.class);
+		var environment = Mockito.mock(ScanEnvironment.class);
 		List<URL> nonRootUrls = new ArrayList<>();
 		Mockito.when(environment.getNonRootUrls()).thenReturn(nonRootUrls);
 		return environment;
@@ -103,7 +105,7 @@ class ResourceScannerTest {
 	@Test
 	void testFilesInJarIoException2() {
 		final var scanner = new ResourceScanner();
-        var scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
+		var scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
 				Mockito.mock(ScanParameters.class));
 		Assertions.assertNotNull(scan);
 	}

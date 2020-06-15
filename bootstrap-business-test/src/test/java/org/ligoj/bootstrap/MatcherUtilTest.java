@@ -25,8 +25,7 @@ import org.opentest4j.AssertionFailedError;
  * Test class of {@link MatcherUtil}
  */
 class MatcherUtilTest {
-	
-	
+
 	@Test
 	void coverage() {
 		new MatcherUtil().toString();
@@ -41,14 +40,22 @@ class MatcherUtilTest {
 		Mockito.when(path.toString()).thenReturn("any");
 		violations.add(violation);
 		final var violationException = new ConstraintViolationException(violations);
-		Assertions.assertEquals("expected: <firstName> but was: <[any]>", Assertions.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(violationException, "firstName", "message")).getMessage());
+		Assertions.assertEquals("expected: <firstName> but was: <[any]>",
+				Assertions
+						.assertThrows(AssertionFailedError.class,
+								() -> MatcherUtil.assertThrows(violationException, "firstName", "message"))
+						.getMessage());
 	}
 
 	@Test
 	void assertThrowsNoField() {
 		final Set<ConstraintViolation<?>> violations = new HashSet<>();
 		final var violationException = new ConstraintViolationException(violations);
-		Assertions.assertEquals("expected: <firstName> but was: <[]>", Assertions.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(violationException, "firstName", "message")).getMessage());
+		Assertions.assertEquals("expected: <firstName> but was: <[]>",
+				Assertions
+						.assertThrows(AssertionFailedError.class,
+								() -> MatcherUtil.assertThrows(violationException, "firstName", "message"))
+						.getMessage());
 	}
 
 	@Test
@@ -90,7 +97,11 @@ class MatcherUtilTest {
 		violations.add(violation);
 
 		final var violationException = new ConstraintViolationException(violations);
-		Assertions.assertEquals("expected: <message> but was: <any>", Assertions.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(violationException, "firstName", "message")).getMessage());
+		Assertions.assertEquals("expected: <message> but was: <any>",
+				Assertions
+						.assertThrows(AssertionFailedError.class,
+								() -> MatcherUtil.assertThrows(violationException, "firstName", "message"))
+						.getMessage());
 	}
 
 	@Test
@@ -112,7 +123,11 @@ class MatcherUtilTest {
 		error.put("rule", "any");
 		errors.add(error);
 		violationException.getErrors().put("firstName", errors);
-		Assertions.assertEquals("expected: <message> but was: <any>", Assertions.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(violationException, "firstName", "message")).getMessage());
+		Assertions.assertEquals("expected: <message> but was: <any>",
+				Assertions
+						.assertThrows(AssertionFailedError.class,
+								() -> MatcherUtil.assertThrows(violationException, "firstName", "message"))
+						.getMessage());
 	}
 
 	@Test
@@ -123,11 +138,19 @@ class MatcherUtilTest {
 		error.put("rule", "any");
 		errors.add(error);
 		violationException.getErrors().put("any", errors);
-		Assertions.assertEquals("expected: <firstName> but was: <[any]>", Assertions.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(violationException, "firstName", "message")).getMessage());
+		Assertions.assertEquals("expected: <firstName> but was: <[any]>",
+				Assertions
+						.assertThrows(AssertionFailedError.class,
+								() -> MatcherUtil.assertThrows(violationException, "firstName", "message"))
+						.getMessage());
 	}
 
 	@Test
 	void assertThrowsValidationNoField() {
-		Assertions.assertEquals("expected: <any> but was: <[]>", Assertions.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(new ValidationJsonException(), "any", "message")).getMessage());
+		final var ex = new ValidationJsonException();
+		Assertions.assertEquals("expected: <any> but was: <[]>",
+				Assertions
+						.assertThrows(AssertionFailedError.class, () -> MatcherUtil.assertThrows(ex, "any", "message"))
+						.getMessage());
 	}
 }
