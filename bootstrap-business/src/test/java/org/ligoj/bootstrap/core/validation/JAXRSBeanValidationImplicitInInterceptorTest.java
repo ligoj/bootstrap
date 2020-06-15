@@ -50,84 +50,84 @@ class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 		/**
 		 * @param param Simple String.
 		 */
-		void simple(final String param) {
+		public void simple(final String param) {
 			//
 		}
 
 		/**
 		 * @param param Named query parameter.
 		 */
-		void queryObject(final @QueryParam("some") Object param) {
+		public void queryObject(final @QueryParam("some") Object param) {
 			//
 		}
 
 		/**
 		 * @param param Generic parameter.
 		 */
-		void object(final Object param) {
+		public void object(final Object param) {
 			//
 		}
 
 		/**
 		 * @param param Multipart parameter.
 		 */
-		void multipart(@Multipart final Object param) {
+		public void multipart(@Multipart final Object param) {
 			//
 		}
 
 		/**
 		 * @param params Object array parameter.
 		 */
-		void array(final Object[] params) {
+		public void array(final Object[] params) {
 			//
 		}
 
 		/**
 		 * @param params Object collection parameter.
 		 */
-		void collection(final Collection<Object> params) {
+		public void collection(final Collection<Object> params) {
 			//
 		}
 
 		/**
 		 * @param param Path parameter.
 		 */
-		void excluded(final @PathParam("p") Object param) {
+		public void excluded(final @PathParam("p") Object param) {
 			//
 		}
 
 		/**
 		 * @param param Simple not null String parameter.
 		 */
-		void jsr349Simple(final @NotNull String param) {
+		public void jsr349Simple(final @NotNull String param) {
 			//
 		}
 
 		/**
 		 * @param param Simple optional String parameter.
 		 */
-		void jsr349NullableObject(final @Nullable Object param) {
+		public void jsr349NullableObject(final @Nullable Object param) {
 			//
 		}
 
 		/**
 		 * @param param Simple not null path parameter parameter.
 		 */
-		void jsr349Object(final @NotNull @PathParam("p") Object param) {
+		public void jsr349Object(final @NotNull @PathParam("p") Object param) {
 			//
 		}
 
 		/**
 		 * @param params Collection parameter with several constraints.
 		 */
-		void jsr349Collection(final @NotEmpty @Size(max = 2) Collection<Object> params) {
+		public void jsr349Collection(final @NotEmpty @Size(max = 2) Collection<Object> params) {
 			//
 		}
 
 		/**
 		 * @param context Security context.
 		 */
-		void jsr349Context(final @Context SecurityContext context) {
+		public void jsr349Context(final @Context SecurityContext context) {
 			//
 		}
 

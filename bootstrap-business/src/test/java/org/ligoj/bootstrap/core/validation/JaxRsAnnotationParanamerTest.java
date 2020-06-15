@@ -35,7 +35,7 @@ class JaxRsAnnotationParanamerTest {
 		 * @param n A JSR-303 constraint parameter.
 		 * @param i1 Named (CDI) parameter.
 		 */
-		void test(final @PathParam("p") String p1, final @HeaderParam("h") String h1, final @FormParam("f") String f1,
+		public void test(final @PathParam("p") String p1, final @HeaderParam("h") String h1, final @FormParam("f") String f1,
 				final @CookieParam("c") String c1, @QueryParam("q") String q1, @NotNull String n, @Named("i") String i1) {
 			//
 		}
