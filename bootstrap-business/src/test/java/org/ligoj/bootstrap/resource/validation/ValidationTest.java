@@ -45,7 +45,7 @@ class ValidationTest extends AbstractBootTest {
 
 	@Test
 	void testPerformance() {
-        var newWine = newWine();
+		var newWine = newWine();
 		Assertions.assertTimeout(Duration.ofSeconds(7), () -> {
 			for (var i = 10000; i-- > 0;) {
 				validator.validateCheck(newWine);
@@ -55,7 +55,8 @@ class ValidationTest extends AbstractBootTest {
 
 	@Test
 	void testEmptyBean() {
-		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(new Wine()));
+		final var wine = newWine();
+		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(wine));
 	}
 
 	@Test

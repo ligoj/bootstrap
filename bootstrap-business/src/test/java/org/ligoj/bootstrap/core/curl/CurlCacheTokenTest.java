@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.curl;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -31,11 +32,13 @@ class CurlCacheTokenTest {
 	@Test
 	void getTokenCacheFailed() {
 		final var sync = new Object();
-        var counter = new AtomicInteger();
-		Assertions.assertThrows(ValidationJsonException.class, () -> Assertions.assertEquals("", cacheToken.getTokenCache(sync, "key", k -> {
+		var counter = new AtomicInteger();
+		final UnaryOperator<String> function = k -> {
 			counter.incrementAndGet();
 			return null;
-		}, 2, ValidationJsonException::new)));
+		};
+		Assertions.assertThrows(ValidationJsonException.class,
+				() -> cacheToken.getTokenCache(sync, "key", function, 2, ValidationJsonException::new));
 		Assertions.assertEquals(2, counter.get());
 		Assertions.assertEquals("ok", cacheToken.getTokenCache(sync, "key", k -> {
 			if (counter.incrementAndGet() == 4) {
@@ -49,7 +52,7 @@ class CurlCacheTokenTest {
 	@Test
 	void getTokenCache() {
 		final var sync = new Object();
-        var counter = new AtomicInteger();
+		var counter = new AtomicInteger();
 		Assertions.assertEquals("ok", cacheToken.getTokenCache(sync, "key", k -> {
 			if (counter.incrementAndGet() == 2) {
 				return "ok";

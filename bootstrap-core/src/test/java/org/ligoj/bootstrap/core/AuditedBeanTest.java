@@ -16,13 +16,13 @@ import org.ligoj.bootstrap.core.model.Auditable;
  * {@link AuditedBean}, {@link AbstractAudited},
  * {@link AbstractNamedAuditedEntity} test class.
  */
-public class AuditedBeanTest {
+class AuditedBeanTest {
 
 	/**
 	 * Test {@link AuditedBean#copyAuditData(Auditable, Auditable)}
 	 */
 	@Test
-	public void testCopyAuditData() {
+	void testCopyAuditData() {
 		final var from = newAuditable();
 		final AbstractNamedAuditedEntity<Integer> to = new AbstractNamedAuditedEntity<>() {
 
@@ -45,7 +45,7 @@ public class AuditedBeanTest {
 	 * Test {@link AuditedBean#copyAuditData(Auditable, Auditable)}
 	 */
 	@Test
-	public void testToString() {
+	void testToString() {
 		final var auditedBean = new AuditedBean<Serializable, Serializable>();
 		auditedBean.setId(0);
 		Assertions.assertEquals("AuditedBean(id=0)", auditedBean.toString());
@@ -56,7 +56,7 @@ public class AuditedBeanTest {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testCopyAuditDataFromNull() {
+	void testCopyAuditDataFromNull() {
 		final Auditable<String, ?, Date> to = newAuditable();
 		AuditedBean.copyAuditData(null, (Auditable) to);
 		assertData(to);
@@ -66,7 +66,7 @@ public class AuditedBeanTest {
 	 * Test {@link AuditedBean#copyAuditData(Auditable)}
 	 */
 	@Test
-	public void testCopyAuditDataInstanceFromNull() {
+	void testCopyAuditDataInstanceFromNull() {
 		final var audited = newAuditedVo();
 		audited.copyAuditData(null);
 		assertData(audited);
@@ -77,7 +77,7 @@ public class AuditedBeanTest {
 	 * {@link AuditedBean#getLastModifiedDate()}
 	 */
 	@Test
-	public void testGetDateNull() {
+	void testGetDateNull() {
 		final Auditable<String, Integer, Date> from = new AbstractAudited<>() {
 			// Nothing
 		};
@@ -91,7 +91,7 @@ public class AuditedBeanTest {
 	 * Test {@link AuditedBean#copyAuditData(Auditable)}
 	 */
 	@Test
-	public void testCopyAuditDataInstance() {
+	void testCopyAuditDataInstance() {
 		final var from = newAuditable();
 		final var audited = new AuditedBean<String, Integer>();
 		audited.copyAuditData(from);
