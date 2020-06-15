@@ -19,7 +19,7 @@ class BeanProcessorTest {
 	 * Simple test of a valid property.
 	 */
 	@Test
-    void getValue() {
+	void getValue() {
 		final Deque<Object> contextData = new LinkedList<>();
 		final var systemUser = new SystemUser();
 		systemUser.setLogin("any");
@@ -31,7 +31,7 @@ class BeanProcessorTest {
 	 * Simple test of a <code>null</code> valid property.
 	 */
 	@Test
-    void getValueNull() {
+	void getValueNull() {
 		Assertions.assertNull(new BeanProcessor<>(SystemUser.class, "login").getValue((SystemUser) null));
 	}
 
@@ -39,7 +39,7 @@ class BeanProcessorTest {
 	 * Simple test of a invalid property name.
 	 */
 	@Test
-    void getValueInvalidProperty() {
+	void getValueInvalidProperty() {
 		Assertions.assertThrows(IllegalStateException.class, () -> new BeanProcessor<>(SystemUser.class, "_any"));
 	}
 
@@ -47,9 +47,10 @@ class BeanProcessorTest {
 	 * Simple test of non compatible object.
 	 */
 	@Test
-    void getValueInvalidBean() {
+	void getValueInvalidBean() {
 		final Deque<Object> contextData = new LinkedList<>();
 		contextData.add(3);
-		Assertions.assertThrows(IllegalStateException.class, () -> new BeanProcessor<>(SystemUser.class, "login").getValue(contextData));
+		final var processor = new BeanProcessor<>(SystemUser.class, "login");
+		Assertions.assertThrows(IllegalStateException.class, () -> processor.getValue(contextData));
 	}
 }
