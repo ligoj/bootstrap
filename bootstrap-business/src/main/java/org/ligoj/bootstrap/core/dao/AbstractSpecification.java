@@ -49,19 +49,15 @@ public abstract class AbstractSpecification {
 	/**
 	 * Return the ORM path from the given rule.
 	 *
-	 * @param root
-	 *            The {@link Root} used to resolved the path.
-	 * @param path
-	 *            The path value. Nested path is accepted.
-	 * @param <U>
-	 *            The entity type referenced by the {@link Root}
-	 * @param <T>
-	 *            The resolved entity type of the path value.
+	 * @param root The {@link Root} used to resolved the path.
+	 * @param path The path value. Nested path is accepted.
+	 * @param <U>  The entity type referenced by the {@link Root}
+	 * @param <T>  The resolved entity type of the path value.
 	 * @return The resolved {@link Path} from the root.
 	 */
 	@SuppressWarnings("unchecked")
 	protected <U, T> Path<T> getOrmPath(final Root<U> root, final String path) {
-        var currentPath = (PathImplementor<?>) root;
+		var currentPath = (PathImplementor<?>) root;
 		for (final var pathFragment : path.split(DELIMITERS)) {
 			currentPath = getNextPath(pathFragment, (From<?, ?>) currentPath);
 		}
@@ -76,7 +72,7 @@ public abstract class AbstractSpecification {
 
 	@SuppressWarnings("unchecked")
 	private <X> PathImplementor<X> getNextPath(final String pathFragment, final From<?, ?> from) {
-        var currentPath = (PathImplementor<?>) from.get(pathFragment);
+		var currentPath = (PathImplementor<?>) from.get(pathFragment);
 		fixAlias(from, aliasCounter);
 
 		// Handle join. Does not manage many-to-many
@@ -93,15 +89,11 @@ public abstract class AbstractSpecification {
 	/**
 	 * Retrieve an existing join within the ones within the given root and that match to given attribute.
 	 *
-	 * @param from
-	 *            the from source element.
-	 * @param attribute
-	 *            the attribute to join
+	 * @param from      the from source element.
+	 * @param attribute the attribute to join
 	 * @return The join/fetch path if it exists.
-	 * @param <U>
-	 *            The source type of the {@link Join}
-	 * @param <T>
-	 *            The resolved entity type of the path value.
+	 * @param <U> The source type of the {@link Join}
+	 * @param <T> The resolved entity type of the path value.
 	 */
 	@SuppressWarnings("unchecked")
 	protected <U, T> PathImplementor<T> getJoinPath(final From<?, U> from, final Attribute<?, ?> attribute) {
@@ -125,13 +117,10 @@ public abstract class AbstractSpecification {
 	/**
 	 * Return the raw data into the right type. Generic type is also handled.
 	 *
-	 * @param data
-	 *            the data as String.
-	 * @param expression
-	 *            the target expression.
+	 * @param data       the data as String.
+	 * @param expression the target expression.
 	 * @return the data typed as much as possible to the target expression.
-	 * @param <Y>
-	 *            The type of the {@link Expression}
+	 * @param <Y> The type of the {@link Expression}
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected static <Y> Y toRawData(final String data, final Expression<Y> expression) {
@@ -142,19 +131,19 @@ public abstract class AbstractSpecification {
 		final var expressionType = (Class<?>) GenericTypeReflector.getExactFieldType(field, entity);
 
 		// Bind the data to the correct type
-		final Y result;
+		final Object result;
 		if (expressionType == Date.class) {
 			// For Date, only milliseconds are managed
-			result = (Y) new Date(Long.parseLong(data));
+			result = new Date(Long.parseLong(data));
 		} else if (expressionType.isEnum()) {
 			// Manage Enum type
-			result = (Y) toEnum(data, (Expression<Enum>) expression);
+			result = toEnum(data, (Expression<Enum>) expression);
 		} else {
 			// Involve bean utils to convert the data
-			result = (Y) CONVERTER.convertType(data, expressionType);
+			result = CONVERTER.convertType(data, expressionType);
 		}
 
-		return result;
+		return (Y) result;
 	}
 
 	/**

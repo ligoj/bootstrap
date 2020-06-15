@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DummyBusinessEntity extends AbstractBusinessEntity<String> {
+class DummyBusinessEntity extends AbstractBusinessEntity<String> {
 
 	// Nothing
 

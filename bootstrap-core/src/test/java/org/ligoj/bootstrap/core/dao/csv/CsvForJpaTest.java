@@ -182,20 +182,20 @@ class CsvForJpaTest {
 
 	@Test
 	void toJpaUnknownProperty() {
-		Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("blah\n4\n"), true));
+		final var str = new StringReader("blah\n4\n");
+		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity.class, str, true));
 	}
 
 	@Test
 	void toJpaInvalidTrailing() {
-		Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("'8' \t7\n"), false));
+		final var str = new StringReader("'8' \t7\n");
+		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity.class, str, false));
 	}
 
 	@Test
 	void toJpaTooMuchValues() {
-		Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("id\n4;1\n"), true));
+		final var str = new StringReader("id\n4;1\n");
+		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity.class, str, true));
 	}
 
 	@Test
@@ -343,8 +343,8 @@ class CsvForJpaTest {
 
 	@Test
 	void toJpaUnknownClass() {
-		Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(Integer.class, new StringReader("n\n1\n"), true));
+		final var str = new StringReader("n\n1\n");
+		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(Integer.class, str, true));
 	}
 
 	@Test
@@ -388,8 +388,8 @@ class CsvForJpaTest {
 
 	@Test
 	void toJpaMissingValues() {
-		Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(DummyEntity.class, new StringReader("4;3.5;5;5;5;5;5;5;5;5;5;5\n"), false));
+		final var str = new StringReader("4;3.5;5;5;5;5;5;5;5;5;5;5\n");
+		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity.class, str, false));
 	}
 
 	@Test
@@ -446,8 +446,9 @@ class CsvForJpaTest {
 
 	@Test
 	void toJpaForeignKeyNotExist1() {
+		final var str = new StringReader("link.id!\n8000");
 		final var iau = Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id!\n8000"), true));
+				() -> csvForJpa.toJpa(DummyEntity2.class, str, true));
 		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = 8000", iau.getCause().getMessage());
 	}
 
@@ -465,8 +466,8 @@ class CsvForJpaTest {
 
 	@Test
 	void toJpaEnumInvalid() {
-		Assertions.assertThrows(TechnicalException.class,
-				() -> csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialEnum\n_ERROR_"), true));
+		final var str = new StringReader("dialEnum\n_ERROR_");
+		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity2.class, str, true));
 	}
 
 	@Test
@@ -483,39 +484,33 @@ class CsvForJpaTest {
 
 	@Test
 	void toJpaForeignKeyNaturalNotExist() {
+		final var str = new StringReader("user.login\nnobody");
 		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = nobody",
-				Assertions
-						.assertThrows(TechnicalException.class,
-								() -> csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login\nnobody"), true))
+				Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity2.class, str, true))
 						.getCause().getMessage());
 	}
 
 	@Test
 	void toJpaForeignKeyNaturalNotExist2() {
-		Assertions
-				.assertEquals("Missing foreign key DummyEntity2#user.login = nobody",
-						Assertions
-								.assertThrows(TechnicalException.class,
-										() -> csvForJpa.toJpa(DummyEntity2.class,
-												new StringReader("user.login!\nnobody"), true))
-								.getCause().getMessage());
+		final var str = new StringReader("user.login!\nnobody");
+		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = nobody",
+				Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity2.class, str, true))
+						.getCause().getMessage());
 	}
 
 	@Test
 	void toJpaForeignKeyNotExist2() {
+		final var str = new StringReader("link.id\n8000");
 		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = 8000",
-				Assertions
-						.assertThrows(TechnicalException.class,
-								() -> csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n8000"), true))
+				Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity2.class, str, true))
 						.getCause().getMessage());
 	}
 
 	@Test
 	void toJpaForeignKeyNotExist3() {
+		final var str = new StringReader("link.id\n-8000");
 		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = -8000",
-				Assertions
-						.assertThrows(TechnicalException.class,
-								() -> csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id\n-8000"), true))
+				Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity2.class, str, true))
 						.getCause().getMessage());
 	}
 

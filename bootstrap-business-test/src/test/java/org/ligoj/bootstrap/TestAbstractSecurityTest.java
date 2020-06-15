@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test of {@link AbstractSecurityTest}
  */
-public class TestAbstractSecurityTest extends AbstractSecurityTest {
+class TestAbstractSecurityTest extends AbstractSecurityTest {
 
 	@Test
 	void testGetJaxRsSecurityContext() {
