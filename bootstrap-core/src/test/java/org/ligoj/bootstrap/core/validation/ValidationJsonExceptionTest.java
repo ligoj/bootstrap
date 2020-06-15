@@ -239,13 +239,15 @@ class ValidationJsonExceptionTest {
 
 	@Test
 	void assertTrueErrorObject() {
-		Assertions.assertEquals("{value=[{rule=y, parameters={param1=value1, param2=NAME}}]}", Assertions.assertThrows(
-				ValidationJsonException.class,
-				() -> ValidationJsonException.assertTrue(false, "y", "param1", "value1", "param2", new Object() {
-					public String toString() {
-						return "NAME";
-					}
-				})).getErrors().toString());
+		final var object = new Object() {
+			public String toString() {
+				return "NAME";
+			}
+		};
+		Assertions.assertEquals("{value=[{rule=y, parameters={param1=value1, param2=NAME}}]}",
+				Assertions.assertThrows(ValidationJsonException.class,
+						() -> ValidationJsonException.assertTrue(false, "y", "param1", "value1", "param2", object))
+						.getErrors().toString());
 	}
 
 	@Test
