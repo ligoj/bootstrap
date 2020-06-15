@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of bean.
  */
-public class BeanTest {
+class BeanTest {
 
 	@Test
 	void beans() throws ReflectiveOperationException {

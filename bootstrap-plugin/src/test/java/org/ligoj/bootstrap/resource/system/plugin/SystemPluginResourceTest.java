@@ -263,23 +263,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertEquals(0, mockCentral("search.json").autoUpdate());
 	}
 
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	@Test
 	void refreshPluginsAutoInstall() throws Exception {
 		configuration.put("ligoj.plugin.install", "plugin-sample");
@@ -289,6 +272,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			public int autoUpdate() {
 				return 0;
 			}
+
 			@Override
 			public int autoInstall(Set<String> plugins) {
 				Assertions.assertEquals("plugin-sample", plugins.iterator().next());
@@ -303,7 +287,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		resource.refreshPlugins(null);
 
-		//1 install, restart needed
+		// 1 install, restart needed
 		Assertions.assertTrue(check.get());
 	}
 
@@ -316,6 +300,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			public int autoUpdate() {
 				return 0;
 			}
+
 			@Override
 			public int autoInstall(Set<String> plugins) {
 				Assertions.assertEquals("plugin-foo", plugins.iterator().next());
@@ -333,7 +318,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		// No update, no restart needed
 		Assertions.assertFalse(check.get());
 	}
-
 
 	@Test
 	void autoInstallNoPlugin() throws IOException {
@@ -610,7 +594,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void manifestData() {
-		Assertions.assertTrue(Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+(\\.\\d+\\..*)?$"));
+		Assertions.assertTrue(
+				Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+(\\.\\d+\\..*)?$"));
 		Assertions.assertEquals("java.base", Integer.class.getModule().getName());
 	}
 
@@ -765,9 +750,11 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	void configurePluginEntityNotFound() {
-		Assertions.assertThrows(TechnicalException.class, () -> new SystemPluginResource()
-				.configurePluginEntity(Arrays.stream(new URL[] { new URL("file://tmp") }), SystemUser.class, "---"));
+	void configurePluginEntityNotFound() throws MalformedURLException {
+		final var resource = new SystemPluginResource();
+		final var urls = Arrays.stream(new URL[] { new URL("file://tmp") });
+		Assertions.assertThrows(TechnicalException.class,
+				() -> resource.configurePluginEntity(urls, SystemUser.class, "---"));
 	}
 
 	@Test
@@ -813,16 +800,15 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void installNotExists() {
-		Assertions.assertThrows(ValidationJsonException.class,
-				() -> newPluginResourceInstall().install("any", "central"));
+		final var resource = newPluginResourceInstall();
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.install("any", "central"));
 	}
 
 	@Test
 	void installNotExistsVersion() {
-		MatcherUtil.assertThrows(
-				Assertions.assertThrows(ValidationJsonException.class,
-						() -> newPluginResourceInstall().install("any", "dummy", "central")),
-				"artifact", "cannot-be-installed");
+		final var resource = newPluginResourceInstall();
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class,
+				() -> resource.install("any", "dummy", "central")), "artifact", "cannot-be-installed");
 	}
 
 	@Test
