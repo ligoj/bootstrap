@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Path("/test/validation")
 @Produces(MediaType.APPLICATION_JSON)
 @Service
-public class ValidationTestResource {
+class ValidationTestResource {
 	/**
 	 * Simple POST validation.
 	 * 
@@ -28,7 +28,7 @@ public class ValidationTestResource {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public int create(final Wine entity) {
+	int create(final Wine entity) {
 		return entity.getId();
 	}
 

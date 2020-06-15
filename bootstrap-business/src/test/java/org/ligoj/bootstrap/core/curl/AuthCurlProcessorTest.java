@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link AuthCurlProcessor}
  */
-public class AuthCurlProcessorTest {
+class AuthCurlProcessorTest {
 
 	/**
 	 * Process with provided and not empty credentials.

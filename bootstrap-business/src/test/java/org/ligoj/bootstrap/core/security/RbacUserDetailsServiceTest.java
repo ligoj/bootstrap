@@ -21,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * {@link RbacUserDetailsService} test class.
  */
 @ExtendWith(SpringExtension.class)
-public class RbacUserDetailsServiceTest extends AbstractBootTest {
+class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@Autowired
 	private RbacUserDetailsService userDetailsService;

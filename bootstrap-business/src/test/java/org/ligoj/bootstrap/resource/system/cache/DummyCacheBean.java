@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * Test bean for JSR-107 tests
  */
 @Component
-public class DummyCacheBean {
+class DummyCacheBean {
 
 	static int hit = 0;
 
@@ -26,7 +26,7 @@ public class DummyCacheBean {
 	 * @return the last #hit counter known by the cache.
 	 */
 	@CacheResult(cacheName = "test-cache")
-	public int getHit(@CacheKey final String entry) {
+	int getHit(@CacheKey final String entry) {
 		return ++hit;
 	}
 
@@ -45,7 +45,7 @@ public class DummyCacheBean {
 	 * @return the last #hit counter known by the cache.
 	 */
 	@CacheResult(cacheName = "test-cache-1")
-	public int getHit1(@CacheKey final String entry) {
+	int getHit1(@CacheKey final String entry) {
 		return ++hit;
 	}
 
@@ -64,7 +64,7 @@ public class DummyCacheBean {
 	 * @return the last #hit counter known by the cache.
 	 */
 	@CacheResult(cacheName = "test-cache-2")
-	public int getHit2(@CacheKey final String entry) {
+	int getHit2(@CacheKey final String entry) {
 		return ++hit;
 	}
 

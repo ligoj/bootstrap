@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link UserSettingResource}
  */
 @ExtendWith(SpringExtension.class)
-public class UserSettingResourceTest extends AbstractBootTest {
+class UserSettingResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private UserSettingResource resource;

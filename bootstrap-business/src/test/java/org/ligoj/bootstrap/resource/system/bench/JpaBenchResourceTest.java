@@ -23,7 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link JpaBenchResource}.
  */
 @ExtendWith(SpringExtension.class)
-public class JpaBenchResourceTest extends AbstractBootTest {
+class JpaBenchResourceTest extends AbstractBootTest {
 
 	/**
 	 * Bench resource for performance.

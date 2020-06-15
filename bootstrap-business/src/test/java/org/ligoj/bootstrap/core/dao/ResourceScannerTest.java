@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 /**
  * Test for {@link ResourceScanner}
  */
-public class ResourceScannerTest {
+class ResourceScannerTest {
 
 	/**
 	 * Simulate {@link IOException} for {@link ResourceScanner#getJarUrl(URL)}

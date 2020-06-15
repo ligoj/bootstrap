@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link SystemRoleRepository}
  */
 @ExtendWith(SpringExtension.class)
-public class RoleDaoTest extends AbstractBootTest {
+class RoleDaoTest extends AbstractBootTest {
 
 	/**
 	 * Factory DAO.

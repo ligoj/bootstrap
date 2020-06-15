@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link OnlyRedirectHttpResponseCallback}
  */
-public class OnlyRedirectHttpResponseCallbackTest {
+class OnlyRedirectHttpResponseCallbackTest {
 
 	@Test
 	void testLocation() {

@@ -66,7 +66,7 @@ class MapperTest extends AbstractMapper {
 		private String dummy;
 
 		@SuppressWarnings("unused")
-		public String getDummy() throws IOException {
+		String getDummy() throws IOException {
 			throw new IOException(dummy);
 		}
 

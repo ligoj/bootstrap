@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Wne entity.
+ * Wine entity.
  */
 @Entity
 @Table(name = "DEMO_WINE")

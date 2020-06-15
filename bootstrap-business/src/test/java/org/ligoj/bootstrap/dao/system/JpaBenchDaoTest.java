@@ -17,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * JPA bench test.
  */
 @ExtendWith(SpringExtension.class)
-public class JpaBenchDaoTest extends AbstractBootTest {
+class JpaBenchDaoTest extends AbstractBootTest {
 
 	/**
 	 * JPA DAO provider for performance.

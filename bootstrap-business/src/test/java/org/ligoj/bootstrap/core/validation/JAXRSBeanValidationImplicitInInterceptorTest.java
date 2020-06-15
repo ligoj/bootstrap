@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
  * {@link JAXRSBeanValidationImplicitInInterceptor} checks.
  */
 @ExtendWith(SpringExtension.class)
-public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
+class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 
 	@Autowired
 	private JAXRSBeanValidationImplicitInInterceptor validationInInterceptor;
@@ -50,7 +50,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Simple String.
 		 */
-		public void simple(final String param) {
+		void simple(final String param) {
 			//
 		}
 
@@ -58,7 +58,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Named query parameter.
 		 */
-		public void queryObject(final @QueryParam("some") Object param) {
+		void queryObject(final @QueryParam("some") Object param) {
 			//
 		}
 
@@ -66,7 +66,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Generic parameter.
 		 */
-		public void object(final Object param) {
+		void object(final Object param) {
 			//
 		}
 
@@ -74,7 +74,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Multipart parameter.
 		 */
-		public void multipart(@Multipart final Object param) {
+		void multipart(@Multipart final Object param) {
 			//
 		}
 
@@ -82,7 +82,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param params
 		 *            Object array parameter.
 		 */
-		public void array(final Object[] params) {
+		void array(final Object[] params) {
 			//
 		}
 
@@ -90,7 +90,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param params
 		 *            Object collection parameter.
 		 */
-		public void collection(final Collection<Object> params) {
+		void collection(final Collection<Object> params) {
 			//
 		}
 
@@ -98,7 +98,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Path parameter.
 		 */
-		public void excluded(final @PathParam("p") Object param) {
+		void excluded(final @PathParam("p") Object param) {
 			//
 		}
 
@@ -106,7 +106,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Simple not null String parameter.
 		 */
-		public void jsr349Simple(final @NotNull String param) {
+		void jsr349Simple(final @NotNull String param) {
 			//
 		}
 
@@ -114,7 +114,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Simple optional String parameter.
 		 */
-		public void jsr349NullableObject(final @Nullable Object param) {
+		void jsr349NullableObject(final @Nullable Object param) {
 			//
 		}
 
@@ -122,7 +122,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param param
 		 *            Simple not null path parameter parameter.
 		 */
-		public void jsr349Object(final @NotNull @PathParam("p") Object param) {
+		void jsr349Object(final @NotNull @PathParam("p") Object param) {
 			//
 		}
 
@@ -130,7 +130,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param params
 		 *            Collection parameter with several constraints.
 		 */
-		public void jsr349Collection(final @NotEmpty @Size(max = 2) Collection<Object> params) {
+		void jsr349Collection(final @NotEmpty @Size(max = 2) Collection<Object> params) {
 			//
 		}
 
@@ -138,7 +138,7 @@ public class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTe
 		 * @param context
 		 *            Security context.
 		 */
-		public void jsr349Context(final @Context SecurityContext context) {
+		void jsr349Context(final @Context SecurityContext context) {
 			//
 		}
 

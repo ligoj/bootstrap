@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link HeaderHttpResponseCallback}
  */
-public class HeaderHttpResponseCallbackTest {
+class HeaderHttpResponseCallbackTest {
 
 	@Test
 	void onResponseNoHeader() throws Exception {

@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.resource.system.bench;
 /**
  * Simple bean for JSon tests.
  */
-public class SimpleJsonBean {
+class SimpleJsonBean {
 
 	/**
 	 * Key.
@@ -23,7 +23,7 @@ public class SimpleJsonBean {
 	 * 
 	 * @return the {@link #key} value.
 	 */
-	public String getKey() {
+	String getKey() {
 		return key;
 	}
 
@@ -42,7 +42,7 @@ public class SimpleJsonBean {
 	 * 
 	 * @return the {@link #value} value.
 	 */
-	public Integer getValue() {
+	Integer getValue() {
 		return value;
 	}
 

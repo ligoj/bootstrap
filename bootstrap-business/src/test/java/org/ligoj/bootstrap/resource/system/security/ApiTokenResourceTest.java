@@ -22,7 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link ApiTokenResource}
  */
 @ExtendWith(SpringExtension.class)
-public class ApiTokenResourceTest extends AbstractBootTest {
+class ApiTokenResourceTest extends AbstractBootTest {
 
 	private static final String TOKEN = "BWo9iEky2tpPX7RPhovNy5SywYI2fmacfRnLhJSZtfhCclj7IdP0uDZdLzqhUKnBu5svgKbkZS4eeLQVgu5Li2aMTOt9Fr1dLF8zMt7SNiMYyWv6YCFIsEUmeDjswFlf";
 	private static final String TOKEN_CRYPT = "s0RscSFywiK2rU9L5bovd3nSVPx9HGP33IGIbWnhdxADs5MdzQS+ml6T84O2SdtGGexkocaug7He2SxPJhb4J3CRbvDRDuD5Qeq76MPA83x9hL4kZs/mNfW7BW1yV/iHNPXtbO4bURNbnZMPuA+sILYJmRIv2A5I9Vp5OiJy+QGzpE7uVM6wYg==";

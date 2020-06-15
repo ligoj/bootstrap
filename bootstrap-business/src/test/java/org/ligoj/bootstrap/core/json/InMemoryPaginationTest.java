@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * JSon pagination test of {@link InMemoryPagination}.
  */
 @ExtendWith(SpringExtension.class)
-public class InMemoryPaginationTest extends AbstractBootTest {
+class InMemoryPaginationTest extends AbstractBootTest {
 
 	private InMemoryPagination inMemoryPagination;
 

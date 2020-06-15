@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Test class of {@link AuthorizationResource}
  */
 @ExtendWith(SpringExtension.class)
-public class AuthorizationResourceTest extends AbstractBootTest {
+class AuthorizationResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private AuthorizationResource resource;

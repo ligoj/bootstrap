@@ -27,7 +27,7 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario;
 /**
  * Test class of {@link CurlProcessor}
  */
-public class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
+class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	/**
 	 * port used for proxy

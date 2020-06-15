@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * A simple collection wrapper in order to perform a performance test with Jackson and Jettison providers.
  */
-public class JsonBenchBean {
+class JsonBenchBean {
 
 	/**
 	 * Bean collection (some items for performance test)
@@ -20,7 +20,7 @@ public class JsonBenchBean {
 	 * 
 	 * @return the {@link #beans} value.
 	 */
-	public List<SimpleJsonBean> getBeans() {
+	List<SimpleJsonBean> getBeans() {
 		return beans;
 	}
 

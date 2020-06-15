@@ -13,7 +13,7 @@ import org.ligoj.bootstrap.core.DateUtils;
 /**
  * Test class of {@link LocalDateParamConverter}
  */
-public class LocalDateParamConverterTest extends AbstractDataGeneratorTest {
+class LocalDateParamConverterTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void fromStringNull() {

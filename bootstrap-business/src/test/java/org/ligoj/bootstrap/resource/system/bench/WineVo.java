@@ -19,7 +19,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class WineVo {
+class WineVo {
 
 	@Min(0)
 	private int id;

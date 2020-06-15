@@ -16,7 +16,7 @@ import org.springframework.data.jpa.repository.Query;
 /**
  * Wines , JDBC based DAO
  */
-public interface WineRepository extends RestRepository<Wine, Integer> {
+interface WineRepository extends RestRepository<Wine, Integer> {
 
 	/**
 	 * Return all {@link Wine} objects with the given name.
