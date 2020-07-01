@@ -55,7 +55,7 @@ class ValidationTest extends AbstractBootTest {
 
 	@Test
 	void testEmptyBean() {
-		final var wine = newWine();
+		final var wine = new Wine();
 		Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validateCheck(wine));
 	}
 
