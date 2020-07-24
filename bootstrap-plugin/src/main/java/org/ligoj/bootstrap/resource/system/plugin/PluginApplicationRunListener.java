@@ -49,45 +49,15 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 	}
 
 	@Override
-	public void starting() {
-		// Nothing to do
-	}
-
-	@Override
 	public int getOrder() {
 		// Be sure to be executed before EventPublishingRunListener
 		return -10;
 	}
 
 	@Override
-	public void environmentPrepared(final ConfigurableEnvironment environment) {
-		// Nothing to do
-	}
-
-	@Override
-	public void contextPrepared(final ConfigurableApplicationContext context) {
-		// Nothing to do
-	}
-
-	@Override
-	public void contextLoaded(final ConfigurableApplicationContext context) {
-		// Nothing to do
-	}
-
-	@Override
 	public void failed(ConfigurableApplicationContext context, Throwable exception) {
 		// Nothing to do
 		log.error("Context failed to start", exception);
-	}
-
-	@Override
-	public void running(ConfigurableApplicationContext context) {
-		// Nothing to do
-	}
-
-	@Override
-	public void started(ConfigurableApplicationContext context) {
-		// Nothing to do
 	}
 
 }
