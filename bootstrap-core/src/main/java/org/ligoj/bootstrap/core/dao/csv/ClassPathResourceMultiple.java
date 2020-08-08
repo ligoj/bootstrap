@@ -50,7 +50,7 @@ public class ClassPathResourceMultiple {
 	private void addCombinations(final String csvRoot, final Class<?> entityClass) {
 		final var name = entityClass.getSimpleName();
 		addCombination(csvRoot + "/" + name.toLowerCase(Locale.ENGLISH) + ".csv");
-		addCombination(csvRoot + "/" + StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(name), '-').toLowerCase(Locale.ENGLISH) + ".csv");
+		addCombination(csvRoot + "/" + String.join("-", StringUtils.splitByCharacterTypeCamelCase(name)).toLowerCase(Locale.ENGLISH) + ".csv");
 	}
 
 	/**

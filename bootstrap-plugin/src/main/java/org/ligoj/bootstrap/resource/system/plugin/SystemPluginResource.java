@@ -653,7 +653,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		for (final var entityClass : csvEntities) {
 			// Build the required CSV file
 			final var csv = "csv/"
-					+ StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(entityClass.getSimpleName()), '-')
+					+ String.join("-", StringUtils.splitByCharacterTypeCamelCase(entityClass.getSimpleName()))
 							.toLowerCase(Locale.ENGLISH)
 					+ ".csv";
 			configurePluginEntity(Collections.list(classLoader.getResources(csv)).stream(), entityClass,

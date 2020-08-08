@@ -84,7 +84,7 @@ public class ResourceScanner extends StandardScanner {
 		if ("jar".equals(ormUrl.getProtocol())) {
 			if (StringUtils.countMatches(ormUrl.getPath(), "!") > 1) {
 				// Cascaded JAR URL, remove only the last fragment
-				ormJarUrl = new URL(urlStr.substring(0, urlStr.lastIndexOf('!')));
+				ormJarUrl = new URL(StringUtils.substringBeforeLast(urlStr, "!"));
 			} else {
 				// Extract the jar containing this file
 				ormJarUrl = new URL("file", ormUrl.getHost(), ormUrl.getPath().substring("file:".length(), ormUrl.getPath().indexOf('!')));

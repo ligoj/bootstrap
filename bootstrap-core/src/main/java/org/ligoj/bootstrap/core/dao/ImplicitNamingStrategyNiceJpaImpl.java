@@ -63,7 +63,7 @@ public class ImplicitNamingStrategyNiceJpaImpl extends org.hibernate.boot.model.
 	 */
 	@Override
 	protected String transformAttributePath(final AttributePath attributePath) {
-		return StringUtils.lowerCase(StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attributePath.getProperty()), '_'));
+		return StringUtils.lowerCase(String.join("_", StringUtils.splitByCharacterTypeCamelCase(attributePath.getProperty())));
 	}
 
 	@Override
