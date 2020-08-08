@@ -41,6 +41,8 @@ import org.springframework.mock.web.DelegatingServletOutputStream;
  * Test class of {@link BackendProxyServlet}
  */
 class BackendProxyServletTest {
+	
+	private static final String MAX_THREADS = "10";
 
 	private BackendProxyServlet servlet;
 
@@ -184,7 +186,7 @@ class BackendProxyServletTest {
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
 		Mockito.when(servletConfig.getInitParameter("proxyToKey")).thenReturn("endpoint.rest");
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn(prefix);
-		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("6");
+		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn(MAX_THREADS);
 		servlet.init(servletConfig);
 	}
 
@@ -492,7 +494,7 @@ class BackendProxyServletTest {
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn("prefix");
-		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn("6");
+		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn(MAX_THREADS);
 		Assertions.assertThrows(UnavailableException.class, () -> servlet.init(servletConfig));
 	}
 
