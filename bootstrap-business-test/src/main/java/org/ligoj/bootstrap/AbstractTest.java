@@ -30,8 +30,8 @@ public class AbstractTest { // NOPMD NOSONAR
 	 * Initialize mocks of this class.
 	 */
 	@BeforeEach
-	public void injectMock() {
-		MockitoAnnotations.initMocks(this);
+	public void injectMock() throws Exception {
+		MockitoAnnotations.openMocks(this).close();
 	}
 
 	   /**
