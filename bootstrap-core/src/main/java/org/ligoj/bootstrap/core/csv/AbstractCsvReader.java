@@ -15,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -117,6 +118,11 @@ public abstract class AbstractCsvReader<T> {
 	 * Bean utility.
 	 */
 	protected final BeanUtil beanUtilsBean = BeanUtil.declared;
+
+	/**
+	 * Local {@link Field} cache.
+	 */
+	protected Map<Class<?>, Map<String, Field>> fields = new WeakHashMap<>();
 
 	/**
 	 * All fields constructor.
@@ -228,7 +234,7 @@ public abstract class AbstractCsvReader<T> {
 			}
 
 			// Read only data of mapped column
-			if (StringUtils.isNotBlank(property)) {
+			if (property.length() > 0) {
 
 				// Read the mapped column value
 				final var rawValue = values.get(index);
@@ -275,8 +281,6 @@ public abstract class AbstractCsvReader<T> {
 		throw new TechnicalException("Foreign key management is not supported in bean mode");
 	}
 
-	Map<Class<?>, Map<String, Field>> fields = new WeakHashMap<>();
-
 	/**
 	 * Return the field from the given class.
 	 *
@@ -285,7 +289,8 @@ public abstract class AbstractCsvReader<T> {
 	 * @return the {@link Field} of this property.
 	 */
 	protected Field getField(final Class<?> beanType, final String property) {
-		final var field = FieldUtils.getField(beanType, property, true);
+		final var field = fields.computeIfAbsent(beanType, c -> new HashMap<>()).computeIfAbsent(property,
+				p -> FieldUtils.getField(beanType, p, true));
 		if (field == null) {
 			throw new TechnicalException("Unknown property " + property + " in class " + beanType.getName());
 		}
