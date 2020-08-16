@@ -45,7 +45,7 @@
 		<junit.jupiter.version>5.6.2</junit.jupiter.version>
 
 		<apacheds.version>1.5.5</apacheds.version>
-		<aspectj.version>1.9.5</aspectj.version>
+		<aspectj.version>1.9.6</aspectj.version>
 		<byte-buddy.version>1.10.14</byte-buddy.version>
 		<cache.version>1.1.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
