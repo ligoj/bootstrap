@@ -87,7 +87,6 @@
 		<spring-data.version>2.3.3.RELEASE</spring-data.version>
 		<spring-security.version>5.3.4.RELEASE</spring-security.version>
 		<spring-security-rsa>1.0.8.RELEASE</spring-security-rsa>
-		<validation-api.version>2.0.1.Final</validation-api.version>
 		<wiremock.version>2.27.1</wiremock.version>
 	</properties>
 
@@ -412,11 +411,6 @@
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>${validation-api.version}</version>
 			</dependency>
 
 			<!-- JSR-919 -->

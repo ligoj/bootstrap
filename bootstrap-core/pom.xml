@@ -240,12 +240,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- JSR-303 -->
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-		</dependency>
-
 		<!-- JSR-245, JSR-341 -->
 		<dependency>
 			<groupId>org.glassfish</groupId>
