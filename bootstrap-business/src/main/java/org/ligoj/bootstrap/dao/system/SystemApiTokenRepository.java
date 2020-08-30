@@ -17,22 +17,28 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	/**
 	 * Return the name of the token matching the user.
 	 * 
-	 * @param user
-	 *            The requested user.
-	 * @param hash
-	 *            The requested hashed API token.
+	 * @param user The requested user.
+	 * @param hash The requested hashed API token.
 	 * @return the API name when there is match between user and API token.
 	 */
 	@Query(value = "SELECT name FROM SystemApiToken WHERE user=?1 AND hash=?2")
 	String findByUserAndHash(String user, String hash);
 
 	/**
+	 * Return the name of the token matching the user. Used for plain text token, without hash.
+	 * 
+	 * @param user  The requested user.
+	 * @param token The requested plain text/unsecured API token.
+	 * @return the API name when there is match between user and API token.
+	 */
+	@Query(value = "SELECT name FROM SystemApiToken WHERE user=?1 AND hash ='_plain_' AND token=?2")
+	String findByUserAndToken(String user, String token);
+
+	/**
 	 * Return the token entity matching the name and the user.
 	 * 
-	 * @param user
-	 *            The owner.
-	 * @param name
-	 *            The API name.
+	 * @param user The owner.
+	 * @param name The API name.
 	 * @return Matching entity or <code>null</code>.
 	 */
 	SystemApiToken findByUserAndName(String user, String name);
@@ -40,8 +46,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	/**
 	 * Return all API token names of given user.
 	 * 
-	 * @param user
-	 *            The owner.
+	 * @param user The owner.
 	 * @return Owned API token names.
 	 */
 	@Query(value = "SELECT name FROM SystemApiToken WHERE user=?1 ORDER BY name")
@@ -50,10 +55,8 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	/**
 	 * Delete the token entity matching the name and the user.
 	 * 
-	 * @param user
-	 *            The owner.
-	 * @param name
-	 *            The API name.
+	 * @param user The owner.
+	 * @param name The API name.
 	 */
 	void deleteByUserAndName(String user, String name);
 }

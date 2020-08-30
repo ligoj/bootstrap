@@ -38,8 +38,9 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	private SystemApiTokenRepository repository;
 
 	@BeforeEach
-	void setUp2() {
-        var entity = new SystemApiToken();
+	void setUp2() throws GeneralSecurityException {
+
+		var entity = new SystemApiToken();
 		entity.setToken(TOKEN_CRYPT);
 		entity.setHash(TOKEN_HASH);
 		entity.setName("name");
@@ -52,7 +53,37 @@ class ApiTokenResourceTest extends AbstractBootTest {
 		entity.setName("name");
 		entity.setUser("other");
 		repository.saveAndFlush(entity);
+		
+		// Unsecured token
+		entity = new SystemApiToken();
+		entity.setToken("_plain_TEST");
+		entity.setHash("_plain_");
+		entity.setName("unsecured");
+		entity.setUser(DEFAULT_USER);
+		repository.saveAndFlush(entity);
+
+		// Partially unsecured token : SQL injection, hack,...
+		entity = new SystemApiToken();
+		entity.setToken("TEST");
+		entity.setHash("_plain_");
+		entity.setName("unsecured_ko_2");
+		entity.setUser(DEFAULT_USER);
+		repository.saveAndFlush(entity);
+
+		// Partially unsecured token : SQL injection, hack,...
+		entity = new SystemApiToken();
+		entity.setToken("_plain_TEST");
+		entity.setHash("_plain_hash");
+		entity.setName("unsecured_ko_3");
+		entity.setUser(DEFAULT_USER);
+		repository.saveAndFlush(entity);
 		em.clear();
+	}
+
+	@Test
+	void getTokenPlain() throws GeneralSecurityException {
+		final var tokens = resource.getToken("unsecured");
+		Assertions.assertEquals("_plain_TEST", tokens);
 	}
 
 	@Test
@@ -64,13 +95,18 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	@Test
 	void getTokenNames() {
 		final var tokensName = resource.getTokenNames();
-		Assertions.assertEquals(1, tokensName.size());
+		Assertions.assertEquals(4, tokensName.size());
 		Assertions.assertEquals("name", tokensName.get(0));
 	}
 
 	@Test
 	void check() {
 		Assertions.assertTrue(resource.check(DEFAULT_USER, TOKEN));
+	}
+
+	@Test
+	void checkPlain() {
+		Assertions.assertTrue(resource.check(DEFAULT_USER, "_plain_TEST"));
 	}
 
 	@Test
@@ -89,6 +125,14 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void checkWrongPlain1() {
+		Assertions.assertFalse(resource.check(DEFAULT_USER, "unsecured_ko_2"));
+	}
+	@Test
+	void checkWrongPlain2() {
+		Assertions.assertFalse(resource.check(DEFAULT_USER, "unsecured_ko_3"));
+	}
+	@Test
 	void checkInvalidDigest() {
 		final var resource = new ApiTokenResource();
 		resource.setTokenDigest("any");
@@ -97,7 +141,7 @@ class ApiTokenResourceTest extends AbstractBootTest {
 
 	@Test
 	void create() throws GeneralSecurityException {
-		Assertions.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertEquals(4, repository.findAllByUser(DEFAULT_USER).size());
 		final var token = resource.create("new-api");
 
 		// Check new state
@@ -106,7 +150,7 @@ class ApiTokenResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_USER, newToken.getUser());
 		Assertions.assertNotNull(newToken.getHash());
 		final var tokens = resource.getTokenNames();
-		Assertions.assertEquals(2, tokens.size());
+		Assertions.assertEquals(5, tokens.size());
 		Assertions.assertEquals("new-api", tokens.get(1));
 		Assertions.assertEquals(token, resource.getToken("new-api"));
 	}
@@ -119,14 +163,14 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	@Test
 	void update() throws GeneralSecurityException {
         var tokens = resource.getTokenNames();
-		Assertions.assertEquals(1, tokens.size());
+		Assertions.assertEquals(4, tokens.size());
 		Assertions.assertEquals("name", tokens.get(0));
 		final var token = resource.update("name");
 
 		// Check new state
 		Assertions.assertNotNull(token);
 		tokens = resource.getTokenNames();
-		Assertions.assertEquals(1, tokens.size());
+		Assertions.assertEquals(4, tokens.size());
 		Assertions.assertEquals("name", tokens.get(0));
 		Assertions.assertEquals(token, resource.getToken("name"));
 		final var newToken = repository.findByUserAndName(DEFAULT_USER, "name");
@@ -138,12 +182,12 @@ class ApiTokenResourceTest extends AbstractBootTest {
 
 	@Test
 	void remove() {
-		Assertions.assertEquals(1, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertEquals(4, repository.findAllByUser(DEFAULT_USER).size());
 		resource.remove("name");
 
 		// Check new state
 		repository.findByNameExpected("name");
 		Assertions.assertEquals(1, repository.findAllByUser("other").size());
-		Assertions.assertEquals(0, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertEquals(3, repository.findAllByUser(DEFAULT_USER).size());
 	}
 }

@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
@@ -58,6 +59,15 @@ import lombok.extern.slf4j.Slf4j;
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
 public class ApiTokenResource {
+
+	/**
+	 * Special prefix for plain/unsecured hash API token. Useful for generated API token from external tool.
+	 */
+	private static final String PREFIX_TOKEN = "_plain_";
+	/**
+	 * Special value for plain/unsecured hash API token. Useful for generated API token from external tool.
+	 */
+	private static final String PLAIN_HASH = "_plain_";
 
 	/**
 	 * Az09 string generator.
@@ -99,14 +109,16 @@ public class ApiTokenResource {
 	/**
 	 * Check the given token.
 	 * 
-	 * @param user
-	 *            The user name. Will be used to build the hash.
-	 * @param token
-	 *            The user password or token.
+	 * @param user  The user name. Will be used to build the hash.
+	 * @param token The user password or token.
 	 * @return <code>true</code> if the token match.
 	 */
 	public boolean check(final String user, final String token) {
 		try {
+			if (StringUtils.startsWith(token, PREFIX_TOKEN)) {
+				// Unsecured token, only null hash can match
+				return repository.findByUserAndToken(user, token) != null;
+			}
 			// Check the API token from data base
 			return repository.findByUserAndHash(user, hash(token)) != null;
 		} catch (final GeneralSecurityException e) {
@@ -130,30 +142,29 @@ public class ApiTokenResource {
 	/**
 	 * Return raw token value corresponding to the requested name and owned by current user.
 	 * 
-	 * @param name
-	 *            The token's name.
+	 * @param name The token's name.
 	 * @return raw token value corresponding to the requested name and owned by current user.
-	 * @throws GeneralSecurityException
-	 *             When there is a security issue.
+	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@GET
 	@Path("{name:\\w+}")
 	@OnNullReturn404
 	public String getToken(@PathParam("name") final String name) throws GeneralSecurityException {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
+		if (entity.getHash().equals(PLAIN_HASH) && entity.getToken().startsWith(PREFIX_TOKEN)) {
+			// Unsecured plain token. Useful for initial SQL injected token
+			return entity.getToken();
+		}
 		return decrypt(entity.getToken(), newSecretKey(entity.getUser(), entity.getName()));
 	}
 
 	/**
 	 * Decrypt the message with the given key.
 	 * 
-	 * @param encryptedMessage
-	 *            Encrypted message.
-	 * @param secretKey
-	 *            The secret key.
+	 * @param encryptedMessage Encrypted message.
+	 * @param secretKey        The secret key.
 	 * @return the original message.
-	 * @throws GeneralSecurityException
-	 *             When there is a security issue.
+	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	private String decrypt(final String encryptedMessage, final byte[] secretKey) throws GeneralSecurityException {
 		final var message = Base64.decodeBase64(encryptedMessage.getBytes(StandardCharsets.UTF_8));
@@ -170,13 +181,10 @@ public class ApiTokenResource {
 	/**
 	 * Encrypt the message with the given key.
 	 * 
-	 * @param message
-	 *            Ciphered message.
-	 * @param secretKey
-	 *            The secret key.
+	 * @param message   Ciphered message.
+	 * @param secretKey The secret key.
 	 * @return the original message.
-	 * @throws GeneralSecurityException
-	 *             When there is a security issue.
+	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	private String encrypt(final String message, final byte[] secretKey) throws GeneralSecurityException {
 		final var digest = MessageDigest.getInstance(tokenDigest);
@@ -195,8 +203,7 @@ public class ApiTokenResource {
 	/**
 	 * Hash without salt the given token.
 	 * 
-	 * @param token
-	 *            The user token.
+	 * @param token The user token.
 	 * @return the hash without salt.
 	 */
 	private String hash(final String token) throws NoSuchAlgorithmException {
@@ -208,19 +215,16 @@ public class ApiTokenResource {
 	/**
 	 * From a password, an amount of iterations, returns the corresponding digest
 	 * 
-	 * @param iterations
-	 *            The amount of iterations of the algorithm.
-	 * @param password
-	 *            String The password to encrypt
+	 * @param iterations The amount of iterations of the algorithm.
+	 * @param password   String The password to encrypt
 	 * @return byte[] The digested password
-	 * @throws NoSuchAlgorithmException
-	 *             If the algorithm doesn't exist
+	 * @throws NoSuchAlgorithmException If the algorithm doesn't exist
 	 */
 	protected byte[] simpleHash(final int iterations, final String password) throws NoSuchAlgorithmException {
 		// This is not a single hash
 		final var digest = MessageDigest.getInstance("SHA-1"); // NOSONAR
 		digest.reset();
-        var input = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+		var input = digest.digest(password.getBytes(StandardCharsets.UTF_8));
 		for (var i = 0; i < iterations; i++) {
 			digest.reset();
 			input = digest.digest(input);
@@ -236,11 +240,9 @@ public class ApiTokenResource {
 	/**
 	 * Create a new token for current user.
 	 * 
-	 * @param name
-	 *            New token name.
+	 * @param name New token name.
 	 * @return the generated token.
-	 * @throws GeneralSecurityException
-	 *             When there is a security issue.
+	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -274,11 +276,9 @@ public class ApiTokenResource {
 	/**
 	 * Update a named token with a new generated one.
 	 * 
-	 * @param name
-	 *            Token to update.
+	 * @param name Token to update.
 	 * @return the new generated token.
-	 * @throws GeneralSecurityException
-	 *             When there is a security issue.
+	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -299,8 +299,7 @@ public class ApiTokenResource {
 	/**
 	 * Delete a API token by it's name for current user.
 	 * 
-	 * @param name
-	 *            The API token's name.
+	 * @param name The API token's name.
 	 */
 	@DELETE
 	@Path("{name}")
