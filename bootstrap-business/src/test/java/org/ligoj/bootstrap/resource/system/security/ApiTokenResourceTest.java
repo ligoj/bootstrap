@@ -24,13 +24,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 class ApiTokenResourceTest extends AbstractBootTest {
 
-	private static final String TOKEN = "BWo9iEky2tpPX7RPhovNy5SywYI2fmacfRnLhJSZtfhCclj7IdP0uDZdLzqhUKnBu5svgKbkZS4eeLQVgu5Li2aMTOt9Fr1dLF8zMt7SNiMYyWv6YCFIsEUmeDjswFlf";
-	private static final String TOKEN_CRYPT = "s0RscSFywiK2rU9L5bovd3nSVPx9HGP33IGIbWnhdxADs5MdzQS+ml6T84O2SdtGGexkocaug7He2SxPJhb4J3CRbvDRDuD5Qeq76MPA83x9hL4kZs/mNfW7BW1yV/iHNPXtbO4bURNbnZMPuA+sILYJmRIv2A5I9Vp5OiJy+QGzpE7uVM6wYg==";
-	private static final String TOKEN_HASH = "0X73AfPjOJevD9d7acZ7swxjRJcDGASVcYeBf2AseSrhI3y9gMeVwdwotLVGcKJJTnfPFZYBsH6npUA13kL8Wg==";
+	private static final String TOKEN = "GJqYHFWnnH3Dp9XMVdDV3QkFbjltP2jxodtlvUQXnlLAFvN5pR45WysikOng8nI7A8HS55MhsDS0w6h4UvgnNh3oLb6RpaUI2luzhtC3VhziP03wbMkkZNNfiL3L5wE3";
+	private static final String TOKEN_CRYPT = "+CdhL/qhnLv9xLjuTeoJfQN6B+TXBnpjNPu3y6lKWQxIJrVw2qMNyQOKRZ6eUVbvZpuBkgHdIT/Te9Olc5WQVsPsQ2ym9VdvMKH/7MJdElit37yxTlQVjHXmZL4dB83DDGOUs7W1CS2pjgddQT/EkkrDKwL1W4m9ktGdG7h6MVim9xugsGho7A==";
+	private static final String TOKEN_HASH = "FBG9Cn/dvk4okgV2svVhGJOQ1ozHgf8SzlaoMt7A6nfJVjsdSv6fRny9dHPW1VNH1JRH6lPeRewvwNMPN45TAQ==";
 
-	private static final String TOKEN2 = "G51xg2we70Ffd2YikudjpfvQszt63hXgjOMRqR713gWlswErfVlsXGRkujqKAz4Jgnxl5OrF3KZU8gaFhYwlEKmIcqkd2kT1TZjKNDNjsz77yakfybL5Bo1213b4Yt4Y";
-	private static final String TOKEN2_CRYPT = "qZr9bHmhxu3s7zznK2vKuyvz4L7HRfngFvfRewegEJUeVQUXVF3niedDKBFz1iO6G5IMnD6vVXJbyVVNqXPj+kolK1Y9gZdG3JwXXHchQszGOxfW3BK6xO98sNUoS/KkIYAu4yoz+33dpFM3BHCKEEZyvVe5377dIgI8opH3a1l2GMkzJ0Apxg==";
-	private static final String TOKEN2_HASH = "g3RAG1pLtkz6+HgwHJJWooQ9AK1mvt+nt4i41xXhRH+Hw9uOO4HFheFGjaH64GZsRXJ2XDlZFDm8C25SUKgLjg==";
+	private static final String TOKEN2 = "Ol6lNcVl2AXFvj8xNFt3VX0tcMExFYt0J8SrTin7DzQl9qzCvA1xgmsSOaQOuVSm4TnaSqLo3se80pCSLi5Qzez1n3qMT8JJ3gyRzXDHDSegPjOWhufwnEgBi6NQxkn8";
+	private static final String TOKEN2_CRYPT = "5c8zRVZh+xcCwDjX8rI4VkynWK4VENxADB27MLi9I+bvA6tiAsnTsfq2U+4Tl32jrEZ1UQaI2Ba/P0KEEXDUaL7oAOTUxYaYL1/Bfra1YJFr+7oAi7kz4ziJ0FjKyfFOsHFcg01jS+6Gm6U1FdEHO/kjJiJL3GVNHBgEMK5RFXGotW+m4lBO8g==";
+	private static final String TOKEN2_HASH = "CjQsWSNXHXNt3o6oC7/h2cvVFwQa420o6co93AQMbVdpv/pCKLxkk2kovjmtG7XCuwzunPPnex6sMUpItdte7g==";
 	@Autowired
 	private ApiTokenResource resource;
 

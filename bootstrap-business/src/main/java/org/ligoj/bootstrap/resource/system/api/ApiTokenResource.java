@@ -93,7 +93,7 @@ public class ApiTokenResource {
 	/**
 	 * Secret key of DES algorithm used to generated the SSO token.
 	 */
-	@Value("${{api.token.secret:K%ë£/L@_§z3-Àçñ?}")
+	@Value("${api.token.secret:K%ë£/L@_§z3-Àçñ?}")
 	private String tokenSecret;
 
 	/**
