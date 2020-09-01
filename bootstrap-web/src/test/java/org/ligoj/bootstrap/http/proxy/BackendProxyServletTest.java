@@ -271,6 +271,36 @@ class BackendProxyServletTest {
 		Mockito.verify(exchange, Mockito.times(0)).header("x-api-key", "token");
 	}
 
+	/**
+	 * Manage the API user without API user and session
+	 */
+	@Test
+	void addProxyHeadersApiPartial1Headers() throws ServletException {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var exchange = Mockito.mock(Request.class);
+		Mockito.when(request.getHeader("x-api-user")).thenReturn("user");
+		setupRedirection("a", "a");
+		servlet.addProxyHeaders(request, exchange);
+		Mockito.verify(exchange, Mockito.times(0)).header("SM_UNIVERSALID", "user");
+		Mockito.verify(exchange, Mockito.times(0)).header("SM_SESSIONID", null);
+		Mockito.verify(exchange, Mockito.times(0)).header("x-api-key", "token");
+	}
+
+	/**
+	 * Manage the API key without API and without session
+	 */
+	@Test
+	void addProxyHeadersApiPartial2Headers() throws ServletException {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var exchange = Mockito.mock(Request.class);
+		Mockito.when(request.getHeader("x-api-key")).thenReturn("token");
+		setupRedirection("a", "a");
+		servlet.addProxyHeaders(request, exchange);
+		Mockito.verify(exchange, Mockito.times(0)).header("SM_UNIVERSALID", "user");
+		Mockito.verify(exchange, Mockito.times(0)).header("SM_SESSIONID", null);
+		Mockito.verify(exchange, Mockito.times(0)).header("x-api-key", "token");
+	}
+
 	@Test
 	void onProxyResponseFailure() throws IOException, ServletException {
 		init();

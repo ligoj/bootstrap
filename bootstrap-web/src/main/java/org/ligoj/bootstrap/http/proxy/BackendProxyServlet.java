@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.http.proxy;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,10 +34,19 @@ import org.eclipse.jetty.http.HttpHeaderValue;
 import org.eclipse.jetty.proxy.ProxyServlet;
 import org.eclipse.jetty.util.Callback;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Reverse proxy for business server.
  */
+@Slf4j
 public class BackendProxyServlet extends ProxyServlet {
+
+	/**
+	 * Header forwarded to back-end and containing the principal user name or declared API user that will be checked on
+	 * the other side.
+	 */
+	private static final String HEADER_USER = "SM_UNIVERSALID";
 
 	private static final String COOKIE_JEE = "JSESSIONID";
 
@@ -95,22 +105,17 @@ public class BackendProxyServlet extends ProxyServlet {
 
 		if (clientRequest.getUserPrincipal() != null) {
 			// Stateful authenticated user
-			proxyRequest.header("SM_UNIVERSALID", clientRequest.getUserPrincipal().getName());
+			proxyRequest.header(HEADER_USER, clientRequest.getUserPrincipal().getName());
 			proxyRequest.header("SM_SESSIONID", clientRequest.getSession(false).getId());
 		} else {
 			// Forward API user, if defined.
-			if (clientRequest.getParameter(apiUserParameter) != null) {
-				proxyRequest.header("SM_UNIVERSALID",
-						StringUtils.trimToNull(clientRequest.getParameter(apiUserParameter)));
-			} else if (clientRequest.getHeader(apiUserHeader) != null) {
-				proxyRequest.header("SM_UNIVERSALID", StringUtils.trimToNull(clientRequest.getHeader(apiUserHeader)));
-			}
+			final var apiUser = getIdData(clientRequest, apiUserParameter, apiUserHeader);
+			final var apiKey = getIdData(clientRequest, apiKeyParameter, apiKeyHeader);
 
-			// Forward API key, if defined.
-			if (clientRequest.getParameter(apiKeyParameter) != null) {
-				proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getParameter(apiKeyParameter)));
-			} else if (clientRequest.getHeader(apiKeyHeader) != null) {
-				proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getHeader(apiKeyHeader)));
+			if (apiUser != null && apiKey != null) {
+				// When there is an API user,
+				proxyRequest.header(HEADER_USER, apiUser);
+				proxyRequest.header(apiKeyHeader, apiKey);
 			}
 		}
 
@@ -122,6 +127,11 @@ public class BackendProxyServlet extends ProxyServlet {
 							.filter(cookie -> !cookie.split("=")[0].trim().equals(COOKIE_JEE)).map(String::trim)
 							.collect(Collectors.joining("; "))));
 		}
+	}
+
+	private String getIdData(final HttpServletRequest req, final String parameter, final String header) {
+		return ObjectUtils.defaultIfNull(StringUtils.trimToNull(req.getParameter(parameter)),
+				StringUtils.trimToNull(req.getHeader(header)));
 	}
 
 	@Override
@@ -226,10 +236,16 @@ public class BackendProxyServlet extends ProxyServlet {
 		// Append the query string
 		path = newPathWithQueryString(request);
 
-		final var rewrittenURI = URI.create(this.proxyTo + path.substring(this.prefix.length())).normalize();
-		if (validateDestination(rewrittenURI.getHost(), rewrittenURI.getPort())) {
-			// It's a valid and up target
-			return rewrittenURI.toString();
+		final var proxyUrl = this.proxyTo + path.substring(this.prefix.length());
+		try {
+			final var rewrittenURI = new URI(proxyUrl).normalize();
+			if (validateDestination(rewrittenURI.getHost(), rewrittenURI.getPort())) {
+				// It's a valid and up target
+				return rewrittenURI.toString();
+			}
+		} catch (final URISyntaxException x) {
+			// Invalid query
+			log.info("Invalid URI {} built from path {}", proxyUrl, request.getRequestURI(), x);
 		}
 		return null;
 	}
