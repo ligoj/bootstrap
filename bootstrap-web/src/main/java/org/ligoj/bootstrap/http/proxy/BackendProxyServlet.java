@@ -45,8 +45,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Headers will not be forwarded from the back-end.
 	 */
-	private static final String[] IGNORE_HEADERS = new String[] { "expires", "x-content-type-options", "server", "visited", "date",
-			"x-frame-options", "x-xss-protection", "pragma", "cache-control" };
+	private static final String[] IGNORE_HEADERS = new String[] { "expires", "x-content-type-options", "server",
+			"visited", "date", "x-frame-options", "x-xss-protection", "pragma", "cache-control" };
 
 	/**
 	 * Header will be ignore when the value starts with the
@@ -66,7 +66,8 @@ public class BackendProxyServlet extends ProxyServlet {
 		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_NOT_FOUND, HttpServletResponse.SC_NOT_FOUND);
 		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_METHOD_NOT_ALLOWED, HttpServletResponse.SC_NOT_FOUND);
 		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_FORBIDDEN, HttpServletResponse.SC_FORBIDDEN);
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_BAD_REQUEST, HttpServletResponse.SC_BAD_REQUEST);
 		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_SERVICE_UNAVAILABLE, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 	}
@@ -83,6 +84,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	private String prefix; // NOSONAR - Initialized once, from #init()
 	private String apiKeyParameter; // NOSONAR - Initialized once, from #init()
 	private String apiUserParameter; // NOSONAR - Initialized once, from #init()
+	private String apiUserHeader; // NOSONAR - Initialized once, from #init()
 	private String apiKeyHeader; // NOSONAR - Initialized once, from #init()
 	private Pattern apiKeyCleanPattern; // NOSONAR - Initialized once, from #init()
 	private Pattern apiUserCleanPattern; // NOSONAR - Initialized once, from #init()
@@ -91,15 +93,26 @@ public class BackendProxyServlet extends ProxyServlet {
 	protected void addProxyHeaders(final HttpServletRequest clientRequest, final Request proxyRequest) {
 		super.addProxyHeaders(clientRequest, proxyRequest);
 
-		// Forward security identifier if defined
-		proxyRequest.header("SM_UNIVERSALID", clientRequest.getUserPrincipal() == null
-				? StringUtils.trimToNull(clientRequest.getParameter(apiUserParameter)) : clientRequest.getUserPrincipal().getName());
+		if (clientRequest.getUserPrincipal() != null) {
+			// Stateful authenticated user
+			proxyRequest.header("SM_UNIVERSALID", clientRequest.getUserPrincipal().getName());
+			proxyRequest.header("SM_SESSIONID", clientRequest.getSession(false).getId());
+		} else {
+			// Forward API user, if defined.
+			if (clientRequest.getParameter(apiUserParameter) != null) {
+				proxyRequest.header("SM_UNIVERSALID",
+						StringUtils.trimToNull(clientRequest.getParameter(apiUserParameter)));
+			} else if (clientRequest.getHeader(apiUserHeader) != null) {
+				proxyRequest.header("SM_UNIVERSALID", StringUtils.trimToNull(clientRequest.getHeader(apiUserHeader)));
+			}
 
-		// Forward original SESSIONID
-		proxyRequest.header("SM_SESSIONID", clientRequest.getSession(false) == null ? null : clientRequest.getSession(false).getId());
-
-		// Forward API key, if defined.
-		proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getParameter(apiKeyParameter)));
+			// Forward API key, if defined.
+			if (clientRequest.getParameter(apiKeyParameter) != null) {
+				proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getParameter(apiKeyParameter)));
+			} else if (clientRequest.getHeader(apiKeyHeader) != null) {
+				proxyRequest.header(apiKeyHeader, StringUtils.trimToNull(clientRequest.getHeader(apiKeyHeader)));
+			}
+		}
 
 		// Forward all cookies but JSESSIONID.
 		final var cookies = clientRequest.getHeader(HEADER_COOKIE);
@@ -112,8 +125,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	}
 
 	@Override
-	protected void onProxyResponseFailure(final HttpServletRequest clientRequest, final HttpServletResponse proxyResponse,
-			final Response serverResponse, final Throwable failure) {
+	protected void onProxyResponseFailure(final HttpServletRequest clientRequest,
+			final HttpServletResponse proxyResponse, final Response serverResponse, final Throwable failure) {
 		_log.warn(failure.toString());
 
 		if (proxyResponse.isCommitted()) {
@@ -129,7 +142,8 @@ public class BackendProxyServlet extends ProxyServlet {
 				proxyResponse.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 				proxyResponse.setContentType("application/json");
 				try {
-					proxyResponse.getOutputStream().write("{\"code\":\"business-down\"}".getBytes(StandardCharsets.UTF_8));
+					proxyResponse.getOutputStream()
+							.write("{\"code\":\"business-down\"}".getBytes(StandardCharsets.UTF_8));
 				} catch (final IOException ioe) {
 					_log.warn("Broken proxy stream", ioe);
 				}
@@ -143,16 +157,15 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Check, and return the lower value of given parameter.
 	 * 
-	 * @param parameter
-	 *            the expected "init" parameter.
-	 * @param defaultValue
-	 *            the optional default value. May be <code>null</code>.
+	 * @param parameter    the expected "init" parameter.
+	 * @param defaultValue the optional default value. May be <code>null</code>.
 	 * @return the lower value of given parameter.
-	 * @throws UnavailableException
-	 *             when required parameter is not defined.
+	 * @throws UnavailableException when required parameter is not defined.
 	 */
-	protected String getRequiredInitParameter(final String parameter, final String defaultValue) throws UnavailableException {
-		final var value = ObjectUtils.defaultIfNull(StringUtils.trimToNull(getServletConfig().getInitParameter(parameter)), defaultValue);
+	protected String getRequiredInitParameter(final String parameter, final String defaultValue)
+			throws UnavailableException {
+		final var value = ObjectUtils
+				.defaultIfNull(StringUtils.trimToNull(getServletConfig().getInitParameter(parameter)), defaultValue);
 		if (value == null) {
 			throw new UnavailableException("Init parameter '" + parameter + "' is required.");
 		}
@@ -162,16 +175,15 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Check, and return the lower value of given parameter.
 	 * 
-	 * @param parameter
-	 *            the expected "init" parameter.
+	 * @param parameter the expected "init" parameter.
 	 * @return the lower value of given parameter.
 	 */
 	private String getRequiredSystemInitParameter(final String parameter) throws UnavailableException {
 		final var parameterValue = StringUtils.trimToNull(getRequiredInitParameter(parameter, null));
 		final var value = StringUtils.trimToNull(System.getProperty(parameterValue));
 		if (value == null) {
-			throw new UnavailableException(
-					"Init parameter '" + parameter + "' is defined, but points to a non defined system property '" + parameterValue + "'");
+			throw new UnavailableException("Init parameter '" + parameter
+					+ "' is defined, but points to a non defined system property '" + parameterValue + "'");
 		}
 		return value;
 	}
@@ -186,8 +198,9 @@ public class BackendProxyServlet extends ProxyServlet {
 		this.proxyTo = getRequiredSystemInitParameter("proxyToKey");
 
 		// Read API configuration
-		this.apiKeyParameter = getRequiredInitParameter("apiKeyParameter", "api-key");
 		this.apiUserParameter = getRequiredInitParameter("apiUserParameter", "api-user");
+		this.apiUserHeader = getRequiredInitParameter("apiUserHeader", "x-api-user");
+		this.apiKeyParameter = getRequiredInitParameter("apiKeyParameter", "api-key");
 		this.apiKeyHeader = getRequiredInitParameter("apiKeyHeader", "x-api-key");
 		this.apiKeyCleanPattern = newCleanParameter(apiKeyParameter);
 		this.apiUserCleanPattern = newCleanParameter(apiUserParameter);
@@ -238,7 +251,8 @@ public class BackendProxyServlet extends ProxyServlet {
 		}
 
 		// Don't forward API key as parameter, only as an header
-		query = StringUtils.trimToNull(removeApiParameter(removeApiParameter(query, apiKeyCleanPattern), apiUserCleanPattern));
+		query = StringUtils
+				.trimToNull(removeApiParameter(removeApiParameter(query, apiKeyCleanPattern), apiUserCleanPattern));
 		if (query == null) {
 			// The new query, without API key is empty
 			return path;
@@ -255,25 +269,25 @@ public class BackendProxyServlet extends ProxyServlet {
 		final var apiMatcher = pattern.matcher(query);
 		if (apiMatcher.find()) {
 			// API Token is defined as a query parameter, we can remove it
-			return ObjectUtils.defaultIfNull(apiMatcher.group(2), "") + ObjectUtils.defaultIfNull(apiMatcher.group(4), "");
+			return ObjectUtils.defaultIfNull(apiMatcher.group(2), "")
+					+ ObjectUtils.defaultIfNull(apiMatcher.group(4), "");
 		}
 		return query;
 	}
 
 	@Override
-	protected String filterServerResponseHeader(final HttpServletRequest clientRequest, final Response serverResponse, final String headerName,
-			final String headerValue) {
+	protected String filterServerResponseHeader(final HttpServletRequest clientRequest, final Response serverResponse,
+			final String headerName, final String headerValue) {
 		// Filter some headers
 		final var lowerCase = StringUtils.lowerCase(headerName);
-		return ArrayUtils.contains(IGNORE_HEADERS, lowerCase)
-				|| IGNORE_HEADER_VALUE.containsKey(lowerCase) && headerValue.startsWith(IGNORE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
+		return ArrayUtils.contains(IGNORE_HEADERS, lowerCase) || IGNORE_HEADER_VALUE.containsKey(lowerCase)
+				&& headerValue.startsWith(IGNORE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
 	}
 
 	/**
 	 * Indicates the request was in AJAX or not.
 	 * 
-	 * @param request
-	 *            The original request.
+	 * @param request The original request.
 	 * @return <code>true</code> for Ajax request.
 	 */
 	public static boolean isAjaxRequest(final HttpServletRequest request) {
@@ -281,8 +295,9 @@ public class BackendProxyServlet extends ProxyServlet {
 	}
 
 	@Override
-	protected void onResponseContent(final HttpServletRequest request, final HttpServletResponse response, final Response proxyResponse,
-			final byte[] buffer, final int offset, final int length, final Callback callback) {
+	protected void onResponseContent(final HttpServletRequest request, final HttpServletResponse response,
+			final Response proxyResponse, final byte[] buffer, final int offset, final int length,
+			final Callback callback) {
 		final var plainStatus = needPlainPageErrorStatus(request, proxyResponse.getStatus());
 		if (plainStatus == 0) {
 			super.onResponseContent(request, response, proxyResponse, buffer, offset, length, callback);
@@ -301,8 +316,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Is it a 404 like error?
 	 * 
-	 * @param status
-	 *            the current status.
+	 * @param status the current status.
 	 * @return the nearest managed status.
 	 */
 	protected int getManagedPlainPageError(final int status) {
@@ -312,10 +326,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Is it a non AJAX 404 like error? .
 	 * 
-	 * @param request
-	 *            the current request.
-	 * @param status
-	 *            the current status.
+	 * @param request the current request.
+	 * @param status  the current status.
 	 * @return 0 or the status to display.
 	 */
 	protected int needPlainPageErrorStatus(final HttpServletRequest request, final int status) {
@@ -324,7 +336,8 @@ public class BackendProxyServlet extends ProxyServlet {
 	}
 
 	@Override
-	protected void onServerResponseHeaders(final HttpServletRequest request, final HttpServletResponse response, final Response proxyResponse) {
+	protected void onServerResponseHeaders(final HttpServletRequest request, final HttpServletResponse response,
+			final Response proxyResponse) {
 		if (needPlainPageErrorStatus(request, proxyResponse.getStatus()) == 0) {
 			super.onServerResponseHeaders(request, response, proxyResponse);
 		} else {
@@ -337,17 +350,19 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Return root request.
 	 * 
-	 * @param request
-	 *            the current request.
+	 * @param request the current request.
 	 * @return the root (container) {@link ServletRequest}.
 	 */
 	protected ServletRequest getRoot(final ServletRequest request) {
-		return request instanceof HttpServletRequestWrapper ? getRoot(((HttpServletRequestWrapper) request).getRequest()) : request;
+		return request instanceof HttpServletRequestWrapper
+				? getRoot(((HttpServletRequestWrapper) request).getRequest())
+				: request;
 	}
 
 	@Override
 	protected Set<String> findConnectionHeaders(final HttpServletRequest clientRequest) {
-		final var ignoreRequestHeader = new HashSet<>(CollectionUtils.emptyIfNull(super.findConnectionHeaders(clientRequest)));
+		final var ignoreRequestHeader = new HashSet<>(
+				CollectionUtils.emptyIfNull(super.findConnectionHeaders(clientRequest)));
 
 		// Drop cookie headers forward from FRONT to BACK by default, only filtered ones will be added
 		ignoreRequestHeader.add(HEADER_COOKIE);
