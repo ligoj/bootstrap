@@ -212,7 +212,7 @@ class BackendProxyServletTest {
 		final var session = Mockito.mock(HttpSession.class);
 		final var principal = Mockito.mock(Principal.class);
 		Mockito.when(request.getSession(false)).thenReturn(session);
-		Mockito.when(request.getHeader("cookie")).thenReturn("JSESSIONID=value1; OTHER1=value2; OTHER2=value3");
+		Mockito.when(request.getHeader("cookie")).thenReturn("JSESSIONID=value1; OTHER1=value2   ;   OTHER2=value3  ");
 		Mockito.when(session.getId()).thenReturn("J_SESSIONID");
 		Mockito.when(request.getUserPrincipal()).thenReturn(principal);
 		Mockito.when(principal.getName()).thenReturn("junit");

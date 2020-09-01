@@ -104,8 +104,10 @@ public class BackendProxyServlet extends ProxyServlet {
 		// Forward all cookies but JSESSIONID.
 		final var cookies = clientRequest.getHeader(HEADER_COOKIE);
 		if (cookies != null) {
-			proxyRequest.header(HEADER_COOKIE, StringUtils.trimToNull(
-					Arrays.stream(cookies.split(";")).filter(cookie -> !cookie.split("=")[0].trim().equals(COOKIE_JEE)).collect(Collectors.joining("; "))));
+			proxyRequest.header(HEADER_COOKIE,
+					StringUtils.trimToNull(Arrays.stream(cookies.split(";"))
+							.filter(cookie -> !cookie.split("=")[0].trim().equals(COOKIE_JEE)).map(String::trim)
+							.collect(Collectors.joining("; "))));
 		}
 	}
 
