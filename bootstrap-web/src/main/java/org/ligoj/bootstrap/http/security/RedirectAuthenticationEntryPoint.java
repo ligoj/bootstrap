@@ -22,7 +22,7 @@ import lombok.Setter;
 public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
 	/**
-	 * JSon redirection strategy, used when the pattern "redirectJson" matches to the current request.
+	 * JSON redirection strategy, used when the pattern "redirectJson" matches to the current request.
 	 */
 	@Setter
 	private RedirectStrategy redirectStrategy;
@@ -34,9 +34,10 @@ public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntr
 	private Set<String> redirectUrls;
 
 	/**
-	 * @param loginFormUrl
-	 *            URL where the login page can be found. Should either be relative to the web-app context path (include
-	 *            a leading {@code /}) or an absolute URL.
+	 * Build the redirect to a specific entry point.
+	 * 
+	 * @param loginFormUrl URL where the login page can be found. Should either be relative to the web-app context path
+	 *                     (include a leading {@code /}) or an absolute URL.
 	 */
 	public RedirectAuthenticationEntryPoint(final String loginFormUrl) {
 		super(loginFormUrl);
@@ -46,8 +47,8 @@ public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntr
 	 * Performs the redirect (or forward) to the login form URL.
 	 */
 	@Override
-	public void commence(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException authException)
-			throws IOException, ServletException {
+	public void commence(final HttpServletRequest request, final HttpServletResponse response,
+			final AuthenticationException authException) throws IOException, ServletException {
 
 		// Choose the right redirection
 		if (redirectUrls.contains(request.getServletPath())) {

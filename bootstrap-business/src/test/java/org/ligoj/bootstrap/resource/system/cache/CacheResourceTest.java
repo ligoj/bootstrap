@@ -5,6 +5,8 @@ package org.ligoj.bootstrap.resource.system.cache;
 
 import java.util.Collections;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -167,6 +169,11 @@ class CacheResourceTest extends AbstractBootTest {
 		dummyCacheBean.getHit("entry-key");
 		doManyHits();
 		assertCache(cacheResource.getCache("test-cache"));
+	}
+
+	@Test
+	void getCacheNotExists() {
+		Assertions.assertThrows(EntityNotFoundException.class, () -> assertCache(cacheResource.getCache("NOT-EXISTS")));
 	}
 
 	@Test

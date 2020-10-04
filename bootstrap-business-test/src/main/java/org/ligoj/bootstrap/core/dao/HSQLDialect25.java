@@ -10,6 +10,9 @@ import org.hibernate.dialect.HSQLDialect;
  */
 public class HSQLDialect25 extends HSQLDialect {
 
+	/**
+	 * Default dialect constructor adding the missing features.
+	 */
 	public HSQLDialect25() {
 		super();
 		registerKeyword("PERIOD");

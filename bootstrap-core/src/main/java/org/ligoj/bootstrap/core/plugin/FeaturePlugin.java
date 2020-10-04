@@ -43,7 +43,7 @@ public interface FeaturePlugin extends Comparable<FeaturePlugin> {
 	 */
 	default String getName() {
 		return StringUtils.defaultIfBlank(getClass().getPackage().getImplementationTitle(),
-				StringUtils.capitalize(StringUtils.substringAfter(getKey(), ':').replace(':', ' ')));
+				StringUtils.capitalize(StringUtils.substringAfterLast(getKey(), ':').replace(':', ' ')));
 	}
 
 	/**

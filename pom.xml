@@ -11,10 +11,10 @@
 
 	<artifactId>root</artifactId>
 	<version>2.8.5-SNAPSHOT</version><!-- required by 'version' plugin -->
+	<packaging>pom</packaging>
 	<name>Ligoj - Bootstrap</name>
 	<description>Ligoj Bootstrap JAX-RS architecture template</description>
 	<url>https://github.com/ligoj/bootstrap</url>
-	<packaging>pom</packaging>
 
 	<modules>
 		<module>parent</module>

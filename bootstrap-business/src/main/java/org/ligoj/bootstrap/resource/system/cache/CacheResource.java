@@ -6,8 +6,10 @@ package org.ligoj.bootstrap.resource.system.cache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -71,13 +73,17 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	public CacheStatistics getCache(@PathParam("name") final String name) {
 		final var result = new CacheStatistics();
 		@SuppressWarnings("unchecked")
-		final var cache = (CacheProxy<Object, Object>) cacheManager.getCache(name).getNativeCache();
+		final var cache = (CacheProxy<Object, Object>) getCacheExpected(name).getNativeCache();
 		final var node = newCacheNode(cache.getNodeEngine().getLocalMember());
 		node.setCluster(newCacheCluster(cache.getNodeEngine().getClusterService()));
 		result.setId(name);
 		result.setNode(node);
 		setStatistics(result, cache.getLocalCacheStatistics());
 		return result;
+	}
+
+	private Cache getCacheExpected(final String name) {
+		return Optional.ofNullable(cacheManager.getCache(name)).orElseThrow(() -> new EntityNotFoundException(name));
 	}
 
 	/**
@@ -123,7 +129,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	@DELETE
 	@Path("{name:[\\w\\-]+}")
 	public void invalidate(@PathParam("name") final String name) {
-		cacheManager.getCache(name).clear();
+		getCacheExpected(name).clear();
 	}
 
 	/**
