@@ -23,6 +23,7 @@ function installMaven {
   echo '</repositories><pluginRepositories>' >> $M2_HOME/conf/settings.xml
   echo '<pluginRepository><id>spring-milestone-p</id><url>https://repo.spring.io/milestone/</url></pluginRepository>' >> $M2_HOME/conf/settings.xml
   echo '</pluginRepositories></profile></profiles><activeProfiles><activeProfile>spring-milestone</activeProfile></activeProfiles></settings>' >> $M2_HOME/conf/settings.xml
+
 }
 
 #
