@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.AsyncContext;
@@ -193,7 +194,7 @@ class BackendProxyServletTest {
 	@Test
 	void addProxyHeaders() {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
+		final var exchange = setupRequest(request);
 		final var session = Mockito.mock(HttpSession.class);
 		final var principal = Mockito.mock(Principal.class);
 		Mockito.when(request.getSession(false)).thenReturn(session);
@@ -210,10 +211,10 @@ class BackendProxyServletTest {
 	 */
 	@Test
 	void addProxyHeadersCookie() {
-		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
 		final var session = Mockito.mock(HttpSession.class);
 		final var principal = Mockito.mock(Principal.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var exchange = setupRequest(request);
 		Mockito.when(request.getSession(false)).thenReturn(session);
 		Mockito.when(request.getHeader("cookie")).thenReturn("JSESSIONID=value1; OTHER1=value2   ;   OTHER2=value3  ");
 		Mockito.when(session.getId()).thenReturn("J_SESSIONID");
@@ -231,7 +232,7 @@ class BackendProxyServletTest {
 	@Test
 	void addProxyHeadersApiParameters() throws ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
+		final var exchange = setupRequest(request);
 		Mockito.when(request.getParameter("api-key")).thenReturn("token");
 		Mockito.when(request.getParameter("api-user")).thenReturn("user");
 		setupRedirection("a", "a");
@@ -247,7 +248,7 @@ class BackendProxyServletTest {
 	@Test
 	void addProxyHeadersApiHeaders() throws ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
+		final var exchange = setupRequest(request);
 		Mockito.when(request.getHeader("x-api-key")).thenReturn("token");
 		Mockito.when(request.getHeader("x-api-user")).thenReturn("user");
 		setupRedirection("a", "a");
@@ -263,12 +264,22 @@ class BackendProxyServletTest {
 	@Test
 	void addProxyHeadersAnonymous() throws ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
+		final var exchange = setupRequest(request);
+
 		setupRedirection("a", "a");
 		servlet.addProxyHeaders(request, exchange);
 		Mockito.verify(exchange, Mockito.times(0)).header("SM_UNIVERSALID", "user");
 		Mockito.verify(exchange, Mockito.times(0)).header("SM_SESSIONID", null);
 		Mockito.verify(exchange, Mockito.times(0)).header("x-api-key", "token");
+	}
+
+	private Request setupRequest(final HttpServletRequest request) {
+		final var exchange = Mockito.mock(Request.class);
+		final Map<String, Object> attributes = Map.of("org.eclipse.jetty.proxy.clientRequest", request);
+		Mockito.when(exchange.getAttributes()).thenReturn(attributes);
+		Mockito.when(exchange.getHeaders()).thenReturn(new HttpFields());
+		Mockito.when(request.getProtocol()).thenReturn("HTTP/1.1");
+		return exchange;
 	}
 
 	/**
@@ -277,7 +288,7 @@ class BackendProxyServletTest {
 	@Test
 	void addProxyHeadersApiPartial1Headers() throws ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
+		final var exchange = setupRequest(request);
 		Mockito.when(request.getHeader("x-api-user")).thenReturn("user");
 		setupRedirection("a", "a");
 		servlet.addProxyHeaders(request, exchange);
@@ -292,7 +303,7 @@ class BackendProxyServletTest {
 	@Test
 	void addProxyHeadersApiPartial2Headers() throws ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var exchange = Mockito.mock(Request.class);
+		final var exchange = setupRequest(request);
 		Mockito.when(request.getHeader("x-api-key")).thenReturn("token");
 		setupRedirection("a", "a");
 		servlet.addProxyHeaders(request, exchange);
