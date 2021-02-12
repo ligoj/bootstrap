@@ -19,20 +19,22 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	 * 
 	 * @param user The requested user.
 	 * @param hash The requested hashed API token.
-	 * @return the API name when there is match between user and API token.
+	 * @return <code>true</code> when there is match between user and API token.
 	 */
-	@Query(value = "SELECT name FROM SystemApiToken WHERE user=?1 AND hash=?2")
-	String findByUserAndHash(String user, String hash);
+	@Query(value = "SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
+			+ "FROM #{#entityName} WHERE user=:user AND hash=:hash")
+	boolean checkByUserAndHash(String user, String hash);
 
 	/**
 	 * Return the name of the token matching the user. Used for plain text token, without hash.
 	 * 
 	 * @param user  The requested user.
 	 * @param token The requested plain text/unsecured API token.
-	 * @return the API name when there is match between user and API token.
+	 * @return <code>true</code> when there is match between user and API token.
 	 */
-	@Query(value = "SELECT name FROM SystemApiToken WHERE user=?1 AND hash ='_plain_' AND token=?2")
-	String findByUserAndToken(String user, String token);
+	@Query(value = "SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
+			+ "FROM #{#entityName} WHERE user=:user AND hash ='_plain_' AND token=:token")
+	boolean checkByUserAndToken(String user, String token);
 
 	/**
 	 * Return the token entity matching the name and the user.

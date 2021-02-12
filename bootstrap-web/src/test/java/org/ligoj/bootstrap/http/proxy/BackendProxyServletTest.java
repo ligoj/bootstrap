@@ -124,6 +124,15 @@ class BackendProxyServletTest {
 		final var rewriteURI = servlet.rewriteTarget(request);
 		Assertions.assertNull(rewriteURI);
 	}
+	@Test
+	void rewriteURIInvalidUri() throws ServletException {
+		servlet.getBlackListHosts().add("proxified:1");
+		setupRedirection("/rest", ":invalid:uri");
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
+		final var rewriteURI = servlet.rewriteTarget(request);
+		Assertions.assertNull(rewriteURI);
+	}
 
 	@Test
 	void rewriteURIWithQuery() throws ServletException {
@@ -135,48 +144,35 @@ class BackendProxyServletTest {
 		Assertions.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
 	}
 
+	private void rewriteURI(final String proxy, final String query, final String rewrite) throws ServletException {
+		setupRedirection("/rest", proxy);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getParameter("api-key")).thenReturn("api-key=VALUE-1-a");
+		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
+		Mockito.when(request.getQueryString()).thenReturn(query);
+		final var rewriteURI = servlet.rewriteTarget(request);
+		Assertions.assertEquals(rewrite, rewriteURI);
+	}
+
 	@Test
 	void rewriteURIWithSoloApiInQuery() throws ServletException {
-		setupRedirection("/rest", "http://proxified:1/endpoint");
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getParameter("api-key")).thenReturn("VALUE-1-a");
-		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
-		Mockito.when(request.getQueryString()).thenReturn("api-key=VALUE-1-a");
-		final var rewriteURI = servlet.rewriteTarget(request);
-		Assertions.assertEquals("http://proxified:1/endpoint/any", rewriteURI);
+		rewriteURI("http://proxified:1/endpoint", "api-key=VALUE-1-a", "http://proxified:1/endpoint/any");
 	}
 
 	@Test
 	void rewriteURIWithInsertedApiInQuery() throws ServletException {
-		setupRedirection("/rest", "http://proxified:1/endpoint");
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getParameter("api-key")).thenReturn("VALUE-1-a");
-		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
-		Mockito.when(request.getQueryString()).thenReturn("p=2&api-key=VALUE-1-a&q=3&r");
-		final var rewriteURI = servlet.rewriteTarget(request);
-		Assertions.assertEquals("http://proxified:1/endpoint/any?p=2&q=3&r", rewriteURI);
+		rewriteURI("http://proxified:1/endpoint", "p=2&api-key=VALUE-1-a&q=3&r",
+				"http://proxified:1/endpoint/any?p=2&q=3&r");
 	}
 
 	@Test
 	void rewriteURIWithInsertedApiStartQuery() throws ServletException {
-		setupRedirection("/rest", "http://proxified:1/endpoint");
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getParameter("api-key")).thenReturn("VALUE-1-a");
-		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
-		Mockito.when(request.getQueryString()).thenReturn("api-key=VALUE-1-a&q=3&r");
-		final var rewriteURI = servlet.rewriteTarget(request);
-		Assertions.assertEquals("http://proxified:1/endpoint/any?q=3&r", rewriteURI);
+		rewriteURI("http://proxified:1/endpoint", "api-key=VALUE-1-a&q=3&r", "http://proxified:1/endpoint/any?q=3&r");
 	}
 
 	@Test
 	void rewriteURIWithApiNotQuery() throws ServletException {
-		setupRedirection("/rest", "http://proxified:1/endpoint");
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getParameter("api-key")).thenReturn("VALUE-1-a");
-		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
-		Mockito.when(request.getQueryString()).thenReturn("query");
-		final var rewriteURI = servlet.rewriteTarget(request);
-		Assertions.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
+		rewriteURI("http://proxified:1/endpoint", "query", "http://proxified:1/endpoint/any?query");
 	}
 
 	private void setupRedirection(final String prefix, final String proxyTo) throws ServletException {

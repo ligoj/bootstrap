@@ -10,7 +10,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 /**
@@ -53,7 +52,7 @@ class OnlyRedirectHttpResponseCallbackTest {
 		final var response = Mockito.mock(CloseableHttpResponse.class);
 		final var statusLine = Mockito.mock(StatusLine.class);
 		final var header = Mockito.mock(Header.class);
-		Mockito.when(response.getFirstHeader(ArgumentMatchers.eq("location"))).thenReturn(header);
+		Mockito.when(response.getFirstHeader("location")).thenReturn(header);
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_MOVED_TEMPORARILY);
 		Assertions.assertFalse(new OnlyRedirectHttpResponseCallback().acceptResponse(response));
@@ -64,7 +63,7 @@ class OnlyRedirectHttpResponseCallbackTest {
 		final var response = Mockito.mock(CloseableHttpResponse.class);
 		final var statusLine = Mockito.mock(StatusLine.class);
 		final var header = Mockito.mock(Header.class);
-		Mockito.when(response.getFirstHeader(ArgumentMatchers.eq("location"))).thenReturn(header);
+		Mockito.when(response.getFirstHeader("location")).thenReturn(header);
 		Mockito.when(header.getValue()).thenReturn("/");
 		Mockito.when(response.getStatusLine()).thenReturn(statusLine);
 		Mockito.when(statusLine.getStatusCode()).thenReturn(HttpServletResponse.SC_MOVED_TEMPORARILY);

@@ -132,7 +132,7 @@ public abstract class AbstractCsvReader<T> {
 	 * @param headers  Headers, an ordered property list. Header with <code>null</code> or empty name will skip the
 	 *                 corresponding column. Column values are also trimmed.
 	 */
-	public AbstractCsvReader(final Reader reader, final Class<T> beanType, final String... headers) {
+	protected AbstractCsvReader(final Reader reader, final Class<T> beanType, final String... headers) {
 		this.csvReader = new CsvReader(reader);
 		this.headers = StringUtils.stripAll(headers);
 		this.clazz = beanType;

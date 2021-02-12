@@ -18,6 +18,13 @@
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Ligoj Bootstrap Parent</description>
 	<url>https://github.com/ligoj/bootstrap</url>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://fabdouglas.mit-license.org/</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<scm>
 		<connection>scm:git:https://github.com/ligoj/bootstrap.git</connection>
 		<developerConnection>scm:git:https://github.com/ligoj/bootstrap.git</developerConnection>
@@ -31,13 +38,6 @@
 		<system>Travis</system>
 		<url>https://travis-ci.org/ligoj/bootstrap</url>
 	</ciManagement>
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>https://fabdouglas.mit-license.org/</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 	<properties>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 

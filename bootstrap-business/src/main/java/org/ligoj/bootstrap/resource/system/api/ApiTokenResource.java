@@ -117,10 +117,10 @@ public class ApiTokenResource {
 		try {
 			if (StringUtils.startsWith(token, PREFIX_TOKEN)) {
 				// Unsecured token, only null hash can match
-				return repository.findByUserAndToken(user, token) != null;
+				return repository.checkByUserAndToken(user, token);
 			}
 			// Check the API token from data base
-			return repository.findByUserAndHash(user, hash(token)) != null;
+			return repository.checkByUserAndHash(user, hash(token));
 		} catch (final GeneralSecurityException e) {
 			log.error("Unable to validate a token for user : " + user, e);
 		}
@@ -128,6 +128,7 @@ public class ApiTokenResource {
 		// Credential has not been validated, the user is invalid
 		return false;
 	}
+
 
 	/**
 	 * Return all API names owned by the current user.

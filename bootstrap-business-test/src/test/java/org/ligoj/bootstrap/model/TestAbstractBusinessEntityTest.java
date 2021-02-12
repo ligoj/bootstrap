@@ -30,10 +30,11 @@ class TestAbstractBusinessEntityTest extends AbstractBusinessEntityTest {
 	}
 
 	@Test
-	void testSystemDialect() throws ReflectiveOperationException {
+	void testPojo() throws ReflectiveOperationException {
 		testPojo(SystemDialect.class);
 		testPojo(SystemUserSetting.class);
 		testPojo(SystemUser.class);
+		testPojo(Generated.class);
 	}
 
 }

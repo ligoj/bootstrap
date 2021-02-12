@@ -159,14 +159,6 @@ class CsvForJpaTest {
 	}
 
 	@Test
-	void toJpa() throws Exception {
-		final var jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n"), true);
-		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
-	}
-
-	@Test
 	void toJpaFiltered() throws Exception {
 		Assertions.assertEquals(1,
 				csvForJpa.toJpa(DummyEntity3.class, new StringReader("login\nA"), true, true, e -> true).size());
@@ -198,20 +190,30 @@ class CsvForJpaTest {
 		Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity.class, str, true));
 	}
 
-	@Test
-	void toJpaTrailing1() throws Exception {
-		final var jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'\n"), true);
+	private void toJpa(final String input, final boolean hasHeader) throws Exception {
+		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(input), hasHeader);
 		Assertions.assertEquals(1, jpa.size());
 		assertEquals(newWine(), jpa.get(0));
 	}
 
 	@Test
+	void toJpa() throws Exception {
+		toJpa("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n4;5;1;2;3;6;7;8\n", true);
+	}
+
+	@Test
+	void toJpaTrailing1() throws Exception {
+		toJpa("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'\n", true);
+	}
+
+	@Test
 	void toJpaTrailing2() throws Exception {
-		final var jpa = csvForJpa.toJpa(DummyEntity.class,
-				new StringReader("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'\r"), true);
-		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
+		toJpa("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'\r", true);
+	}
+
+	@Test
+	void toJpaEntity() throws Exception {
+		toJpa("9;5;3;1;7;8;6;2\n", false);
 	}
 
 	/**
@@ -294,13 +296,6 @@ class CsvForJpaTest {
 		final var newWine = newWine();
 		newWine.setWneCnty("World\n, hold\non");
 		assertEquals(newWine, jpa.get(0));
-	}
-
-	@Test
-	void toJpaEntity() throws Exception {
-		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader("9;5;3;1;7;8;6;2\n"), false);
-		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
 	}
 
 	@Test

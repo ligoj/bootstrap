@@ -22,15 +22,16 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Service;
 
+import com.hazelcast.cache.HazelcastCacheManager;
 import com.hazelcast.cache.impl.CacheProxy;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.Member;
 import com.hazelcast.internal.cluster.ClusterService;
-import com.hazelcast.spi.AbstractDistributedObject;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -153,13 +154,11 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	@Override
 	public void onApplicationEvent(final ContextClosedEvent event) {
 		log.info("Stopping context detected, shutdown the Hazelcast instance");
-		// Get any cache to retrieve the Hazelcast instance
-		final var name = cacheManager.getCacheNames().iterator().next();
-		final var cache = (AbstractDistributedObject<?>) cacheManager.getCache(name).getNativeCache();
+		final var manager = (HazelcastCacheManager) ((JCacheCacheManager) cacheManager).getCacheManager();
 		try {
-			cache.getNodeEngine().getHazelcastInstance().getLifecycleService().terminate();
+			manager.getHazelcastInstance().getLifecycleService().terminate();
 		} catch (HazelcastInstanceNotActiveException he) {
-			log.info("Hazelcast node was already terminated");
+			log.info("Hazelcast node was already terminated: {}", he.getMessage());
 		}
 	}
 }

@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.cache.annotation.CacheRemoveAll;
@@ -30,6 +31,7 @@ import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -143,7 +145,7 @@ public class AuthorizationResource {
 		authorization.setPattern(entity.getPattern());
 		authorization.setType(entity.getType());
 		repository.save(authorization);
-		cacheManager.getCache("user-details").clear();
+		Optional.ofNullable(cacheManager.getCache("user-details")).ifPresent(Cache::clear);
 	}
 
 	/**
