@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
@@ -46,8 +48,8 @@
 
 		<!-- JSR-154 -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -121,14 +123,26 @@
 									<target name="Minify CSS">
 										<delete file="${target-css}.lst" quiet="true" />
 										<copy file="${reference-html}" tofile="${target-css}.lst" />
-										<replaceregexp file="${target-css}.lst" match=".*&lt;link\s+.*rel\s*=\s*&quot;stylesheet&quot;.*href\s*=\s*&quot;(.*?)&quot;\s+.*$" replace="${line.separator}###\1"
-											byline="false" flags="mg" encoding="utf-8" />
-										<replaceregexp file="${target-css}.lst" match="^(?!###).*$" replace="" byline="true" flags="g" encoding="utf-8" />
-										<replaceregexp file="${target-css}.lst" match="[&quot;?].*" replace="" byline="true" flags="g" encoding="utf-8" />
-										<replaceregexp file="${target-css}.lst" match="\r?\n\s*\r?\n" replace="" byline="false" flags="gm" encoding="utf-8" />
-										<replaceregexp file="${target-css}.lst" match="###" replace=",src/main/webapp/" byline="true" flags="g" encoding="utf-8" />
-										<replaceregexp file="${target-css}.lst" match="," replace="" byline="false" encoding="utf-8" />
-										<loadfile property="css-files" srcFile="${target-css}.lst" />
+										<replaceregexp file="${target-css}.lst"
+											match=".*&lt;link\s+.*rel\s*=\s*&quot;stylesheet&quot;.*href\s*=\s*&quot;(.*?)&quot;\s+.*$"
+											replace="${line.separator}###\1" byline="false" flags="mg"
+											encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst"
+											match="^(?!###).*$" replace="" byline="true" flags="g"
+											encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst"
+											match="[&quot;?].*" replace="" byline="true" flags="g"
+											encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst"
+											match="\r?\n\s*\r?\n" replace="" byline="false" flags="gm"
+											encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst"
+											match="###" replace=",src/main/webapp/" byline="true"
+											flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-css}.lst"
+											match="," replace="" byline="false" encoding="utf-8" />
+										<loadfile property="css-files"
+											srcFile="${target-css}.lst" />
 										<delete file="${target-css}.lst" quiet="true" />
 										<delete file="${target-css}.tmp" quiet="true" />
 										<concat destfile="${target-css}.tmp">
@@ -166,15 +180,28 @@
 								<configuration>
 									<target name="Minify Login CSS">
 										<delete file="${target-login-css}.lst" quiet="true" />
-										<copy file="${reference-login-html}" tofile="${target-login-css}.lst" />
-										<replaceregexp file="${target-login-css}.lst" match=".*&lt;link\s+.*rel\s*=\s*&quot;stylesheet&quot;.*href\s*=\s*&quot;(.*?)&quot;\s+.*$" replace="${line.separator}###\1"
-											byline="false" flags="mg" encoding="utf-8" />
-										<replaceregexp file="${target-login-css}.lst" match="^(?!###).*$" replace="" byline="true" flags="g" encoding="utf-8" />
-										<replaceregexp file="${target-login-css}.lst" match="[&quot;?].*" replace="" byline="true" flags="g" encoding="utf-8" />
-										<replaceregexp file="${target-login-css}.lst" match="\r?\n\s*\r?\n" replace="" byline="false" flags="gm" encoding="utf-8" />
-										<replaceregexp file="${target-login-css}.lst" match="###" replace=",src/main/webapp/" byline="true" flags="g" encoding="utf-8" />
-										<replaceregexp file="${target-login-css}.lst" match="," replace="" byline="false" encoding="utf-8" />
-										<loadfile property="css-files" srcFile="${target-login-css}.lst" />
+										<copy file="${reference-login-html}"
+											tofile="${target-login-css}.lst" />
+										<replaceregexp file="${target-login-css}.lst"
+											match=".*&lt;link\s+.*rel\s*=\s*&quot;stylesheet&quot;.*href\s*=\s*&quot;(.*?)&quot;\s+.*$"
+											replace="${line.separator}###\1" byline="false" flags="mg"
+											encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst"
+											match="^(?!###).*$" replace="" byline="true" flags="g"
+											encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst"
+											match="[&quot;?].*" replace="" byline="true" flags="g"
+											encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst"
+											match="\r?\n\s*\r?\n" replace="" byline="false" flags="gm"
+											encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst"
+											match="###" replace=",src/main/webapp/" byline="true"
+											flags="g" encoding="utf-8" />
+										<replaceregexp file="${target-login-css}.lst"
+											match="," replace="" byline="false" encoding="utf-8" />
+										<loadfile property="css-files"
+											srcFile="${target-login-css}.lst" />
 										<delete file="${target-login-css}.lst" quiet="true" />
 										<delete file="${target-login-css}.tmp" quiet="true" />
 										<concat destfile="${target-login-css}.tmp">
