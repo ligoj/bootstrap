@@ -44,11 +44,14 @@
 		<junit.platform.version>1.7.1</junit.platform.version>
 		<junit.jupiter.version>5.7.1</junit.jupiter.version>
 
+		<annotation-api.version>1.3.2</annotation-api.version>
+		<activation.version>1.2.0</activation.version>
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.9.6</aspectj.version>
 		<byte-buddy.version>1.10.20</byte-buddy.version>
 		<cache.version>1.1.0</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
+		<c3p0.version>0.9.5.5</c3p0.version>
 		<commons-codec>1.15</commons-codec>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-io.version>2.8.0</commons-io.version>
@@ -79,7 +82,9 @@
 		<mysql.version>8.0.21</mysql.version>
 		<postgresql.version>42.2.14</postgresql.version>
 		<paranamer.version>2.8</paranamer.version>
+		<persistence.version>2.2</persistence.version>
 		<quartz.version>2.3.2</quartz.version>
+		<servlet.version>4.0.4</servlet.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<spring.version>5.3.3</spring.version>
 		<spring-boot.version>2.4.2</spring-boot.version>
@@ -87,6 +92,7 @@
 		<spring-data.version>2.4.3</spring-data.version>
 		<spring-security.version>5.4.2</spring-security.version>
 		<spring-security-rsa>1.0.8.RELEASE</spring-security-rsa>
+		<transaction-api.version>1.2</transaction-api.version>
 		<wiremock.version>2.27.1</wiremock.version>
 	</properties>
 
@@ -512,7 +518,7 @@
 			<dependency>
 				<groupId>com.sun.activation</groupId>
 				<artifactId>javax.activation</artifactId>
-				<version>1.2.0</version>
+				<version>${activation.version}</version>
 			</dependency>
 
 			<!-- Database -->
@@ -582,21 +588,21 @@
 			<dependency>
 				<groupId>javax.persistence</groupId>
 				<artifactId>javax.persistence-api</artifactId>
-				<version>2.2</version>
+				<version>${persistence.version}</version>
 			</dependency>
 
 			<!-- JSR-907 -->
 			<dependency>
 				<groupId>javax.transaction</groupId>
 				<artifactId>javax.transaction-api</artifactId>
-				<version>1.2</version>
+				<version>${transaction-api.version}</version>
 			</dependency>
 
 			<!-- JSR-154 -->
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.1.0</version>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${servlet.version}</version>
 			</dependency>
 
 			<!-- CDI -->
@@ -610,7 +616,7 @@
 			<dependency>
 				<groupId>javax.annotation</groupId>
 				<artifactId>javax.annotation-api</artifactId>
-				<version>1.3.2</version>
+				<version>${annotation-api.version}</version>
 			</dependency>
 
 			<dependency>
@@ -628,6 +634,22 @@
 				<groupId>org.quartz-scheduler</groupId>
 				<artifactId>quartz</artifactId>
 				<version>${quartz.version}</version>
+				<exclusions>
+					<!-- No distributed jobs -->
+					<exclusion>
+						<groupId>com.mchange</groupId>
+						<artifactId>c3p0</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.mchange</groupId>
+						<artifactId>mchange-commons-java</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>${c3p0.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.wink</groupId>
@@ -717,10 +739,38 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-paranamer</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-parameter-names</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jdk8</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
