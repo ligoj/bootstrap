@@ -23,7 +23,7 @@ class PluginApplicationRunListenerTest {
 	@Test
 	void noPluginClassLoader() throws IOException, NoSuchAlgorithmException {
 		try (ThreadClassLoaderScope scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
-			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]).starting();
+			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]).starting(null);
 		}
 	}
 
@@ -32,9 +32,9 @@ class PluginApplicationRunListenerTest {
 		final var scope = new ThreadClassLoaderScope(new PluginsClassLoader());
 		try {
 			final var listener = new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]);
-			listener.starting();
+			listener.starting(null);
 			Assertions.assertTrue(listener.getOrder() < 0);
-			listener.environmentPrepared(null);
+			listener.environmentPrepared(null, null);
 			listener.contextPrepared(null);
 			listener.contextLoaded(null);
 			listener.started(null);
