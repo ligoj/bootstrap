@@ -245,6 +245,10 @@ public class ConfigurationResource {
 	@PUT
 	public void put(final ConfigurationEditionVo conf) {
 		self.put(conf.getName(), conf.getValue(), conf.isSystem(), conf.isSecured());
+		if (StringUtils.isNotBlank(conf.getOldName()) && !conf.getOldName().equals(conf.getName())) {
+			// This is a rename, delete the previous name
+			self.delete(conf.getOldName(), conf.isSystem());
+		}
 	}
 
 	/**

@@ -21,6 +21,11 @@ public class ConfigurationEditionVo extends SystemConfiguration {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Optional previous name. When defined, the configuration will be renamed.
+	 */
+	private String oldName;
+
+	/**
 	 * When <code>true</code> the value is secured and need to be read on-demand.
 	 */
 	private boolean secured;

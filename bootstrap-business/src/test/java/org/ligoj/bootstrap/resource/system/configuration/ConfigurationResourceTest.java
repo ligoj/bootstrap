@@ -158,15 +158,7 @@ class ConfigurationResourceTest extends AbstractBootTest {
 
 	@Test
 	void putSecuredOverrideSystem() {
-		final var vo = new ConfigurationEditionVo();
-		vo.setName("test-key44");
-		vo.setValue("new-value-db4");
-		vo.setSystem(true);
-		vo.setSecured(true);
-
-		// Initial value
-		Assertions.assertNull(resource.get("test-key44"));
-		Assertions.assertNull(System.getProperty("test-key44"));
+		final var vo = newVo();
 
 		try {
 			// Change the value
@@ -187,6 +179,55 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		} finally {
 			System.clearProperty(vo.getName());
 		}
+	}
+
+	@Test
+	void putRename() {
+		final var vo = newVo();
+
+		try {
+			// Change the value
+			resource.put(vo);
+			Assertions.assertEquals("new-value-db4", resource.get(vo.getName()));
+			
+			// Rename
+			vo.setName("test-key44-new");
+			vo.setOldName("test-key44");
+			vo.setValue("new-value-db4-new");
+			resource.put(vo);
+			
+			// Check new value with the new name
+			Assertions.assertEquals("new-value-db4-new", resource.get("test-key44-new"));
+			Assertions.assertNull(resource.get("test-key44"));
+
+			// Rename same name
+			vo.setOldName("test-key44-new");
+			resource.put(vo);
+			// No change
+			Assertions.assertEquals("new-value-db4-new", resource.get("test-key44-new"));
+			
+			
+			// Set the old name to a blank value
+			vo.setOldName("  ");
+			resource.put(vo);
+			Assertions.assertEquals("new-value-db4-new", resource.get("test-key44-new"));
+		} finally {
+			System.clearProperty("test-key44");
+			System.clearProperty("test-key44-new");
+		}
+	}
+
+	private ConfigurationEditionVo newVo() {
+		final var vo = new ConfigurationEditionVo();
+		vo.setName("test-key44");
+		vo.setValue("new-value-db4");
+		vo.setSystem(true);
+		vo.setSecured(true);
+
+		// Initial value
+		Assertions.assertNull(resource.get("test-key44"));
+		Assertions.assertNull(System.getProperty("test-key44"));
+		return vo;
 	}
 
 	@Test
