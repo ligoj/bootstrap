@@ -86,12 +86,12 @@
 		<quartz.version>2.3.2</quartz.version>
 		<servlet.version>4.0.4</servlet.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<spring.version>5.3.3</spring.version>
-		<spring-boot.version>2.4.2</spring-boot.version>
-		<spring-cloud.version>3.0.1</spring-cloud.version>
-		<spring-data.version>2.4.3</spring-data.version>
-		<spring-security.version>5.4.2</spring-security.version>
-		<spring-security-rsa>1.0.8.RELEASE</spring-security-rsa>
+		<spring.version>5.3.6</spring.version>
+		<spring-boot.version>2.4.5</spring-boot.version>
+		<spring-cloud.version>3.0.2</spring-cloud.version>
+		<spring-data.version>2.4.8</spring-data.version>
+		<spring-security.version>5.4.6</spring-security.version>
+		<spring-security-rsa>1.0.10.RELEASE</spring-security-rsa>
 		<transaction-api.version>1.2</transaction-api.version>
 		<wiremock.version>2.27.2</wiremock.version>
 	</properties>
