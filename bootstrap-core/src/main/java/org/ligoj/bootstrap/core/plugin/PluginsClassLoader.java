@@ -329,7 +329,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	public static String toExtendedVersion(final String version) {
 		final var fileWithVersionExp = new StringBuilder();
-		final String[] allFragments = { "0", "0", "0", "0" };
+		final var allFragments = new String[]{ "0", "0", "0", "0" };
 		final var versionFragments = ObjectUtils.defaultIfNull(StringUtils.split(version, "-."), allFragments);
 		System.arraycopy(versionFragments, 0, allFragments, 0, versionFragments.length);
 		Arrays.stream(allFragments).map(s -> StringUtils.leftPad(StringUtils.leftPad(s, 7, '0'), 8, 'Z'))
