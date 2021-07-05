@@ -94,7 +94,7 @@
 		<spring-security.version>5.5.1</spring-security.version>
 		<spring-security-rsa>1.0.10.RELEASE</spring-security-rsa>
 		<transaction-api.version>1.2</transaction-api.version>
-		<wiremock.version>2.28.0</wiremock.version>
+		<wiremock.version>2.29.0</wiremock.version>
 	</properties>
 
 	<dependencyManagement>
