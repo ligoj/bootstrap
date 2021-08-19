@@ -42,6 +42,9 @@ public class CsvForJpa extends AbstractCsvManager {
 	@PersistenceContext(type = PersistenceContextType.TRANSACTION, unitName = "pu")
 	private EntityManager em;
 
+	/**
+	 * Transaction manager used to manage separated CSV files.
+	 */
 	@Autowired
 	protected JpaTransactionManager transactionManager;
 

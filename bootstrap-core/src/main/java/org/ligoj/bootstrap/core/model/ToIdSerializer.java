@@ -20,17 +20,22 @@ public class ToIdSerializer extends StdSerializer<Persistable<?>> {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+
 	/**
 	 * JAX-RS serializer instance.
 	 */
 	public static final ToIdSerializer INSTANCE = new ToIdSerializer();
 
+	/**
+	 * Default constructor.
+	 */
 	protected ToIdSerializer() {
 		super(Persistable.class, false);
 	}
 
 	@Override
-	public void serialize(final Persistable<?> bean, final JsonGenerator generator, final SerializerProvider provider) throws IOException {
+	public void serialize(final Persistable<?> bean, final JsonGenerator generator, final SerializerProvider provider)
+			throws IOException {
 		if (bean.getId() instanceof Number) {
 			// Numeric, but no decimal accepted
 			generator.writeNumber(((Number) bean.getId()).longValue());

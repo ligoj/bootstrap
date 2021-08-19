@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public class MapProcessor<T> extends BeanProcessor<T> {
 
+	/**
+	 * Shared map values.
+	 */
 	protected final Map<?, ?> map;
 
 	/**

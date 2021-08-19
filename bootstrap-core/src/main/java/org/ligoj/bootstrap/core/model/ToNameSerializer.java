@@ -25,6 +25,9 @@ public class ToNameSerializer extends StdSerializer<INamableBean<?>> {
 	 */
 	public static final ToNameSerializer INSTANCE = new ToNameSerializer();
 
+	/**
+	 * Default constructor.
+	 */
 	protected ToNameSerializer() {
 		super(INamableBean.class, false);
 	}

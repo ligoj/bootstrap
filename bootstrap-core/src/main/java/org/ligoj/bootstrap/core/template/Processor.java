@@ -18,6 +18,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Processor<T> {
 
+	/**
+	 * Shared data value.
+	 */
 	protected Object data;
 
 	/**

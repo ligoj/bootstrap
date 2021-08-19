@@ -19,14 +19,15 @@ import org.hibernate.mapping.Constraint;
 import org.hibernate.mapping.Table;
 
 /**
- * Implements the original legacy naming behavior : 
+ * Implements the original legacy naming behavior :
  * <ul>
  * <li>no "_id" for join column</li>
  * <li>FK has "FK_" as prefix</li>
  * <li>Join column use table name instead of entity name</li>
  * </ul>
  */
-public class ImplicitNamingStrategyNiceJpaImpl extends org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl {
+public class ImplicitNamingStrategyNiceJpaImpl
+		extends org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl {
 
 	/**
 	 * SID
@@ -40,7 +41,8 @@ public class ImplicitNamingStrategyNiceJpaImpl extends org.hibernate.boot.model.
 
 	@Override
 	public Identifier determineJoinColumnName(final ImplicitJoinColumnNameSource source) {
-		if (source.getNature() == ImplicitJoinColumnNameSource.Nature.ELEMENT_COLLECTION || source.getAttributePath() == null) {
+		if (source.getNature() == ImplicitJoinColumnNameSource.Nature.ELEMENT_COLLECTION
+				|| source.getAttributePath() == null) {
 			return source.getReferencedTableName();
 		}
 		return toIdentifier(transformAttributePath(source.getAttributePath()), source.getBuildingContext());
@@ -48,37 +50,43 @@ public class ImplicitNamingStrategyNiceJpaImpl extends org.hibernate.boot.model.
 
 	@Override
 	public Identifier determineJoinTableName(final ImplicitJoinTableNameSource source) {
-		final var name = source.getOwningPhysicalTableName() + '_' + transformAttributePath(source.getAssociationOwningAttributePath());
+		final var name = source.getOwningPhysicalTableName() + '_'
+				+ transformAttributePath(source.getAssociationOwningAttributePath());
 		return toIdentifier(name, source.getBuildingContext());
 	}
 
 	/**
-	 * For JPA standards we typically need the unqualified name. However, a more usable
-	 * impl tends to use the whole path. This method provides an easy hook for subclasses
-	 * to accomplish that
+	 * For JPA standards we typically need the unqualified name. However, a more usable impl tends to use the whole
+	 * path. This method provides an easy hook for subclasses to accomplish that
 	 *
-	 * @param attributePath
-	 *            The attribute path
+	 * @param attributePath The attribute path
 	 * @return The extracted name
 	 */
 	@Override
 	protected String transformAttributePath(final AttributePath attributePath) {
-		return StringUtils.lowerCase(String.join("_", StringUtils.splitByCharacterTypeCamelCase(attributePath.getProperty())));
+		return StringUtils
+				.lowerCase(String.join("_", StringUtils.splitByCharacterTypeCamelCase(attributePath.getProperty())));
 	}
 
 	@Override
 	public Identifier determineForeignKeyName(final ImplicitForeignKeyNameSource source) {
-		return toIdentifier(Constraint.generateName("FK_", new Table(source.getTableName().getText()), toColumns(source.getColumnNames())),
-				source.getBuildingContext());
+		return toIdentifier(Constraint.generateName("FK_", new Table(source.getTableName().getText()),
+				toColumns(source.getColumnNames())), source.getBuildingContext());
 	}
 
+	/**
+	 * Return the column of given identifiers.
+	 * 
+	 * @param identifiers The identifiers to map.
+	 * @return The column of given identifiers.
+	 */
 	protected List<Column> toColumns(final List<Identifier> identifiers) {
 		return identifiers.stream().map(column -> new Column(column.getText())).collect(Collectors.toList());
 	}
 
 	@Override
 	public Identifier determineUniqueKeyName(final ImplicitUniqueKeyNameSource source) {
-		return toIdentifier(Constraint.generateName("UK_", new Table(source.getTableName().getText()), toColumns(source.getColumnNames())),
-				source.getBuildingContext());
+		return toIdentifier(Constraint.generateName("UK_", new Table(source.getTableName().getText()),
+				toColumns(source.getColumnNames())), source.getBuildingContext());
 	}
 }

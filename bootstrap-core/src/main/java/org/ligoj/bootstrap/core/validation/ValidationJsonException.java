@@ -167,7 +167,7 @@ public class ValidationJsonException extends RuntimeException {
 		}
 	}
 
-	protected Serializable[] toArray(final Object[] raw) {
+	private Serializable[] toArray(final Object[] raw) {
 		final var result = new Serializable[raw.length];
 		for (var i = 0; i < raw.length; i++) {
 			final var obj = raw[i];

@@ -75,6 +75,7 @@ public class CurlProcessor implements AutoCloseable {
 			return new X509Certificate[0];
 		}
 	}
+
 	/**
 	 * Proxy configuration constants
 	 */
@@ -111,8 +112,7 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Return a trusted SSL registry using the given protocol.
 	 *
-	 * @param protocol
-	 *            The SSL protocol.
+	 * @param protocol The SSL protocol.
 	 * @return A new trusted SSL registry using the given protocol.
 	 */
 	protected static Registry<ConnectionSocketFactory> newSslContext(final String protocol) {
@@ -121,8 +121,7 @@ public class CurlProcessor implements AutoCloseable {
 		try {
 			final var sslContext = SSLContext.getInstance(protocol);
 			sslContext.init(null, allCerts, new SecureRandom());
-			final var sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-					NoopHostnameVerifier.INSTANCE);
+			final var sslSocketFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
 			return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslSocketFactory)
 					.register("http", PlainConnectionSocketFactory.getSocketFactory()).build();
 		} catch (final GeneralSecurityException e) {
@@ -134,12 +133,9 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Create a new processor, check the URL, and if failed, throw a {@link ValidationJsonException}
 	 *
-	 * @param url
-	 *            The URL to check.
-	 * @param propertyName
-	 *            Name of the validation JSon property
-	 * @param errorText
-	 *            I18N key of the validation message.
+	 * @param url          The URL to check.
+	 * @param propertyName Name of the validation JSon property
+	 * @param errorText    I18N key of the validation message.
 	 */
 	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
 		try (final var curlProcessor = new CurlProcessor()) {
@@ -152,6 +148,9 @@ public class CurlProcessor implements AutoCloseable {
 
 	protected final HttpClientBuilder clientBuilder;
 
+	/**
+	 * Optional response callback.
+	 */
 	@Setter
 	protected HttpResponseCallback callback;
 
@@ -171,8 +170,7 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Prepare a processor with callback.
 	 *
-	 * @param callback
-	 *            Not <code>null</code> {@link HttpResponseCallback} used for each response.
+	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
 	 */
 	public CurlProcessor(final HttpResponseCallback callback) {
 		this.callback = callback;
@@ -225,14 +223,10 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Add a header if not defined in <param>request</param>.
 	 *
-	 * @param request
-	 *            The user defined request.
-	 * @param httpRequest
-	 *            The target HTTP request.
-	 * @param header
-	 *            The single valued header to add.
-	 * @param defaultHeader
-	 *            The default value of header to add.
+	 * @param request       The user defined request.
+	 * @param httpRequest   The target HTTP request.
+	 * @param header        The single valued header to add.
+	 * @param defaultHeader The default value of header to add.
 	 */
 	private void addSingleValuedHeader(final CurlRequest request, final HttpRequestBase httpRequest,
 			final String header, final String defaultHeader) {
@@ -246,17 +240,14 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Call the HTTP method.
 	 *
-	 * @param request
-	 *            The request to process.
-	 * @param url
-	 *            The URL to call.
+	 * @param request The request to process.
+	 * @param url     The URL to call.
 	 * @return <code>true</code> when the call succeed.
-	 * @throws Exception
-	 *             When process failed at protocol level or timeout.
+	 * @throws Exception When process failed at protocol level or timeout.
 	 */
 	protected boolean call(final CurlRequest request, final String url) throws Exception { // NOSONAR - Many Exception
-		final var httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod())
-				.getConstructor(String.class).newInstance(url);
+		final var httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod()).getConstructor(String.class)
+				.newInstance(url);
 		addHeaders(request, request.getContent(), httpRequest);
 
 		// Timeout management
@@ -297,10 +288,8 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Execute a GET and return the content.
 	 *
-	 * @param url
-	 *            The GET URL.
-	 * @param headers
-	 *            Optional headers <code>name:value</code>.
+	 * @param url     The GET URL.
+	 * @param headers Optional headers <code>name:value</code>.
 	 * @return the response if there is no error, or <code>null</code>/
 	 */
 	public String get(final String url, final String... headers) {
@@ -313,14 +302,13 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Execute the given requests.
 	 *
-	 * @param requests
-	 *            the request to proceed.
+	 * @param requests the request to proceed.
 	 * @return <code>true</code> if the process succeed.
 	 */
 	public boolean process(final CurlRequest... requests) {
 
 		// Log file base 0 counter
-        var counter = 0;
+		var counter = 0;
 		for (final var request : requests) {
 			// Update the counter
 			request.counter = counter++;
@@ -336,8 +324,7 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Process the given request.
 	 *
-	 * @param request
-	 *            The request to process.
+	 * @param request The request to process.
 	 * @return <code>true</code> when the call succeed.
 	 */
 	protected boolean process(final CurlRequest request) {
@@ -346,7 +333,7 @@ public class CurlProcessor implements AutoCloseable {
 		// Expose the current processor to this request
 		request.processor = this;
 		try {
-            var result = call(request, url);
+			var result = call(request, url);
 			if (!result && replay != null) {
 				// Replay as needed this request
 				result = replay.apply(request) && call(request, url);
@@ -362,8 +349,7 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Execute the given requests. Cookies are kept along this execution and the next ones associated to this processor.
 	 *
-	 * @param requests
-	 *            the request to proceed.
+	 * @param requests the request to proceed.
 	 * @return <code>true</code> if the process succeed.
 	 */
 	public boolean process(final List<CurlRequest> requests) {
@@ -373,12 +359,9 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Check the request, and if failed, throw a {@link ValidationJsonException}
 	 *
-	 * @param request
-	 *            The request to check.
-	 * @param propertyName
-	 *            Name of the validation JSon property
-	 * @param errorText
-	 *            I18N key of the validation message.
+	 * @param request      The request to check.
+	 * @param propertyName Name of the validation JSon property
+	 * @param errorText    I18N key of the validation message.
 	 */
 	public void validate(final CurlRequest request, final String propertyName, final String errorText) {
 		if (!process(request)) {
@@ -389,12 +372,10 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Check the URL, and if failed, throw a {@link ValidationJsonException}
 	 *
-	 * @param url
-	 *            The URL to check.
-	 * @param propertyName
-	 *            Name of the validation JSon property name for {@link ValidationJsonException} when the check fails.
-	 * @param errorText
-	 *            I18N key of the validation message when the check fails.
+	 * @param url          The URL to check.
+	 * @param propertyName Name of the validation JSon property name for {@link ValidationJsonException} when the check
+	 *                     fails.
+	 * @param errorText    I18N key of the validation message when the check fails.
 	 */
 	public void validate(final String url, final String propertyName, final String errorText) {
 		validate(new CurlRequest(HttpMethod.GET, url, null), propertyName, errorText);

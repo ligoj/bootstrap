@@ -23,6 +23,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class CurlCacheToken {
 
+	/**
+	 * Current context.
+	 */
 	@Autowired
 	protected ApplicationContext applicationContext;
 
