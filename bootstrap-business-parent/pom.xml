@@ -48,8 +48,8 @@
 
 		<!-- JSR-907 -->
 		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>javax.transaction-api</artifactId>
+			<groupId>jakarta.transaction</groupId>
+			<artifactId>jakarta.transaction-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
@@ -62,21 +62,14 @@
 
 		<!-- CDI -->
 		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.el</groupId>
-					<artifactId>javax.el-api</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>jakarta.enterprise</groupId>
+			<artifactId>jakarta.enterprise.cdi-api</artifactId>
 		</dependency>
 
 		<!-- JSR-250 -->
 		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 
 		<dependency>
@@ -150,40 +143,12 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*.txt</exclude>
-					<exclude>**/*.csv</exclude>
-					<exclude>**/*.xls</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.csv</include>
-					<include>**/*.xls</include>
-				</includes>
 			</resource>
 		</resources>
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*.txt</exclude>
-					<exclude>**/*.csv</exclude>
-					<exclude>**/*.xls</exclude>
-				</excludes>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.csv</include>
-					<include>**/*.xls</include>
-				</includes>
 			</testResource>
 		</testResources>
 	</build>

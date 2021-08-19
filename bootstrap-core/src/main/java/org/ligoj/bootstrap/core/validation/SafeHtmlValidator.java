@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Parser;
 import org.jsoup.safety.Cleaner;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 /**
  * Validate that the string does not contain malicious code.
@@ -24,7 +24,7 @@ import org.jsoup.safety.Whitelist;
  * @author Fabrice Daugan
  */
 public class SafeHtmlValidator implements ConstraintValidator<SafeHtml, CharSequence> {
-	private final Whitelist whitelist = Whitelist.relaxed().addProtocols("a", "href", "#");
+	private final Safelist whitelist = Safelist.relaxed().addProtocols("a", "href", "#");
 	private static final String BASE_URI = "https://h.o.s.t";
 
 	@Override

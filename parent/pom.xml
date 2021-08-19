@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.ligoj.parent</groupId>
 		<artifactId>project</artifactId>
-		<version>15.0.1</version>
+		<version>16.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -41,60 +41,59 @@
 	<properties>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
-		<junit.platform.version>1.7.1</junit.platform.version>
-		<junit.jupiter.version>5.7.1</junit.jupiter.version>
-
-		<annotation-api.version>1.3.2</annotation-api.version>
-		<activation.version>1.2.0</activation.version>
+		<annotation-api.version>1.3.5</annotation-api.version>
+		<activation.version>1.2.2</activation.version>
 		<apacheds.version>1.5.5</apacheds.version>
 		<aspectj.version>1.9.7</aspectj.version>
-		<byte-buddy.version>1.11.6</byte-buddy.version>
-		<cache.version>1.1.0</cache.version>
+		<byte-buddy.version>1.11.12</byte-buddy.version>
+		<cache.version>1.1.1</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
 		<c3p0.version>0.9.5.5</c3p0.version>
 		<commons-codec>1.15</commons-codec>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-collections.version>3.2.2</commons-collections.version>
-		<commons-io.version>2.10.0</commons-io.version>
+		<commons-io.version>2.11.0</commons-io.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<commons-text.version>1.9</commons-text.version>
 		<cxf.version>3.3.11</cxf.version>
-		<dbcp.version>2.8.0</dbcp.version>
+		<dbcp.version>2.9.0</dbcp.version>
 		<dom4j.version>2.1.3</dom4j.version>
+		<enterprise.cdi-api.version>2.0.2</enterprise.cdi-api.version>
 		<guava.version>30.1.1-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>3.12.12</hazelcast.version>
-		<hibernate.version>5.5.3.Final</hibernate.version>
+		<hibernate.version>5.5.6.Final</hibernate.version>
 		<hibernate-validator.version>6.2.0.Final</hibernate-validator.version>
 		<httpclient.version>4.5.13</httpclient.version>
 		<httpcore.version>4.4.14</httpcore.version>
 		<hsqldb.version>2.6.0</hsqldb.version>
-		<jackson.version>2.12.3</jackson.version>
-		<jackson.databind.version>2.12.3</jackson.databind.version>
+		<jackson.version>2.12.4</jackson.version>
+		<jackson.databind.version>2.12.4</jackson.databind.version>
 		<jasypt.version>1.9.3</jasypt.version>
 		<jaxb.version>2.3.2</jaxb.version>
-		<jetty.version>9.4.42.v20210604</jetty.version>
+		<jetty.version>9.4.43.v20210629</jetty.version>
 		<jodd-bean.version>5.1.4</jodd-bean.version>
-		<jsoup.version>1.13.1</jsoup.version>
+		<jsoup.version>1.14.2</jsoup.version>
 		<log4j.version>2.14.1</log4j.version>
 		<lombok.version>1.18.20</lombok.version>
-		<mail.version>1.6.1</mail.version>
+		<mail.version>1.6.7</mail.version>
 		<mockito.version>3.11.2</mockito.version>
 		<mysql.version>8.0.25</mysql.version>
 		<postgresql.version>42.2.20</postgresql.version>
 		<paranamer.version>2.8</paranamer.version>
-		<persistence.version>2.2</persistence.version>
+		<persistence.version>2.2.3</persistence.version>
 		<quartz.version>2.3.2</quartz.version>
 		<servlet.version>4.0.4</servlet.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<spring.version>5.3.8</spring.version>
-		<spring-boot.version>2.5.2</spring-boot.version>
+		<slf4j.version>1.7.32</slf4j.version>
+		<soap-api.version>1.4.2</soap-api.version>
+		<spring.version>5.3.9</spring.version>
+		<spring-boot.version>2.5.3</spring-boot.version>
 		<spring-cloud.version>3.0.3</spring-cloud.version>
-		<spring-data.version>2.5.2</spring-data.version>
-		<spring-security.version>5.5.1</spring-security.version>
+		<spring-data.version>2.5.4</spring-data.version>
+		<spring-security.version>5.5.2</spring-security.version>
 		<spring-security-rsa>1.0.10.RELEASE</spring-security-rsa>
-		<transaction-api.version>1.2</transaction-api.version>
-		<wiremock.version>2.29.0</wiremock.version>
+		<transaction-api.version>1.3.3</transaction-api.version>
+		<wiremock.version>2.30.1</wiremock.version>
 	</properties>
 
 	<dependencyManagement>
@@ -140,6 +139,138 @@
 				<version>${cxf.version}</version>
 				<exclusions>
 					<exclusion>
+						<groupId>javax.xml.soap</groupId>
+						<artifactId>javax.xml.soap-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-jta_1.1_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.sun.activation</groupId>
+						<artifactId>javax.activation</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-json-basic</artifactId>
+				<version>${cxf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.xml.soap</groupId>
+						<artifactId>javax.xml.soap-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.sun.activation</groupId>
+						<artifactId>javax.activation</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-jta_1.1_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.activation</groupId>
+						<artifactId>activation</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.rmi</groupId>
+						<artifactId>jboss-rmi-api_1.0_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-xjc</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-service-description-swagger</artifactId>
+				<version>${cxf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.xml.soap</groupId>
+						<artifactId>javax.xml.soap-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.sun.activation</groupId>
+						<artifactId>javax.activation</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-jta_1.1_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.rmi</groupId>
+						<artifactId>jboss-rmi-api_1.0_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.validation</groupId>
+						<artifactId>validation-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-rs-service-description</artifactId>
+				<version>${cxf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-jta_1.1_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.sun.activation</groupId>
+						<artifactId>javax.activation</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http</artifactId>
+				<version>${cxf.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
 					</exclusion>
@@ -151,9 +282,17 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-rt-rs-service-description</artifactId>
+				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 				<version>${cxf.version}</version>
 				<exclusions>
+					<exclusion>
+						<groupId>javax.xml.ws</groupId>
+						<artifactId>jaxws-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.annotation</groupId>
+						<artifactId>javax.annotation-api</artifactId>
+					</exclusion>
 					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -171,6 +310,11 @@
 				<artifactId>jaxb-runtime</artifactId>
 				<version>${jaxb.version}</version>
 			</dependency>
+			<dependency>
+			    <groupId>jakarta.xml.ws</groupId>
+   				<artifactId>jakarta.xml.ws-api</artifactId>
+   				<version>${jaxb.version}</version>
+   			</dependency>
 			<dependency>
 				<groupId>jakarta.xml.bind</groupId>
 				<artifactId>jakarta.xml.bind-api</artifactId>
@@ -434,15 +578,9 @@
 			<!-- JSR-919 -->
 			<dependency>
 				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
+				<artifactId>jakarta.mail</artifactId>
 				<version>${mail.version}</version>
 				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 
 			<dependency>
@@ -519,11 +657,11 @@
 			<dependency>
 				<groupId>jakarta.activation</groupId>
 				<artifactId>jakarta.activation-api</artifactId>
-				<version>1.2.1</version>
+				<version>${activation.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.activation</groupId>
-				<artifactId>javax.activation</artifactId>
+				<artifactId>jakarta.activation</artifactId>
 				<version>${activation.version}</version>
 			</dependency>
 
@@ -580,6 +718,10 @@
 						<artifactId>javax.activation-api</artifactId>
 					</exclusion>
 					<exclusion>
+						<groupId>javax.persistence</groupId>
+						<artifactId>javax.persistence-api</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>org.jboss.spec.javax.transaction</groupId>
 						<artifactId>jboss-transaction-api_1.2_spec</artifactId>
 					</exclusion>
@@ -592,15 +734,15 @@
 
 			<!-- JSR-317, JSR 338 -->
 			<dependency>
-				<groupId>javax.persistence</groupId>
-				<artifactId>javax.persistence-api</artifactId>
+				<groupId>jakarta.persistence</groupId>
+				<artifactId>jakarta.persistence-api</artifactId>
 				<version>${persistence.version}</version>
 			</dependency>
 
 			<!-- JSR-907 -->
 			<dependency>
-				<groupId>javax.transaction</groupId>
-				<artifactId>javax.transaction-api</artifactId>
+				<groupId>jakarta.transaction</groupId>
+				<artifactId>jakarta.transaction-api</artifactId>
 				<version>${transaction-api.version}</version>
 			</dependency>
 
@@ -613,15 +755,15 @@
 
 			<!-- CDI -->
 			<dependency>
-				<groupId>javax.enterprise</groupId>
-				<artifactId>cdi-api</artifactId>
-				<version>1.2</version>
+				<groupId>jakarta.enterprise</groupId>
+				<artifactId>jakarta.enterprise.cdi-api</artifactId>
+				<version>${enterprise.cdi-api.version}</version>
 			</dependency>
 
 			<!-- JSR-250 -->
 			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>javax.annotation-api</artifactId>
+				<groupId>jakarta.annotation</groupId>
+				<artifactId>jakarta.annotation-api</artifactId>
 				<version>${annotation-api.version}</version>
 			</dependency>
 
@@ -787,8 +929,42 @@
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.databind.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.soap</groupId>
+				<artifactId>jakarta.xml.soap-api</artifactId>
+				<version>${soap-api.version}</version>
+			</dependency>
+			
+		
 		</dependencies>
 	</dependencyManagement>
+	
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${plugin.resources}</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+						<propertiesEncoding>UTF-8</propertiesEncoding>
+						<nonFilteredFileExtensions>
+							<nonFilteredFileExtension>zip</nonFilteredFileExtension>
+							<nonFilteredFileExtension>csv</nonFilteredFileExtension>
+							<nonFilteredFileExtension>jar</nonFilteredFileExtension>
+							<nonFilteredFileExtension>txt</nonFilteredFileExtension>
+							<nonFilteredFileExtension>xls</nonFilteredFileExtension>
+							<nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+							<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+							<nonFilteredFileExtension>png</nonFilteredFileExtension>
+							<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+						</nonFilteredFileExtensions>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<profiles>
 		<profile>

@@ -12,8 +12,8 @@
 	<dependencies>
 		<!-- JSR-907 -->
 		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>javax.transaction-api</artifactId>
+			<groupId>jakarta.transaction</groupId>
+			<artifactId>jakarta.transaction-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
@@ -87,46 +87,4 @@
 			<artifactId>wiremock-jre8</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*.txt</exclude>
-					<exclude>**/*.csv</exclude>
-					<exclude>**/*.xls</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.csv</include>
-					<include>**/*.xls</include>
-				</includes>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*.txt</exclude>
-					<exclude>**/*.csv</exclude>
-					<exclude>**/*.xls</exclude>
-				</excludes>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>**/*.txt</include>
-					<include>**/*.csv</include>
-					<include>**/*.xls</include>
-				</includes>
-			</testResource>
-		</testResources>
-	</build>
 </project>
