@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.cache;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -18,9 +19,12 @@ import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 
 import com.hazelcast.cache.HazelcastCacheManager;
+import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
+
+import lombok.Setter;
 
 /**
  * Factory of {@link EhCacheManagerFactoryBean} with modular {@link CacheConfig} creation delegate to
@@ -28,16 +32,26 @@ import com.hazelcast.config.EvictionPolicy;
  */
 public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {
 
+	/**
+	 * Cache manager instance.
+	 */
 	protected CacheManager cacheManager;
+
+	/**
+	 * Cache configuration location.
+	 */
+	@Setter
+	private String location;
 
 	@Autowired
 	protected ApplicationContext context;
 
 	@Override
-	public void afterPropertiesSet() {
-		final var provider = Caching.getCachingProvider();
-		final var manager = (HazelcastCacheManager) provider
-				.getCacheManager(URI.create("bootstrap-cache-manager"), null);
+	public void afterPropertiesSet() throws URISyntaxException {
+		final var properties = HazelcastCachingProvider.propertiesByLocation(location);
+		final var provider = (com.hazelcast.cache.HazelcastCachingProvider) Caching.getCachingProvider();
+		final var manager = (HazelcastCacheManager) provider.getCacheManager(new URI("bootstrap-cache-manager"), null,
+				properties);
 		context.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this::newCacheConfig));
 		this.cacheManager = manager;
 	}
@@ -45,8 +59,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	/**
 	 * Compete the configuration after its creation and configuration be {@link CacheManagerAware} implementor.
 	 *
-	 * @param mapConfig
-	 *            The target {@link CacheConfig} to configure.
+	 * @param mapConfig The target {@link CacheConfig} to configure.
 	 */
 	protected void postConfigure(final CacheConfig<?, ?> mapConfig) {
 		if (CacheResource.isStatisticEnabled()) {
