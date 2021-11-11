@@ -42,8 +42,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	 * Set the configuration object to use the specified file name to load the value for the password. The password is
 	 * trimmed to <code>null</code>.
 	 *
-	 * @param passwordFilename
-	 *            the name of the file name to load.
+	 * @param passwordFilename the name of the file name to load.
 	 * @return The resolved password from given file or <code>null</code> if failed.
 	 */
 	protected String getPasswordFromFile(final String passwordFilename) {
@@ -69,14 +68,12 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	/**
 	 * Read a password value from the piped readers.
 	 *
-	 * @param property
-	 *            Initial property to read.
-	 * @param pipedReaders
-	 *            The ordered readers. Stopped when <code>null</code> is returned.
+	 * @param property     Initial property to read.
+	 * @param pipedReaders The ordered readers. Stopped when <code>null</code> is returned.
 	 */
 	@SafeVarargs
 	private String pipe(final String property, final UnaryOperator<String>... pipedReaders) {
-        var value = property;
+		var value = property;
 		for (final var reader : pipedReaders) {
 			if (StringUtils.isNotBlank(value)) {
 				value = reader.apply(value);
@@ -93,12 +90,12 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	@Override
 	public char[] getPasswordCharArray() {
 		// Raw value providers
-        var password = pipe(passwordSysPropertyName, System::getProperty);
+		var password = pipe(passwordSysPropertyName, p -> System.getProperty(p));
 		if (password == null) {
 			password = pipe(passwordSysPropertyName, GlobalPropertyUtils::getProperty);
 		}
 		if (password == null) {
-			password = pipe(passwordEnvName, System::getenv);
+			password = pipe(passwordEnvName, p -> System.getenv(p));
 		}
 
 		// File providers
