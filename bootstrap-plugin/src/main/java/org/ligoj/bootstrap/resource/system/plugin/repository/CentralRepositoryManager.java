@@ -26,7 +26,7 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 
 	private static final String DEFAULT_ARTIFACT_URL = "https://repo.maven.apache.org/maven2/org/ligoj/plugin/";
 	private static final String DEFAULT_GROUP_ID = "org.ligoj.plugin";
-	private static final String DEFAULT_SEARCH_URL = "http://search.maven.org/solrsearch/select?wt=json&rows=100&q=";
+	private static final String DEFAULT_SEARCH_URL = "https://search.maven.org/solrsearch/select?wt=json&rows=100&q=";
 
 	@Override
 	public String getId() {
