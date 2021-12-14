@@ -75,7 +75,7 @@
 		<jodd-bean.version>5.1.4</jodd-bean.version>
 		<jsoup.version>1.14.2</jsoup.version>
 		<log4j.version>2.16.0</log4j.version>
-		<lombok.version>1.18.20</lombok.version>
+		<lombok.version>1.18.22</lombok.version>
 		<mail.version>1.6.7</mail.version>
 		<mockito.version>3.11.2</mockito.version>
 		<mysql.version>8.0.25</mysql.version>
