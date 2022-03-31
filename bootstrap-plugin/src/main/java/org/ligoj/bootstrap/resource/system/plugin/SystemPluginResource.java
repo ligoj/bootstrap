@@ -116,15 +116,24 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	@Autowired
 	private SystemPluginRepository repository;
 
+	/**
+	 * Injected CSV bean mapper for JPA shared with child classes.
+	 */
 	@Autowired
 	protected CsvForJpa csvForJpa;
 
+	/**
+	 * Injected entity manager shared with child classes.
+	 */
 	@Autowired
 	protected EntityManager em;
 
 	@Autowired
 	private RestartEndpoint restartEndpoint;
 
+	/**
+	 * Injected Spring context
+	 */
 	@Autowired
 	protected ApplicationContext context;
 
@@ -671,6 +680,16 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		return plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
 	}
 
+	/**
+	 * Configure a plug-in from a given class and CSV. Its content is converted into target entity's type and inserted
+	 * with JPA. The CSV file must be located inside the scope of the target plug-in.
+	 * 
+	 * @param <T> Target class type.
+	 * @param csv List of URL of CSV. Only the first one matching to plug-in location is read.
+	 * @param entityClass Target class of the CSV.
+	 * @param pluginLocation The plug-in owner's location
+	 * @throws IOException When the CSV management failed.
+	 */
 	protected <T> void configurePluginEntity(final Stream<URL> csv, final Class<T> entityClass,
 			final String pluginLocation) throws IOException {
 		// Accept the CSV file only from the JAR/folder where the plug-in is installed from

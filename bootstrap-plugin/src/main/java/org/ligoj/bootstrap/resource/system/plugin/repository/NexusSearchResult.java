@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Result from maven search
+ * Result from Maven search
  */
 @Getter
 @Setter
@@ -20,9 +20,16 @@ public class NexusSearchResult implements Artifact {
 	 * SID
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Artifact name (Maven central representation)
+	 */
 	@JsonProperty("artifactId")
 	private String artifact;
 
+	/**
+	 * Full artifact's version.
+	 */
 	@JsonProperty("latestRelease")
 	private String version;
 }

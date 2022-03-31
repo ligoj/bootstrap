@@ -19,15 +19,20 @@ public class ArtifactVo implements Artifact {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * ArtifactID
+	 */
 	private String artifact;
 
+	/**
+	 * Full version.
+	 */
 	private String version;
 
 	/**
 	 * Constructor for a copy of the given artifact
 	 * 
-	 * @param artifact
-	 *            The artifact to clone.
+	 * @param artifact The artifact to clone.
 	 */
 	public ArtifactVo(final Artifact artifact) {
 		this();

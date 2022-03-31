@@ -27,6 +27,9 @@ public class CentralSearchResult implements Artifact {
 	@JsonProperty("a")
 	private String artifact;
 
+	/**
+	 * Full artifact's version.
+	 */
 	@JsonProperty("latestVersion")
 	private String version;
 }

@@ -88,15 +88,43 @@ public class BackendProxyServlet extends ProxyServlet {
 	private static final long serialVersionUID = -3387356144222298075L;
 
 	/**
-	 * Static configuration created on {@link #init()})
+	 * Target backend's endpoint.
 	 */
 	private String proxyTo; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Prefix activating this backend
+	 */
 	private String prefix; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Name of query parameter containing the API key
+	 */
 	private String apiKeyParameter; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Name of query parameter containing the API user name.
+	 */
 	private String apiUserParameter; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Name of header containing the API user name.
+	 */
 	private String apiUserHeader; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Name of header containing the API key.
+	 */
 	private String apiKeyHeader; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Pattern capturing the API key to filter.
+	 */
 	private Pattern apiKeyCleanPattern; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * Pattern capturing the API user to filter.
+	 */
 	private Pattern apiUserCleanPattern; // NOSONAR - Initialized once, from #init()
 
 	@Override

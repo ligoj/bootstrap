@@ -19,24 +19,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractRemoteRepositoryManager implements RepositoryManager {
 
+	/**
+	 * Injected configuration resource shared with child classes.
+	 */
 	@Autowired
 	protected ConfigurationResource configuration;
 
 	/**
 	 * Return the plug-ins search URL.
 	 *
-	 * @param defaultUrl
-	 *            The default URL.
+	 * @param defaultUrl The default URL.
 	 * @return The plug-ins search URL.
 	 */
 	protected String getSearchUrl(final String defaultUrl) {
 		return getConfiguration("search.url", defaultUrl);
 	}
+
 	/**
 	 * Return the plug-ins filtered group-id to query the repository manager.
 	 *
-	 * @param defaultGroupIp
-	 *            The "groupId".
+	 * @param defaultGroupIp The "groupId".
 	 * @return The "groupId" filter.
 	 */
 	protected String getGroupId(final String defaultGroupIp) {
@@ -46,8 +48,7 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	/**
 	 * Return the plug-ins download base URL.
 	 *
-	 * @param defaultUrl
-	 *            The default URL.
+	 * @param defaultUrl The default URL.
 	 * @return The plug-ins download URL.
 	 */
 	protected String getArtifactBaseUrl(final String defaultUrl) {
@@ -57,10 +58,8 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	/**
 	 * Get the repository configuration or the default value if not configured.
 	 *
-	 * @param suffix
-	 *            The configuration key name suffix.
-	 * @param defaultValue
-	 *            The default configuration value.
+	 * @param suffix       The configuration key name suffix.
+	 * @param defaultValue The default configuration value.
 	 * @return The configuration value. Default is the given "defaultValue" parameter.
 	 */
 	private String getConfiguration(final String suffix, final String defaultValue) {
@@ -70,33 +69,28 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	/**
 	 * Return the plug-ins download URL.
 	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @param version
-	 *            The version to install.
-	 * @param defaultUrl
-	 *            The default artifact base URL.
+	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @param version    The version to install.
+	 * @param defaultUrl The default artifact base URL.
 	 * @return The plug-ins download URL. Ends with "/".
 	 */
 	protected String getArtifactUrl(String artifact, String version, final String defaultUrl) {
-		return StringUtils.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/") + artifact + "/" + version + "/" + artifact + "-" + version + ".jar";
+		return StringUtils.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/") + artifact + "/" + version + "/"
+				+ artifact + "-" + version + ".jar";
 	}
 
 	/**
 	 * Return the input stream from the remote URL.
 	 *
-	 * @param artifact
-	 *            The Maven artifact identifier and also corresponding to the plug-in simple name.
-	 * @param version
-	 *            The version to install.
-	 * @param defaultUrl
-	 *            The default artifact base URL.
+	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
+	 * @param version    The version to install.
+	 * @param defaultUrl The default artifact base URL.
 	 * @return The opened {@link InputStream} of the artifact to download.
 	 * @see #getArtifactBaseUrl(String)
-	 * @throws IOException
-	 *             When download failed.
+	 * @throws IOException When download failed.
 	 */
-	public InputStream getArtifactInputStream(String artifact, String version, final String defaultUrl) throws IOException {
+	public InputStream getArtifactInputStream(String artifact, String version, final String defaultUrl)
+			throws IOException {
 		final var url = getArtifactUrl(artifact, version, defaultUrl);
 		log.info("Resolved remote URL is {}", url);
 		return new URL(url).openStream();
