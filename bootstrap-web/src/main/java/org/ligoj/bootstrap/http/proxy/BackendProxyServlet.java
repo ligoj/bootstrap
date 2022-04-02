@@ -398,9 +398,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * @return the root (container) {@link ServletRequest}.
 	 */
 	protected ServletRequest getRoot(final ServletRequest request) {
-		return request instanceof HttpServletRequestWrapper
-				? getRoot(((HttpServletRequestWrapper) request).getRequest())
-				: request;
+		return request instanceof HttpServletRequestWrapper hreq ? getRoot(hreq.getRequest()) : request;
 	}
 
 	@Override

@@ -171,8 +171,8 @@ public class ValidationJsonException extends RuntimeException {
 		final var result = new Serializable[raw.length];
 		for (var i = 0; i < raw.length; i++) {
 			final var obj = raw[i];
-			if (obj instanceof Serializable) {
-				result[i] = (Serializable) obj;
+			if (obj instanceof Serializable ser) {
+				result[i] = ser;
 			} else {
 				result[i] = obj.toString();
 			}

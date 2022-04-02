@@ -720,12 +720,12 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * @param <T>         The entity type.
 	 */
 	protected <T> void persistAsNeeded(final Class<T> entityClass, T entity) {
-		if (entity instanceof AbstractBusinessEntity) {
-			persistAsNeeded(entityClass, (AbstractBusinessEntity<?>) entity);
-		} else if (entity instanceof INamableBean) {
-			persistAsNeeded(entityClass, entity, "name", ((INamableBean<?>) entity).getName());
-		} else if (entity instanceof SystemUser) {
-			persistAsNeeded(entityClass, entity, "login", ((SystemUser) entity).getLogin());
+		if (entity instanceof AbstractBusinessEntity<?> be) {
+			persistAsNeeded(entityClass, be);
+		} else if (entity instanceof INamableBean<?> nb) {
+			persistAsNeeded(entityClass, entity, "name", nb.getName());
+		} else if (entity instanceof SystemUser su) {
+			persistAsNeeded(entityClass, entity, "login", su.getLogin());
 		} else {
 			em.persist(entity);
 		}

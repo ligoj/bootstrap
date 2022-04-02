@@ -36,8 +36,8 @@ public abstract class AbstractMapper {
 		if (ex != null) {
 			serverError.setThrowable(ex);
 		}
-		if (ex instanceof AbstractParameteredException && ((AbstractParameteredException) ex).getParameters().length > 0) {
-			serverError.setParameters(((AbstractParameteredException) ex).getParameters());
+		if (ex instanceof AbstractParameteredException e && e.getParameters().length > 0) {
+			serverError.setParameters(e.getParameters());
 		}
 		return toResponse(status, serverError);
 	}

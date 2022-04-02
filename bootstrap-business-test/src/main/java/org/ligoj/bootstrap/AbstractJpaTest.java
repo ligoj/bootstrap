@@ -140,6 +140,6 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	 * @return <code>true</code> if the given collection is a {@link PersistentBag} and is initialized.
 	 */
 	protected boolean isLazyInitialized(final Collection<?> bag) {
-		return bag instanceof PersistentBag && ((PersistentBag) bag).wasInitialized();
+		return bag instanceof PersistentBag b && b.wasInitialized();
 	}
 }

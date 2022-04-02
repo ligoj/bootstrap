@@ -123,10 +123,10 @@ public class Template<T> {
 					writeItem(writer, tags, tagContext, end, contextData, value);
 					contextData.removeLast();
 				}
-			} else if (parent instanceof Iterable<?>) {
+			} else if (parent instanceof Collection<?> it) {
 				// Collection case
                 var index = 0;
-				for (final Object value : (Collection<?>) parent) {
+				for (final Object value : it) {
 					contextData.add(index++);
 					writeItem(writer, tags, tagContext, end, contextData, value);
 					contextData.removeLast();

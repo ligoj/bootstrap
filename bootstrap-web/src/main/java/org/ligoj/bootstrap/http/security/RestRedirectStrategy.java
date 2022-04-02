@@ -44,9 +44,9 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		response.setContentType("application/json");
 
 		final var authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (success && authentication instanceof CookieUsernamePasswordAuthenticationToken) {
+		if (success && authentication instanceof CookieUsernamePasswordAuthenticationToken cAuth) {
 			// Forward cookies from back-office
-			((CookieUsernamePasswordAuthenticationToken) authentication).getCookies().forEach(cookie -> response.addHeader("Set-Cookie", cookie));
+			cAuth.getCookies().forEach(cookie -> response.addHeader("Set-Cookie", cookie));
 		}
 		// Write the JSON data containing the redirection and the status
 		final var redirectUrl = response.encodeRedirectURL(request.getContextPath() + url);

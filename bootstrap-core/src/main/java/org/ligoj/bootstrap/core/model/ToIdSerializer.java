@@ -36,9 +36,9 @@ public class ToIdSerializer extends StdSerializer<Persistable<?>> {
 	@Override
 	public void serialize(final Persistable<?> bean, final JsonGenerator generator, final SerializerProvider provider)
 			throws IOException {
-		if (bean.getId() instanceof Number) {
+		if (bean.getId() instanceof Number n) {
 			// Numeric, but no decimal accepted
-			generator.writeNumber(((Number) bean.getId()).longValue());
+			generator.writeNumber(n.longValue());
 		} else {
 			// Consider ID as a String (not failsafe)
 			generator.writeString((String) bean.getId());

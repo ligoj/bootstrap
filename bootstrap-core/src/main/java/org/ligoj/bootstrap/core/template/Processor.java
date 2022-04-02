@@ -53,9 +53,9 @@ public class Processor<T> {
 	@SuppressWarnings("unchecked")
 	public Object getValue(final Deque<Object> contextData) {
 
-		if (data instanceof Processor<?>) {
+		if (data instanceof Processor<?> dataP) {
 			// Wrapped content
-			return getValue((T) ((Processor<T>) data).getValue(contextData));
+			return getValue((T) dataP.getValue(contextData));
 		}
 
 		return getValue((T) contextData.getLast());

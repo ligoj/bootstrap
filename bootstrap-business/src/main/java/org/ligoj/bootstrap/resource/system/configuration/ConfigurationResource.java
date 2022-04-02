@@ -132,8 +132,7 @@ public class ConfigurationResource {
 
 		// First add the system properties
 		env.getPropertySources().forEach(source -> {
-			if (source instanceof EnumerablePropertySource) {
-				final var eSource = (EnumerablePropertySource<?>) source;
+			if (source instanceof EnumerablePropertySource<?> eSource) {
 				Arrays.stream(eSource.getPropertyNames()).map(v -> {
 					final var vo = new ConfigurationVo();
 					vo.setName(v);

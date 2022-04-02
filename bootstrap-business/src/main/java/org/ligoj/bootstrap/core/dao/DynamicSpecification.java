@@ -176,8 +176,8 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	private Predicate getPredicate(final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb,
 			final UIRule rule) {
 		final Predicate predicate;
-		if (rule instanceof BasicRule) {
-			predicate = getPredicate(root, cb, (BasicRule) rule, query);
+		if (rule instanceof BasicRule r) {
+			predicate = getPredicate(root, cb, r, query);
 		} else {
 			predicate = getGroupPredicate((UiFilter) rule, root, query, cb);
 		}

@@ -223,9 +223,9 @@ public class PluginsClassLoader extends URLClassLoader {
 					Thread.currentThread().getContextClassLoader().toString());
 			return null;
 		}
-		if (cl instanceof PluginsClassLoader) {
+		if (cl instanceof PluginsClassLoader pcl) {
 			// Class loader has been found
-			return (PluginsClassLoader) cl;
+			return pcl;
 		}
 
 		// Try the parent

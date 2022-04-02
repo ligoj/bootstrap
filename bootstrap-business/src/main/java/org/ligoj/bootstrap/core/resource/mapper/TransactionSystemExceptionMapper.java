@@ -25,9 +25,9 @@ public class TransactionSystemExceptionMapper extends AbstractMapper implements 
 
 	@Override
 	public Response toResponse(final TransactionSystemException ex) {
-		if (ExceptionUtils.getRootCause(ex) instanceof ConstraintViolationException) {
+		if (ExceptionUtils.getRootCause(ex) instanceof ConstraintViolationException c) {
 			// Set the content type, and JSR-303 error into JSON format.
-			return toResponse(Status.BAD_REQUEST, new ValidationJsonException((ConstraintViolationException) ExceptionUtils.getRootCause(ex)));
+			return toResponse(Status.BAD_REQUEST, new ValidationJsonException(c));
 		}
 		
 		// Not yet managed exception
