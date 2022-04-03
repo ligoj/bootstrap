@@ -75,7 +75,7 @@ class DescribedBeanTest {
 
 	@Test
     void testNamedBean() {
-		final var bean = new NamedBean<Integer>(1, "VALUE");
+		final var bean = new NamedBean<>(1, "VALUE");
 		Assertions.assertEquals("VALUE", bean.getName());
 		Assertions.assertEquals(1, bean.getId().intValue());
 	}

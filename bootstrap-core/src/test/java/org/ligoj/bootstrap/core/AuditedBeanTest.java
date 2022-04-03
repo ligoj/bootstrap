@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +45,7 @@ class AuditedBeanTest {
 	 */
 	@Test
 	void testToString() {
-		final var auditedBean = new AuditedBean<Serializable, Serializable>();
+		final var auditedBean = new AuditedBean<>();
 		auditedBean.setId(0);
 		Assertions.assertEquals("AuditedBean(id=0)", auditedBean.toString());
 	}

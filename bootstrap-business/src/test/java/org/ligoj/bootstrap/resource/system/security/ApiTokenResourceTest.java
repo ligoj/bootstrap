@@ -38,7 +38,7 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	private SystemApiTokenRepository repository;
 
 	@BeforeEach
-	void setUp2() throws GeneralSecurityException {
+	void setUp2() {
 
 		var entity = new SystemApiToken();
 		entity.setToken(TOKEN_CRYPT);

@@ -3,8 +3,6 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +13,7 @@ class HSQLDialect25Test {
 
 	@SuppressWarnings("deprecation")
 	@Test
-	void constr() throws IOException {
+	void constr() {
 		Assertions.assertTrue(new HSQLDialect25().getKeywords().contains("period"));
 	}
 

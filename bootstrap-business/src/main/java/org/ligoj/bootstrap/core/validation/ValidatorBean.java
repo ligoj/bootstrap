@@ -98,7 +98,7 @@ public class ValidatorBean {
 	 */
 	public <T> void validateCheck(final Collection<T> objects, final Class<?>... groups) {
 		// Validate the beans
-		final var errors = new HashSet<ConstraintViolation<T>>(validate(objects, groups));
+		final var errors = new HashSet<>(validate(objects, groups));
 		if (!errors.isEmpty()) {
 			// At least one error
 			throw new ConstraintViolationException(StringUtils.join(errors, ','), errors);
