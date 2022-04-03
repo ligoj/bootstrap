@@ -190,7 +190,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		});
 
 		//
-		return enabled.values().stream().sorted(Comparator.comparing(NamedBean::getId)).collect(Collectors.toList());
+		return enabled.values().stream().sorted(Comparator.comparing(NamedBean::getId)).toList();
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	public List<Artifact> search(@QueryParam("q") @DefaultValue("") final String query,
 			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) throws IOException {
 		return getLastPluginVersions(repository).values().stream().filter(a -> a.getArtifact().contains(query))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	/**
@@ -501,7 +501,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		log.info("Plugins are now configured");
 
 		// And remove the old plug-in no more installed
-		repository.deleteAll(removedPlugins.stream().map(Persistable::getId).collect(Collectors.toList()));
+		repository.deleteAll(removedPlugins.stream().map(Persistable::getId).toList());
 	}
 
 	/**
@@ -516,8 +516,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		final var repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
 		var counter = 0;
 		for (final var artifact : getLastPluginVersions(repositoryName).values().stream().map(Artifact::getArtifact)
-				.filter(plugins::contains).filter(Predicate.not(currentPlugins::containsKey))
-				.collect(Collectors.toList())) {
+				.filter(plugins::contains).filter(Predicate.not(currentPlugins::containsKey)).toList()) {
 			install(artifact, repositoryName);
 			counter++;
 		}
@@ -538,7 +537,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 				.filter(a -> plugins.containsKey(a.getArtifact()))
 				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
 						.compareTo(StringUtils.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
-				.collect(Collectors.toList())) {
+				.toList()) {
 			install(artifact.getArtifact(), repositoryName);
 			counter++;
 		}
@@ -771,7 +770,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		// Add the enabled plug-ins
 		if (settings.getApplicationSettings().getPlugins() == null) {
 			settings.getApplicationSettings().setPlugins(context.getBeansOfType(FeaturePlugin.class).values().stream()
-					.map(FeaturePlugin::getKey).collect(Collectors.toList()));
+					.map(FeaturePlugin::getKey).toList());
 		}
 
 	}

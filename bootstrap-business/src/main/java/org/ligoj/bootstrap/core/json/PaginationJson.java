@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.MultivaluedMap;
@@ -288,7 +287,7 @@ public class PaginationJson {
 		final var result = new TableItem<T>();
 
 		// Force the content to be fetched
-		result.setData(items.getContent().stream().map(converter).collect(Collectors.toList()));
+		result.setData(items.getContent().stream().map(converter).toList());
 
 		// Need to be updated when the filters are supported.
 		result.setRecordsFiltered(items.getTotalElements());

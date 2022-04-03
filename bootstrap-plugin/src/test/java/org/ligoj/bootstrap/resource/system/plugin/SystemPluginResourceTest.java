@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -416,7 +415,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 * Ignore plugin-ui runtime (issue in Eclipse)
 	 */
 	private List<PluginVo> filter(final List<PluginVo> plugins) {
-		return plugins.stream().filter(p -> !"feature:ui".equals(p.getId())).collect(Collectors.toList());
+		return plugins.stream().filter(p -> !"feature:ui".equals(p.getId())).toList();
 	}
 
 	@Test

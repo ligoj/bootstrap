@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.archive.scan.internal.StandardScanner;
@@ -44,7 +43,7 @@ public class ResourceScanner extends StandardScanner {
 
 		try {
 			final Set<URL> urls = new LinkedHashSet<>(environment.getNonRootUrls()); // NOSONAR - Requested by Hibernate
-			urls.addAll(Collections.list(getOrmUrls()).stream().map(this::getJarUrlSafe).collect(Collectors.toList()));
+			urls.addAll(Collections.list(getOrmUrls()).stream().map(this::getJarUrlSafe).toList());
 
 			// Remove the root URL from the non root list
 			urls.remove(environment.getRootUrl());

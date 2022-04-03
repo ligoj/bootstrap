@@ -52,13 +52,13 @@ public class MatcherUtil {
 	 */
 	public static void assertThrows(final ConstraintViolationException ex, final String field, final String message) {
 		final var errors = ex.getConstraintViolations().stream()
-				.filter(v -> field.equals(v.getPropertyPath().toString())).collect(Collectors.toList());
+				.filter(v -> field.equals(v.getPropertyPath().toString())).toList();
 		final List<String> errorsS = new ArrayList<>();
 		errors.forEach(v -> {
 			errorsS.add(StringUtils.defaultIfBlank(ClassUtils.getShortClassName(ClassUtils.getPackageName(v.getMessageTemplate())), null));
 			errorsS.add(StringUtils.defaultIfBlank(v.getMessageTemplate(), null));
 		});
-		final var errorsS2 = errorsS.stream().filter(Objects::nonNull).map(String::toLowerCase).collect(Collectors.toList());
+		final var errorsS2 = errorsS.stream().filter(Objects::nonNull).map(String::toLowerCase).toList();
 		Assertions.assertEquals(errors.isEmpty() ? field : message.toLowerCase(),
 				errorsS2.stream().filter(message::equalsIgnoreCase).findAny().orElseGet(
 						() -> errors.isEmpty()

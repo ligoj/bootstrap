@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.core.dao;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.model.naming.Identifier;
@@ -81,7 +80,7 @@ public class ImplicitNamingStrategyNiceJpaImpl
 	 * @return The column of given identifiers.
 	 */
 	protected List<Column> toColumns(final List<Identifier> identifiers) {
-		return identifiers.stream().map(column -> new Column(column.getText())).collect(Collectors.toList());
+		return identifiers.stream().map(column -> new Column(column.getText())).toList();
 	}
 
 	@Override

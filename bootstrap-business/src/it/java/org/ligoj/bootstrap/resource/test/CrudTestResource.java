@@ -148,7 +148,7 @@ public class CrudTestResource {
 	@GET
 	@Path("{query}")
 	public List<WineVo> findByName(@PathParam("query") final String name) {
-		return repository.findByNameContainingIgnoreCase(name).stream().map(CrudTestResource::toVo).collect(Collectors.toList());
+		return repository.findByNameContainingIgnoreCase(name).stream().map(CrudTestResource::toVo).toList();
 	}
 
 	/**

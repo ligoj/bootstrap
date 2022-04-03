@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriInfo;
@@ -97,7 +96,7 @@ public class InMemoryPagination {
 	public TableItem<String> getFilteredStringList(final UriInfo uriInfo, final Stream<String> items) {
 		return applyPagination(uriInfo,
 				items.filter(input -> StringUtils.containsIgnoreCase(input, DataTableAttributes.getSearch(uriInfo)))
-						.collect(Collectors.toList()),
+						.toList(),
 				Function.identity());
 	}
 

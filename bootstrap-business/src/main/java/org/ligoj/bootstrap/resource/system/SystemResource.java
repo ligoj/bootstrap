@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.resource.system;
 import java.io.File;
 import java.util.Arrays;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -70,7 +69,7 @@ public class SystemResource {
 			fileVo.setFreeSpace(root.getFreeSpace());
 			fileVo.setUsableSpace(root.getUsableSpace());
 			return fileVo;
-		}).collect(Collectors.toList()));
+		}).toList());
 		return settings;
 	}
 

@@ -11,7 +11,6 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.BeanUtils;
@@ -102,8 +101,7 @@ public abstract class AbstractCsvManager {
 	public <T> void toCsv(final List<T> items, final Class<T> beanType, final Writer result) throws IOException {
 		// Build descriptor list respecting the declaration order
 		final var descriptorsOrdered = Arrays.stream(BeanUtils.getPropertyDescriptors(beanType))
-				.filter(property -> property.getWriteMethod() != null).map(PropertyDescriptor::getName)
-				.collect(Collectors.toList());
+				.filter(property -> property.getWriteMethod() != null).map(PropertyDescriptor::getName).toList();
         var headers = new String[descriptorsOrdered.size()];
 		headers = descriptorsOrdered.toArray(headers);
 

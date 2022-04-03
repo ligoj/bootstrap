@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -117,7 +116,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 		final var cluster = new CacheCluster();
 		cluster.setId(clusterService.getClusterId());
 		cluster.setState(clusterService.getClusterState().toString());
-		cluster.setMembers(clusterService.getMembers().stream().map(this::newCacheNode).collect(Collectors.toList()));
+		cluster.setMembers(clusterService.getMembers().stream().map(this::newCacheNode).toList());
 		return cluster;
 	}
 

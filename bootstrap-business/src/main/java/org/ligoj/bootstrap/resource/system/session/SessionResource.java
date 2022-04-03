@@ -100,7 +100,7 @@ public class SessionResource {
 			// No authorization -> no roles
 			return EMPTY_ROLES;
 		}
-		return rolesAsString.stream().map(authorizations::get).filter(Objects::nonNull).collect(Collectors.toList());
+		return rolesAsString.stream().map(authorizations::get).filter(Objects::nonNull).toList();
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class SessionResource {
 	 */
 	private List<String> getRolesAsString() {
 		final var roles = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		return roles.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+		return roles.stream().map(GrantedAuthority::getAuthority).toList();
 	}
 
 	/**
@@ -128,6 +128,6 @@ public class SessionResource {
 			apiAuthorization.setMethod(entry.getKey());
 			apiAuthorization.setPattern(pattern.pattern());
 			return apiAuthorization;
-		})).collect(Collectors.toList());
+		})).toList();
 	}
 }
