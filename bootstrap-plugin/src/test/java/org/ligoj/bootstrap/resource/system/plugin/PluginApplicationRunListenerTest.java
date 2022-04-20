@@ -37,8 +37,8 @@ class PluginApplicationRunListenerTest {
 			listener.environmentPrepared(null, null);
 			listener.contextPrepared(null);
 			listener.contextLoaded(null);
-			listener.started(null);
-			listener.running(null);
+			listener.started(null, null);
+			listener.ready(null, null);
 			listener.failed(null, null);
 		} finally {
 			scope.close();

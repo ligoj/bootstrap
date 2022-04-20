@@ -60,7 +60,8 @@ public class ObjectMapperTrim extends ObjectMapper {
 		module.addSerializer(Enum.class, new LowerCasingEnumSerializer());
 
 		// Case insensitive enumeration
-		enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		_deserializationConfig = _deserializationConfig.without(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		_serializationConfig = _serializationConfig.without(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 		registerModule(module);
 	}
 }

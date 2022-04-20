@@ -34,6 +34,7 @@ class TestAbstractTest extends AbstractTest {
 		closeQuietly(null);
 	}
 
+	@SuppressWarnings({ "deprecation", "removal" })
 	@Test
 	void testCheckPermission() {
 		// only for coverage

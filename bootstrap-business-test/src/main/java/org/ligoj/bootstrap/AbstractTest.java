@@ -24,6 +24,7 @@ public class AbstractTest { // NOPMD NOSONAR
 	/**
 	 * Original security manager.
 	 */
+	@SuppressWarnings("removal")
 	protected static final ThreadLocal<SecurityManager> SECURITY_MANAGER_THREAD = new ThreadLocal<>();
 
 	/**
@@ -81,8 +82,10 @@ public class AbstractTest { // NOPMD NOSONAR
 	/**
 	 * Install a hook to prevent {@link System#exit(int)} to be executed.
 	 */
+	@SuppressWarnings({ "removal", "deprecation" })
 	@BeforeAll
 	public static void forbidSystemExitCall() {
+		// See https://openjdk.java.net/jeps/411 and https://bugs.openjdk.java.net/browse/JDK-8199704 for migration
 		SECURITY_MANAGER_THREAD.set(new SecurityManager() {
 			@Override
 			public void checkPermission(final Permission permission) {
@@ -98,6 +101,7 @@ public class AbstractTest { // NOPMD NOSONAR
 	/**
 	 * Restore previous security manager replaced by the one installed by {@link #forbidSystemExitCall()}.
 	 */
+	@SuppressWarnings("removal")
 	@AfterAll
 	public static void restoreSystemExitCall() {
 		System.setSecurityManager(SECURITY_MANAGER_THREAD.get());
