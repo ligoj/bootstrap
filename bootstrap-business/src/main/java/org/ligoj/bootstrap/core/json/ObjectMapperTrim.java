@@ -49,6 +49,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 	/**
 	 * Default constructor overriding the default annotation introspector.
 	 */
+	@SuppressWarnings("deprecation")
 	public ObjectMapperTrim() {
 		final var module = new SimpleModule("BootstrapModule", new Version(1, 0, 1, null, null, null));
 		module.addDeserializer(Date.class, DateDeserializer.INSTANCE);
@@ -60,8 +61,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 		module.addSerializer(Enum.class, new LowerCasingEnumSerializer());
 
 		// Case insensitive enumeration
-		_deserializationConfig = _deserializationConfig.without(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-		_serializationConfig = _serializationConfig.without(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+		enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 		registerModule(module);
 	}
 }

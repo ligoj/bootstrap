@@ -484,7 +484,6 @@ class PaginationJsonTest extends AbstractBootTest {
 		Assertions.assertEquals(1, pageRequest.getRecordsTotal());
 		Assertions.assertEquals(1, pageRequest.getRecordsFiltered());
 		Assertions.assertEquals("echo", pageRequest.getDraw());
-		Assertions.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
 	}
 
 	/**
@@ -503,6 +502,5 @@ class PaginationJsonTest extends AbstractBootTest {
 		Assertions.assertNotNull(pageRequest);
 		Assertions.assertEquals(1, pageRequest.getData().size());
 		Assertions.assertNull(pageRequest.getDraw());
-		Assertions.assertTrue(pageRequest.getData() instanceof ArrayList<?>);
 	}
 }
