@@ -1,7 +1,7 @@
 ## :link: Ligoj Bootstrap [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root)
 REST+Front-End template with a ton of integrated component with many enterprise features : RBAC, Cache, modular modules
 
-[![Build Status](https://travis-ci.com/ligoj/bootstrap.svg?branch=master)](https://travis-ci.com/ligoj/bootstrap)
+[![Build Status](https://app.travis-ci.com/github/ligoj/bootstrap.svg?branch=master)](https://app.travis-ci.com/github/ligoj/bootstrap)
 [![Build Status](https://circleci.com/gh/ligoj/bootstrap.svg?style=svg)](https://circleci.com/gh/ligoj/bootstrap)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.ligoj.bootstrap%3Aroot&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=org.ligoj.bootstrap%3Aroot)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?metric=alert_status&project=org.ligoj.bootstrap:root)](https://sonarcloud.io/dashboard/index/org.ligoj.bootstrap:root)
