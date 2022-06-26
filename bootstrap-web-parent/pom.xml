@@ -162,7 +162,7 @@
 											</not>
 										</condition>
 										<exec executable="cleancss${nodejs.ext}">
-											<arg value="--s0" />
+											<arg value="-O2" />
 											<arg value="-o" />
 											<arg value="${target-css}" />
 											<arg value="${target-css}.tmp" />
@@ -221,7 +221,7 @@
 											</not>
 										</condition>
 										<exec executable="cleancss${nodejs.ext}">
-											<arg value="--s0" />
+											<arg value="-O2" />
 											<arg value="-o" />
 											<arg value="${target-login-css}" />
 											<arg value="${target-login-css}.tmp" />
