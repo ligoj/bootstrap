@@ -5,6 +5,7 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
 	<import resource="classpath:META-INF/spring/rest-context-common.xml" />
+	<import resource="classpath:/META-INF/spring/rest-context-web.xml" />
 
 	<jaxrs:server id="restServer" address="/" staticSubresourceResolution="true">
 		<jaxrs:inInterceptors>
