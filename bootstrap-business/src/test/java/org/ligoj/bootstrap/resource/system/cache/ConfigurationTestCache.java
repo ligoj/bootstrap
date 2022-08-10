@@ -26,20 +26,18 @@ class ConfigurationTestCache implements CacheManagerAware {
 	@Override
 	public void onCreate(HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
 		final var config = provider.apply("test-cache");
-		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)
-				.setMaximumSizePolicy(EvictionConfig.MaxSizePolicy.ENTRY_COUNT).setSize(200));
+		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setSize(200));
 		cacheManager.createCache("test-cache", config);
 
-	
 		final var tokens1 = provider.apply("test-cache-1");
 		tokens1.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, 1)));
-		tokens1.setEvictionConfig(new EvictionConfig() );
+		tokens1.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("test-cache-1", tokens1);
 
 		final var tokens2 = provider.apply("test-cache-2");
 		tokens2.setExpiryPolicyFactory(TouchedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, 1)));
-		tokens2.setEvictionConfig(new EvictionConfig() );
+		tokens2.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("test-cache-2", tokens2);
-}
+	}
 
 }

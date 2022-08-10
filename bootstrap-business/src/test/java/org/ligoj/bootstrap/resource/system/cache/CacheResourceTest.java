@@ -40,6 +40,7 @@ class CacheResourceTest extends AbstractBootTest {
 	@BeforeEach
 	void cleanCache() {
 		cacheManager.getCache("test-cache").clear();
+		cacheResource.enableStatistics();
 	}
 
 	@Test
@@ -149,7 +150,7 @@ class CacheResourceTest extends AbstractBootTest {
 
 		final var caches = cacheResource.getCaches();
 		Assertions.assertEquals(6, caches.size());
-		Assertions.assertTrue(caches.stream().filter(c -> "test-cache".equals(c.getId())).anyMatch(this::assertCache));
+		caches.stream().filter(c -> "test-cache".equals(c.getId())).forEach(this::assertCache);
 	}
 
 	private void doManyHits() {
@@ -165,6 +166,10 @@ class CacheResourceTest extends AbstractBootTest {
 		dummyCacheBean.getHit("entry-key");
 		doManyHits();
 		assertCache(cacheResource.getCache("test-cache"));
+
+		cacheResource.disableStatistics();
+		doManyHits();
+		Assertions.assertTrue(cacheResource.getCache("test-cache").getSize() == 0);
 	}
 
 	@Test
@@ -174,37 +179,22 @@ class CacheResourceTest extends AbstractBootTest {
 
 	@Test
 	void setStatistics() {
-		dummyCacheBean.getHit("entry-key");
-		cacheResource.invalidate("test-cache");
-		dummyCacheBean.getHit("entry-key");
-		doManyHits();
 
-		final var policy = System.getProperty("java.security.policy");
-		try {
-			System.setProperty("java.security.policy", "path_to_policy");
-			final var result = new CacheStatistics();
-			final var statistics = Mockito.mock(com.hazelcast.cache.CacheStatistics.class);
-			Mockito.doReturn(1.1F).when(statistics).getCacheMissPercentage();
-			Mockito.doReturn(2.2F).when(statistics).getCacheHitPercentage();
-			Mockito.doReturn(3L).when(statistics).getCacheHits();
-			Mockito.doReturn(4L).when(statistics).getCacheMisses();
-			Mockito.doReturn(5F).when(statistics).getAverageGetTime();
-			cacheResource.setStatistics(result, statistics);
+		final var result = new CacheStatistics();
+		final var statistics = Mockito.mock(com.hazelcast.cache.CacheStatistics.class);
+		Mockito.doReturn(1.1F).when(statistics).getCacheMissPercentage();
+		Mockito.doReturn(2.2F).when(statistics).getCacheHitPercentage();
+		Mockito.doReturn(3L).when(statistics).getCacheHits();
+		Mockito.doReturn(4L).when(statistics).getCacheMisses();
+		Mockito.doReturn(5F).when(statistics).getAverageGetTime();
+		cacheResource.setStatistics(result, statistics);
 
-			// Check results
-			Assertions.assertEquals(1.1, result.getMissPercentage(), 0.01);
-			Assertions.assertEquals(2.2, result.getHitPercentage(), 0.01);
-			Assertions.assertEquals(3, result.getHitCount().longValue());
-			Assertions.assertEquals(4, result.getMissCount().longValue());
-			Assertions.assertEquals(5, result.getAverageGetTime(), 0.01);
-		} finally {
-			// Restore policy
-			if (policy == null) {
-				System.clearProperty("java.security.policy");
-			} else {
-				System.setProperty("java.security.policy", policy);
-			}
-		}
+		// Check results
+		Assertions.assertEquals(1.1, result.getMissPercentage(), 0.01);
+		Assertions.assertEquals(2.2, result.getHitPercentage(), 0.01);
+		Assertions.assertEquals(3, result.getHitCount().longValue());
+		Assertions.assertEquals(4, result.getMissCount().longValue());
+		Assertions.assertEquals(5, result.getAverageGetTime(), 0.01);
 	}
 
 	private boolean assertCache(final CacheStatistics cache) {
@@ -226,13 +216,6 @@ class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(1, cluster.getMembers().size());
 		Assertions.assertNull(cluster.getMembers().get(0).getCluster());
 		Assertions.assertNotNull(cluster.getState());
-
-		// Only with enabled statistics
-		Assertions.assertNull(cache.getAverageGetTime());
-		Assertions.assertNull(cache.getHitCount());
-		Assertions.assertNull(cache.getMissCount());
-		Assertions.assertNull(cache.getHitPercentage());
-		Assertions.assertNull(cache.getMissPercentage());
 		return true;
 	}
 

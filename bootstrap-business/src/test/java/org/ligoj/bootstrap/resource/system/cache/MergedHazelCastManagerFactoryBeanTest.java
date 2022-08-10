@@ -18,20 +18,10 @@ import com.hazelcast.config.CacheConfig;
 class MergedHazelCastManagerFactoryBeanTest {
 
 	private MergedHazelCastManagerFactoryBean bean;
-	private String oldPolicy;
 
 	@BeforeEach
 	void prepare() {
 		bean = new MergedHazelCastManagerFactoryBean();
-		oldPolicy = System.getProperty("java.security.policy");
-	}
-
-	private void clean() {
-		if (oldPolicy == null) {
-			System.clearProperty("java.security.policy");
-		} else {
-			System.setProperty("java.security.policy", oldPolicy);
-		}
 	}
 
 	@Test
@@ -56,27 +46,8 @@ class MergedHazelCastManagerFactoryBeanTest {
 
 	@Test
 	void postConfigureNoPolicy() {
-		final CacheConfig<?,?> mapConfig = Mockito.mock(CacheConfig.class);
-		try {
-			System.clearProperty("java.security.policy");
-			bean.postConfigure(mapConfig);
-		} finally {
-			clean();
-		}
+		final CacheConfig<?, ?> mapConfig = Mockito.mock(CacheConfig.class);
+		bean.postConfigure(mapConfig);
 		Mockito.verify(mapConfig, Mockito.never()).setStatisticsEnabled(true);
 	}
-
-	@Test
-	void postConfigurePolicy() {
-		final CacheConfig<?,?> mapConfig = Mockito.mock(CacheConfig.class);
-		try {
-			System.setProperty("java.security.policy", "some_path_to_policy");
-			bean.postConfigure(mapConfig);
-		} finally {
-			clean();
-		}
-		// JMX enabled
-		Mockito.verify(mapConfig).setStatisticsEnabled(true);
-	}
-
 }

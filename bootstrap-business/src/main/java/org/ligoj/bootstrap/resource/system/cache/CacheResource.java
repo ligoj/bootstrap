@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.jcache.JCacheCacheManager;
@@ -28,10 +28,11 @@ import org.springframework.stereotype.Service;
 
 import com.hazelcast.cache.HazelcastCacheManager;
 import com.hazelcast.cache.impl.CacheProxy;
+import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.core.Member;
 import com.hazelcast.internal.cluster.ClusterService;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -47,6 +48,10 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	@Autowired
 	protected CacheManager cacheManager;
 
+	@Setter
+	@Value("${hazelcast.statistics.enable:false}")
+	private boolean statisticsEnabled = false;
+
 	/**
 	 * Return the installed caches.
 	 *
@@ -54,11 +59,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	 */
 	@GET
 	public List<CacheStatistics> getCaches() {
-		final List<CacheStatistics> result = new ArrayList<>();
-		for (final var cache : cacheManager.getCacheNames()) {
-			result.add(getCache(cache));
-		}
-		return result;
+		return cacheManager.getCacheNames().stream().map(this::getCache).toList();
 	}
 
 	/**
@@ -72,14 +73,18 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	@Path("{name:[\\w\\-]+}")
 	public CacheStatistics getCache(@PathParam("name") final String name) {
 		final var result = new CacheStatistics();
-		@SuppressWarnings("unchecked")
-		final var cache = (CacheProxy<Object, Object>) getCacheExpected(name).getNativeCache();
+		final var cache = getCacheNative(name);
 		final var node = newCacheNode(cache.getNodeEngine().getLocalMember());
 		node.setCluster(newCacheCluster(cache.getNodeEngine().getClusterService()));
 		result.setId(name);
 		result.setNode(node);
 		setStatistics(result, cache.getLocalCacheStatistics());
 		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	private CacheProxy<Object, Object> getCacheNative(final String name) {
+		return (CacheProxy<Object, Object>) getCacheExpected(name).getNativeCache();
 	}
 
 	private Cache getCacheExpected(final String name) {
@@ -95,7 +100,7 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	protected void setStatistics(final CacheStatistics result, final com.hazelcast.cache.CacheStatistics statistics) {
 		result.setSize(statistics.getOwnedEntryCount());
 		// Only when statistics are enabled
-		if (isStatisticEnabled()) {
+		if (statisticsEnabled) {
 			result.setMissPercentage(statistics.getCacheMissPercentage());
 			result.setMissCount(statistics.getCacheMisses());
 			result.setHitPercentage(statistics.getCacheHitPercentage());
@@ -107,14 +112,14 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	private CacheNode newCacheNode(Member member) {
 		final var node = new CacheNode();
 		node.setAddress(Objects.toString(member.getAddress()));
-		node.setId(member.getUuid());
+		node.setId(member.getUuid().toString());
 		node.setVersion(Objects.toString(member.getVersion()));
 		return node;
 	}
 
 	private CacheCluster newCacheCluster(ClusterService clusterService) {
 		final var cluster = new CacheCluster();
-		cluster.setId(clusterService.getClusterId());
+		cluster.setId(clusterService.getClusterId().toString());
 		cluster.setState(clusterService.getClusterState().toString());
 		cluster.setMembers(clusterService.getMembers().stream().map(this::newCacheNode).toList());
 		return cluster;
@@ -133,21 +138,34 @@ public class CacheResource implements ApplicationListener<ContextClosedEvent> {
 	}
 
 	/**
+	 * Enable all cache statistics
+	 */
+	@POST
+	@Path("statistics/enable")
+	public void enableStatistics() {
+		changeStatistics(true);
+	}
+
+	/**
+	 * Disable all cache statistics
+	 */
+	@POST
+	@Path("statistics/disable")
+	public void disableStatistics() {
+		changeStatistics(false);
+	}
+
+	private void changeStatistics(final boolean enabled) {
+		getCacheNative("authorizations").getService().getCacheConfigs().forEach(c -> c.setStatisticsEnabled(enabled));
+		statisticsEnabled = enabled;
+	}
+
+	/**
 	 * Invalidate all caches.
 	 */
 	@DELETE
 	public void invalidate() {
 		cacheManager.getCacheNames().stream().map(cacheManager::getCache).forEach(Cache::clear);
-	}
-
-	/**
-	 * Indicates the statistics are enabled or nor.
-	 *
-	 * @return <code>true</code> when statistics are enabled. Based on <code>java.security.policy</code>.
-	 */
-	public static boolean isStatisticEnabled() {
-		// When a policy is defined, assume JMX is enabled
-		return System.getProperty("java.security.policy") != null;
 	}
 
 	@Override

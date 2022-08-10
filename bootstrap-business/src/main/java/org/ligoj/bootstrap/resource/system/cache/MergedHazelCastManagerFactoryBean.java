@@ -15,6 +15,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 
@@ -46,8 +47,13 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	@Autowired
 	protected ApplicationContext context;
 
+	@Setter
+	@Value("${hazelcast.statistics.enable:false}")
+	private boolean statisticsEnabled = false;
+
 	@Override
 	public void afterPropertiesSet() throws URISyntaxException {
+		System.setProperty("hazelcast.jcache.provider.type", "member");
 		final var properties = HazelcastCachingProvider.propertiesByLocation(location);
 		final var provider = (com.hazelcast.cache.HazelcastCachingProvider) Caching.getCachingProvider();
 		final var manager = (HazelcastCacheManager) provider.getCacheManager(new URI("bootstrap-cache-manager"), null,
@@ -62,8 +68,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	 * @param mapConfig The target {@link CacheConfig} to configure.
 	 */
 	protected void postConfigure(final CacheConfig<?, ?> mapConfig) {
-		if (CacheResource.isStatisticEnabled()) {
-			// When a policy is defined, assume JMX is enabled
+		if (statisticsEnabled) {
 			mapConfig.setStatisticsEnabled(true);
 		}
 	}
@@ -73,8 +78,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	 */
 	private CacheConfig<?, ?> newCacheConfig(final String name) {
 		final CacheConfig<?, ?> config = new CacheConfig<>(name);
-		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)
-				.setMaximumSizePolicy(EvictionConfig.MaxSizePolicy.ENTRY_COUNT));
+		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU));
 		config.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(Duration.ETERNAL));
 		// Post configuration
 		postConfigure(config);
