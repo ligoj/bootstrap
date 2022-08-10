@@ -240,6 +240,7 @@ class ValidationJsonExceptionTest {
 	@Test
 	void assertTrueErrorObject() {
 		final var object = new Object() {
+			@Override
 			public String toString() {
 				return "NAME";
 			}

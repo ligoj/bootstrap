@@ -141,7 +141,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	private ConfigurationResource configuration;
 
 	/**
-	 * Return all plug-ins with details.
+	 * Return all plug-ins with details from a given repository.
 	 *
 	 * @param repository The repository identifier to query.
 	 * @return All plug-ins with details.
