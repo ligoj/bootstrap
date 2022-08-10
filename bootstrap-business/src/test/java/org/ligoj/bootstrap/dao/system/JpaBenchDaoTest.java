@@ -34,7 +34,7 @@ class JpaBenchDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Test for transaction mode with 3M LOB file.
+	 * Test for transaction mode with ~10M LOB file.
 	 */
 	@Test
 	void testJpaBlob() throws Exception {
@@ -49,7 +49,7 @@ class JpaBenchDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Test for transaction read mode with 3M LOB file.
+	 * Test for transaction read mode with ~10M LOB file.
 	 */
 	@Test
 	void testJpaBlobRead() throws Exception {

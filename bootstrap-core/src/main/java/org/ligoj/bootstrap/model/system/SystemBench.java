@@ -31,7 +31,7 @@ public class SystemBench extends AbstractAudited<Integer> {
 	private String prfChar;
 
 	@Lob
-	@Column(name = "PICTURE", length = 5000000)
+	@Column(name = "PICTURE", length = 10000000)
 	@Basic(fetch = FetchType.LAZY)
 	private byte[] picture;
 
