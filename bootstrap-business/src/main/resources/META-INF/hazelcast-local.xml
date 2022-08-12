@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hazelcast xmlns="http://www.hazelcast.com/schema/config"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.hazelcast.com/schema/config
-           http://www.hazelcast.com/schema/config/hazelcast-config-5.0.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config
+           http://www.hazelcast.com/schema/config/hazelcast-config-5.1.xsd">
+
 	<network>
 		<join>
 			<multicast enabled="false"/>
@@ -17,5 +18,11 @@
         <property name="hazelcast.integrity-checker.enabled">false</property>
         <property name="hazelcast.jet.enabled">false</property>
         <property name="hazelcast.diagnostics.enabled">false</property>
+        <property name="hazelcast.event.thread.count">2</property>
+        <property name="hazelcast.io.input.thread.count">2</property>
+        <property name="hazelcast.io.output.thread.count">2</property>
+        <property name="hazelcast.operation.thread.count">1</property>
+        <property name="hazelcast.operation.generic.thread.count">1</property>
+        
     </properties>
 </hazelcast>
