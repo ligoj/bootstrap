@@ -29,7 +29,7 @@
 		<property name="locations">
 			<list>
 				<!-- This file is maintained by the system administrators -->
-				<value>classpath:admin.confidential.properties</value>
+				<value>classpath*:admin.confidential.properties</value>
 
 				<!-- This file is updated by the build system -->
 				<value>classpath:maven-buildinfo.properties</value>
