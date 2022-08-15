@@ -55,7 +55,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Headers will not be forwarded from the back-end.
 	 */
-	private static final String[] IGNORE_HEADERS = new String[] { "expires", "x-content-type-options", "server",
+	private static final String[] IGNORE_HEADERS = { "expires", "x-content-type-options", "server",
 			"visited", "date", "x-frame-options", "x-xss-protection", "pragma", "cache-control" };
 
 	/**
