@@ -87,7 +87,7 @@
 		<slf4j.version>1.7.36</slf4j.version>
 		<soap-api.version>1.4.2</soap-api.version>
 		<spring.version>5.3.22</spring.version>
-		<spring-boot.version>2.6.8</spring-boot.version>
+		<spring-boot.version>2.7.3</spring-boot.version>
 		<spring-cloud-context.version>3.1.2</spring-cloud-context.version>
 		<spring-data.version>2.7.0</spring-data.version>
 		<spring-security.version>5.7.1</spring-security.version>
