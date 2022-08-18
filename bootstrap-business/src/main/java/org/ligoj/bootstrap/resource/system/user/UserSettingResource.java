@@ -39,8 +39,7 @@ public class UserSettingResource {
 	/**
 	 * Delete a {@link SystemUserSetting}
 	 * 
-	 * @param name
-	 *            the user setting name to delete.
+	 * @param name the user setting name to delete.
 	 */
 	@DELETE
 	@Path("{name}")
@@ -61,8 +60,7 @@ public class UserSettingResource {
 	/**
 	 * Return all settings of given user.
 	 * 
-	 * @param login
-	 *            USer login to check.
+	 * @param login USer login to check.
 	 * @return all user's settings.
 	 */
 	public Map<String, Object> findAll(final String login) {
@@ -73,8 +71,7 @@ public class UserSettingResource {
 	/**
 	 * Return a specific setting of current user.
 	 * 
-	 * @param name
-	 *            The setting's name.
+	 * @param name The setting's name.
 	 * @return a specific user's setting. May be <code>null</code>
 	 */
 	@GET
@@ -86,10 +83,8 @@ public class UserSettingResource {
 	/**
 	 * Return a specific user's setting.
 	 * 
-	 * @param login
-	 *            the user login owning the setting.
-	 * @param name
-	 *            The setting's name.
+	 * @param login the user login owning the setting.
+	 * @param name  The setting's name.
 	 * @return a specific user's setting. May be <code>null</code>.
 	 */
 	public String findByName(final String login, final String name) {
@@ -98,18 +93,17 @@ public class UserSettingResource {
 	}
 
 	/**
-	 * Save or update a setting and return the corresponding identifier.
+	 * Save or update a setting of a given user.
 	 * 
-	 * @param name
-	 *            the setting name.
-	 * @param value
-	 *            the new value.
+	 * @param user  the related user name.
+	 * @param name  the setting name.
+	 * @param value the new value.
 	 */
 	@POST
 	@PUT
-	@Path("{name}/{value}")
-	public void saveOrUpdate(@PathParam("name") final String name, @PathParam("value") final String value) {
-		final var user = SecurityContextHolder.getContext().getAuthentication().getName();
+	@Path("/system/admin-setting/{user}/{name}/{value}")
+	public void saveOrUpdate(@PathParam("name") final String user, @PathParam("name") final String name,
+			@PathParam("value") final String value) {
 		final var setting = repository.findByLoginAndName(user, name);
 		if (setting == null) {
 			final var entity = new SystemUserSetting();
@@ -120,6 +114,20 @@ public class UserSettingResource {
 		} else {
 			setting.setValue(value);
 		}
+	}
+
+	/**
+	 * Save or update a setting of current given user.
+	 * 
+	 * @param name  the setting name.
+	 * @param value the new value.
+	 */
+	@POST
+	@PUT
+	@Path("{name}/{value}")
+	public void saveOrUpdate(@PathParam("name") final String name, @PathParam("value") final String value) {
+		final var user = SecurityContextHolder.getContext().getAuthentication().getName();
+		saveOrUpdate(user, name, value);
 	}
 
 }
