@@ -79,7 +79,7 @@
 		<mail.version>1.6.7</mail.version>
 		<mockito.version>4.1.0</mockito.version>
 		<mysql.version>8.0.29</mysql.version>
-		<postgresql.version>42.3.3</postgresql.version>
+		<postgresql.version>42.4.2</postgresql.version>
 		<paranamer.version>2.8</paranamer.version>
 		<persistence.version>2.2.3</persistence.version>
 		<quartz.version>2.3.2</quartz.version>
