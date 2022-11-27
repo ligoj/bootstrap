@@ -175,7 +175,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertNull(pluginVo.getNewVersion());
 		Assertions.assertEquals("Foo", pluginVo.getName());
 	}
-
 	@Test
 	void findAllInstalledNextNewPlugin() throws IOException {
 		final var resource = mockCentral("search.json");
@@ -594,7 +593,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void manifestData() {
 		Assertions.assertTrue(
-				Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+(\\.\\d+\\..*)?$"));
+				Integer.class.getModule().getDescriptor().rawVersion().get().matches("\\d+(\\.\\d+\\..*)?(-ea)?$"));
 		Assertions.assertEquals("java.base", Integer.class.getModule().getName());
 	}
 
@@ -604,7 +603,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		final var plugin = new SystemPlugin();
 		plugin.setVersion("old version");
 		resource.configurePluginUpdate(service1, plugin);
-		Assertions.assertNotNull("1.0", plugin.getVersion());
+		Assertions.assertTrue(plugin.getVersion().matches("\\d{4}-\\d{2}-\\d{2}T.*"));
 	}
 
 	@Test
@@ -757,7 +756,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	void configurePluginEntityFromJar() throws MalformedURLException, IOException {
+	void configurePluginEntityFromJar() throws IOException {
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
 				new URL[] { Thread.currentThread().getContextClassLoader()
 						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar") },
@@ -773,7 +772,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	void configurePluginEntityFromProject() throws MalformedURLException, IOException {
+	void configurePluginEntityFromProject() throws IOException {
 		final var url = Thread.currentThread().getContextClassLoader()
 				.getResource("csv-test/sample-business-entity.csv");
 		final var pluginResource = new SystemPluginResource();
@@ -784,7 +783,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	void configurePluginEntitySystemUser() throws MalformedURLException, IOException {
+	void configurePluginEntitySystemUser() throws IOException {
 		final var url = Thread.currentThread().getContextClassLoader().getResource("csv-test/sample-system-user.csv");
 		final var pluginResource = new SystemPluginResource();
 		pluginResource.em = Mockito.mock(EntityManager.class);
@@ -911,17 +910,15 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		return pluginResource;
 	}
 
-	private SystemPluginResource newPluginResourceDelete(final String artifact) throws IOException {
+	private void doPluginResourceDelete(final String artifact) throws IOException {
 		final var pluginResource = newPluginResourceDelete();
 		pluginResource.delete(artifact);
-		return pluginResource;
 	}
 
-	private SystemPluginResource newPluginResourceDelete(final String artifact, final String version)
+	private void doPluginResourceDelete(final String artifact, final String version)
 			throws IOException {
 		final var pluginResource = newPluginResourceDelete();
 		pluginResource.delete(artifact, version);
-		return pluginResource;
 	}
 
 	private SystemPluginResource newPluginResourceDelete() {
@@ -952,7 +949,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 */
 	@Test
 	void removeNotExists() throws IOException {
-		newPluginResourceDelete("any");
+		doPluginResourceDelete("any");
 	}
 
 	/**
@@ -964,7 +961,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertFalse(TEMP_FILE.exists());
 		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
-		newPluginResourceDelete("plugin-iam");
+		doPluginResourceDelete("plugin-iam");
 		Assertions.assertFalse(TEMP_FILE.exists());
 	}
 
@@ -976,7 +973,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertFalse(TEMP_FILE.exists());
 		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
-		newPluginResourceDelete("plugin-iam");
+		doPluginResourceDelete("plugin-iam");
 		Assertions.assertFalse(TEMP_FILE.exists());
 	}
 
@@ -988,7 +985,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertFalse(TEMP_FILE.exists());
 		FileUtils.touch(TEMP_FILE);
 		Assertions.assertTrue(TEMP_FILE.exists());
-		newPluginResourceDelete("plugin-iam-node", "test");
+		doPluginResourceDelete("plugin-iam-node", "test");
 		Assertions.assertFalse(TEMP_FILE.exists());
 	}
 
