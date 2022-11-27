@@ -39,7 +39,7 @@ import jodd.typeconverter.TypeConverterManager;
 import jodd.typeconverter.impl.DateConverter;
 
 /**
- * CSV reader implementation based on Camel implementation (see "BindyCsvDataFormat") where some issues have been fixed.
+ * CSV reader implementation based on Camel implementation where some issues have been fixed.
  *
  * @param <T> Bean type.
  */
@@ -93,11 +93,11 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Date patterns together.
 	 */
-	protected static final String[] DATE_PATTERNS = { DATE_PATTERN_HMS, DATE_PATTERN_HM, DATE_PATTERN,
+	protected static final String[] DATE_PATTERNS = {DATE_PATTERN_HMS, DATE_PATTERN_HM, DATE_PATTERN,
 			DATE_PATTERN_EN_HMS, DATE_PATTERN_EN_HM, DATE_PATTERN_EN, DATE_PATTERN_HMS.replace('/', '-'),
 			DATE_PATTERN_HM.replace('/', '-'), DATE_PATTERN.replace('/', '-'), DATE_PATTERN_EN_HMS.replace('/', '-'),
 			DATE_PATTERN_EN_HM.replace('/', '-'), DATE_PATTERN_EN.replace('/', '-'), DATE_PATTERN_ISO,
-			DATE_PATTERN_ISO2 };
+			DATE_PATTERN_ISO2};
 
 	/**
 	 * The ordered headers used to build the target bean.
@@ -256,13 +256,13 @@ public abstract class AbstractCsvReader<T> {
 	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	protected void setProperty(final T bean, final String property, final String rawValue,
-			final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
+	                           final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
 		if (setter == null) {
-			final var fkeyIndex = property.indexOf('.');
-			if (fkeyIndex == -1) {
+			final var keyIndex = property.indexOf('.');
+			if (keyIndex == -1) {
 				setSimpleProperty(bean, property, rawValue);
 			} else {
-				setForeignProperty(bean, property, rawValue, fkeyIndex);
+				setForeignProperty(bean, property, rawValue, keyIndex);
 			}
 		} else {
 			setter.accept(bean, property, rawValue);
@@ -272,12 +272,12 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Manage foreign key.
 	 *
-	 * @param bean      Target bean.
-	 * @param property  Target property.
-	 * @param rawValue  Source value.
-	 * @param fkeyIndex Foreign key index.
+	 * @param bean     Target bean.
+	 * @param property Target property.
+	 * @param rawValue Source value.
+	 * @param keyIndex Foreign key index.
 	 */
-	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int fkeyIndex) {
+	protected void setForeignProperty(final T bean, final String property, final String rawValue, final int keyIndex) {
 		throw new TechnicalException("Foreign key management is not supported in bean mode");
 	}
 
@@ -304,8 +304,8 @@ public abstract class AbstractCsvReader<T> {
 	 * @param property the bean property to set. Must be a {@link Map}
 	 * @param key      the key of the {@link Map} property
 	 * @param rawValue the raw value to put in the {@link Map}.
-	 * @exception IllegalAccessException if this {@code Field} object is enforcing Java language access control and the
-	 *                                   underlying field is inaccessible.
+	 * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the
+	 *                                underlying field is inaccessible.
 	 */
 	protected void setMapProperty(final T bean, final String property, final String key, final String rawValue)
 			throws IllegalAccessException {
@@ -354,7 +354,7 @@ public abstract class AbstractCsvReader<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property,
-			final String rawValue) {
+	                                                        final String rawValue) {
 		final var field = getField(clazz, property);
 
 		// Update the property
@@ -383,7 +383,7 @@ public abstract class AbstractCsvReader<T> {
 
 	@SuppressWarnings("unchecked")
 	private <E extends Enum<E>> Collection<Object> newCollection(final String rawValue, final Field field,
-			final Collection<Object> result) {
+	                                                             final Collection<Object> result) {
 		final var generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 		for (final var item : rawValue.split(",")) {
 			if (generic.isEnum()) {

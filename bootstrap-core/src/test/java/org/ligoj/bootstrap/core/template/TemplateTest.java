@@ -142,7 +142,7 @@ class TemplateTest {
 		final Set<SystemRoleAssignment> assignments = new HashSet<>();
 		final var assignment = new SystemRoleAssignment();
 		final var role = new SystemRole();
-		role.setName("myrole");
+		role.setName("myRole");
 		assignment.setRole(role);
 		assignments.add(assignment);
 		user.setRoles(assignments);
@@ -153,7 +153,7 @@ class TemplateTest {
 		tags.put("name", new BeanProcessor<>(SystemRole.class, "name"));
 		new Template<>("{{user}}1{{username/}}2{{assignments}}3{{role}}4{{name/}}5{{/role}}6{{/assignments}}7{{/user}}").write(writer, tags,
 				null);
-		Assertions.assertEquals("1junit234myrole567", new String(bos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("1junit234myRole567", new String(bos.toByteArray(), StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -208,7 +208,7 @@ class TemplateTest {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>(new String[] { "A", "B" }));
 		tags.put("tag-value", new Processor<>());
-		tags.put("sub-tag", new Processor<>(Arrays.asList(new String[] { "john", "doe" })));
+		tags.put("sub-tag", new Processor<>(Arrays.asList("john", "doe")));
 		tags.put("sub-tag-value", new Processor<>());
 		new Template<>("0{{tag}}1{{tag-value/}}2{{sub-tag}}{{sub-tag-value/}}{{/sub-tag}}{{/tag}}3").write(writer, tags, null);
 		Assertions.assertEquals("01A2johndoe1B2johndoe3", new String(bos.toByteArray(), StandardCharsets.UTF_8));

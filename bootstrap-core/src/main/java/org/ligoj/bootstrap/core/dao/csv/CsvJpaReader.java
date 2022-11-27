@@ -57,27 +57,27 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	@Override
-	protected void setForeignProperty(final T bean, final String fqname, final String rawValue, final int fkeyIndex) {
-		final var name = fqname.substring(0, fkeyIndex);
+	protected void setForeignProperty(final T bean, final String fqname, final String rawValue, final int keyIndex) {
+		final var name = fqname.substring(0, keyIndex);
 		final var field = getField(clazz, name);
-		final var fkeyName = fqname.substring(fkeyIndex + 1);
+		final var keyName = fqname.substring(keyIndex + 1);
 
 		// Collection management
 		if (field.getType().isAssignableFrom(Set.class)) {
 			// Set support
-			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, fkeyName, new HashSet<>()));
+			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, keyName, new HashSet<>()));
 		} else if (field.getType().isAssignableFrom(List.class)) {
 			// List support
-			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, fkeyName, new ArrayList<>()));
+			beanUtilsBean.setProperty(bean, name, newCollection(rawValue, name, field, keyName, new ArrayList<>()));
 		} else {
 			// Simple property
 			beanUtilsBean.setProperty(bean, name, getForeignProperty(rawValue, name, field,
-					TypeUtils.getRawType(field.getGenericType(), bean.getClass()), fkeyName));
+					TypeUtils.getRawType(field.getGenericType(), bean.getClass()), keyName));
 		}
 	}
 
 	private Object getForeignProperty(final String rawValue, final String name, final Field field, final Class<?> type,
-			final String fkName) {
+	                                  final String fkName) {
 		final Object foreignEntity;
 		if (fkName.charAt(fkName.length() - 1) == '!') {
 			foreignEntity = readFromEm(rawValue, type, fkName.substring(0, fkName.length() - 1));
@@ -92,7 +92,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	private Collection<Object> newCollection(final String rawValue, final String masterPropertyName, final Field field,
-			String propertyName, final Collection<Object> arrayList) {
+	                                         String propertyName, final Collection<Object> arrayList) {
 		final var generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 		for (final var item : rawValue.split(",")) {
 			arrayList.add(getForeignProperty(item, masterPropertyName, field, generic, propertyName));
