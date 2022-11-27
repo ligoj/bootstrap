@@ -19,7 +19,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Fail safe password configuration using in this order :
+ * Fail-safe password configuration using in this order :
  * <ul>
  * <li>System property</li>
  * <li>Environment variable</li>
@@ -58,7 +58,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 		// Read password from the classpath
 		try {
 			return StringUtils.trimToNull(IOUtils.toString(new ClassPathResource(passwordFilename).getInputStream(),
-					StandardCharsets.UTF_8.name()));
+					StandardCharsets.UTF_8));
 		} catch (final IOException ioe) { // NOSONAR - Safely ignore this fails, and assume there is no password
 			log.warn("Unable to read resource {} : {}", passwordFilename, ioe.getMessage());
 		}
@@ -90,12 +90,12 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	@Override
 	public char[] getPasswordCharArray() {
 		// Raw value providers
-		var password = pipe(passwordSysPropertyName, p -> System.getProperty(p));
+		var password = pipe(passwordSysPropertyName, System::getProperty);
 		if (password == null) {
 			password = pipe(passwordSysPropertyName, GlobalPropertyUtils::getProperty);
 		}
 		if (password == null) {
-			password = pipe(passwordEnvName, p -> System.getenv(p));
+			password = pipe(passwordEnvName, System::getenv);
 		}
 
 		// File providers
