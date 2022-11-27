@@ -13,6 +13,7 @@ import org.jasypt.properties.PropertyValueEncryptionUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 import lombok.Setter;
@@ -25,12 +26,12 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 	/**
 	 * Global properties.
 	 */
-	private static Properties props = null;
+	private static final Properties props = new Properties();
 
 	/**
 	 * Attached and validated locations.
 	 */
-	private static Resource[] locations = new Resource[0];
+	public static Resource[] locations = new Resource[0];
 
 	/*
 	 * Shared encryptor.
@@ -47,17 +48,11 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 		super.loadProperties(props);
 
 		// Save the global properties
-		setGlobalProperties(props);
+		GlobalPropertyUtils.props.putAll(props);
 	}
 
 	@Override
 	public void setLocations(final Resource... locations) {
-		// Invalidate previous cache
-		if (GlobalPropertyUtils.props != null) {
-			setGlobalProperties(null);
-			setGlobalLocations();
-		}
-
 		// Cleanup resources to avoid useless WAR
 		final var newLocations = new ArrayList<Resource>(locations.length);
 		for (final var location : locations) {
@@ -76,33 +71,15 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 			newLocationsArray = newLocations.toArray(new Resource[0]);
 		}
 
-		// Add the locations to the bean
-		super.setLocations(locations);
-
 		// Increase the application properties
-		setGlobalLocations(ArrayUtils.addAll(GlobalPropertyUtils.locations, newLocationsArray));
+		GlobalPropertyUtils.locations =ArrayUtils.addAll(GlobalPropertyUtils.locations, newLocationsArray);
+
+		// Add the locations to the bean
+		super.setLocations(GlobalPropertyUtils.locations);
 	}
 
 	/**
-	 * Set the global locations.
-	 *
-	 * @param locations The global resources.
-	 */
-	public static void setGlobalLocations(final Resource... locations) {
-		GlobalPropertyUtils.locations = locations;
-	}
-
-	/**
-	 * Set the global properties.
-	 *
-	 * @param props The global properties.
-	 */
-	public static void setGlobalProperties(final Properties props) {
-		GlobalPropertyUtils.props = props;
-	}
-
-	/**
-	 * Return a property loaded by the place holder.
+	 * Return a property loaded by the placeholder.
 	 *
 	 * @param name the property name.
 	 * @return the property value.
@@ -112,17 +89,16 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 	}
 
 	@Override
-	protected String convertPropertyValue(final String originalValue) {
-		if (!PropertyValueEncryptionUtils.isEncryptedValue(originalValue)) {
-			return originalValue;
+	protected String convertPropertyValue(@Nullable final String originalValue) {
+		if (PropertyValueEncryptionUtils.isEncryptedValue(originalValue)) {
+			return PropertyValueEncryptionUtils.decrypt(originalValue, GlobalPropertyUtils.stringEncryptor);
 		}
-		return PropertyValueEncryptionUtils.decrypt(originalValue, GlobalPropertyUtils.stringEncryptor);
+		return originalValue;
 	}
 
 	@Override
-	protected void doProcessProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
-			StringValueResolver valueResolver) {
-		super.doProcessProperties(beanFactoryToProcess,
-				strVal -> convertPropertyValue(valueResolver.resolveStringValue(strVal)));
+	protected void doProcessProperties(ConfigurableListableBeanFactory factory,
+	                                   StringValueResolver resolver) {
+		super.doProcessProperties(factory, v -> convertPropertyValue(resolver.resolveStringValue(v)));
 	}
 }
