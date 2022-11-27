@@ -49,8 +49,8 @@ class CsvForBeanTest {
 		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n", result.toString());
 
 		// Only there for coverage
-		Wrapper.values();
-		Wrapper.valueOf(Wrapper.DOUBLE_QUOTE.name());
+		Assertions.assertTrue(Wrapper.values().length > 0);
+		Assertions.assertNotNull(Wrapper.valueOf(Wrapper.DOUBLE_QUOTE.name()));
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class CsvForBeanTest {
 	@Test
 	void toBeanPerformance() throws IOException {
 		final var count = 100;
-		for (var i = count; i-- > 0;) {
+		for (var i = count; i-- > 0; ) {
 			toBeanPerformanceP();
 		}
 	}
@@ -126,7 +126,7 @@ class CsvForBeanTest {
 	void toBeanPerformanceP() throws IOException {
 		final var buffer = new StringBuilder("name;name;name;name;name;name\n");
 		final var count = 1000;
-		for (var i = count; i-- > 0;) {
+		for (var i = count; i-- > 0; ) {
 			buffer.append("name;name;name;name;name;name\n");
 		}
 		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()));
@@ -137,7 +137,7 @@ class CsvForBeanTest {
 	@Test
 	void toBeanPerformance2() throws IOException {
 		final var count = 100;
-		for (var i = count; i-- > 0;) {
+		for (var i = count; i-- > 0; ) {
 			toBeanPerformanceP2();
 		}
 	}
@@ -145,7 +145,7 @@ class CsvForBeanTest {
 	void toBeanPerformanceP2() throws IOException {
 		final var buffer = new StringBuilder("name;name;name;name;name;name\n");
 		final var count = 1000;
-		for (var i = count; i-- > 0;) {
+		for (var i = count; i-- > 0; ) {
 			buffer.append("name;name;name;name;name;name\n");
 		}
 		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()),
@@ -290,7 +290,7 @@ class CsvForBeanTest {
 				() -> csvForBean.toBean(DummyEntity3.class, reader),
 				"Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
 		Assertions.assertTrue(e.getCause().getMessage().contains(
-				"Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection to java.util.LinkedHashMap"));
+				"Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection"));
 	}
 
 	/**
