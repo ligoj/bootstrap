@@ -61,7 +61,7 @@
 		<enterprise.cdi-api.version>2.0.2</enterprise.cdi-api.version>
 		<guava.version>31.1-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
-		<hazelcast.version>5.1.5</hazelcast.version>
+		<hazelcast.version>5.2.1</hazelcast.version>
 		<hibernate.version>5.6.14.Final</hibernate.version>
 		<hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
 		<httpclient.version>4.5.13</httpclient.version>
