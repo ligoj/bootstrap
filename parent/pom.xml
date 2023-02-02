@@ -13,7 +13,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.9.3-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Ligoj Bootstrap Parent</description>
@@ -39,12 +39,16 @@
 		<url>https://travis-ci.com/ligoj/bootstrap</url>
 	</ciManagement>
 	<properties>
+		<plugin.surefire.report>3.0.0-M8</plugin.surefire.report>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 
-		<annotation-api.version>1.3.5</annotation-api.version>
-		<activation.version>1.2.2</activation.version>
+		<annotation-api.version>2.1.1</annotation-api.version>
+		<ant.version>1.10.13</ant.version>
+		<activation.version>2.0.1</activation.version>
+		<activation-api.version>2.1.1</activation-api.version>
 		<apacheds.version>1.5.5</apacheds.version>
-		<aspectj.version>1.9.9.1</aspectj.version>
+		<asm.version>9.4</asm.version>
+		<aspectj.version>1.9.19</aspectj.version>
 		<byte-buddy.version>1.12.22</byte-buddy.version>
 		<cache.version>1.1.1</cache.version>
 		<cachefilter.version>2.3.1</cachefilter.version>
@@ -55,49 +59,65 @@
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<commons-text.version>1.10.0</commons-text.version>
-		<cxf.version>3.5.5</cxf.version>
+		<cxf.version>4.0.0</cxf.version>
 		<dbcp.version>2.9.0</dbcp.version>
 		<dom4j.version>2.1.4</dom4j.version>
-		<enterprise.cdi-api.version>2.0.2</enterprise.cdi-api.version>
+		<el.version>5.0.0-M1</el.version>
+		<el-api.version>5.0.1</el-api.version>
+		<enterprise.cdi-api.version>4.0.1</enterprise.cdi-api.version>
 		<guava.version>31.1-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
 		<hazelcast.version>5.2.1</hazelcast.version>
-		<hibernate.version>5.6.14.Final</hibernate.version>
-		<hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
+		<hibernate.version>6.1.6.Final</hibernate.version>
+		<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
 		<hsqldb.version>2.7.1</hsqldb.version>
 		<jackson.version>2.14.2</jackson.version>
 		<jackson.databind.version>2.14.2</jackson.databind.version>
 		<jasypt.version>1.9.3</jasypt.version>
-		<jaxb.version>2.3.2</jaxb.version>
-		<jetty.version>9.4.50.v20221201</jetty.version>
+		<jaxb.version>4.0.1</jaxb.version>
+		<jaxb-api.version>4.0.0</jaxb-api.version>
+		<jetty.version>11.0.13</jetty.version>
 		<jodd-bean.version>5.1.6</jodd-bean.version>
 		<jsoup.version>1.15.3</jsoup.version>
-		<log4j.version>2.17.2</log4j.version>
+		<log4j.version>2.19.0</log4j.version>
+		<log4j-api.version>2.19.0</log4j-api.version>
 		<lombok.version>1.18.22</lombok.version><!-- Don't use 1.18.24 -->
-		<mail.version>1.6.7</mail.version>
-		<mockito.version>4.7.0</mockito.version>
+		<mail.version>2.0.1</mail.version>
+		<mockito.version>5.1.1</mockito.version>
 		<mysql.version>8.0.32</mysql.version>
 		<postgresql.version>42.5.2</postgresql.version>
 		<paranamer.version>2.8</paranamer.version>
-		<persistence.version>2.2.3</persistence.version>
+		<persistence.version>3.1.0</persistence.version>
 		<quartz.version>2.3.2</quartz.version>
-		<servlet.version>4.0.4</servlet.version>
-		<slf4j.version>1.7.36</slf4j.version>
-		<soap-api.version>1.4.2</soap-api.version>
-		<spring.version>5.3.24</spring.version>
-		<spring-boot.version>2.7.6</spring-boot.version>
-		<spring-cloud-context.version>3.1.5</spring-cloud-context.version>
-		<spring-data.version>2.7.6</spring-data.version>
-		<spring-security.version>5.8.0</spring-security.version>
+		<servlet.version>6.0.0</servlet.version>
+		<slf4j.version>2.0.6</slf4j.version>
+		<soap-api.version>3.0.0</soap-api.version>
+		<spring.version>6.0.4</spring.version>
+		<spring-boot.version>3.0.2</spring-boot.version>
+		<spring-cloud-context.version>4.0.1</spring-cloud-context.version>
+		<spring-data.version>3.0.1</spring-data.version>
+		<spring-security.version>6.0.1</spring-security.version>
 		<spring-security-rsa>1.0.11.RELEASE</spring-security-rsa>
-		<transaction-api.version>1.3.3</transaction-api.version>
-		<wiremock.version>2.35.0</wiremock.version>
+		<transaction-api.version>2.0.1</transaction-api.version>
+		<wiremock.version>3.0.0-beta-2</wiremock.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+
+			<!-- JSR-245, JSR-341 -->
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>jakarta.el</artifactId>
+				<version>${el.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.el</groupId>
+				<artifactId>jakarta.el-api</artifactId>
+				<version>${el-api.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.dom4j</groupId>
 				<artifactId>dom4j</artifactId>
@@ -111,7 +131,7 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-core</artifactId>
-				<version>2.9.3-SNAPSHOT</version>
+				<version>3.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.gentyref</groupId>
@@ -313,12 +333,12 @@
 			<dependency>
 			    <groupId>jakarta.xml.ws</groupId>
    				<artifactId>jakarta.xml.ws-api</artifactId>
-   				<version>${jaxb.version}</version>
+   				<version>${jaxb-api.version}</version>
    			</dependency>
 			<dependency>
 				<groupId>jakarta.xml.bind</groupId>
 				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>${jaxb.version}</version>
+				<version>${jaxb-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.thoughtworks.paranamer</groupId>
@@ -492,11 +512,11 @@
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
-				<version>${log4j.version}</version>
+				<version>${log4j-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
+				<artifactId>log4j-slf4j2-impl</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
@@ -657,7 +677,7 @@
 			<dependency>
 				<groupId>jakarta.activation</groupId>
 				<artifactId>jakarta.activation-api</artifactId>
-				<version>${activation.version}</version>
+				<version>${activation-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.activation</groupId>
@@ -700,37 +720,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-entitymanager</artifactId>
-				<version>${hibernate.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>xml-apis</artifactId>
-						<groupId>xml-apis</groupId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.enterprise</groupId>
-						<artifactId>cdi-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>javax.activation-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.persistence</groupId>
-						<artifactId>javax.persistence-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jboss.spec.javax.transaction</groupId>
-						<artifactId>jboss-transaction-api_1.2_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.geronimo.specs</groupId>
-						<artifactId>geronimo-jta_1.1_spec</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 
 			<!-- JSR-317, JSR 338 -->
 			<dependency>
@@ -770,13 +759,13 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business</artifactId>
-				<version>2.9.3-SNAPSHOT</version>
+				<version>3.0.0-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business-test</artifactId>
-				<version>2.9.3-SNAPSHOT</version>
+				<version>3.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.quartz-scheduler</groupId>
@@ -848,7 +837,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.tomakehurst</groupId>
-				<artifactId>wiremock-jre8</artifactId>
+				<artifactId>wiremock</artifactId>
 				<version>${wiremock.version}</version>
 				<exclusions>
 					<exclusion>
@@ -876,8 +865,8 @@
 				<version>2.8.3-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+				<artifactId>jackson-jakarta-rs-json-provider</artifactId>
 				<version>${jackson.version}</version>
 				<exclusions>
 					<exclusion>
@@ -983,7 +972,7 @@
 				<dependency>
 					<groupId>org.ligoj.bootstrap</groupId>
 					<artifactId>bootstrap-launcher</artifactId>
-					<version>2.9.3-SNAPSHOT</version>
+					<version>3.0.0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>

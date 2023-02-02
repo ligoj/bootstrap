@@ -5,9 +5,9 @@ package org.ligoj.bootstrap.model.system;
 
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 

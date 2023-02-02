@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.resource.system.security;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 

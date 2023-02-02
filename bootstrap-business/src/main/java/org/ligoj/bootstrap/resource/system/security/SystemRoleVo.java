@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.resource.system.security;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import org.ligoj.bootstrap.core.NamedBean;
 

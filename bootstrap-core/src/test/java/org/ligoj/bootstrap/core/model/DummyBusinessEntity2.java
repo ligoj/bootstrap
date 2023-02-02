@@ -20,7 +20,7 @@ public class DummyBusinessEntity2 extends AbstractBusinessEntity<String> {
 	private static final long serialVersionUID = 1L;
 
 	@java.lang.SuppressWarnings("all")
-	@javax.annotation.Generated("lombok")
+	@jakarta.annotation.Generated("lombok")
 	protected boolean canEqual(final java.lang.Object other) {
 		return other instanceof DummyBusinessEntity2;
 	}

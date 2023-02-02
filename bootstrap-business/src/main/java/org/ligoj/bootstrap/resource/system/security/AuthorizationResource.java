@@ -13,18 +13,18 @@ import java.util.regex.Pattern;
 
 import javax.cache.annotation.CacheRemoveAll;
 import javax.cache.annotation.CacheResult;
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
 
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 /**
@@ -55,7 +54,7 @@ public class AuthorizationResource {
 	protected CacheManager cacheManager;
 
 	@Value("${security.filter.methods:GET,POST,DELETE,PUT}")
-	private HttpMethod[] methods;
+	private String[] methods;
 
 	/**
 	 * Retrieve an authorization from its identifier.
@@ -184,8 +183,8 @@ public class AuthorizationResource {
 	 * @return The authorizations of each role.
 	 */
 	@CacheResult(cacheName = "authorizations")
-	public Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> getAuthorizations() {
-		final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache = new EnumMap<>(
+	public Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> getAuthorizations() {
+		final Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> authorizationsCache = new EnumMap<>(
 				AuthorizationType.class);
 		final var authorizations = repository.findAll();
 		authorizations.forEach(a -> addAuthorization(newCacheRole(newCacheType(authorizationsCache, a), a), a));
@@ -195,16 +194,16 @@ public class AuthorizationResource {
 	/**
 	 * Cache authorization role
 	 */
-	private Map<HttpMethod, List<Pattern>> newCacheRole(final Map<String, Map<HttpMethod, List<Pattern>>> existingAuthorizations,
+	private Map<String, List<Pattern>> newCacheRole(final Map<String, Map<String, List<Pattern>>> existingAuthorizations,
 			final SystemAuthorization authorization) {
-		return existingAuthorizations.computeIfAbsent(authorization.getRole().getName(), r -> new EnumMap<>(HttpMethod.class));
+		return existingAuthorizations.computeIfAbsent(authorization.getRole().getName(), r -> new HashMap<>());
 	}
 
 	/**
 	 * Cache authorization type
 	 */
-	private Map<String, Map<HttpMethod, List<Pattern>>> newCacheType(
-			final Map<AuthorizationType, Map<String, Map<HttpMethod, List<Pattern>>>> authorizationsCache,
+	private Map<String, Map<String, List<Pattern>>> newCacheType(
+			final Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> authorizationsCache,
 			final SystemAuthorization authorization) {
 		return authorizationsCache.computeIfAbsent(authorization.getType(), a -> new HashMap<>());
 	}
@@ -212,7 +211,7 @@ public class AuthorizationResource {
 	/**
 	 * Add an authorization to the given cache.
 	 */
-	private void addAuthorization(final Map<HttpMethod, List<Pattern>> existingAuthorizations, final SystemAuthorization authorization) {
+	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final SystemAuthorization authorization) {
 		if (authorization.getMethod() == null) {
 			// All methods
 			for (final var method : methods) {
@@ -227,7 +226,7 @@ public class AuthorizationResource {
 	/**
 	 * Add an pattern/method authorization to the given cache.
 	 */
-	private void addAuthorization(final Map<HttpMethod, List<Pattern>> existingAuthorizations, final HttpMethod method,
+	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final String method,
 			final String pattern) {
 		existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>()).add(Pattern.compile(pattern));
 	}

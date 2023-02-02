@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.junit.jupiter.api.AfterEach;

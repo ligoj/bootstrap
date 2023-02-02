@@ -3,11 +3,12 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
 
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class DummyEntity {
 	private String wnePict;
 	
 	@Length(max=500)
+	@Size(max = 500)
 	private String wneDesc;
 
 }

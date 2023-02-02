@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;

@@ -3,8 +3,8 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 

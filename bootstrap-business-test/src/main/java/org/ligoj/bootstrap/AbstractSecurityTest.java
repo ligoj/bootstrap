@@ -89,11 +89,11 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * Build and return a REST security context.
 	 * 
 	 * @param user
-	 *            the user name of {@link javax.ws.rs.core.SecurityContext}
-	 * @return a mock of {@link javax.ws.rs.core.SecurityContext} with a defined {@link Principal}
+	 *            the user name of {@link jakarta.ws.rs.core.SecurityContext}
+	 * @return a mock of {@link jakarta.ws.rs.core.SecurityContext} with a defined {@link Principal}
 	 */
-	protected javax.ws.rs.core.SecurityContext getJaxRsSecurityContext(final String user) {
-		final var context = Mockito.mock(javax.ws.rs.core.SecurityContext.class);
+	protected jakarta.ws.rs.core.SecurityContext getJaxRsSecurityContext(final String user) {
+		final var context = Mockito.mock(jakarta.ws.rs.core.SecurityContext.class);
 		final var principal = Mockito.mock(Principal.class);
 		Mockito.when(principal.getName()).thenReturn(user);
 		Mockito.when(context.getUserPrincipal()).thenReturn(principal);

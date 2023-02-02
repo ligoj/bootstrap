@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.ligoj.bootstrap.AbstractJpaTest;
 import org.springframework.test.annotation.Rollback;

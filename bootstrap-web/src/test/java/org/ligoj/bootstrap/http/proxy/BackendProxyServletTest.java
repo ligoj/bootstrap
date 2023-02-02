@@ -11,17 +11,17 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.UnavailableException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.jetty.client.api.Request;
@@ -29,13 +29,13 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.Callback;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.DelegatingServletOutputStream;
 
 /**
@@ -61,7 +61,7 @@ class BackendProxyServletTest {
 			private static final long serialVersionUID = 1L;
 
 			{
-				_log = Log.getLogger("junit");
+				_log = LoggerFactory.getLogger("junit");
 			}
 
 			@Override
@@ -273,7 +273,7 @@ class BackendProxyServletTest {
 		final var exchange = Mockito.mock(Request.class);
 		final Map<String, Object> attributes = Map.of("org.eclipse.jetty.proxy.clientRequest", request);
 		Mockito.when(exchange.getAttributes()).thenReturn(attributes);
-		Mockito.when(exchange.getHeaders()).thenReturn(new HttpFields());
+		Mockito.when(exchange.getHeaders()).thenReturn(HttpFields.build());
 		Mockito.when(request.getProtocol()).thenReturn("HTTP/1.1");
 		return exchange;
 	}
@@ -534,7 +534,7 @@ class BackendProxyServletTest {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		final var response = Mockito.mock(HttpServletResponse.class);
 		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getHeaders()).thenReturn(new HttpFields());
+		Mockito.when(proxyResponse.getHeaders()).thenReturn(HttpFields.build());
 		servlet.onServerResponseHeaders(request, response, proxyResponse);
 		Mockito.verify(response, Mockito.never()).addHeader("Content-Type", "text/html");
 	}
@@ -546,7 +546,7 @@ class BackendProxyServletTest {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		final var proxyResponse = Mockito.mock(Response.class);
 		Mockito.when(proxyResponse.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
-		Mockito.when(proxyResponse.getHeaders()).thenReturn(new HttpFields());
+		Mockito.when(proxyResponse.getHeaders()).thenReturn(HttpFields.build());
 		servlet.onServerResponseHeaders(request, response, proxyResponse);
 		Mockito.verify(response, Mockito.never()).addHeader("Content-Type", "text/html");
 	}

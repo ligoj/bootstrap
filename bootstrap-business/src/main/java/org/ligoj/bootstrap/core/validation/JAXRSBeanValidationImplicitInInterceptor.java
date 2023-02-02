@@ -13,12 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Payload;
-import javax.validation.constraints.NotNull;
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.ws.rs.QueryParam;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Payload;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import jakarta.ws.rs.QueryParam;
 
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.logging.FaultListener;
@@ -42,7 +42,7 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 	/**
 	 * Excluded parameter annotation name or package. {@link String#startsWith(String)} will be used.
 	 */
-	@Value("#{'${validation.excludes:javax.ws.rs,org.apache.cxf.jaxrs.ext.multipart.Multipart}'.split(',')}")
+	@Value("#{'${validation.excludes:jakarta.ws.rs,org.apache.cxf.jaxrs.ext.multipart.Multipart}'.split(',')}")
 	private final Collection<String> excludes = Collections.singleton(QueryParam.class.getPackage().getName());
 
 	@Autowired

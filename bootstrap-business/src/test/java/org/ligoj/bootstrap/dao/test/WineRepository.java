@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.dao.test;
 
 import java.util.List;
 
-import javax.persistence.OrderBy;
+import jakarta.persistence.OrderBy;
 
 import org.ligoj.bootstrap.core.dao.RestRepository;
 import org.ligoj.bootstrap.model.test.Wine;

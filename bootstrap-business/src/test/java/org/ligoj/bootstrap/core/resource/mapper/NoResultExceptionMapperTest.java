@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;

@@ -8,9 +8,9 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.Date;
 
-import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverterProvider;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * Build a {@link Date} from a UNIX timestamp value : the number of milliseconds since the Unix Epoch (1 January 1970

@@ -3,8 +3,8 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 import lombok.Getter;
 import lombok.Setter;

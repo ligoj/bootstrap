@@ -6,11 +6,11 @@ package org.ligoj.bootstrap.core.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,8 +72,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	void doFilterPlentyAuthority() throws Exception {
 
 		for (final var method : HttpMethod.values()) {
-			addSystemAuthorization(method, "role1", "^myurl");
-			addSystemAuthorization(method, "role2", "^myurl");
+			addSystemAuthorization(method.name(), "role1", "^myurl");
+			addSystemAuthorization(method.name(), "role2", "^myurl");
 		}
 		em.flush();
 		em.clear();
@@ -141,8 +141,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	void doFilterAttachedAuthority2() throws Exception {
 		attachRole(DEFAULT_ROLE, "role1", "role2", "role3");
 		for (final var method : HttpMethod.values()) {
-			addSystemAuthorization(method, "role1", "^myurl");
-			addSystemAuthorization(method, "role2", "^myurl");
+			addSystemAuthorization(method.name(), "role1", "^myurl");
+			addSystemAuthorization(method.name(), "role2", "^myurl");
 			addSystemAuthorization(null, "role1", "^youurl");
 			addSystemAuthorization(null, "role2", "^yoururl");
 		}
@@ -173,7 +173,7 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	@Test
 	void doFilterAttachedAuthority3() throws Exception {
 		attachRole(DEFAULT_ROLE, "role2");
-		addSystemAuthorization(HttpMethod.GET, "role2", "^rest/match$");
+		addSystemAuthorization(HttpMethod.GET.name(), "role2", "^rest/match$");
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
@@ -189,13 +189,14 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
+		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
 		Mockito.when(request.getMethod()).thenReturn("HEAD");
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.atLeastOnce()).doFilter(request, response);
+		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
 		Mockito.validateMockitoUsage();
 	}
 
-	private void addSystemAuthorization(final HttpMethod method, final String roleName, final String pattern) {
+	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {
         var role = systemRoleRepository.findByName(roleName);
 		if (role == null) {
 			role = new SystemRole();

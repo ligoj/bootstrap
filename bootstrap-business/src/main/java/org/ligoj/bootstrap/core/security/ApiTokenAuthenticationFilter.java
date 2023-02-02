@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.security;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;

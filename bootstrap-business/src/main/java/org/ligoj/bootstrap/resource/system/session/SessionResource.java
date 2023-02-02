@@ -12,11 +12,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
@@ -25,7 +25,6 @@ import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
 import org.ligoj.bootstrap.resource.system.user.UserSettingResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,7 +49,7 @@ public class SessionResource {
 	/**
 	 * Memory safe empty authorization.
 	 */
-	private static final List<Map<HttpMethod, List<Pattern>>> EMPTY_ROLES = new ArrayList<>();
+	private static final List<Map<String, List<Pattern>>> EMPTY_ROLES = new ArrayList<>();
 
 	@Autowired
 	private AuthorizationResource authorizationResource;
@@ -94,7 +93,7 @@ public class SessionResource {
 	/**
 	 * Return only authorization for the granted authorities.
 	 */
-	private List<Map<HttpMethod, List<Pattern>>> filterRoles(final Map<String, Map<HttpMethod, List<Pattern>>> authorizations,
+	private List<Map<String, List<Pattern>>> filterRoles(final Map<String, Map<String, List<Pattern>>> authorizations,
 			final List<String> rolesAsString) {
 		if (authorizations == null) {
 			// No authorization -> no roles
@@ -106,7 +105,7 @@ public class SessionResource {
 	/**
 	 * Return all flattered patterns.
 	 */
-	private Set<String> toPatterns(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
+	private Set<String> toPatterns(final List<Map<String, List<Pattern>>> authorizations) {
 		return authorizations.stream().map(Map::values).flatMap(Collection::stream).flatMap(Collection::stream).map(Pattern::pattern)
 				.collect(Collectors.toSet());
 	}
@@ -122,7 +121,7 @@ public class SessionResource {
 	/**
 	 * Build and return the list of API authorizations.
 	 */
-	private List<SystemAuthorization> getApiAuthorizations(final List<Map<HttpMethod, List<Pattern>>> authorizations) {
+	private List<SystemAuthorization> getApiAuthorizations(final List<Map<String, List<Pattern>>> authorizations) {
 		return authorizations.stream().map(Map::entrySet).flatMap(Collection::stream).flatMap(entry -> entry.getValue().stream().map(pattern -> {
 			final var apiAuthorization = new SystemAuthorization();
 			apiAuthorization.setMethod(entry.getKey());

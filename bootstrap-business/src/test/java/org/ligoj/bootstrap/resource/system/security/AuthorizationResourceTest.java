@@ -242,14 +242,14 @@ class AuthorizationResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	void testInvalidPatternFromDb() {
-		addSystemAuthorization(HttpMethod.GET, "role1", "^(my\\(url");
+		addSystemAuthorization(HttpMethod.GET.name(), "role1", "^(my\\(url");
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
 		Assertions.assertThrows(PatternSyntaxException.class, () -> resource.getAuthorizations());
 	}
 
-	private void addSystemAuthorization(final HttpMethod method, final String roleName, final String pattern) {
+	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {
         var role = systemRoleRepository.findByName(roleName);
 		if (role == null) {
 			role = new SystemRole();

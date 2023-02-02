@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.json.datatable;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.junit.jupiter.api.Assertions;

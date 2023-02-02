@@ -6,7 +6,7 @@ package org.ligoj.bootstrap;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

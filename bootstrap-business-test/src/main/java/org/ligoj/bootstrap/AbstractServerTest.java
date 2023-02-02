@@ -35,7 +35,12 @@ public abstract class AbstractServerTest extends AbstractAppTest {
 	public void shutDownMockServer() {
 		System.clearProperty("http.keepAlive");
 		if (httpServer != null) {
-			httpServer.stop();
+			try {
+				httpServer.stop();
+			} catch (Exception e) {
+				// Ignore this error
+				log.info("Jetty server did not stopped properly {}", e.getClass().getName());
+			}
 		}
 	}
 

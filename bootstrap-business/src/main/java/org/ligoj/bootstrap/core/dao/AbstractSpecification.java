@@ -3,31 +3,32 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.IdentifiableType;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jodd.typeconverter.TypeConverterManager;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.PathImplementor;
-import org.hibernate.query.criteria.internal.path.SingularAttributeJoin;
-import org.hibernate.query.criteria.internal.path.SingularAttributePath;
+import org.hibernate.Session;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.metamodel.model.domain.internal.BasicSqmPathSource;
+import org.hibernate.metamodel.model.domain.internal.EntityTypeImpl;
+import org.hibernate.metamodel.model.domain.internal.SingularAttributeImpl;
+import org.hibernate.query.criteria.JpaPath;
+import org.hibernate.query.sqm.tree.domain.SqmBasicValuedSimplePath;
+import org.hibernate.query.sqm.tree.domain.SqmPath;
+import org.hibernate.query.sqm.tree.from.SqmJoin;
+import org.hibernate.spi.NavigablePath;
+import org.hibernate.type.AssociationType;
+import org.hibernate.type.BagType;
 
-import com.googlecode.gentyref.GenericTypeReflector;
-
-import jodd.typeconverter.TypeConverterManager;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.NavigableMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Common JPA tools to manipulate specification path.
@@ -57,33 +58,33 @@ public abstract class AbstractSpecification {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <U, T> Path<T> getOrmPath(final Root<U> root, final String path) {
-		var currentPath = (PathImplementor<?>) root;
+		var currentPath = (SqmPath<?>) root;
 		for (final var pathFragment : path.split(DELIMITERS)) {
 			currentPath = getNextPath(pathFragment, (From<?, ?>) currentPath);
 		}
 
-		// Fail safe identifier access for non singular target path
-		if (currentPath instanceof SingularAttributeJoin) {
-			currentPath = getNextPath(((IdentifiableType<?>) currentPath.getModel()).getId(Object.class).getName(),
-					(From<?, ?>) currentPath);
+		// Fail-safe identifier access for non-singular target path
+		if (currentPath instanceof SqmJoin<?, ?>) {
+			final var idName = ((IdentifiableType) ((Attribute) currentPath.getModel()).getDeclaringType()).getId(Object.class).getName();
+			currentPath = getNextPath(idName, (From<?, ?>) currentPath);
 		}
 		return (Path<T>) currentPath;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <X> PathImplementor<X> getNextPath(final String pathFragment, final From<?, ?> from) {
-		var currentPath = (PathImplementor<?>) from.get(pathFragment);
+	private <X> SqmPath<X> getNextPath(final String pathFragment, final From<?, ?> from) {
+		var currentPath = (SqmPath<?>) from.get(pathFragment);
 		fixAlias(from, aliasCounter);
 
 		// Handle join. Does not manage many-to-many
-		if (currentPath.getAttribute().getPersistentAttributeType() != PersistentAttributeType.BASIC) {
-			currentPath = getJoinPath(from, currentPath.getAttribute());
+		if (!(currentPath.getReferencedPathSource() instanceof BasicSqmPathSource<?>)) {
+			currentPath = getPreviousJoinPath(from, currentPath.getNavigablePath().getLocalName());
 			if (currentPath == null) {
 				// if no join, we create it
 				currentPath = fixAlias(from.join(pathFragment, JoinType.LEFT), aliasCounter);
 			}
 		}
-		return (PathImplementor<X>) currentPath;
+		return (SqmPath<X>) currentPath;
 	}
 
 	/**
@@ -91,27 +92,27 @@ public abstract class AbstractSpecification {
 	 *
 	 * @param from      the from source element.
 	 * @param attribute the attribute to join
+	 * @param <U>       The source type of the {@link Join}
+	 * @param <T>       The resolved entity type of the path value.
 	 * @return The join/fetch path if it exists.
-	 * @param <U> The source type of the {@link Join}
-	 * @param <T> The resolved entity type of the path value.
 	 */
 	@SuppressWarnings("unchecked")
-	protected <U, T> PathImplementor<T> getJoinPath(final From<?, U> from, final Attribute<?, ?> attribute) {
+	protected <U, T> SqmPath<T> getPreviousJoinPath(final From<?, U> from, final String attribute) {
 
 		// Search within current joins
 		for (final var join : from.getJoins()) {
-			if (join.getAttribute().equals(attribute)) {
-				return fixAlias((Join<U, T>) join, aliasCounter);
+			if (join.getAttribute().getName().equals(attribute)) {
+				return fixAlias((Selection<T>) join, aliasCounter);
 			}
 		}
 		return null;
 	}
 
-	private <T> PathImplementor<T> fixAlias(final Selection<T> join, final AtomicInteger integer) {
+	private <T> SqmPath<T> fixAlias(final Selection<T> join, final AtomicInteger integer) {
 		if (join.getAlias() == null) {
 			join.alias("_" + integer.incrementAndGet());
 		}
-		return (PathImplementor<T>) join;
+		return (SqmPath<T>) join;
 	}
 
 	/**
@@ -119,16 +120,44 @@ public abstract class AbstractSpecification {
 	 *
 	 * @param data       the data as String.
 	 * @param expression the target expression.
+	 * @param <Y>        The type of the {@link Expression}
 	 * @return the data typed as much as possible to the target expression.
-	 * @param <Y> The type of the {@link Expression}
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected static <Y> Y toRawData(final String data, final Expression<Y> expression) {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	protected static <Y> Y toRawData(final EntityManager em, final String data, final Expression<Y> expression) {
 
 		// Guess the right compile time type, including generic type
-		final var field = (Field) ((SingularAttributePath<?>) expression).getAttribute().getJavaMember();
-		final Class<?> entity = ((SingularAttributePath<?>) expression).getPathSource().getJavaType();
-		final var expressionType = (Class<?>) GenericTypeReflector.getExactFieldType(field, entity);
+		final var sf = (SessionFactoryImpl) em.unwrap(Session.class).getSessionFactory();
+		final var path = ((JpaPath<?>) expression).getNavigablePath();
+		final var metaModel = sf.getMetamodel();
+
+		var parent = path;
+		var reversePath = new ArrayList<NavigablePath>();
+		do {
+			reversePath.add(0, parent);
+			parent = parent.getParent();
+		} while (parent != null);
+		var model = metaModel.getEntityDescriptor(reversePath.get(0).getLocalName()).getEntityMetamodel();
+		for (int i = 1; i < reversePath.size() - 1; i++) {
+			final var join = reversePath.get(i).getLocalName();
+			final var type = model.getPropertyTypes()[model.getPropertyIndex(join)];
+			final String typeName;
+			if (type.isCollectionType()) {
+				typeName = ((AssociationType) type).getAssociatedEntityName(sf);
+				i++; // Skip next bag join
+			} else {
+				typeName =type.getName();
+			}
+			model = metaModel.getEntityDescriptor(typeName).getEntityMetamodel();
+		}
+
+		final var field = path.getLocalName();
+		final Class<?> expressionType;
+		if (model.getIdentifierProperty().getName().equals(field)) {
+			expressionType = model.getIdentifierProperty().getType().getReturnedClass();
+		} else {
+			expressionType = model.getPropertyTypes()[model.getPropertyIndex(field)].getReturnedClass();
+		}
 
 		// Bind the data to the correct type
 		final Object result;

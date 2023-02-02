@@ -3,17 +3,11 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
-import javax.ws.rs.core.UriInfo;
-
-import org.hibernate.collection.internal.PersistentBag;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContextType;
+import jakarta.ws.rs.core.UriInfo;
+import org.hibernate.collection.spi.PersistentBag;
 import org.junit.jupiter.api.BeforeAll;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
@@ -22,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Basic JPA test support.
@@ -140,6 +139,6 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	 * @return <code>true</code> if the given collection is a {@link PersistentBag} and is initialized.
 	 */
 	protected boolean isLazyInitialized(final Collection<?> bag) {
-		return bag instanceof PersistentBag b && b.wasInitialized();
+		return bag instanceof PersistentBag<?> b && b.wasInitialized();
 	}
 }

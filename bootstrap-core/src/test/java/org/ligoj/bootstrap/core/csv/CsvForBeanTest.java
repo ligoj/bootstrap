@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.persistence.CascadeType;
+import jakarta.persistence.CascadeType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

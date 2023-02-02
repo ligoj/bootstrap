@@ -4,7 +4,7 @@
 		<validation-mode>NONE</validation-mode>
 		<properties>
 			<property name="hibernate.archive.autodetection" value="class" />
-			<property name="javax.persistence.validation.mode" value="NONE" />
+			<property name="jakarta.persistence.validation.group.pre-update" value="NONE" />
 			<property name="hibernate.validator.apply_to_ddl" value="false" />
 			<property name="hibernate.validator.autoregister_listeners" value="false" />
 			<property name="hibernate.check_nullability" value="true" />
@@ -16,7 +16,7 @@
 			<property name="hibernate.max_fetch_depth" value="4" />
 			<property name="hibernate.physical_naming_strategy" value="org.ligoj.bootstrap.core.dao.PhysicalNamingStrategyLowerCase" />
 			<property name="hibernate.implicit_naming_strategy" value="org.ligoj.bootstrap.core.dao.ImplicitNamingStrategyNiceJpaImpl" />
-			<property name="hibernate.ejb.identifier_generator_strategy_provider" value="org.ligoj.bootstrap.core.dao.SequenceIdentifierGeneratorStrategyProvider" />
+			<property name="hibernate.increment_size" value="1000"/>
 			<property name="hibernate.connection.charSet" value="UTF-8" />
 		</properties>
 	</persistence-unit>

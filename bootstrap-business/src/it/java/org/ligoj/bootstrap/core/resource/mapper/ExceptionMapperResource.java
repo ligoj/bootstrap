@@ -7,15 +7,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.naming.CommunicationException;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.NoResultException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.ligoj.bootstrap.core.SpringUtils;
@@ -148,7 +148,7 @@ public class ExceptionMapperResource {
 	@DELETE
 	@Path("json-mapping")
 	public void throwJSonMapping() throws IOException {
-		SpringUtils.getApplicationContext().getBean("jacksonProvider", com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider.class);
+		SpringUtils.getApplicationContext().getBean("jacksonProvider", com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider.class);
 		new ObjectMapperTrim().readValue("{\"dialDouble\":\"A\"}", SystemDialect.class);
 	}
 

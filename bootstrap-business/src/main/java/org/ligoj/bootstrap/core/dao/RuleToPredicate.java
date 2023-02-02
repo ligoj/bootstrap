@@ -3,9 +3,10 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 
@@ -25,5 +26,5 @@ interface RuleToPredicate {
 	 *            The current {@link Expression}
 	 * @return The predicate. Never <code>null</code>.
 	 */
-	Predicate toPredicate(CriteriaBuilder cb, String data, Expression<? extends Comparable<Object>> expression);
+	Predicate toPredicate(EntityManager em, CriteriaBuilder cb, String data, Expression<? extends Comparable<Object>> expression);
 }

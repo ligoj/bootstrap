@@ -69,7 +69,7 @@ public class ImplicitNamingStrategyNiceJpaImpl
 
 	@Override
 	public Identifier determineForeignKeyName(final ImplicitForeignKeyNameSource source) {
-		return toIdentifier(Constraint.generateName("FK_", new Table(source.getTableName().getText()),
+		return toIdentifier(Constraint.generateName("FK_", new Table(null, source.getTableName().getText()),
 				toColumns(source.getColumnNames())), source.getBuildingContext());
 	}
 

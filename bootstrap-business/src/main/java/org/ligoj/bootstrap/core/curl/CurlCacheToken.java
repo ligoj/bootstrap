@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

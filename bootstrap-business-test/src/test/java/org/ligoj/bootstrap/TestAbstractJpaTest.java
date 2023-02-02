@@ -3,20 +3,19 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-
-import org.hibernate.collection.internal.PersistentBag;
+import jakarta.persistence.EntityManager;
+import org.hibernate.collection.spi.PersistentBag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test of {@link AbstractJpaTest}
@@ -41,7 +40,7 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 
 	@Test
 	void isLazyInitializedFalse() {
-		Assertions.assertFalse(super.isLazyInitialized(new PersistentBag()));
+		Assertions.assertFalse(super.isLazyInitialized(new PersistentBag<>()));
 	}
 
 	@Test
@@ -51,7 +50,7 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 
 	@Test
 	void isLazyInitializedTrue() {
-		final PersistentBag bag = new PersistentBag() {
+		final var bag = new PersistentBag<>() {
 			private static final long serialVersionUID = 1L;
 
 			{

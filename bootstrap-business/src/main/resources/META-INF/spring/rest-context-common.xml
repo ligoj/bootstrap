@@ -3,7 +3,7 @@
 	xsi:schemaLocation="
  		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<!-- Jackson Provider -->
-	<bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" lazy-init="true">
+	<bean id="jacksonProvider" class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider" lazy-init="true">
 		<property name="mapper" ref="objectMapper" />
 	</bean>
 
@@ -13,7 +13,7 @@
 
 	<bean id="jaxRsParameterNameProvider" class="org.ligoj.bootstrap.core.validation.JaxRsParameterNameProvider"/>
 	<bean id="validationProvider" class="org.apache.cxf.validation.BeanValidationProvider" >
-		<constructor-arg type="javax.validation.ParameterNameProvider" ref="jaxRsParameterNameProvider"/>
+		<constructor-arg type="jakarta.validation.ParameterNameProvider" ref="jaxRsParameterNameProvider"/>
 	</bean>
 	<bean id="validationInInterceptor" class="org.ligoj.bootstrap.core.validation.JAXRSBeanValidationImplicitInInterceptor">
 	    <property name="provider" ref="validationProvider" />

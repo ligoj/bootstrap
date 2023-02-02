@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;

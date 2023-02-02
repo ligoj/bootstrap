@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.core.model;
 
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 import org.hibernate.validator.constraints.Length;
 import org.ligoj.bootstrap.core.IDescribableBean;

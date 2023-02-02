@@ -12,10 +12,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.metadata.ConstraintDescriptor;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hibernate.validator.constraints.Length;

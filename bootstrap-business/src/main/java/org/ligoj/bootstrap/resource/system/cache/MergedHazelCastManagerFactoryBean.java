@@ -16,7 +16,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.ApplicationContext;
 
 import com.hazelcast.cache.HazelcastCacheManager;
@@ -28,7 +27,7 @@ import com.hazelcast.config.EvictionPolicy;
 import lombok.Setter;
 
 /**
- * Factory of {@link EhCacheManagerFactoryBean} with modular {@link CacheConfig} creation delegate to
+ * Factory of cache with modular {@link CacheConfig} creation delegate to
  * {@link CacheManagerAware} implementors.
  */
 public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {

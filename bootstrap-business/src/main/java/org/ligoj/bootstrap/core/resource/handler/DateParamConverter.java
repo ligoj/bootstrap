@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.core.resource.handler;
 
 import java.util.Date;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 import org.ligoj.bootstrap.core.DateUtils;
 

@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.core.dao;
 
 import java.io.Serializable;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

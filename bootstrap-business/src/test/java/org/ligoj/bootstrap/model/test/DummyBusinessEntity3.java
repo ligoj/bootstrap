@@ -3,9 +3,9 @@
  */
 package org.ligoj.bootstrap.model.test;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
 

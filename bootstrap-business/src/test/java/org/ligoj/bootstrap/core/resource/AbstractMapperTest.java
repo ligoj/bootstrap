@@ -3,14 +3,14 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Assertions;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 /**
  * Base test class of {@link AbstractMapper}

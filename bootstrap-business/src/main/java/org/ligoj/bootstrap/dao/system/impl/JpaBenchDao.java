@@ -5,10 +5,10 @@ package org.ligoj.bootstrap.dao.system.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import org.ligoj.bootstrap.dao.system.BenchResult;
 import org.ligoj.bootstrap.dao.system.ISystemPerformanceJpaDao;

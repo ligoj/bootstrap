@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

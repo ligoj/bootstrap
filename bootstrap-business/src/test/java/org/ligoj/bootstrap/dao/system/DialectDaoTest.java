@@ -5,10 +5,10 @@ package org.ligoj.bootstrap.dao.system;
 
 import java.util.GregorianCalendar;
 
-import javax.persistence.CascadeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContextType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

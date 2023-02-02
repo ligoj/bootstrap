@@ -9,19 +9,18 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -47,21 +46,19 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 		/*
 		 * This is the most serious place of security check. If this filter is called, it means the previous security
-		 * checks granted access until there. So, it mean the current user is either anonymous either (but assumed) an
+		 * checks granted access until there. So, it means the current user is either anonymous either (but assumed) an
 		 * fully authenticated user. In case of anonymous user case, there is no role but ROLE_ANONYMOUS. So there is no
 		 * need to involve more role checking. We assume there is no way to grant access to ROLE_ANONYMOUS with this
 		 * filter.
 		 */
-		final var authorities = SecurityContextHolder.getContext()
-				.getAuthentication().getAuthorities();
+		final var authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 		if (!authorities.contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
 			// Not anonymous, so we need to check using RBAC strategy.
 
 			// Build the URL
 			final var fullRequest = getFullRequest(httpRequest);
 			// Check access
-			final var method = HttpMethod
-					.valueOf(StringUtils.upperCase(httpRequest.getMethod(), Locale.ENGLISH));
+			final var method = StringUtils.upperCase(httpRequest.getMethod());
 			if (!isAuthorized(authorities, fullRequest, method)) {
 				// Forbidden access
 				updateForbiddenAccess((HttpServletResponse) response);
@@ -96,9 +93,8 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 * Check the authorization
 	 */
 	private boolean isAuthorized(final Collection<? extends GrantedAuthority> authorities, final String request,
-			final HttpMethod method) {
-		final var authorizationsCache = authorizationResource
-				.getAuthorizations().get(AuthorizationType.API);
+			final String method) {
+		final var authorizationsCache = authorizationResource.getAuthorizations().get(AuthorizationType.API);
 
 		// Check the authorization
 		if (authorizationsCache != null) {

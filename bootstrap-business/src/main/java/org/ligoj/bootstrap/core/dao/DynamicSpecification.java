@@ -3,18 +3,9 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule.RuleOperator;
@@ -23,11 +14,14 @@ import org.ligoj.bootstrap.core.json.jqgrid.UiFilter;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter.FilterOperator;
 import org.springframework.data.jpa.domain.Specification;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * A specification managing multiple rules, grouping, ordering and fetching.
- * 
+ *
  * @param <U> Attached entity type.
  */
 @Slf4j
@@ -48,23 +42,26 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 */
 	private static final String LIKE = "%";
 
+	private final EntityManager em;
+
 	/**
 	 * Mapper to build a {@link Predicate} from data, expression and criteria builder.
 	 */
 	private static final EnumMap<RuleOperator, RuleToPredicate> PREDICATE_MAPPER = new EnumMap<>(RuleOperator.class);
+
 	static {
 		PREDICATE_MAPPER.put(RuleOperator.BW,
-				(cb, d, e) -> cb.like(cb.upper(e.as(String.class)), d.toUpperCase(Locale.ENGLISH) + LIKE));
+				(em, cb, d, e) -> cb.like(cb.upper(e.as(String.class)), d.toUpperCase(Locale.ENGLISH) + LIKE));
 		PREDICATE_MAPPER.put(RuleOperator.CN,
-				(cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH) + LIKE));
+				(em, cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH) + LIKE));
 		PREDICATE_MAPPER.put(RuleOperator.EW,
-				(cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH)));
-		PREDICATE_MAPPER.put(RuleOperator.GT, (cb, d, e) -> cb.greaterThan(e, toRawData(d, e)));
-		PREDICATE_MAPPER.put(RuleOperator.GTE, (cb, d, e) -> cb.greaterThanOrEqualTo(e, toRawData(d, e)));
-		PREDICATE_MAPPER.put(RuleOperator.LT, (cb, d, e) -> cb.lessThan(e, toRawData(d, e)));
-		PREDICATE_MAPPER.put(RuleOperator.LTE, (cb, d, e) -> cb.lessThanOrEqualTo(e, toRawData(d, e)));
-		PREDICATE_MAPPER.put(RuleOperator.NE, (cb, d, e) -> cb.notEqual(e, toRawData(d, e)));
-		PREDICATE_MAPPER.put(RuleOperator.EQ, (cb, d, e) -> cb.equal(e, toRawData(d, e)));
+				(em, cb, d, e) -> cb.like(cb.upper(e.as(String.class)), LIKE + d.toUpperCase(Locale.ENGLISH)));
+		PREDICATE_MAPPER.put(RuleOperator.GT, (em, cb, d, e) -> cb.greaterThan(e, toRawData(em, d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.GTE, (em, cb, d, e) -> cb.greaterThanOrEqualTo(e, toRawData(em, d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.LT, (em, cb, d, e) -> cb.lessThan(e, toRawData(em, d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.LTE, (em, cb, d, e) -> cb.lessThanOrEqualTo(e, toRawData(em, d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.NE, (em, cb, d, e) -> cb.notEqual(e, toRawData(em, d, e)));
+		PREDICATE_MAPPER.put(RuleOperator.EQ, (em, cb, d, e) -> cb.equal(e, toRawData(em, d, e)));
 	}
 
 	/**
@@ -84,13 +81,14 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 
 	/**
 	 * Set the filter configurations.
-	 * 
+	 *
 	 * @param filter         the filters.
 	 * @param mapping        the mapping used to match JSON properties/path with the ORM path.
 	 * @param specifications the custom specifications.
 	 */
-	DynamicSpecification(final UiFilter filter, final Map<String, String> mapping,
+	DynamicSpecification(final EntityManager em, final UiFilter filter, final Map<String, String> mapping,
 			final Map<String, CustomSpecification> specifications) {
+		this.em = em;
 		this.filter = filter;
 		this.mapping = MapUtils.emptyIfNull(mapping);
 		this.specifications = MapUtils.emptyIfNull(specifications);
@@ -149,7 +147,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 */
 	private <X extends Comparable<Object>> Predicate getPredicate(final CriteriaBuilder cb, final BasicRule rule,
 			final Expression<X> expression) {
-		return PREDICATE_MAPPER.get(rule.getOp()).toPredicate(cb, rule.getData(), expression);
+		return PREDICATE_MAPPER.get(rule.getOp()).toPredicate(em, cb, rule.getData(), expression);
 	}
 
 	/**

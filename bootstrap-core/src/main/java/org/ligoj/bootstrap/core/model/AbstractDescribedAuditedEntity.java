@@ -3,18 +3,16 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.Serializable;
-
-import javax.persistence.MappedSuperclass;
-
-import org.hibernate.validator.constraints.Length;
-import org.ligoj.bootstrap.core.IDescribableBean;
-import org.ligoj.bootstrap.core.validation.SafeHtml;
-
+import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+import org.ligoj.bootstrap.core.IDescribableBean;
+import org.ligoj.bootstrap.core.validation.SafeHtml;
+
+import java.io.Serializable;
 
 /**
  * Named, described and audited entity.

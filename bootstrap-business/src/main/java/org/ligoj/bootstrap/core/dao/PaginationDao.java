@@ -7,16 +7,16 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
-import javax.ws.rs.core.UriInfo;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.apache.commons.collections4.MapUtils;
 import org.ligoj.bootstrap.core.json.PaginationJson;
@@ -233,7 +233,7 @@ public class PaginationDao {
 		}
 
 		// Return a specification based on a set of UI filter
-		return new DynamicSpecification<>(uiPageRequest.getUiFilter(), mapping, specifications);
+		return new DynamicSpecification<>(em, uiPageRequest.getUiFilter(), mapping, specifications);
 	}
 
 	/**

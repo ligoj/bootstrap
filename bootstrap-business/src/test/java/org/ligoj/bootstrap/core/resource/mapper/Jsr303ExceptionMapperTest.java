@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.core.resource.mapper;
 
 import java.util.Collections;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;

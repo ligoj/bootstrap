@@ -5,8 +5,8 @@ package org.ligoj.bootstrap.core.model;
 
 import java.io.Serializable;
 
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
 
 import org.ligoj.bootstrap.core.INamableBean;
 

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

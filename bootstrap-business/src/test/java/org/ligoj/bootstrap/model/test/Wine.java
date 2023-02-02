@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.model.test;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Length;
 import org.ligoj.bootstrap.core.model.AbstractPersistable;

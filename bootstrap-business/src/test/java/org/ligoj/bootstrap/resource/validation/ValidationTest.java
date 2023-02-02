@@ -6,8 +6,8 @@ package org.ligoj.bootstrap.resource.validation;
 import java.time.Duration;
 import java.util.Collections;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -166,7 +166,7 @@ class ValidationTest extends AbstractBootTest {
 		Assertions.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
 		Assertions.assertEquals(3, constraints.get("name").size());
 		Assertions.assertEquals("org.hibernate.validator.constraints.Length", constraints.get("picture").get(0));
-		Assertions.assertTrue(constraints.get("name").contains("javax.validation.constraints.NotEmpty"));
+		Assertions.assertTrue(constraints.get("name").contains("jakarta.validation.constraints.NotEmpty"));
 		Assertions.assertTrue(constraints.get("name").contains("org.ligoj.bootstrap.core.validation.UpperCase"));
 	}
 
