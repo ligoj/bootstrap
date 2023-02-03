@@ -184,11 +184,10 @@ public class AuthorizationResource {
 	 */
 	@CacheResult(cacheName = "authorizations")
 	public Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> getAuthorizations() {
-		final Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> authorizationsCache = new EnumMap<>(
+		final Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> cache = new EnumMap<>(
 				AuthorizationType.class);
-		final var authorizations = repository.findAll();
-		authorizations.forEach(a -> addAuthorization(newCacheRole(newCacheType(authorizationsCache, a), a), a));
-		return authorizationsCache;
+		repository.findAll().forEach(a -> addAuthorization(newCacheRole(newCacheType(cache, a), a), a));
+		return cache;
 	}
 
 	/**
@@ -224,7 +223,7 @@ public class AuthorizationResource {
 	}
 
 	/**
-	 * Add an pattern/method authorization to the given cache.
+	 * Add a pattern/method authorization to the given cache.
 	 */
 	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final String method,
 			final String pattern) {
