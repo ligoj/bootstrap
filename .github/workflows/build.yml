@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v20
+        uses: whelk-io/maven-settings-xml-action@v21
         with:
           repositories: '[
                   { "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"},
@@ -44,19 +44,19 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Show extracted Maven project version
-        run: echo ${{ env.RELEASE_VERSION }}
+        run: echo "RELEASE_VERSION: ${{ env.RELEASE_VERSION }}, CHECK_ENVIRONMENT: ${{ env.CHECK_ENVIRONMENT }}"
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -e -V clean package jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B -e -V clean package # jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dmaven.test.redirectTestOutputToFile=false
           -Djava.net.preferIPv4Stack=true
           -Dsurefire.useFile=false
           -DbuildVersion=${{ env.RELEASE_VERSION }}
           -Dskip-sonarsource-repo=true
           -Pjacoco -Djacoco.includes="org.ligoj.bootstrap.*"
-          -Dsonar.projectKey=org.ligoj.api:root
+          -Dsonar.projectKey="org.ligoj.api:root"
           -Dsonar.javascript.exclusions="node_modules,dist"
           -Dsonar.host.url="https://sonarcloud.io"
           -Dsonar.organization=ligoj-github
