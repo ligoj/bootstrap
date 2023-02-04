@@ -50,7 +50,8 @@ jobs:
         run: |
           echo "ls"
           ls
-          pwd
+          echo "mvn evaluate"
+          mvn help:evaluate -Dexpression=project.version -q -DforceStdout
           echo "Extract version from pom.xml"
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Show extracted Maven project version
