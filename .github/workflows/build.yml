@@ -22,18 +22,12 @@ jobs:
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v20
         with:
-          profiles: >
-            [
-              {
-                "id": "spring-milestone",
-                "repositories": [
+          repositories: '[
                   { "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"},
                   { "id": "oss-sonatype", "url": "https://oss.sonatype.org/service/local/repositories/releases/content/"}
-                ],
-                "plugin_repositories": [{ "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"}]
-              }
-            ]
-          active_profiles: '["spring-milestone"]'
+                ]'
+          plugin_repositories: '[{ "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"}]'
+          active_profiles: '["github"]'
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
