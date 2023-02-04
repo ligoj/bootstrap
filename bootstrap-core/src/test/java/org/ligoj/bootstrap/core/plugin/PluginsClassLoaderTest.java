@@ -3,6 +3,13 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -11,13 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 /**
  * Test class of {@link PluginsClassLoader}
@@ -154,18 +154,20 @@ class PluginsClassLoaderTest {
 	}
 
 	@Test
-	void copyFailed() throws IOException, NoSuchAlgorithmException {
+	void copyFailed() throws IOException {
 		final var refError = new AtomicReference<PluginsClassLoader>();
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
-			try (PluginsClassLoader classLoader = new PluginsClassLoader() {
-				@Override
-				protected void copy(final Path from, final Path to) throws IOException {
-					throw new IOException();
+			Assertions.assertThrows(PluginException.class, () -> {
+				try (PluginsClassLoader classLoader = new PluginsClassLoader() {
+					@Override
+					protected void copy(final Path from, final Path to) throws IOException {
+						throw new IOException();
+					}
+				}) {
+					// Ignore
 				}
-			}) {
-				Assertions.assertThrows(PluginException.class, () -> classLoader.copyExportedResources("any", null));
-			}
+			});
 		} finally {
 			System.clearProperty("ligoj.home");
 			if (refError.get() != null) {

@@ -269,14 +269,13 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Copy a resource as needed to be exported from the JAR plug-in to the home.
 	 */
 	private void copyExportedResource(final String plugin, final Path targetExport, final Path root, final Path from) {
-		final var dest = targetExport.resolve(root.relativize(from).toString());
+		final var to = targetExport.resolve(root.relativize(from).toString());
 		// Copy without overwrite
-		if (!dest.toFile().exists()) {
+		if (!to.toFile().exists()) {
 			try {
-				copy(from, dest);
+				copy(from, to);
 			} catch (final IOException e) {
-				throw new PluginException(plugin,
-						String.format("Unable to copy exported resource %s to %s", from, dest.toString()), e);
+				throw new PluginException(plugin, String.format("Unable to copy exported resource %s to %s", from, to), e);
 			}
 		}
 	}
