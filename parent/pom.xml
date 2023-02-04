@@ -702,17 +702,13 @@
 				<version>${postgresql.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.orm</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>xml-apis</artifactId>
 						<groupId>xml-apis</groupId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.xml.bind</groupId>
-						<artifactId>jaxb-api</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>org.jboss.spec.javax.transaction</groupId>
