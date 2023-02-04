@@ -46,7 +46,6 @@ jobs:
       - name: Show extracted Maven project version
         run: |
           echo "RELEASE_VERSION: ${{ env.RELEASE_VERSION}}"
-          echo "CHECK_ENVIRONMENT: ${{ vars.CHECK_ENVIRONMENT }}"
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
