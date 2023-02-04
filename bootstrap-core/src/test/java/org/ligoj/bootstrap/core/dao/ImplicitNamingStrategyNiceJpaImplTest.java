@@ -42,7 +42,7 @@ class ImplicitNamingStrategyNiceJpaImplTest {
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
 		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
 
-		Assertions.assertEquals("UK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
+		Assertions.assertEquals("UK_bg6a6jkepii31sno6kq8jv1g5", identifier.getText());
 	}
 
 	@Test
