@@ -49,7 +49,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -e -V clean package # jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B -e -V clean package
           -Dmaven.test.redirectTestOutputToFile=false
           -Djava.net.preferIPv4Stack=true
           -Dsurefire.useFile=false
