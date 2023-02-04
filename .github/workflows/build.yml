@@ -44,7 +44,8 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Show extracted Maven project version
-        run: 'echo "RELEASE_VERSION: ${{ env.RELEASE_VERSION }}, CHECK_ENVIRONMENT: ${{ env.CHECK_ENVIRONMENT }}"'
+        run: |
+          echo "RELEASE_VERSION: ${{ env.RELEASE_VERSION }}, CHECK_ENVIRONMENT: ${{ env.CHECK_ENVIRONMENT }}"
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
