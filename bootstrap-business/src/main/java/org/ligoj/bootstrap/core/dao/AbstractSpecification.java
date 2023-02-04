@@ -7,27 +7,21 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.IdentifiableType;
-import jakarta.persistence.metamodel.SingularAttribute;
 import jodd.typeconverter.TypeConverterManager;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.metamodel.model.domain.internal.BasicSqmPathSource;
-import org.hibernate.metamodel.model.domain.internal.EntityTypeImpl;
-import org.hibernate.metamodel.model.domain.internal.SingularAttributeImpl;
 import org.hibernate.query.criteria.JpaPath;
-import org.hibernate.query.sqm.tree.domain.SqmBasicValuedSimplePath;
 import org.hibernate.query.sqm.tree.domain.SqmPath;
 import org.hibernate.query.sqm.tree.from.SqmJoin;
 import org.hibernate.spi.NavigablePath;
 import org.hibernate.type.AssociationType;
-import org.hibernate.type.BagType;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.NavigableMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -50,7 +44,7 @@ public abstract class AbstractSpecification {
 	/**
 	 * Return the ORM path from the given rule.
 	 *
-	 * @param root The {@link Root} used to resolved the path.
+	 * @param root The {@link Root} used to resolve the path.
 	 * @param path The path value. Nested path is accepted.
 	 * @param <U>  The entity type referenced by the {@link Root}
 	 * @param <T>  The resolved entity type of the path value.
@@ -65,7 +59,7 @@ public abstract class AbstractSpecification {
 
 		// Fail-safe identifier access for non-singular target path
 		if (currentPath instanceof SqmJoin<?, ?>) {
-			final var idName = ((IdentifiableType) ((Attribute) currentPath.getModel()).getDeclaringType()).getId(Object.class).getName();
+			final var idName = ((IdentifiableType<?>) ((Attribute<?,?>) currentPath.getModel()).getDeclaringType()).getId(Object.class).getName();
 			currentPath = getNextPath(idName, (From<?, ?>) currentPath);
 		}
 		return (Path<T>) currentPath;

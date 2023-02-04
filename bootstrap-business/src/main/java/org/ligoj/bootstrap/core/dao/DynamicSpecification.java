@@ -42,7 +42,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 */
 	private static final String LIKE = "%";
 
-	private final EntityManager em;
+	private transient final EntityManager em;
 
 	/**
 	 * Mapper to build a {@link Predicate} from data, expression and criteria builder.
@@ -67,7 +67,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * JQ Grid filters.
 	 */
-	private final UiFilter filter;
+	private transient final UiFilter filter;
 
 	/**
 	 * Business to ORM field mapping.
@@ -77,7 +77,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * Business to ORM field mapping.
 	 */
-	private final Map<String, CustomSpecification> specifications;
+	private transient final Map<String, CustomSpecification> specifications;
 
 	/**
 	 * Set the filter configurations.

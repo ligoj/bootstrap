@@ -3,11 +3,6 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.util.Locale;
-
-import org.hibernate.boot.model.naming.Identifier;
-import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-
 /**
  * Strategy forcing lower case for all data names.
  */

@@ -83,7 +83,7 @@ class CacheResourceTest extends AbstractBootTest {
 	 * Tested cache expires with 1 second after the last update.
 	 */
 	@Test
-	void expirityModifyPolicy() throws InterruptedException {
+	void expiryModifyPolicy() throws InterruptedException {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache-1");
 		Assertions.assertEquals(1, dummyCacheBean.getHit1("entry-key"));
@@ -112,7 +112,7 @@ class CacheResourceTest extends AbstractBootTest {
 	 * Tested cache expires with 1 second after the last update/access.
 	 */
 	@Test
-	void expirityTouchedPolicy() throws InterruptedException {
+	void expiryTouchedPolicy() throws InterruptedException {
 		DummyCacheBean.hit = 0;
 		cacheResource.invalidate("test-cache-2");
 		Assertions.assertEquals(1, dummyCacheBean.getHit2("entry-key"));
@@ -154,7 +154,7 @@ class CacheResourceTest extends AbstractBootTest {
 	}
 
 	private void doManyHits() {
-		for (var i = 100000; i-- > 0;) {
+		for (var i = 100000; i-- > 0; ) {
 			dummyCacheBean.getHit("entry-key" + i);
 		}
 	}
@@ -169,7 +169,7 @@ class CacheResourceTest extends AbstractBootTest {
 
 		cacheResource.disableStatistics();
 		doManyHits();
-		Assertions.assertTrue(cacheResource.getCache("test-cache").getSize() == 0);
+		Assertions.assertEquals(0, cacheResource.getCache("test-cache").getSize());
 	}
 
 	@Test
@@ -197,7 +197,7 @@ class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(5, result.getAverageGetTime(), 0.01);
 	}
 
-	private boolean assertCache(final CacheStatistics cache) {
+	private void assertCache(final CacheStatistics cache) {
 		Assertions.assertEquals("test-cache", cache.getId());
 		Assertions.assertNotNull(cache.getId());
 		Assertions.assertTrue(cache.getSize() < 100000);
@@ -216,7 +216,6 @@ class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(1, cluster.getMembers().size());
 		Assertions.assertNull(cluster.getMembers().get(0).getCluster());
 		Assertions.assertNotNull(cluster.getState());
-		return true;
 	}
 
 	@Test

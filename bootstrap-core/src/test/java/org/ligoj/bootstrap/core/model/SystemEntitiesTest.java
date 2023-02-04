@@ -62,7 +62,7 @@ class SystemEntitiesTest {
 		Assertions.assertFalse(systemUser.equals(new SystemUser()));
 		Assertions.assertFalse(new SystemUser().equals(systemUser));
 		Assertions.assertEquals("SystemUser(login=name)", systemUser.toString());
-		Assertions.assertTrue(systemUser.hashCode() != 0);
+		Assertions.assertFalse(systemUser.hashCode() == 0);
 
 		final var other = new SystemUser();
 		other.setLogin("other");

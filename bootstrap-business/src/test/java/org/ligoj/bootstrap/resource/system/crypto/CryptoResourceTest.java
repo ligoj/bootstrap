@@ -29,12 +29,12 @@ class CryptoResourceTest extends AbstractBootTest {
 	private CryptoHelper cryptoHelper;
 
 	@BeforeAll
-    static void init() {
+	static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 	}
 
 	@AfterAll
-    static void clean() {
+	static void clean() {
 		System.clearProperty("app.crypto.file");
 	}
 
@@ -50,7 +50,7 @@ class CryptoResourceTest extends AbstractBootTest {
 	@Test
 	void testFindAll() {
 		final var encrypted = resource.create("value");
-		Assertions.assertNotEquals(encrypted, "value");
+		Assertions.assertNotEquals("value", encrypted);
 		Assertions.assertEquals("value", cryptoHelper.decrypt(encrypted));
 
 	}

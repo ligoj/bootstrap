@@ -3,19 +3,12 @@
  */
 package org.ligoj.bootstrap.core.security;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.regex.Pattern;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -26,6 +19,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.regex.Pattern;
 
 /**
  * URL based security filter based on RBAC strategy. Maintains a set of cache to determine as fast as possible the valid
@@ -46,7 +44,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 		/*
 		 * This is the most serious place of security check. If this filter is called, it means the previous security
-		 * checks granted access until there. So, it means the current user is either anonymous either (but assumed) an
+		 * checks granted access until there. So, it means the current user is either anonymous either (but assumed) a
 		 * fully authenticated user. In case of anonymous user case, there is no role but ROLE_ANONYMOUS. So there is no
 		 * need to involve more role checking. We assume there is no way to grant access to ROLE_ANONYMOUS with this
 		 * filter.
@@ -82,7 +80,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 	/**
 	 * Return the full request without query and without context path. Servlet path is kept. The returned path does not
-	 * starts with '/'.
+	 * start with '/'.
 	 */
 	private String getFullRequest(final HttpServletRequest httpRequest) {
 		return StringUtils.removeStart(

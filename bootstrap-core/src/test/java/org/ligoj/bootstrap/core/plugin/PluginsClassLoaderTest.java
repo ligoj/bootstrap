@@ -154,26 +154,24 @@ class PluginsClassLoaderTest {
 	}
 
 	@Test
-	void copyFailed() {
+	void copyFailed() throws IOException, NoSuchAlgorithmException {
 		final var refError = new AtomicReference<PluginsClassLoader>();
-		Assertions.assertThrows(PluginException.class, () -> {
-			try {
-				System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
-				try (PluginsClassLoader classLoader = new PluginsClassLoader() {
-					@Override
-					protected void copy(final Path from, final Path dest) throws IOException {
-						throw new IOException();
-					}
-				}) {
-					classLoader.copyExportedResources("any", null);
+		try {
+			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
+			try (PluginsClassLoader classLoader = new PluginsClassLoader() {
+				@Override
+				protected void copy(final Path from, final Path to) throws IOException {
+					throw new IOException();
 				}
-			} finally {
-				System.clearProperty("ligoj.home");
-				if (refError.get() != null) {
-					refError.get().close();
-				}
+			}) {
+				Assertions.assertThrows(PluginException.class, () -> classLoader.copyExportedResources("any", null));
 			}
-		});
+		} finally {
+			System.clearProperty("ligoj.home");
+			if (refError.get() != null) {
+				refError.get().close();
+			}
+		}
 	}
 
 	@Test
@@ -183,9 +181,9 @@ class PluginsClassLoaderTest {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			try (PluginsClassLoader classLoader = new PluginsClassLoader() {
 				@Override
-				protected void copy(final Path from, final Path dest) throws IOException {
+				protected void copy(final Path from, final Path to) throws IOException {
 					if (!from.toString().endsWith("/export")) {
-						FileUtils.touch(dest.toFile());
+						FileUtils.touch(to.toFile());
 					}
 				}
 			}) {

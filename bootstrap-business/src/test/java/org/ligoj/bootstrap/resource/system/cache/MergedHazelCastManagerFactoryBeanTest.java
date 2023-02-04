@@ -50,4 +50,20 @@ class MergedHazelCastManagerFactoryBeanTest {
 		bean.postConfigure(mapConfig);
 		Mockito.verify(mapConfig, Mockito.never()).setStatisticsEnabled(true);
 	}
+
+	@Test
+	void postConfigureWithoutStatistics() {
+		final CacheConfig<?, ?> mapConfig = Mockito.mock(CacheConfig.class);
+		bean.setStatisticsEnabled(false);
+		bean.postConfigure(mapConfig);
+		Mockito.verify(mapConfig, Mockito.never()).setStatisticsEnabled(true);
+	}
+
+	@Test
+	void postConfigureWithStatistics() {
+		final CacheConfig<?, ?> mapConfig = Mockito.mock(CacheConfig.class);
+		bean.setStatisticsEnabled(true);
+		bean.postConfigure(mapConfig);
+		Mockito.verify(mapConfig, Mockito.times(1)).setStatisticsEnabled(true);
+	}
 }

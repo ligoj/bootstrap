@@ -17,7 +17,9 @@ import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 interface RuleToPredicate {
 	/**
 	 * Create a {@link Predicate} from a rule's data.
-	 * 
+	 *
+	 * @param em
+	 *            The current EntityManager. Used to resolve actual data types from JPA.
 	 * @param cb
 	 *            The current {@link CriteriaBuilder}
 	 * @param data
