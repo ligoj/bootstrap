@@ -3,18 +3,17 @@
  */
 package org.ligoj.bootstrap;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpMethod;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Test of {@link AbstractDataGeneratorTest}
@@ -140,7 +139,7 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void testEnum() {
-		Assertions.assertEquals(HttpMethod.GET, getEnum("", HttpMethod.class));
+		Assertions.assertEquals(org.eclipse.jetty.http.HttpMethod.ACL, getEnum("", org.eclipse.jetty.http.HttpMethod.class));
 	}
 
 	@Test
