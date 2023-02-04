@@ -48,6 +48,10 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Extract Maven project version
         run: |
+          echo "ls"
+          ls
+          pwd
+          echo "Extract version from pom.xml"
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Show extracted Maven project version
         run: echo ${{ env.RELEASE_VERSION }}
