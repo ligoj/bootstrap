@@ -33,7 +33,7 @@ jobs:
                 "plugin_repositories": [{ "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"}]'
               }
             ]
-          active_profiles: ["spring-milestone"]
+          active_profiles: '["spring-milestone"]'
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
