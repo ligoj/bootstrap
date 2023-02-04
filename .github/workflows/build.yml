@@ -48,8 +48,8 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Extract Maven project version
         run: |
-          echo "ls"
-          ls
+          echo "cat settings.xml"
+          cat /home/runner/.m2/settings.xml
           echo "mvn evaluate"
           mvn help:evaluate -Dexpression=project.version -q -DforceStdout
           echo "Extract version from pom.xml"
