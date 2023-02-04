@@ -17,6 +17,23 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v12
+        with:
+          profiles: >
+            [
+              {
+                "id": "spring-milestone",
+                "repositories": [
+                  { "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"},
+                  { "id": "oss-sonatype", "url": "https://oss.sonatype.org/service/local/repositories/releases/content/"}
+                ],
+                "plugin_repositories": [{ "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"}]'
+              }
+            ]
+          active_profiles: ["spring-milestone"]
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
