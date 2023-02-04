@@ -47,7 +47,9 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Extract Maven project version
-        run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        run: |
+          echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
         id: version
       - name: Show extracted Maven project version
         run: echo ${{ steps.project.outputs.version }}
@@ -59,7 +61,7 @@ jobs:
           -Dmaven.test.redirectTestOutputToFile=false \
           -Djava.net.preferIPv4Stack=true \
           -Dsurefire.useFile=false \
-          -DbuildVersion=$BUILD_VERSION \
+          -DbuildVersion=${{ env.RELEASE_VERSION }} \
           -Dskip-sonarsource-repo=true \
           -Pjacoco -Djacoco.includes="org.ligoj.bootstrap.*" \
           -Dsonar.projectKey=org.ligoj.api:root \
