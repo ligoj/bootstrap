@@ -44,12 +44,14 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Show extracted Maven project version
-        run: 'echo "RELEASE_VERSION: ${RELEASE_VERSION}, CHECK_ENVIRONMENT: ${CHECK_ENVIRONMENT}"'
+        run: |
+          echo "RELEASE_VERSION: ${{ env.RELEASE_VERSION}}"
+          echo "CHECK_ENVIRONMENT: ${{ vars.CHECK_ENVIRONMENT }}"
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -e -V clean package
+        run: mvn -B -e -V clean package jacoco:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dmaven.test.redirectTestOutputToFile=false
           -Djava.net.preferIPv4Stack=true
           -Dsurefire.useFile=false
