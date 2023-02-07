@@ -83,7 +83,7 @@
 		<log4j.version>2.19.0</log4j.version>
 		<log4j-api.version>2.19.0</log4j-api.version>
 		<lombok.version>1.18.22</lombok.version><!-- Don't use 1.18.24 -->
-		<mail.version>2.0.1</mail.version>
+		<mail.version>2.1.1</mail.version>
 		<mockito.version>5.1.1</mockito.version>
 		<mysql.version>8.0.32</mysql.version>
 		<postgresql.version>42.5.2</postgresql.version>
@@ -591,8 +591,8 @@
 
 			<!-- JSR-919 -->
 			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>jakarta.mail</artifactId>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
 				<version>${mail.version}</version>
 				<scope>provided</scope>
 			</dependency>
