@@ -3,26 +3,13 @@
  */
 package org.ligoj.bootstrap.http.proxy;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -34,7 +21,14 @@ import org.eclipse.jetty.http.HttpHeaderValue;
 import org.eclipse.jetty.proxy.ProxyServlet;
 import org.eclipse.jetty.util.Callback;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Reverse proxy for business server.
@@ -43,25 +37,26 @@ import lombok.extern.slf4j.Slf4j;
 public class BackendProxyServlet extends ProxyServlet {
 
 	/**
-	 * Header forwarded to back-end and containing the principal user name or declared API user that will be checked on
+	 * Header forwarded to back-end and containing the principal username or declared API user that will be checked on
 	 * the other side.
 	 */
-	private static final String HEADER_USER = "SM_UNIVERSALID";
+	private static final String HEADER_USER = "SM_UniversalID".toUpperCase();
 
-	private static final String COOKIE_JEE = "JSESSIONID";
+	private static final String COOKIE_JEE = "JSessionID".toUpperCase();
 
 	private static final String HEADER_COOKIE = "cookie";
 
 	/**
 	 * Headers will not be forwarded from the back-end.
 	 */
-	private static final String[] IGNORE_HEADERS = { "expires", "x-content-type-options", "server",
-			"visited", "date", "x-frame-options", "x-xss-protection", "pragma", "cache-control" };
+	private static final String[] IGNORE_HEADERS = {"expires", "x-content-type-options", "server",
+			"visited", "date", "x-frame-options", "x-xss-protection", "pragma", "cache-control"};
 
 	/**
-	 * Header will be ignore when the value starts with the
+	 * Header will be ignored when the value starts with the
 	 */
 	private static final Map<String, String> IGNORE_HEADER_VALUE = new HashMap<>();
+
 	static {
 		IGNORE_HEADER_VALUE.put("set-cookie", COOKIE_JEE);
 	}
@@ -103,12 +98,12 @@ public class BackendProxyServlet extends ProxyServlet {
 	private String apiKeyParameter; // NOSONAR - Initialized once, from #init()
 
 	/**
-	 * Name of query parameter containing the API user name.
+	 * Name of query parameter containing the API username.
 	 */
 	private String apiUserParameter; // NOSONAR - Initialized once, from #init()
 
 	/**
-	 * Name of header containing the API user name.
+	 * Name of header containing the API username.
 	 */
 	private String apiUserHeader; // NOSONAR - Initialized once, from #init()
 
@@ -127,14 +122,18 @@ public class BackendProxyServlet extends ProxyServlet {
 	 */
 	private Pattern apiUserCleanPattern; // NOSONAR - Initialized once, from #init()
 
+	private void addHeader(final Request proxyRequest, final String name, final String value) {
+		proxyRequest.headers(headers -> headers.add(name, value));
+	}
+
 	@Override
 	protected void addProxyHeaders(final HttpServletRequest clientRequest, final Request proxyRequest) {
 		super.addProxyHeaders(clientRequest, proxyRequest);
 
 		if (clientRequest.getUserPrincipal() != null) {
 			// Stateful authenticated user
-			proxyRequest.header(HEADER_USER, clientRequest.getUserPrincipal().getName());
-			proxyRequest.header("SM_SESSIONID", clientRequest.getSession(false).getId());
+			addHeader(proxyRequest, HEADER_USER, clientRequest.getUserPrincipal().getName());
+			addHeader(proxyRequest, "SM_SESSIONID", clientRequest.getSession(false).getId());
 		} else {
 			// Forward API user, if defined.
 			final var apiUser = getIdData(clientRequest, apiUserParameter, apiUserHeader);
@@ -142,15 +141,15 @@ public class BackendProxyServlet extends ProxyServlet {
 
 			if (apiUser != null && apiKey != null) {
 				// When there is an API user,
-				proxyRequest.header(HEADER_USER, apiUser);
-				proxyRequest.header(apiKeyHeader, apiKey);
+				addHeader(proxyRequest, HEADER_USER, apiUser);
+				addHeader(proxyRequest, apiKeyHeader, apiKey);
 			}
 		}
 
 		// Forward all cookies but JSESSIONID.
 		final var cookies = clientRequest.getHeader(HEADER_COOKIE);
 		if (cookies != null) {
-			proxyRequest.header(HEADER_COOKIE,
+			addHeader(proxyRequest, HEADER_COOKIE,
 					StringUtils.trimToNull(Arrays.stream(cookies.split(";"))
 							.filter(cookie -> !cookie.split("=")[0].trim().equals(COOKIE_JEE)).map(String::trim)
 							.collect(Collectors.joining("; "))));
@@ -165,7 +164,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	@Override
 	protected void onProxyResponseFailure(final HttpServletRequest clientRequest,
 			final HttpServletResponse proxyResponse, final Response serverResponse, final Throwable failure) {
-		_log.warn(failure.toString());
+		_log.warn("Proxy error", failure);
 
 		if (proxyResponse.isCommitted()) {
 			// Parent behavior
@@ -194,7 +193,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	/**
 	 * Check, and return the lower value of given parameter.
-	 * 
+	 *
 	 * @param parameter    the expected "init" parameter.
 	 * @param defaultValue the optional default value. May be <code>null</code>.
 	 * @return the lower value of given parameter.
@@ -212,7 +211,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	/**
 	 * Check, and return the lower value of given parameter.
-	 * 
+	 *
 	 * @param parameter the expected "init" parameter.
 	 * @return the lower value of given parameter.
 	 */
@@ -243,7 +242,7 @@ public class BackendProxyServlet extends ProxyServlet {
 		this.apiKeyCleanPattern = newCleanParameter(apiKeyParameter);
 		this.apiUserCleanPattern = newCleanParameter(apiUserParameter);
 
-		_log.info("Proxying " + this.prefix + " --> " + this.proxyTo);
+		_log.info("Proxying {} --> {}", this.prefix, this.proxyTo);
 	}
 
 	/**
@@ -294,7 +293,7 @@ public class BackendProxyServlet extends ProxyServlet {
 			return path + "?" + query;
 		}
 
-		// Don't forward API key as parameter, only as an header
+		// Don't forward API key as parameter, only as a header
 		query = StringUtils
 				.trimToNull(removeApiParameter(removeApiParameter(query, apiKeyCleanPattern), apiUserCleanPattern));
 		if (query == null) {
@@ -330,7 +329,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	/**
 	 * Indicates the request was in AJAX or not.
-	 * 
+	 *
 	 * @param request The original request.
 	 * @return <code>true</code> for Ajax request.
 	 */
@@ -359,7 +358,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	/**
 	 * Is it a 404 like error?
-	 * 
+	 *
 	 * @param status the current status.
 	 * @return the nearest managed status.
 	 */
@@ -369,7 +368,7 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	/**
 	 * Is it a non AJAX 404 like error? .
-	 * 
+	 *
 	 * @param request the current request.
 	 * @param status  the current status.
 	 * @return 0 or the status to display.
@@ -393,12 +392,12 @@ public class BackendProxyServlet extends ProxyServlet {
 
 	/**
 	 * Return root request.
-	 * 
+	 *
 	 * @param request the current request.
 	 * @return the root (container) {@link ServletRequest}.
 	 */
 	protected ServletRequest getRoot(final ServletRequest request) {
-		return request instanceof HttpServletRequestWrapper hreq ? getRoot(hreq.getRequest()) : request;
+		return request instanceof HttpServletRequestWrapper hReq ? getRoot(hReq.getRequest()) : request;
 	}
 
 	@Override

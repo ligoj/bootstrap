@@ -166,7 +166,7 @@ public class RoleResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void update(final SystemRoleVo roleVo) {
-		final var role = findById(roleVo.getId());
+		final var role = repository.findOneExpected(roleVo.getId());
 		role.setName(roleVo.getName());
 		// delete authorizations
 		for (final var auth : authorizationRepository.findAllBy(ROLE_ID, role.getId())) {
