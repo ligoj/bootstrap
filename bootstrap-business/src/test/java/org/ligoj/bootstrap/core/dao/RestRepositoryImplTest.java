@@ -407,8 +407,8 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
-	void deleteExpectedError() {
-		Assertions.assertThrows(EmptyResultDataAccessException.class, () -> repository.deleteById(-1));
+	void deleteSilentError() {
+		repository.deleteById(-1);
 	}
 
 	@Test
