@@ -11,6 +11,10 @@ import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
  */
 public class MySQL5InnoDBUtf8Dialect extends MySQL55Dialect {
 
+	public MySQL5InnoDBUtf8Dialect() {
+		registerKeyword("USAGE");
+	}
+
 	@Override
 	public String getTableTypeString() {
 		return super.getTableTypeString() + " DEFAULT CHARSET=utf8";
