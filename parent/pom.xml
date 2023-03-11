@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -66,7 +66,7 @@
 		<enterprise.cdi-api.version>4.0.1</enterprise.cdi-api.version>
 		<guava.version>31.1-jre</guava.version>
 		<gentyref.version>1.2.0</gentyref.version>
-		<hazelcast.version>5.2.1</hazelcast.version>
+		<hazelcast.version>5.2.2</hazelcast.version>
 		<hibernate.version>6.2.0.CR3</hibernate.version>
 		<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
 		<httpclient.version>4.5.14</httpclient.version>
@@ -330,10 +330,10 @@
 				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>
-			    <groupId>jakarta.xml.ws</groupId>
-   				<artifactId>jakarta.xml.ws-api</artifactId>
-   				<version>${jaxb-api.version}</version>
-   			</dependency>
+				<groupId>jakarta.xml.ws</groupId>
+				<artifactId>jakarta.xml.ws-api</artifactId>
+				<version>${jaxb-api.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>jakarta.xml.bind</groupId>
 				<artifactId>jakarta.xml.bind-api</artifactId>
@@ -913,11 +913,11 @@
 				<artifactId>jakarta.xml.soap-api</artifactId>
 				<version>${soap-api.version}</version>
 			</dependency>
-			
-		
+
+
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -980,9 +980,9 @@
 								<configuration>
 									<target>
 										<fixcrlf srcdir="${basedir}/src" eol="unix"
-											encoding="UTF-8"
-											includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt"
-											eof="asis" fixlast="false" />
+												 encoding="UTF-8"
+												 includes="**/*.html,**/*.js,**/*.css,**/*.xml,**/*.java,**/*.txt"
+												 eof="asis" fixlast="false" />
 									</target>
 								</configuration>
 								<goals>
