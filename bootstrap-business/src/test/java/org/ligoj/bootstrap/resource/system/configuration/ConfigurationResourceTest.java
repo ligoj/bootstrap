@@ -3,9 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +16,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test class of {@link ConfigurationResource}
@@ -88,9 +88,34 @@ class ConfigurationResourceTest extends AbstractBootTest {
 						.setParameter("name", "test-key5").getSingleResult().getValue());
 	}
 
+
+	@Test
+	void updateVoNullValue() {
+		final var vo = new ConfigurationVo();
+		resource.updateVo(null, vo);
+		Assertions.assertNull(vo.getValue());
+		Assertions.assertFalse(vo.isSecured());
+	}
+
+	@Test
+	void updateVoEncryptedValue() {
+		final var vo = new ConfigurationVo();
+		resource.updateVo(cryptoHelper.encrypt("some"), vo);
+		Assertions.assertNull(vo.getValue());
+		Assertions.assertTrue(vo.isSecured());
+	}
+
+	@Test
+	void updateVo() {
+		final var vo = new ConfigurationVo();
+		resource.updateVo("some", vo);
+		Assertions.assertEquals("some", vo.getValue());
+		Assertions.assertFalse(vo.isSecured());
+	}
+
 	@Test
 	void findAll() {
-		final Map<String, ConfigurationVo> result = new HashMap<>();
+		final var result = new HashMap<String, ConfigurationVo>();
 		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
 		Assertions.assertNull(result.get("test-key0").getValue());
 		Assertions.assertTrue(result.get("test-key0").isSecured());
@@ -139,7 +164,7 @@ class ConfigurationResourceTest extends AbstractBootTest {
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-db5", resource.get("test-key5"));
-        var newValue = em
+		var newValue = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-key5").getSingleResult();
 
@@ -169,7 +194,7 @@ class ConfigurationResourceTest extends AbstractBootTest {
 			Assertions.assertEquals("new-value-db4", System.getProperty(vo.getName()));
 
 			// Check the data from the database
-            var newValue = em
+			var newValue = em
 					.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 					.setParameter("name", vo.getName()).getSingleResult();
 
@@ -189,13 +214,13 @@ class ConfigurationResourceTest extends AbstractBootTest {
 			// Change the value
 			resource.put(vo);
 			Assertions.assertEquals("new-value-db4", resource.get(vo.getName()));
-			
+
 			// Rename
 			vo.setName("test-key44-new");
 			vo.setOldName("test-key44");
 			vo.setValue("new-value-db4-new");
 			resource.put(vo);
-			
+
 			// Check new value with the new name
 			Assertions.assertEquals("new-value-db4-new", resource.get("test-key44-new"));
 			Assertions.assertNull(resource.get("test-key44"));
@@ -205,8 +230,8 @@ class ConfigurationResourceTest extends AbstractBootTest {
 			resource.put(vo);
 			// No change
 			Assertions.assertEquals("new-value-db4-new", resource.get("test-key44-new"));
-			
-			
+
+
 			// Set the old name to a blank value
 			vo.setOldName("  ");
 			resource.put(vo);
@@ -236,7 +261,7 @@ class ConfigurationResourceTest extends AbstractBootTest {
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-dbX", resource.get("test-keyX"));
-        var newValue = em
+		var newValue = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getSingleResult();
 
@@ -256,7 +281,7 @@ class ConfigurationResourceTest extends AbstractBootTest {
 
 		// Check the data from the cache
 		Assertions.assertEquals("new-value-dbX", resource.get("test-keyX"));
-        var newValue = em
+		var newValue = em
 				.createQuery("FROM SystemConfiguration WHERE name=:name", SystemConfiguration.class)
 				.setParameter("name", "test-keyX").getSingleResult();
 

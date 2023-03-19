@@ -3,29 +3,10 @@
  */
 package org.ligoj.bootstrap.resource.system.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CachePut;
-import javax.cache.annotation.CacheRemove;
-import javax.cache.annotation.CacheResult;
-import javax.cache.annotation.CacheValue;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -38,8 +19,11 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.stereotype.Service;
 
+import javax.cache.annotation.*;
+import java.util.*;
+
 /**
- * Manage {@link SystemConfiguration}. Should be protected with ORBAC rules. Order rules:
+ * Manage {@link SystemConfiguration}. Should be protected with O-RBAC rules. Order rules:
  * <ul>
  * <li>System properties</li>
  * <li>Environment properties</li>
@@ -113,7 +97,7 @@ public class ConfigurationResource {
 	}
 
 	private String getRaw(final String name) {
-        var value = StringUtils.trimToNull(env.getProperty(name));
+		var value = StringUtils.trimToNull(env.getProperty(name));
 		if (value == null) {
 			value = Optional.ofNullable(repository.findByName(name)).map(SystemConfiguration::getValue)
 					.map(StringUtils::trimToNull).orElse(null);
@@ -128,7 +112,7 @@ public class ConfigurationResource {
 	 */
 	@GET
 	public List<ConfigurationVo> findAll() {
-		final Map<String, ConfigurationVo> result = new TreeMap<>();
+		final var result = new TreeMap<String, ConfigurationVo>();
 
 		// First add the system properties
 		env.getPropertySources().forEach(source -> {
@@ -162,8 +146,14 @@ public class ConfigurationResource {
 		return new ArrayList<>(result.values());
 	}
 
-	private void updateVo(final String value, final ConfigurationVo vo) {
-		if (value.equals(cryptoHelper.decryptAsNeeded(value))) {
+	/**
+	 * Set a value is not an encrypted one.
+	 *
+	 * @param value The raw, maybe encrypted, value
+	 * @param vo    The target value wrapper.
+	 */
+	protected void updateVo(final String value, final ConfigurationVo vo) {
+		if (value == null || value.equals(cryptoHelper.decryptAsNeeded(value))) {
 			vo.setValue(value);
 		} else {
 			// Do not expose secured value, even hashed data
@@ -245,7 +235,7 @@ public class ConfigurationResource {
 	public void put(final ConfigurationEditionVo conf) {
 		self.put(conf.getName(), conf.getValue(), conf.isSystem(), conf.isSecured());
 		if (StringUtils.isNotBlank(conf.getOldName()) && !conf.getOldName().equals(conf.getName())) {
-			// This is a rename, delete the previous name
+			// This is a renaming, delete the previous name
 			self.delete(conf.getOldName(), conf.isSystem());
 		}
 	}
