@@ -3,8 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +11,12 @@ import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 
 /**
  * Test class of {@link UserResource}
@@ -24,6 +26,9 @@ class UserResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private UserResource resource;
+
+	@Autowired
+	private ApiTokenResource apiTokenResource;
 
 	private int defaultRoleId;
 
@@ -73,8 +78,20 @@ class UserResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	void create() {
-		resource.create(newUser());
+	void create() throws GeneralSecurityException {
+		final var apiKey = resource.create(newUser());
+		Assertions.assertNull(apiKey);
+		Assertions.assertEquals("fdaugan", resource.findById("fdaugan").getLogin());
+	}
+
+	@Test
+	void createWithApiKey() throws GeneralSecurityException {
+		final var newUser = newUser();
+		newUser.setApiToken("test");
+		final var apiKey = resource.create(newUser);
+		Assertions.assertNotNull(apiKey);
+		Assertions.assertTrue(apiTokenResource.check(newUser.getLogin(), apiKey));
+		Assertions.assertFalse(apiTokenResource.check(getAuthenticationName(), apiKey));
 		Assertions.assertEquals("fdaugan", resource.findById("fdaugan").getLogin());
 	}
 
@@ -85,7 +102,7 @@ class UserResourceTest extends AbstractBootTest {
 		resource.update(userVo);
 		em.flush();
 		em.clear();
-        var userDto = resource.findById(DEFAULT_USER);
+		var userDto = resource.findById(DEFAULT_USER);
 		Assertions.assertNotNull(userDto);
 		Assertions.assertEquals(0, userDto.getRoles().size());
 		// add role

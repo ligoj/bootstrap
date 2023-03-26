@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheRemove;
+
 import jakarta.persistence.criteria.JoinType;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
@@ -24,6 +26,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.dao.PaginationDao;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
@@ -32,6 +35,7 @@ import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -51,6 +55,9 @@ public class UserResource {
 
 	@Autowired
 	private PaginationJson paginationJson;
+
+	@Autowired
+	private ApiTokenResource apiTokenResource;
 
 	@Autowired
 	private SystemUserRepository repository;
@@ -74,10 +81,10 @@ public class UserResource {
 	/**
 	 * Fetched associations.
 	 */
-	private static final Map<String, JoinType> FETCHED_ASSOCS = new HashMap<>();
+	private static final Map<String, JoinType> FETCHED_ASSOCIATIONS = new HashMap<>();
 
 	static {
-		FETCHED_ASSOCS.put("roles", JoinType.LEFT);
+		FETCHED_ASSOCIATIONS.put("roles", JoinType.LEFT);
 	}
 
 	private static final ToBusinessConverterRole TO_BUSINESS_ROLES = new ToBusinessConverterRole();
@@ -118,9 +125,8 @@ public class UserResource {
 
 	/**
 	 * Retrieve a User by its identifier.
-	 * 
-	 * @param login
-	 *            user identifier.
+	 *
+	 * @param login user identifier.
 	 * @return User.
 	 */
 	@GET
@@ -131,9 +137,8 @@ public class UserResource {
 
 	/**
 	 * Return all users.
-	 * 
-	 * @param uriInfo
-	 *            Query context.
+	 *
+	 * @param uriInfo Query context.
 	 * @return all users.
 	 */
 	@GET
@@ -143,40 +148,43 @@ public class UserResource {
 
 	/**
 	 * Return all users with roles.
-	 * 
-	 * @param uriInfo
-	 *            Query context.
+	 *
+	 * @param uriInfo Query context.
 	 * @return all users.
 	 */
 	@GET
 	@Path("roles")
 	public TableItem<SystemUserVo> findAllWithRoles(@Context final UriInfo uriInfo) {
-		final var findAll = pagination.findAll(SystemUser.class, uriInfo, ORDERED_COLUMNS, null, FETCHED_ASSOCS);
+		final var findAll = pagination.findAll(SystemUser.class, uriInfo, ORDERED_COLUMNS, null, FETCHED_ASSOCIATIONS);
 		// apply pagination
 		return paginationJson.applyPagination(uriInfo, findAll, TO_BUSINESS_ROLES);
 	}
 
 	/**
 	 * Create the user and return the corresponding identifier.
-	 * 
-	 * @param userVo
-	 *            the user to create.
+	 *
+	 * @param userVo the user to create.
+	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@POST
-	public void create(final SystemUserEditionVo userVo) {
-        var user = new SystemUser();
+	public String create(final SystemUserEditionVo userVo) throws GeneralSecurityException {
+		var user = new SystemUser();
 		user.setLogin(userVo.getLogin());
 		// create the user
 		user = repository.save(user);
 		// update role assignment
 		createRoleAssignment(userVo.getRoles(), user);
+
+		if (StringUtils.isNotBlank(userVo.getApiToken())) {
+			return apiTokenResource.create(userVo.getLogin(), userVo.getApiToken());
+		}
+		return null;
 	}
 
 	/**
 	 * Update the user.
-	 * 
-	 * @param userVo
-	 *            the user to update.
+	 *
+	 * @param userVo the user to update.
 	 */
 	@PUT
 	public void update(final SystemUserEditionVo userVo) {
@@ -198,11 +206,9 @@ public class UserResource {
 
 	/**
 	 * Create role assignment.
-	 * 
-	 * @param roleIds
-	 *            The role identifiers.
-	 * @param user
-	 *            The user to assign.
+	 *
+	 * @param roleIds The role identifiers.
+	 * @param user    The user to assign.
 	 */
 	private void createRoleAssignment(final List<Integer> roleIds, final SystemUser user) {
 		for (final var roleId : roleIds) {
@@ -218,9 +224,8 @@ public class UserResource {
 
 	/**
 	 * Delete an {@link SystemUser}
-	 * 
-	 * @param login
-	 *            the user login.
+	 *
+	 * @param login the user login.
 	 */
 	@DELETE
 	@Path("{login}")

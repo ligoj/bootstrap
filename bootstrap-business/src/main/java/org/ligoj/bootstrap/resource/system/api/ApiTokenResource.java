@@ -13,6 +13,7 @@ import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -41,10 +42,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * API Token resource. An user can have several tokens, each one associated to an unique name (user 's scope). The
- * general behavior is :
+ * API Token resource. A user can have several tokens, each one associated to a unique name (user's scope). The
+ * general behavior is:
  * <ul>
- * <li>In the database, are stored user (owner), logical name of the key, hashed key (SHA-512+), crypted key.</li>
+ * <li>In the database, are stored user (owner), logical name of the key, hashed key (SHA-512+), encrypted key.</li>
  * <li>Cipher key column is used to display the plain token value for the user. One by one.</li>
  * <li>Hashed key column is used to match the key, as we would do it for password.</li>
  * <li>The salt used for hashed value is only user name. SHA-512+ strength and the key length (&gt;128) reduce slightly
@@ -72,8 +73,7 @@ public class ApiTokenResource {
 	/**
 	 * Az09 string generator.
 	 */
-	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
-			.filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).build();
+	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).build();
 
 	@Autowired
 	protected SystemApiTokenRepository repository;
@@ -101,17 +101,17 @@ public class ApiTokenResource {
 	private String tokenCrypt;
 
 	/**
-	 * Secret key of DES algorithm used to generated the SSO token.
+	 * Secret key of DES algorithm used to generate the SSO token.
 	 */
 	@Value("${api.token.secret:K%ë£/L@_§z3-Àçñ?}")
 	private String tokenSecret;
 
 	/**
 	 * Check the given token.
-	 * 
+	 *
 	 * @param user  The user name. Will be used to build the hash.
 	 * @param token The user password or token.
-	 * @return <code>true</code> if the token match.
+	 * @return <code>true</code> if the token matches.
 	 */
 	public boolean check(final String user, final String token) {
 		try {
@@ -119,7 +119,7 @@ public class ApiTokenResource {
 				// Unsecured token, only null hash can match
 				return repository.checkByUserAndToken(user, token);
 			}
-			// Check the API token from data base
+			// Check the API token from database
 			return repository.checkByUserAndHash(user, hash(token));
 		} catch (final GeneralSecurityException e) {
 			log.error("Unable to validate a token for user : " + user, e);
@@ -129,10 +129,9 @@ public class ApiTokenResource {
 		return false;
 	}
 
-
 	/**
 	 * Return all API names owned by the current user.
-	 * 
+	 *
 	 * @return All API token names the current user owns.
 	 */
 	@GET
@@ -142,7 +141,7 @@ public class ApiTokenResource {
 
 	/**
 	 * Return raw token value corresponding to the requested name and owned by current user.
-	 * 
+	 *
 	 * @param name The token's name.
 	 * @return raw token value corresponding to the requested name and owned by current user.
 	 * @throws GeneralSecurityException When there is a security issue.
@@ -161,7 +160,7 @@ public class ApiTokenResource {
 
 	/**
 	 * Decrypt the message with the given key.
-	 * 
+	 *
 	 * @param encryptedMessage Encrypted message.
 	 * @param secretKey        The secret key.
 	 * @return the original message.
@@ -181,7 +180,7 @@ public class ApiTokenResource {
 
 	/**
 	 * Encrypt the message with the given key.
-	 * 
+	 *
 	 * @param message   Ciphered message.
 	 * @param secretKey The secret key.
 	 * @return the original message.
@@ -203,7 +202,7 @@ public class ApiTokenResource {
 
 	/**
 	 * Hash without salt the given token.
-	 * 
+	 *
 	 * @param token The user token.
 	 * @return the hash without salt.
 	 */
@@ -215,7 +214,7 @@ public class ApiTokenResource {
 
 	/**
 	 * From a password, an amount of iterations, returns the corresponding digest
-	 * 
+	 *
 	 * @param iterations The amount of iterations of the algorithm.
 	 * @param password   String The password to encrypt
 	 * @return byte[] The digested password
@@ -240,18 +239,30 @@ public class ApiTokenResource {
 
 	/**
 	 * Create a new token for current user.
-	 * 
+	 *
 	 * @param name New token name.
 	 * @return the generated token.
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("{name:[\\w\\-\\.]+}")
+	@Path("{name:[\\w.-]+}")
 	public String create(@PathParam("name") final String name) throws GeneralSecurityException {
+		return create(name, securityHelper.getLogin());
+	}
+
+	/**
+	 * Create a new token for given user.
+	 *
+	 * @param name New token name.
+	 * @param user The target user
+	 * @return the generated token.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	public String create(final String user, final String name) throws GeneralSecurityException {
 		final var entity = new SystemApiToken();
 		entity.setName(name);
-		entity.setUser(securityHelper.getLogin());
+		entity.setUser(user);
 		final var token = newToken(entity);
 		repository.saveAndFlush(entity);
 		return token;
@@ -276,7 +287,7 @@ public class ApiTokenResource {
 
 	/**
 	 * Update a named token with a new generated one.
-	 * 
+	 *
 	 * @param name Token to update.
 	 * @return the new generated token.
 	 * @throws GeneralSecurityException When there is a security issue.
@@ -298,8 +309,8 @@ public class ApiTokenResource {
 	}
 
 	/**
-	 * Delete a API token by it's name for current user.
-	 * 
+	 * Delete an API token by its name for current user.
+	 *
 	 * @param name The API token's name.
 	 */
 	@DELETE
