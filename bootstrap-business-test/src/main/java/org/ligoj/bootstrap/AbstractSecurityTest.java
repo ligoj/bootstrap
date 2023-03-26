@@ -79,7 +79,7 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	/**
 	 * Return the authentication name for mock security. May be overridden.
 	 * 
-	 * @return the user name used for Spring Security mocking.
+	 * @return the username used for Spring Security mocking.
 	 */
     protected String getAuthenticationName() {
 		return DEFAULT_USER;
@@ -88,9 +88,8 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	/**
 	 * Build and return a REST security context.
 	 * 
-	 * @param user
-	 *            the user name of {@link jakarta.ws.rs.core.SecurityContext}
-	 * @return a mock of {@link jakarta.ws.rs.core.SecurityContext} with a defined {@link Principal}
+	 * @param user The username of {@link jakarta.ws.rs.core.SecurityContext}
+	 * @return A {@link jakarta.ws.rs.core.SecurityContext} with a defined {@link Principal} mock
 	 */
 	protected jakarta.ws.rs.core.SecurityContext getJaxRsSecurityContext(final String user) {
 		final var context = Mockito.mock(jakarta.ws.rs.core.SecurityContext.class);
