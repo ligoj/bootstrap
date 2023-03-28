@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.cache.annotation.CacheRemoveAll;
+
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -53,9 +54,21 @@ public class RoleResource {
 
 	/**
 	 * Retrieve an element from its identifier.
-	 * 
-	 * @param id
-	 *            Element's identifier.
+	 *
+	 * @param name Element's name.
+	 * @return Found element. May be <code>null</code>.
+	 */
+	@GET
+	@Path("name/{name}")
+	@org.springframework.transaction.annotation.Transactional(readOnly = true)
+	public SystemRole findByName(@PathParam("name") final String name) {
+		return repository.findByExpected("name", name);
+	}
+
+	/**
+	 * Retrieve an element from its identifier.
+	 *
+	 * @param id Element's identifier.
 	 * @return Found element. May be <code>null</code>.
 	 */
 	@GET
@@ -67,7 +80,7 @@ public class RoleResource {
 
 	/**
 	 * Retrieve all elements without pagination.
-	 * 
+	 *
 	 * @return all elements without pagination.
 	 */
 	@GET
@@ -80,7 +93,7 @@ public class RoleResource {
 
 	/**
 	 * Retrieve all elements without pagination and includes authorizations..
-	 * 
+	 *
 	 * @return all elements without pagination.
 	 */
 	@GET
@@ -131,9 +144,8 @@ public class RoleResource {
 
 	/**
 	 * Create a new element.
-	 * 
-	 * @param roleVo
-	 *            The role to create.
+	 *
+	 * @param roleVo The role to create.
 	 * @return identifier of created object.
 	 */
 	@POST
@@ -158,9 +170,8 @@ public class RoleResource {
 
 	/**
 	 * Update Role from its ID.
-	 * 
-	 * @param roleVo
-	 *            Role data that will be updated.
+	 *
+	 * @param roleVo Role data that will be updated.
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -189,9 +200,8 @@ public class RoleResource {
 
 	/**
 	 * Delete Role from its identifier
-	 * 
-	 * @param id
-	 *            Identifier of the role to delete.
+	 *
+	 * @param id Identifier of the role to delete.
 	 */
 	@DELETE
 	@Path("{id:\\d+}")

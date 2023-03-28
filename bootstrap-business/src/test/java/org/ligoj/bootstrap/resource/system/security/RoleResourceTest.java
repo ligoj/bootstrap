@@ -84,6 +84,16 @@ class RoleResourceTest extends AbstractBootTest {
 	}
 
 	/**
+	 * test find by name service
+	 */
+	@Test
+	void findByName() {
+		final var result = resource.findByName(roleTestName);
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(roleTestId, result.getId());
+	}
+
+	/**
 	 * test find by id service. Id is not in database
 	 */
 	@Test
