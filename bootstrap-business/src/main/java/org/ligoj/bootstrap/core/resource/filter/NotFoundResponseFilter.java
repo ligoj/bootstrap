@@ -3,12 +3,15 @@
  */
 package org.ligoj.bootstrap.core.resource.filter;
 
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
+import jakarta.ws.rs.ext.Provider;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.resource.ServerError;
@@ -16,6 +19,7 @@ import org.ligoj.bootstrap.core.resource.ServerError;
 /**
  * A response filter able to transform Null results to 404 HTTP response when
  */
+@Provider
 public class NotFoundResponseFilter extends AbstractMapper implements ContainerResponseFilter {
 
 	@Override
