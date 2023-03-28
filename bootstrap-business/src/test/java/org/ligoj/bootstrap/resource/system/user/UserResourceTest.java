@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.util.Set;
 
 /**
  * Test class of {@link UserResource}
@@ -29,6 +30,9 @@ class UserResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private ApiTokenResource apiTokenResource;
+
+	@Autowired
+	private SystemRoleRepository roleRepository;
 
 	private int defaultRoleId;
 
@@ -88,7 +92,7 @@ class UserResourceTest extends AbstractBootTest {
 	void createWithApiKey() throws GeneralSecurityException {
 		final var newUser = newUser();
 		newUser.setApiToken("test");
-		final var apiKey = resource.create(newUser);
+		final var apiKey = resource.create(newUser).getId();
 		Assertions.assertNotNull(apiKey);
 		Assertions.assertTrue(apiTokenResource.check(newUser.getLogin(), apiKey));
 		Assertions.assertFalse(apiTokenResource.check(getAuthenticationName(), apiKey));
@@ -105,21 +109,37 @@ class UserResourceTest extends AbstractBootTest {
 		var userDto = resource.findById(DEFAULT_USER);
 		Assertions.assertNotNull(userDto);
 		Assertions.assertEquals(0, userDto.getRoles().size());
-		// add role
+
+		// Add role
+		final var newRole = newRole("test_role");
 		userVo.getRoles().add(defaultRoleId);
+		userVo.getRoles().add(newRole);
 		resource.update(userVo);
 		em.flush();
 		em.clear();
 		userDto = resource.findById(DEFAULT_USER);
 		Assertions.assertNotNull(userDto);
-		Assertions.assertEquals(1, userDto.getRoles().size());
+		Assertions.assertEquals(2, userDto.getRoles().size());
+		Assertions.assertTrue(userDto.getRoles().stream().anyMatch(r -> r.getRole().getId().equals(newRole)));
+		Assertions.assertTrue(userDto.getRoles().stream().anyMatch(r -> r.getRole().getId().equals(defaultRoleId)));
+
 		// nothing to do
 		resource.update(userVo);
 		em.flush();
 		em.clear();
 		userDto = resource.findById(DEFAULT_USER);
 		Assertions.assertNotNull(userDto);
+		Assertions.assertEquals(2, userDto.getRoles().size());
+
+		// Remove role
+		userVo.getRoles().remove(newRole);
+		resource.update(userVo);
+		em.flush();
+		em.clear();
+		userDto = resource.findById(DEFAULT_USER);
+		Assertions.assertNotNull(userDto);
 		Assertions.assertEquals(1, userDto.getRoles().size());
+		Assertions.assertTrue(userDto.getRoles().stream().anyMatch(r -> r.getRole().getId().equals(defaultRoleId)));
 	}
 
 	/**
@@ -146,9 +166,17 @@ class UserResourceTest extends AbstractBootTest {
 	private SystemUserEditionVo newUser() {
 		final var userVo = new SystemUserEditionVo();
 		userVo.setLogin("fdaugan");
-		userVo.setRoles(Collections.singletonList(defaultRoleId));
+		userVo.setRoles(Set.of(defaultRoleId));
 		return userVo;
 	}
+
+	private int newRole(final String name) {
+		final var role = new SystemRole();
+		role.setName(name);
+		roleRepository.saveAndFlush(role);
+		return role.getId();
+	}
+
 
 	/**
 	 * Create a default user object.

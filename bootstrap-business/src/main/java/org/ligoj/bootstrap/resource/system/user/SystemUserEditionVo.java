@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Corporate user for edition.
@@ -20,11 +20,11 @@ public class SystemUserEditionVo extends AbstractSystemUserVo {
 	/**
 	 * Roles identifiers
 	 */
-	private List<Integer> roles = new ArrayList<>();
+	private Set<Integer> roles = new HashSet<>();
 
 	/**
 	 * When defined, an API token is created with this name.
 	 */
-	@Pattern(regexp = "[\\w\\-.]+")
+	@Pattern(regexp = "[\\w.-]+")
 	private String apiToken;
 }

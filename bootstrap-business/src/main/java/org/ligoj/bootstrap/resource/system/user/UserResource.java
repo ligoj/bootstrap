@@ -3,30 +3,14 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheRemove;
-
 import jakarta.persistence.criteria.JoinType;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
-
 import org.apache.commons.lang3.StringUtils;
+import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.dao.PaginationDao;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
@@ -40,6 +24,12 @@ import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
+
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheRemove;
+import java.security.GeneralSecurityException;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * Manage {@link SystemUser}
@@ -164,12 +154,18 @@ public class UserResource {
 	 * Create the user and return the corresponding identifier.
 	 *
 	 * @param userVo the user to create.
+	 * @return the generated token if requested.
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@POST
-	public String create(final SystemUserEditionVo userVo) throws GeneralSecurityException {
-		var user = new SystemUser();
-		user.setLogin(userVo.getLogin());
+	public NamedBean<String> create(final SystemUserEditionVo userVo) throws GeneralSecurityException {
+		var user = Objects.requireNonNullElseGet(repository.findOne(userVo.getLogin()), () -> {
+			final var newUser = new SystemUser();
+			newUser.setLogin(userVo.getLogin());
+			newUser.setRoles(new HashSet<>());
+			return newUser;
+		});
+
 		// create the user
 		user = repository.save(user);
 		// update role assignment
@@ -189,36 +185,35 @@ public class UserResource {
 	@PUT
 	public void update(final SystemUserEditionVo userVo) {
 		final var user = repository.findOneExpected(userVo.getLogin());
-		final var roleToDelete = new ArrayList<SystemRoleAssignment>();
-		// remove roles deleted by the user
-		for (final var role : user.getRoles()) {
-			if (userVo.getRoles().contains(role.getRole().getId())) {
-				userVo.getRoles().remove(role.getRole().getId());
-			} else {
-				roleToDelete.add(role);
-			}
-		}
-		roleAssignmentRepository.deleteAll(roleToDelete);
-		user.getRoles().removeAll(roleToDelete);
-		// create new roles assignment
 		createRoleAssignment(userVo.getRoles(), user);
 	}
 
 	/**
 	 * Create role assignment.
 	 *
-	 * @param roleIds The role identifiers.
-	 * @param user    The user to assign.
+	 * @param targetRoles The desired role identifiers.
+	 * @param user        The user to assign.
 	 */
-	private void createRoleAssignment(final List<Integer> roleIds, final SystemUser user) {
-		for (final var roleId : roleIds) {
+	private void createRoleAssignment(final Set<Integer> targetRoles, final SystemUser user) {
+		// Delete previous assignment roles
+		final var deletedRoles = new HashSet<>(user.getRoles().stream().map(r-> r.getRole().getId()).toList());
+		deletedRoles.removeAll(targetRoles);
+
+		// Create the new assignments
+		final var newRoles = new HashSet<>(targetRoles);
+		user.getRoles().stream().map(r-> r.getRole().getId()).forEach(newRoles::remove);
+
+		// Apply the changes
+		deletedRoles.forEach(r -> roleAssignmentRepository.deleteAllBy("user.id", user.getLogin(), new String[]{"role.id"}, r));
+		newRoles.forEach(r -> {
 			final var roleAssignment = new SystemRoleAssignment();
 			final var role = new SystemRole();
-			role.setId(roleId);
+			role.setId(r);
 			roleAssignment.setRole(role);
 			roleAssignment.setUser(user);
 			roleAssignmentRepository.save(roleAssignment);
-		}
+		});
+
 		cacheManager.getCache("user-details").evict(user.getLogin());
 	}
 
@@ -231,6 +226,8 @@ public class UserResource {
 	@Path("{login}")
 	@CacheRemove(cacheName = "user-details")
 	public void delete(@PathParam("login") @CacheKey final String login) {
+		apiTokenResource.removeAll(login);
+		roleAssignmentRepository.deleteAllBy("user.id", login);
 		repository.deleteById(login);
 	}
 }
