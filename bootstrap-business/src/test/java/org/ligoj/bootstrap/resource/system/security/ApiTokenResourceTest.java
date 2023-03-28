@@ -142,7 +142,9 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	@Test
 	void create() throws GeneralSecurityException {
 		Assertions.assertEquals(4, repository.findAllByUser(DEFAULT_USER).size());
-		final var token = resource.create("new-api");
+		final var tokenObj = resource.create("new-api");
+		Assertions.assertEquals("new-api", tokenObj.getName());
+		final var token = tokenObj.getId();
 
 		// Check new state
 		final var newToken = repository.findByNameExpected("new-api");

@@ -3,33 +3,18 @@
  */
 package org.ligoj.bootstrap.resource.system.api;
 
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
+import org.ligoj.bootstrap.core.INamableBean;
+import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
@@ -38,8 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * API Token resource. A user can have several tokens, each one associated to a unique name (user's scope). The
@@ -247,8 +240,8 @@ public class ApiTokenResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{name:[\\w.-]+}")
-	public String create(@PathParam("name") final String name) throws GeneralSecurityException {
-		return create(name, securityHelper.getLogin());
+	public NamedBean<String> create(@PathParam("name") final String name) throws GeneralSecurityException {
+		return create(securityHelper.getLogin(), name);
 	}
 
 	/**
@@ -259,13 +252,13 @@ public class ApiTokenResource {
 	 * @return the generated token.
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
-	public String create(final String user, final String name) throws GeneralSecurityException {
+	public NamedBean<String> create(final String user, final String name) throws GeneralSecurityException {
 		final var entity = new SystemApiToken();
 		entity.setName(name);
 		entity.setUser(user);
 		final var token = newToken(entity);
 		repository.saveAndFlush(entity);
-		return token;
+		return new NamedBean<String>(token, name);
 	}
 
 	/**
@@ -319,4 +312,12 @@ public class ApiTokenResource {
 		repository.deleteByUserAndName(securityHelper.getLogin(), name);
 	}
 
+	/**
+	 * Remove all API keys associated to given user.
+	 *
+	 * @param login The related username.
+	 */
+	public void removeAll(@PathParam("name") final String login) {
+		repository.deleteAllBy("user", login);
+	}
 }
