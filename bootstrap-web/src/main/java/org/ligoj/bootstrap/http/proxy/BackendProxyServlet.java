@@ -328,13 +328,14 @@ public class BackendProxyServlet extends ProxyServlet {
 	}
 
 	/**
-	 * Indicates the request was in AJAX or not.
+	 * Indicates the request was in API or not.
 	 *
 	 * @param request The original request.
-	 * @return <code>true</code> for Ajax request.
+	 * @return <code>true</code> for API request.
 	 */
-	public static boolean isAjaxRequest(final HttpServletRequest request) {
-		return "XMLHttpRequest".equalsIgnoreCase(StringUtils.trimToEmpty(request.getHeader("X-Requested-With")));
+	public static boolean isApiRequest(final HttpServletRequest request) {
+		return "XMLHttpRequest".equalsIgnoreCase(StringUtils.trimToEmpty(request.getHeader("X-Requested-With")))
+				|| !StringUtils.trimToEmpty(request.getHeader("User-Agent")).contains("Mozilla");
 	}
 
 	@Override
@@ -375,7 +376,7 @@ public class BackendProxyServlet extends ProxyServlet {
 	 */
 	protected int needPlainPageErrorStatus(final HttpServletRequest request, final int status) {
 		final var plainStatus = getManagedPlainPageError(status);
-		return plainStatus == 0 || isAjaxRequest(request) ? 0 : plainStatus;
+		return plainStatus == 0 || isApiRequest(request) ? 0 : plainStatus;
 	}
 
 	@Override

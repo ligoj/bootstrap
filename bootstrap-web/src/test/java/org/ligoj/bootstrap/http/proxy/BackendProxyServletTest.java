@@ -442,16 +442,23 @@ class BackendProxyServletTest {
 	}
 
 	@Test
-	void isAjaxRequestXRequest() {
+	void isApiRequestXRequest() {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		Assertions.assertTrue(BackendProxyServlet.isAjaxRequest(request));
+		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
+	}
+	@Test
+	void isApiRequestFromBrowser() {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
+		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
+		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
 	}
 
 	@Test
-	void isAjaxRequest() {
+	void isApiRequest() {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		Assertions.assertFalse(BackendProxyServlet.isAjaxRequest(request));
+		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
 	}
 
 	@Test
@@ -469,6 +476,7 @@ class BackendProxyServletTest {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		final var dispatcher = Mockito.mock(RequestDispatcher.class);
 		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
 		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
 		Mockito.when(servletContext.getRequestDispatcher("/404.html")).thenReturn(dispatcher);
 		final var proxyResponse = Mockito.mock(Response.class);
@@ -485,6 +493,7 @@ class BackendProxyServletTest {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		final var dispatcher = Mockito.mock(RequestDispatcher.class);
 		final var toBeThrown = new ServletException();
+		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
 		Mockito.doThrow(toBeThrown).when(dispatcher).forward(request, response);
 		Mockito.when(servletContext.getRequestDispatcher("/404.html")).thenReturn(dispatcher);
 		final var proxyResponse = Mockito.mock(Response.class);
@@ -574,6 +583,7 @@ class BackendProxyServletTest {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		final var proxyResponse = Mockito.mock(Response.class);
 		Mockito.when(proxyResponse.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
+		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
 		servlet.onServerResponseHeaders(request, response, proxyResponse);
 		Mockito.verify(response, Mockito.times(1)).addHeader("Content-Type", "text/html");
 	}
