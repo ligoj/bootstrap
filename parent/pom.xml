@@ -80,7 +80,7 @@
 		<jetty.version>11.0.14</jetty.version>
 		<jodd-bean.version>5.1.6</jodd-bean.version>
 		<jsoup.version>1.15.4</jsoup.version>
-		<log4j.version>2.19.0</log4j.version>
+		<log4j.version>2.20.0</log4j.version>
 		<log4j-api.version>2.20.0</log4j-api.version>
 		<lombok.version>1.18.26</lombok.version><!-- Don't use 1.18.24 -->
 		<mail.version>2.1.1</mail.version>
