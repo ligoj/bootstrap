@@ -151,7 +151,7 @@ public class UserResource {
 	}
 
 	/**
-	 * Create the user and return the corresponding identifier.
+	 * Create the user as needed and return the corresponding identifier.
 	 *
 	 * @param userVo the user to create.
 	 * @return the generated token if requested.
@@ -159,20 +159,22 @@ public class UserResource {
 	 */
 	@POST
 	public NamedBean<String> create(final SystemUserEditionVo userVo) throws GeneralSecurityException {
-		var user = Objects.requireNonNullElseGet(repository.findOne(userVo.getLogin()), () -> {
+		final var targetUser = userVo.getLogin();
+		var user = Objects.requireNonNullElseGet(repository.findOne(targetUser), () -> {
 			final var newUser = new SystemUser();
-			newUser.setLogin(userVo.getLogin());
+			newUser.setLogin(targetUser);
 			newUser.setRoles(new HashSet<>());
 			return newUser;
 		});
 
 		// create the user
 		user = repository.save(user);
+		
 		// update role assignment
 		createRoleAssignment(userVo.getRoles(), user);
 
-		if (StringUtils.isNotBlank(userVo.getApiToken())) {
-			return apiTokenResource.create(userVo.getLogin(), userVo.getApiToken());
+		if (StringUtils.isNotBlank(userVo.getApiToken()) && !apiTokenResource.hasToken(targetUser, userVo.getApiToken())) {
+			return apiTokenResource.create(targetUser, userVo.getApiToken());
 		}
 		return null;
 	}
@@ -196,12 +198,12 @@ public class UserResource {
 	 */
 	private void createRoleAssignment(final Set<Integer> targetRoles, final SystemUser user) {
 		// Delete previous assignment roles
-		final var deletedRoles = new HashSet<>(user.getRoles().stream().map(r-> r.getRole().getId()).toList());
+		final var deletedRoles = new HashSet<>(user.getRoles().stream().map(r -> r.getRole().getId()).toList());
 		deletedRoles.removeAll(targetRoles);
 
 		// Create the new assignments
 		final var newRoles = new HashSet<>(targetRoles);
-		user.getRoles().stream().map(r-> r.getRole().getId()).forEach(newRoles::remove);
+		user.getRoles().stream().map(r -> r.getRole().getId()).forEach(newRoles::remove);
 
 		// Apply the changes
 		deletedRoles.forEach(r -> roleAssignmentRepository.deleteAllBy("user.id", user.getLogin(), new String[]{"role.id"}, r));

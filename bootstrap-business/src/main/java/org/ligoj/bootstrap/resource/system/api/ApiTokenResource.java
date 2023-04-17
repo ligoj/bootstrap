@@ -13,7 +13,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
-import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
@@ -32,7 +31,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * API Token resource. A user can have several tokens, each one associated to a unique name (user's scope). The
@@ -152,6 +150,17 @@ public class ApiTokenResource {
 	}
 
 	/**
+	 * Check a token exists for given user.
+	 *
+	 * @param name Token name to check existence
+	 * @param user The owner user.
+	 * @return <code>true</code> when the user has a token key having this name.
+	 */
+	public boolean hasToken(final String user, final String name) {
+		return repository.findByUserAndName(user, name) != null;
+	}
+
+	/**
 	 * Decrypt the message with the given key.
 	 *
 	 * @param encryptedMessage Encrypted message.
@@ -258,7 +267,7 @@ public class ApiTokenResource {
 		entity.setUser(user);
 		final var token = newToken(entity);
 		repository.saveAndFlush(entity);
-		return new NamedBean<String>(token, name);
+		return new NamedBean<>(token, name);
 	}
 
 	/**

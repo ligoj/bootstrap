@@ -97,6 +97,9 @@ class UserResourceTest extends AbstractBootTest {
 		Assertions.assertTrue(apiTokenResource.check(newUser.getLogin(), apiKey));
 		Assertions.assertFalse(apiTokenResource.check(getAuthenticationName(), apiKey));
 		Assertions.assertEquals("fdaugan", resource.findById("fdaugan").getLogin());
+
+		// Second creation does not return the previous or new token
+		Assertions.assertNull(resource.create(newUser));
 	}
 
 	@Test

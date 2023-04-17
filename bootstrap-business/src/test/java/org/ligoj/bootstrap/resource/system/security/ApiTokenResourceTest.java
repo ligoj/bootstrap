@@ -155,6 +155,7 @@ class ApiTokenResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(5, tokens.size());
 		Assertions.assertEquals("new-api", tokens.get(1));
 		Assertions.assertEquals(token, resource.getToken("new-api"));
+		Assertions.assertTrue(resource.hasToken(DEFAULT_USER, "new-api"));
 	}
 
 	@Test
@@ -185,11 +186,14 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	@Test
 	void remove() {
 		Assertions.assertEquals(4, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertTrue(resource.hasToken(DEFAULT_USER, "name"));
+
 		resource.remove("name");
 
 		// Check new state
 		repository.findByNameExpected("name");
 		Assertions.assertEquals(1, repository.findAllByUser("other").size());
 		Assertions.assertEquals(3, repository.findAllByUser(DEFAULT_USER).size());
+		Assertions.assertFalse(resource.hasToken(DEFAULT_USER, "new-api"));
 	}
 }
