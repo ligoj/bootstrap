@@ -3,15 +3,8 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +17,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
 /**
  * Test class of {@link CentralRepositoryManager}
  */
@@ -32,8 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Rollback
 @Transactional
 class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTest {
-
-	protected static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
 	@Autowired
 	private CentralRepositoryManager resource;

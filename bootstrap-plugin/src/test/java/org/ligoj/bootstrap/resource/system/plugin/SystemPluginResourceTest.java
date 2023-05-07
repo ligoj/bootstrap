@@ -3,36 +3,11 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.eclipse.jetty.util.thread.ThreadClassLoaderScope;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -48,13 +23,7 @@ import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
-import org.ligoj.bootstrap.model.system.SystemBench;
-import org.ligoj.bootstrap.model.system.SystemConfiguration;
-import org.ligoj.bootstrap.model.system.SystemPlugin;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
-import org.ligoj.bootstrap.model.system.SystemUser;
-import org.ligoj.bootstrap.model.system.SystemUserSetting;
+import org.ligoj.bootstrap.model.system.*;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.plugin.repository.Artifact;
 import org.ligoj.bootstrap.resource.system.session.ApplicationSettings;
@@ -69,6 +38,22 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 /**
  * Test class of {@link SystemPluginResource}
@@ -116,7 +101,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@AfterEach
-	void cleanIngleton() {
+	void cleanSingleton() {
 		destroySingleton("restartEndpoint");
 	}
 
@@ -497,12 +482,12 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	private void findAllOrphanInternal() throws IOException {
 
 		// A tool where plug-in is no more available -> will not be returned
-		final var orphanPLugin = new SystemPlugin();
-		orphanPLugin.setKey("any");
-		orphanPLugin.setArtifact("plugin-any");
-		orphanPLugin.setType("TOOL");
-		orphanPLugin.setVersion("1.1");
-		repository.saveAndFlush(orphanPLugin);
+		final var orphanPlugin = new SystemPlugin();
+		orphanPlugin.setKey("any");
+		orphanPlugin.setArtifact("plugin-any");
+		orphanPlugin.setType("TOOL");
+		orphanPlugin.setVersion("1.1");
+		repository.saveAndFlush(orphanPlugin);
 
 		final var plugins = filter(resource.findAll("central"));
 		Assertions.assertEquals(2, plugins.size());
@@ -953,7 +938,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	/**
-	 * Remove a plug-in having explicit depending (by name) plug-ins : all related plug-ins are deleted. Note this
+	 * Remove a plug-in having explicit dependencies (by name) plug-ins : all related plug-ins are deleted. Note this
 	 * feature works only for plug-ins that are not loaded in the classloader. Need an {@link URLClassLoader#close()}
 	 */
 	@Test
