@@ -3,9 +3,9 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import java.io.IOException;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
+import java.io.IOException;
 
 /**
  * {@link CloseableHttpResponse} callback used for each response whatever the status.

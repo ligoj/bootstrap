@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import org.apache.http.auth.AUTH;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class SessionAuthCurlProcessorTest {
 		}) {
 			Assertions.assertTrue(processor.process(request));
 		}
-		Assertions.assertEquals("Basic anVuaXQ6cGFzc3dk", request.getHeaders().get(AUTH.WWW_AUTH_RESP));
+		Assertions.assertEquals("Basic anVuaXQ6cGFzc3dk", request.getHeaders().get(HttpHeaders.AUTHORIZATION));
 	}
 
 	/**

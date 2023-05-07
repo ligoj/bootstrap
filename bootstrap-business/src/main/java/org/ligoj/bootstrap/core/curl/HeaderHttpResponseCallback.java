@@ -3,11 +3,10 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import java.io.IOException;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-
 import lombok.AllArgsConstructor;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+
+import java.io.IOException;
 
 /**
  * This callback get the header from the response.

@@ -3,26 +3,22 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpStatus;
-import org.apache.http.impl.client.CloseableHttpClient;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.github.tomakehurst.wiremock.stubbing.Scenario;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.mockito.Mockito;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.github.tomakehurst.wiremock.stubbing.Scenario;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 /**
  * Test class of {@link CurlProcessor}
@@ -353,6 +349,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void closeTwice() {
 		try (final var processor = new CurlProcessor()) {
+			//noinspection RedundantExplicitClose
 			processor.close();
 		}
 	}
@@ -367,6 +364,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 				return mock;
 			}
 		}) {
+			//noinspection RedundantExplicitClose
 			processor.close();
 		}
 	}

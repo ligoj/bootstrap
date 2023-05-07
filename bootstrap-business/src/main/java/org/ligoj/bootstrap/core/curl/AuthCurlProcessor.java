@@ -7,13 +7,12 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.auth.AUTH;
+import org.apache.hc.core5.http.HttpHeaders;
 
 /**
  * Basic authenticated CURL processor. Credentials are sent in each request.
  *
  * @see SessionAuthCurlProcessor for session based cookie after a Basi authentication.
- * @see AUTH#WWW_AUTH_RESP
  */
 public class AuthCurlProcessor extends CurlProcessor {
 
@@ -24,13 +23,10 @@ public class AuthCurlProcessor extends CurlProcessor {
 	/**
 	 * Full constructor holding credential and callback.
 	 *
-	 * @param username
-	 *            the user login. Empty or null login are accepted, but no authentication will be used.
-	 * @param password
-	 *            the user password or API token. <code>null</code> Password is converted to empty string, and still
-	 *            used when user is not empty.
-	 * @param callback
-	 *            Not <code>null</code> {@link HttpResponseCallback} used for each response.
+	 * @param username the user login. Empty or null login are accepted, but no authentication will be used.
+	 * @param password the user password or API token. <code>null</code> Password is converted to empty string, and still
+	 *                 used when user is not empty.
+	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
 	 */
 	public AuthCurlProcessor(final String username, final String password, final HttpResponseCallback callback) {
 		super(callback);
@@ -41,11 +37,9 @@ public class AuthCurlProcessor extends CurlProcessor {
 	/**
 	 * Constructor using parameters set.
 	 *
-	 * @param username
-	 *            the user login. Empty or null login are accepted, but no authentication will be used.
-	 * @param password
-	 *            the user password or API token. <code>null</code> Password is converted to empty string, and still
-	 *            used when user is not empty.
+	 * @param username the user login. Empty or null login are accepted, but no authentication will be used.
+	 * @param password the user password or API token. <code>null</code> Password is converted to empty string, and still
+	 *                 used when user is not empty.
 	 */
 	public AuthCurlProcessor(final String username, final String password) {
 		this(username, password, new DefaultHttpResponseCallback());
@@ -62,9 +56,8 @@ public class AuthCurlProcessor extends CurlProcessor {
 
 	/**
 	 * Add the basic authentication header.
-	 * 
-	 * @param request
-	 *            The request to complete header.
+	 *
+	 * @param request The request to complete header.
 	 */
 	protected void addAuthenticationHeader(final CurlRequest request) {
 		// Check the authentication is needed or not
@@ -74,7 +67,7 @@ public class AuthCurlProcessor extends CurlProcessor {
 			final var tmp = username + ':' + password;
 
 			// Use the preempted authentication processor
-			request.getHeaders().put(AUTH.WWW_AUTH_RESP,
+			request.getHeaders().put(HttpHeaders.AUTHORIZATION,
 					"Basic " + BASE64_CODEC.encodeToString(tmp.getBytes(StandardCharsets.UTF_8)));
 		}
 	}

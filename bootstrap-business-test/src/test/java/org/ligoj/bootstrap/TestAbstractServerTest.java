@@ -3,16 +3,15 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Test class of {@link AbstractServerTest}
@@ -20,43 +19,43 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 class TestAbstractServerTest extends AbstractServerTest {
 
 	/**
-	 * Only there fore coverage, no Spring involved.
+	 * Only there for coverage, no Spring involved.
 	 */
 	@Test
 	void startAutoStop() throws IOException {
 		httpServer.stubFor(
 				WireMock.get(WireMock.urlPathEqualTo("/")).willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_OK).withBody("ok")));
 		httpServer.start();
-		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8.name()));
+		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 	}
 
 	/**
-	 * Only there fore coverage, no Spring involved.
+	 * Only there for coverage, no Spring involved.
 	 */
 	@Test
 	void startStop() throws IOException {
 		httpServer.stubFor(
 				WireMock.get(WireMock.urlPathEqualTo("/")).willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_OK).withBody("ok")));
 		httpServer.start();
-		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8.name()));
+		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 		httpServer.stop();
 		httpServer = null;
 	}
 
 	/**
-	 * Only there fore coverage, no Spring involved.
+	 * Only there for coverage, no Spring involved.
 	 */
 	@Test
 	void startStop2() throws IOException {
 		httpServer.stubFor(
 				WireMock.get(WireMock.urlPathEqualTo("/")).willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_OK).withBody("ok")));
 		httpServer.start();
-		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8.name()));
+		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 		httpServer.stop();
 	}
 
 	/**
-	 * Only there fore coverage, no Spring involved.
+	 * Only there for coverage, no Spring involved.
 	 */
 	@Test
 	void prepareMockServerDuplicate() {

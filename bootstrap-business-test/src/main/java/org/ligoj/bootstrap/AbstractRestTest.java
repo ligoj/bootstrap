@@ -3,23 +3,20 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.IOException;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
-import org.apache.http.util.EntityUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.HttpHostConnectException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 /**
  * An integration test.
@@ -68,18 +65,17 @@ abstract class AbstractRestTest extends AbstractTest {
 	 *
 	 * @return URI used to check the server is UP.
 	 */
-    private String getPingUri() {
+	private String getPingUri() {
 		return BASE_URI + "?_wadl";
 	}
 
 	/**
-	 * Create a new server and return it. A HTTP access is done to WADL to check the server is started.
+	 * Create a new server and return it. An HTTP access is done to WADL to check the server is started.
 	 *
-	 * @param webDescriptor
-	 *            location of Jetty Web descriptor file
+	 * @param webDescriptor location of Jetty Web descriptor file
 	 * @return Jetty server object built from the web descriptor.
 	 */
-    Server startRestServer(final String webDescriptor) {
+	Server startRestServer(final String webDescriptor) {
 		initProperties(webDescriptor);
 		try {
 			final var server = new org.ligoj.bootstrap.http.server.Main().getServer();
@@ -98,13 +94,11 @@ abstract class AbstractRestTest extends AbstractTest {
 	 */
 	private void waitForServerReady() throws IOException, InterruptedException {
 		final var httpget = new HttpGet(getPingUri());
-		HttpResponse response = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, HttpStatus.SC_NOT_FOUND, ""));
-        var counter = 0;
+		CloseableHttpResponse response = null;
+		var counter = 0;
 		while (true) {
 			try {
-				response = httpclient.execute(httpget);
-				final var status = response.getStatusLine().getStatusCode();
-				if (status == HttpStatus.SC_OK) {
+				if (HttpStatus.SC_OK == httpclient.execute(httpget, HttpResponse::getCode)) {
 					break;
 				}
 				checkRetries(counter);
@@ -112,11 +106,14 @@ abstract class AbstractRestTest extends AbstractTest {
 				log.info("Check failed, retrying...");
 				checkRetries(counter);
 			} finally {
-				EntityUtils.consume(response.getEntity());
+				if (response != null) {
+					EntityUtils.consume(response.getEntity());
+				}
 			}
 			counter++;
 		}
 	}
+
 
 	/**
 	 * Check the maximum reach of tries.

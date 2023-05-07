@@ -4,8 +4,7 @@
 package org.ligoj.bootstrap.core.curl;
 
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 
 /**
  * Only accept 302.

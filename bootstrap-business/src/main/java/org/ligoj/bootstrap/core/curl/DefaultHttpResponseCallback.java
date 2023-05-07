@@ -3,15 +3,14 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import jakarta.servlet.http.HttpServletResponse;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.util.EntityUtils;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * The default callback implementation. Stop the execution when a status above 302 is received. Store the last received
@@ -25,20 +24,27 @@ public class DefaultHttpResponseCallback implements HttpResponseCallback {
 
 		// Read the response
 		final var entity = response.getEntity();
-		log.info("{} {}", response.getStatusLine().getStatusCode(), request.getUrl());
+		log.info("{} {}", response.getCode(), request.getUrl());
 		if (entity != null) {
 
-			// Check the status
-			if (!acceptResponse(response)) {
-				log.error(EntityUtils.toString(entity));
-				return false;
-			}
+			try {
+				// Check the status
+				if (!acceptResponse(response)) {
+					log.error(EntityUtils.toString(entity));
+					return false;
+				}
 
-			// Save the response as needed
-			if (request.isSaveResponse()) {
-				request.setResponse(EntityUtils.toString(entity, StandardCharsets.UTF_8));
+				// Save the response as needed
+				if (request.isSaveResponse()) {
+					request.setResponse(EntityUtils.toString(entity, StandardCharsets.UTF_8));
+				}
+
+			} catch(final ParseException pe) {
+				log.error("Unable to parse the response", pe);
+				return false;
+			} finally {
+				entity.getContent().close();
 			}
-			entity.getContent().close();
 		}
 		return true;
 	}
@@ -51,7 +57,7 @@ public class DefaultHttpResponseCallback implements HttpResponseCallback {
 	 * @return <code>true</code> to proceed the next request. <code>false</code> otherwise.
 	 */
 	protected boolean acceptResponse(final CloseableHttpResponse response) {
-		return acceptStatus(response.getStatusLine().getStatusCode());
+		return acceptStatus(response.getCode());
 	}
 
 	/**

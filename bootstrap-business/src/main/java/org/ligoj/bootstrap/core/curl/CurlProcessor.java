@@ -3,52 +3,41 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
+import jakarta.ws.rs.HttpMethod;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.*;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.ligoj.bootstrap.core.validation.ValidationJsonException;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import jakarta.ws.rs.HttpMethod;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpHost;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
-import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * CURL processor.
@@ -117,7 +106,7 @@ public class CurlProcessor implements AutoCloseable {
 	 */
 	protected static Registry<ConnectionSocketFactory> newSslContext(final String protocol) {
 		// Initialize HTTPS scheme
-		final var allCerts = new TrustManager[] { new TrustedX509TrustManager() };
+		final var allCerts = new TrustManager[]{new TrustedX509TrustManager()};
 		try {
 			final var sslContext = SSLContext.getInstance(protocol);
 			sslContext.init(null, allCerts, new SecureRandom());
@@ -173,24 +162,39 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
 	 */
 	public CurlProcessor(final HttpResponseCallback callback) {
+		this(callback, 2000, 20000);
+	}
+
+	/**
+	 * Prepare a processor with callback.
+	 *
+	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
+	 */
+	public CurlProcessor(final HttpResponseCallback callback, long connectionTimeout, long responseTimeout) {
 		this.callback = callback;
 		this.clientBuilder = HttpClientBuilder.create();
 
 		// Initialize proxy
 		final var proxyHost = System.getProperty(HTTPS_PROXY_HOST);
-		HttpHost proxy = null;
 		if (proxyHost != null) {
-			proxy = new HttpHost(proxyHost, Integer.parseInt(System.getProperty(HTTPS_PROXY_PORT)));
+			final var proxy = new HttpHost(proxyHost, Integer.parseInt(System.getProperty(HTTPS_PROXY_PORT)));
+			final var httpRoutePlanner = new DefaultProxyRoutePlanner(proxy);
+			clientBuilder.setRoutePlanner(httpRoutePlanner);
 		}
 
 		// Initialize connection manager
-		final HttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(newSslContext());
+		final var connectionManager = new BasicHttpClientConnectionManager(newSslContext());
 		clientBuilder.setConnectionManager(connectionManager);
-		clientBuilder.setDefaultRequestConfig(RequestConfig.custom().setCookieSpec(CookieSpecs.DEFAULT)
-				.setRedirectsEnabled(false).setSocketTimeout(20000).setProxy(proxy).build());
+		clientBuilder.setDefaultRequestConfig(RequestConfig.custom()
+				.setCookieSpec(StandardCookieSpec.RELAXED)
+				.setRedirectsEnabled(false)
+				.setResponseTimeout(responseTimeout, TimeUnit.MILLISECONDS)
+				.setConnectionRequestTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+				.build());
+
 
 		// Initialize cookie strategy
-		final CookieStore cookieStore = new BasicCookieStore();
+		final var cookieStore = new BasicCookieStore();
 		final var context = HttpClientContext.create();
 		context.setCookieStore(cookieStore);
 		clientBuilder.setDefaultCookieStore(cookieStore);
@@ -202,10 +206,10 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Add headers to HTTP request depending on the content-type and content.
 	 */
-	private void addHeaders(final CurlRequest request, final String content, final HttpRequestBase httpRequest) {
+	private void addHeaders(final CurlRequest request, final String content, final HttpUriRequestBase httpRequest) {
 		if (StringUtils.isNotEmpty(content)) {
 			// Add the content
-			((HttpEntityEnclosingRequest) httpRequest).setEntity(new StringEntity(content, StandardCharsets.UTF_8));
+			httpRequest.setEntity(new StringEntity(content, StandardCharsets.UTF_8));
 
 			// Add content-type header if not provided
 			addSingleValuedHeader(request, httpRequest, "Content-Type", "application/x-www-form-urlencoded");
@@ -228,7 +232,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param header        The single valued header to add.
 	 * @param defaultHeader The default value of header to add.
 	 */
-	private void addSingleValuedHeader(final CurlRequest request, final HttpRequestBase httpRequest,
+	private void addSingleValuedHeader(final CurlRequest request, final HttpUriRequestBase httpRequest,
 			final String header, final String defaultHeader) {
 		// Look the headers, ignoring case for the header to add
 		if (request.getHeaders().keySet().stream().noneMatch(header::equalsIgnoreCase)) {
@@ -246,7 +250,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * @throws Exception When process failed at protocol level or timeout.
 	 */
 	protected boolean call(final CurlRequest request, final String url) throws Exception { // NOSONAR - Many Exception
-		final var httpRequest = (HttpRequestBase) SUPPORTED_METHOD.get(request.getMethod()).getConstructor(String.class)
+		final var httpRequest = (HttpUriRequestBase) SUPPORTED_METHOD.get(request.getMethod()).getConstructor(String.class)
 				.newInstance(url);
 		addHeaders(request, request.getContent(), httpRequest);
 
@@ -264,9 +268,10 @@ public class CurlProcessor implements AutoCloseable {
 		}
 
 		// Execute the request
+		//noinspection deprecation
 		try (var response = httpClient.execute(httpRequest)) {
 			// Save the status
-			request.setStatus(response.getStatusLine().getStatusCode());
+			request.setStatus(response.getCode());
 
 			// Ask for the callback a flow control
 			return ObjectUtils.defaultIfNull(request.getCallback(), callback).onResponse(request, response);
