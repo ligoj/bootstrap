@@ -7,11 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.HttpHostConnectException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,7 +92,6 @@ abstract class AbstractRestTest extends AbstractTest {
 	 */
 	private void waitForServerReady() throws IOException, InterruptedException {
 		final var httpget = new HttpGet(getPingUri());
-		CloseableHttpResponse response = null;
 		var counter = 0;
 		while (true) {
 			try {
@@ -105,10 +102,6 @@ abstract class AbstractRestTest extends AbstractTest {
 			} catch (final HttpHostConnectException ex) { // NOSONAR - Wait, and check later
 				log.info("Check failed, retrying...");
 				checkRetries(counter);
-			} finally {
-				if (response != null) {
-					EntityUtils.consume(response.getEntity());
-				}
 			}
 			counter++;
 		}
