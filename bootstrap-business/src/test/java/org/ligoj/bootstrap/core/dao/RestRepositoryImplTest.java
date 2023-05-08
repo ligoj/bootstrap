@@ -3,15 +3,8 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.svenjacobs.loremipsum.LoremIpsum;
 import jakarta.persistence.criteria.JoinType;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +17,10 @@ import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.svenjacobs.loremipsum.LoremIpsum;
+import java.util.*;
 
 /**
  * {@link RestRepositoryImpl} class test.
@@ -160,7 +152,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		role = roleRepository.findBy("name", "role", new String[] { "id" }, role.getId());
+		role = roleRepository.findBy("name", "role", new String[]{"id"}, role.getId());
 		Assertions.assertNotNull(role);
 		Assertions.assertEquals("role", role.getName());
 	}
@@ -197,7 +189,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		assignment = roleAssignmentRepository.findBy("role.name", "role", new String[] { "user.login" }, DEFAULT_USER);
+		assignment = roleAssignmentRepository.findBy("role.name", "role", new String[]{"user.login"}, DEFAULT_USER);
 		Assertions.assertNotNull(assignment);
 		Assertions.assertEquals("role", assignment.getRole().getName());
 	}
@@ -309,10 +301,10 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		var systemDialect = repository.findAll().get(1);
 		Assertions.assertFalse(repository.findAll().isEmpty());
 		Assertions.assertEquals(0,
-				repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" }, "some"));
-		Assertions.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" },
+				repository.deleteAllBy("id", systemDialect.getId(), new String[]{"dialChar"}, "some"));
+		Assertions.assertEquals(1, repository.deleteAllBy("id", systemDialect.getId(), new String[]{"dialChar"},
 				systemDialect.getDialChar()));
-		Assertions.assertEquals(0, repository.deleteAllBy("id", systemDialect.getId(), new String[] { "dialChar" },
+		Assertions.assertEquals(0, repository.deleteAllBy("id", systemDialect.getId(), new String[]{"dialChar"},
 				systemDialect.getDialChar()));
 		Assertions.assertFalse(repository.existsById(systemDialect.getId()));
 		em.flush();
@@ -325,7 +317,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		role = roleRepository.findBy("name", "role", new String[] { "id" }, role.getId());
+		role = roleRepository.findBy("name", "role", new String[]{"id"}, role.getId());
 		Assertions.assertNotNull(role);
 		Assertions.assertEquals("role", role.getName());
 	}
@@ -347,7 +339,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 
-		final var nb = roleAssignmentRepository.deleteAllBy("role.id", role.getId(), new String[] { "user.login" },
+		final var nb = roleAssignmentRepository.deleteAllBy("role.id", role.getId(), new String[]{"user.login"},
 				DEFAULT_USER);
 		Assertions.assertNotNull(assignment);
 		Assertions.assertEquals(1, nb);
@@ -408,7 +400,10 @@ class RestRepositoryImplTest extends AbstractBootTest {
 
 	@Test
 	void deleteSilentError() {
+		final var count = repository.count();
 		repository.deleteById(-1);
+		Assertions.assertEquals(count, repository.count());
+
 	}
 
 	@Test

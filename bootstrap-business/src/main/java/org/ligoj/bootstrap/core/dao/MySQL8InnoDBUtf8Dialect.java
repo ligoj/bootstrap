@@ -11,6 +11,9 @@ import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
  */
 public class MySQL8InnoDBUtf8Dialect extends MySQL8Dialect {
 
+	/**
+	 * Default constructor with additional registered keywords.
+	 */
 	public MySQL8InnoDBUtf8Dialect() {
 		registerKeyword("USAGE");
 	}
