@@ -106,7 +106,7 @@ public class PluginsClassLoader extends URLClassLoader {
 		log.info("Initialize the plug-ins from directory from {}", homeDirectory);
 		Files.createDirectories(this.pluginDirectory);
 
-		// Add the home it self in the class-path
+		// Add the home itself in the class-path
 		addURL(this.homeDirectory.toUri().toURL());
 
 		if (!isEnabled()) {
