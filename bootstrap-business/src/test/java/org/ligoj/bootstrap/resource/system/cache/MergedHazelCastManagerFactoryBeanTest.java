@@ -3,14 +3,14 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import javax.cache.CacheManager;
-
+import com.hazelcast.config.CacheConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.mockito.Mockito;
 
-import com.hazelcast.config.CacheConfig;
+import javax.cache.CacheManager;
 
 /**
  * Test class of {@link MergedHazelCastManagerFactoryBean}
@@ -22,6 +22,7 @@ class MergedHazelCastManagerFactoryBeanTest {
 	@BeforeEach
 	void prepare() {
 		bean = new MergedHazelCastManagerFactoryBean();
+		bean.configuration = Mockito.mock(ConfigurationResource.class);
 	}
 
 	@Test
@@ -66,4 +67,20 @@ class MergedHazelCastManagerFactoryBeanTest {
 		bean.postConfigure(mapConfig);
 		Mockito.verify(mapConfig, Mockito.times(1)).setStatisticsEnabled(true);
 	}
+
+	@Test
+	void newCacheConfigNoTTL() {
+		Mockito.when(bean.configuration.get("cache.test.ttl", -1)).thenReturn(-1);
+		final var config = bean.newCacheConfig("test");
+		Assertions.assertTrue(config.getExpiryPolicyFactory().create().getExpiryForUpdate().isEternal());
+	}
+
+	@Test
+	void newCacheConfigTTL() {
+		Mockito.when(bean.configuration.get("cache.test.ttl", -1)).thenReturn(3600);
+		final var config = bean.newCacheConfig("test");
+		Assertions.assertFalse(config.getExpiryPolicyFactory().create().getExpiryForUpdate().isEternal());
+		Assertions.assertEquals(3600, config.getExpiryPolicyFactory().create().getExpiryForUpdate().getDurationAmount());
+	}
+
 }

@@ -3,14 +3,14 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.cache.CacheManager;
-import javax.cache.Caching;
-import javax.cache.expiry.AccessedExpiryPolicy;
-import javax.cache.expiry.Duration;
-
+import com.hazelcast.cache.HazelcastCacheManager;
+import com.hazelcast.cache.HazelcastCachingProvider;
+import com.hazelcast.config.CacheConfig;
+import com.hazelcast.config.EvictionConfig;
+import com.hazelcast.config.EvictionPolicy;
+import lombok.Setter;
+import org.ligoj.bootstrap.core.GlobalPropertyUtils;
+import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,13 +18,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
-import com.hazelcast.cache.HazelcastCacheManager;
-import com.hazelcast.cache.HazelcastCachingProvider;
-import com.hazelcast.config.CacheConfig;
-import com.hazelcast.config.EvictionConfig;
-import com.hazelcast.config.EvictionPolicy;
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import javax.cache.expiry.AccessedExpiryPolicy;
+import javax.cache.expiry.CreatedExpiryPolicy;
+import javax.cache.expiry.Duration;
+import javax.cache.expiry.ModifiedExpiryPolicy;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
-import lombok.Setter;
+import static java.util.concurrent.TimeUnit.HOURS;
 
 /**
  * Factory of cache with modular {@link CacheConfig} creation delegate to
@@ -45,6 +49,9 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 
 	@Autowired
 	protected ApplicationContext context;
+
+	@Autowired
+	protected ConfigurationResource configuration;
 
 	@Setter
 	@Value("${hazelcast.statistics.enable:false}")
@@ -74,13 +81,24 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 
 	/**
 	 * Create a new {@link CacheConfig} with configured settings before {@link CacheManagerAware} implementor.
+	 *
+	 * @param name The cache name to configure.
+	 * @return The created  {@link CacheConfig} with the policy.
 	 */
-	private CacheConfig<?, ?> newCacheConfig(final String name) {
+	protected CacheConfig<?, ?> newCacheConfig(final String name) {
 		final CacheConfig<?, ?> config = new CacheConfig<>(name);
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU));
-		config.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(Duration.ETERNAL));
 		// Post configuration
 		postConfigure(config);
+
+		// Last chance to override the default TTL from system configuration
+		final var ttlDuration = configuration.get("cache." + name + ".ttl", -1);
+		if (ttlDuration == -1) {
+			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.ETERNAL));
+		} else {
+			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, ttlDuration)));
+		}
+
 		return config;
 	}
 
@@ -92,11 +110,6 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	@Override
 	public Class<? extends CacheManager> getObjectType() {
 		return this.cacheManager == null ? CacheManager.class : this.cacheManager.getClass();
-	}
-
-	@Override
-	public boolean isSingleton() {
-		return true;
 	}
 
 	@Override
