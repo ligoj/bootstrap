@@ -13,7 +13,7 @@
 
 	<groupId>org.ligoj.bootstrap</groupId>
 	<artifactId>parent</artifactId>
-	<version>3.0.4-SNAPSHOT</version>
+	<version>3.0.4</version>
 	<packaging>pom</packaging>
 	<name>Ligoj - Bootstrap - Parent</name>
 	<description>Ligoj Bootstrap Parent</description>
@@ -93,11 +93,11 @@
 		<servlet.version>6.0.0</servlet.version>
 		<slf4j.version>2.0.7</slf4j.version>
 		<soap-api.version>3.0.0</soap-api.version>
-		<spring.version>6.0.8</spring.version>
-		<spring-boot.version>3.0.6</spring-boot.version>
-		<spring-cloud-context.version>4.0.2</spring-cloud-context.version>
-		<spring-data.version>3.0.5</spring-data.version>
-		<spring-security.version>6.0.3</spring-security.version>
+		<spring.version>6.0.9</spring.version>
+		<spring-boot.version>3.1.0</spring-boot.version>
+		<spring-cloud-context.version>4.0.3</spring-cloud-context.version>
+		<spring-data.version>3.0.6</spring-data.version>
+		<spring-security.version>6.1.0</spring-security.version>
 		<spring-security-rsa>1.0.11.RELEASE</spring-security-rsa>
 		<transaction-api.version>2.0.1</transaction-api.version>
 		<wiremock.version>3.0.0-beta-8</wiremock.version>
@@ -130,7 +130,7 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-core</artifactId>
-				<version>3.0.4-SNAPSHOT</version>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.gentyref</groupId>
@@ -749,13 +749,13 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business</artifactId>
-				<version>3.0.4-SNAPSHOT</version>
+				<version>3.0.4</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business-test</artifactId>
-				<version>3.0.4-SNAPSHOT</version>
+				<version>3.0.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.quartz-scheduler</groupId>
@@ -948,7 +948,7 @@
 				<dependency>
 					<groupId>org.ligoj.bootstrap</groupId>
 					<artifactId>bootstrap-launcher</artifactId>
-					<version>3.0.4-SNAPSHOT</version>
+					<version>3.0.4</version>
 				</dependency>
 			</dependencies>
 		</profile>
