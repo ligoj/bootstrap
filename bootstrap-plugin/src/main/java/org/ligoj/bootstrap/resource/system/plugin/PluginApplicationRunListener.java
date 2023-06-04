@@ -30,10 +30,15 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 	 */
 	public PluginApplicationRunListener(final SpringApplication application, final String... args)
 			throws IOException, NoSuchAlgorithmException {
-		if (PluginsClassLoader.getInstance() == null) {
-			// Replace the main class loader
-			log.info("Install the plugin classloader for application {}({})", application, args);
-			replaceClassLoader();
+		try {
+			if (PluginsClassLoader.getInstance() == null) {
+				// Replace the main class loader
+				log.info("Install the plugin classloader for application {}({})", application, args);
+				replaceClassLoader();
+			}
+			log.info("Application listener and plugin classloader are now configured");
+		} catch(final Throwable t){
+			log.error("Application listener and/or plugin classloader failed, degraded execution", t);
 		}
 	}
 

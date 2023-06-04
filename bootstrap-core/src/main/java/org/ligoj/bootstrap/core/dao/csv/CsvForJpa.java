@@ -111,7 +111,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 */
 	public <T> List<T> toJpa(final Class<T> beanType, final String resource, final boolean hasHeader,
 			final boolean persist) throws IOException {
-		return toJpa(beanType, resource, hasHeader, persist, DEFAULT_ENCODING);
+		return toJpa(beanType, resource, hasHeader, persist, DEFAULT_ENCODING.name());
 	}
 
 	/**
@@ -473,7 +473,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	public int insert(final String csvRoot, final Class<?>... beanTypes) throws IOException {
-		return insert(csvRoot, beanTypes, DEFAULT_ENCODING);
+		return insert(csvRoot, beanTypes, DEFAULT_ENCODING.name());
 	}
 
 	/**
@@ -488,7 +488,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *             Read issue occurred.
 	 */
 	public int reset(final String csvRoot, final Class<?>... beanTypes) throws IOException {
-		return reset(csvRoot, beanTypes, DEFAULT_ENCODING);
+		return reset(csvRoot, beanTypes, DEFAULT_ENCODING.name());
 	}
 
 	/**

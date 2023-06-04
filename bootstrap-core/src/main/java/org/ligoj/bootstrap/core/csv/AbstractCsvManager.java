@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +26,7 @@ public abstract class AbstractCsvManager {
 	/**
 	 * Default CSV encoding.
 	 */
-	public static final String DEFAULT_ENCODING = "cp1250";
+	public static final Charset DEFAULT_ENCODING = Charset.forName("cp1250");
 
 	/**
 	 * Return a list of JPA bean read from the given CSV file. Headers are expected.

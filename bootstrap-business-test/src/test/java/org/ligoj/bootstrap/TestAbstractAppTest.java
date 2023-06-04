@@ -21,7 +21,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 class TestAbstractAppTest extends AbstractAppTest {
 
 	/**
-	 * Only there fore coverage, no Spring involved.
+	 * Only there for coverage, no Spring involved.
 	 */
 	@Test
 	void coverage() {

@@ -807,7 +807,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		final var input = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
 		newPluginResourceInstall().upload(input, "plugin-sample", "1.2.9");
 		Assertions.assertTrue(TEMP_FILE.exists());
-		Assertions.assertEquals("test", FileUtils.readFileToString(TEMP_FILE, "UTF-8"));
+		Assertions.assertEquals("test", FileUtils.readFileToString(TEMP_FILE, StandardCharsets.UTF_8));
 	}
 
 	@Test

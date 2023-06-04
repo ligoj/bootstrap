@@ -50,7 +50,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 		// Read password from file
 		try {
 			return StringUtils
-					.trimToNull(FileUtils.readFileToString(new File(passwordFilename), StandardCharsets.UTF_8.name()));
+					.trimToNull(FileUtils.readFileToString(new File(passwordFilename), StandardCharsets.UTF_8));
 		} catch (final IOException ioe) { // NOSONAR - Safely ignore this fails, and try the next method
 			log.warn("Unable to read file {} : {}", passwordFilename, ioe.getMessage());
 		}

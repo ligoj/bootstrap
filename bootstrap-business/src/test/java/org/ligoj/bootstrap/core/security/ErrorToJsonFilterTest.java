@@ -43,6 +43,6 @@ class ErrorToJsonFilterTest {
 		Mockito.verify(response, Mockito.times(1)).setStatus(500);
 		Mockito.verify(response, Mockito.times(1)).setContentType("application/json");
 		Mockito.verify(response, Mockito.times(1)).setCharacterEncoding("UTF-8");
-		Mockito.verify(outputStream, Mockito.times(1)).write("{\"code\":\"internal\"}".getBytes(StandardCharsets.UTF_8.name()));
+		Mockito.verify(outputStream, Mockito.times(1)).write("{\"code\":\"internal\"}".getBytes(StandardCharsets.UTF_8));
 	}
 }
