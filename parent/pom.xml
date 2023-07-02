@@ -82,7 +82,7 @@
 		<jsoup.version>1.15.4</jsoup.version>
 		<log4j.version>2.20.0</log4j.version>
 		<log4j-api.version>2.20.0</log4j-api.version>
-		<lombok.version>1.18.26</lombok.version>
+		<lombok.version>1.18.28</lombok.version>
 		<mail.version>2.1.1</mail.version>
 		<mockito.version>5.3.0</mockito.version>
 		<mysql.version>8.0.32</mysql.version>
@@ -93,12 +93,12 @@
 		<servlet.version>6.0.0</servlet.version>
 		<slf4j.version>2.0.7</slf4j.version>
 		<soap-api.version>3.0.0</soap-api.version>
-		<spring.version>6.0.9</spring.version>
-		<spring-boot.version>3.1.0</spring-boot.version>
+		<spring.version>6.0.10</spring.version>
+		<spring-boot.version>3.1.1</spring-boot.version>
 		<spring-cloud-context.version>4.0.3</spring-cloud-context.version>
 		<spring-data.version>3.0.6</spring-data.version>
-		<spring-security.version>6.1.0</spring-security.version>
-		<spring-security-rsa>1.0.11.RELEASE</spring-security-rsa>
+		<spring-security.version>6.1.1</spring-security.version>
+		<spring-security-rsa>1.1.1</spring-security-rsa>
 		<transaction-api.version>2.0.1</transaction-api.version>
 		<wiremock.version>3.0.0-beta-10</wiremock.version>
 	</properties>
