@@ -47,6 +47,7 @@ class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTes
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
 								StandardCharsets.UTF_8))));
 		httpServer.start();
+		resource.invalidateLastPluginVersions();
 		final var versions = resource.getLastPluginVersions();
 		Assertions.assertEquals(versions.keySet(), resource.getLastPluginVersions().keySet());
 		resource.invalidateLastPluginVersions();
