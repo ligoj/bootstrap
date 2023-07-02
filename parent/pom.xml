@@ -77,7 +77,7 @@
 		<jasypt.version>1.9.3</jasypt.version>
 		<jaxb.version>4.0.2</jaxb.version>
 		<jaxb-api.version>4.0.0</jaxb-api.version>
-		<jetty.version>11.0.14</jetty.version>
+		<jetty.version>11.0.15</jetty.version>
 		<jodd-bean.version>5.1.6</jodd-bean.version>
 		<jsoup.version>1.15.4</jsoup.version>
 		<log4j.version>2.20.0</log4j.version>
