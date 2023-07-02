@@ -130,7 +130,9 @@ public class ConfigurationResource {
 		// Add the JPA not yet managed
 		repository.findAll().forEach(c -> {
 			if (result.containsKey(c.getName())) {
-				result.get(c.getName()).setOverride(true);
+				final var vo = result.get(c.getName());
+				vo.setPersisted(true);
+				vo.setOverridden(!StringUtils.equals(vo.getValue(), c.getValue()));
 			} else {
 				final var vo = new ConfigurationVo();
 				AuditedBean.copyAuditData(c, vo);
@@ -205,8 +207,8 @@ public class ConfigurationResource {
 	@POST
 	@PUT
 	@Path("{name}/{system}/{secured}")
-	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank final String value,
+	@CacheRemove(cacheName = "configuration")
+	public void put(@CacheKey @PathParam("name") final String name, @NotBlank final String value,
 			@PathParam("system") final boolean system, @PathParam("secured") final boolean secured) {
 		final var setting = repository.findByName(name);
 		final var storedValue = secured ? cryptoHelper.encrypt(value) : value;

@@ -31,9 +31,9 @@ public class ConfigurationVo extends SystemConfiguration {
 	private boolean secured;
 
 	/**
-	 * When <code>true</code> the value is defined in system and persisted.
+	 * When <code>true</code> the value is defined in system and persisted and different from the database value.
 	 */
-	private boolean override;
+	private boolean overridden;
 
 	/**
 	 * The property source.

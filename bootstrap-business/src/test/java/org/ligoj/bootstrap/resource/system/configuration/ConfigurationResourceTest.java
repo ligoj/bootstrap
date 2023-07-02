@@ -37,6 +37,7 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		System.setProperty("test-key3", "value3");
 		System.setProperty("test-key-int", "54");
 		System.setProperty("test-key6", "  ");
+		System.setProperty("test-key8", "same-value-8");
 
 		final var entity0 = new SystemConfiguration();
 		entity0.setName("test-key0");
@@ -63,6 +64,16 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		entity6.setValue("value-db6");
 		em.persist(entity6);
 
+		final var entity7 = new SystemConfiguration();
+		entity7.setName("test-key7");
+		entity7.setValue("only-db7");
+		em.persist(entity7);
+
+		final var entity8 = new SystemConfiguration();
+		entity8.setName("test-key8");
+		entity8.setValue("same-value-8");
+		em.persist(entity8);
+
 		em.flush();
 		cacheManager.getCache("configuration").clear();
 	}
@@ -81,6 +92,9 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("value-db4", resource.get("test-key4"));
 		Assertions.assertEquals("value-db5", resource.get("test-key5"));
 		Assertions.assertEquals("value-db6", resource.get("test-key6"));
+		Assertions.assertEquals("only-db7", resource.get("test-key7"));
+		Assertions.assertEquals("same-value-8", resource.get("test-key8"));
+
 		Assertions.assertNull(resource.get("test-any"));
 
 		Assertions.assertNotEquals("value-db5",
@@ -119,13 +133,13 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
 		Assertions.assertNull(result.get("test-key0").getValue());
 		Assertions.assertTrue(result.get("test-key0").isSecured());
-		Assertions.assertFalse(result.get("test-key0").isPersisted());
-		Assertions.assertTrue(result.get("test-key0").isOverride());
+		Assertions.assertTrue(result.get("test-key0").isPersisted());
+		Assertions.assertTrue(result.get("test-key0").isOverridden());
 		Assertions.assertEquals("systemProperties", result.get("test-key0").getSource());
 		Assertions.assertNull(result.get("test-key1").getValue());
-		Assertions.assertFalse(result.get("test-key1").isOverride());
+		Assertions.assertFalse(result.get("test-key1").isOverridden());
 		Assertions.assertEquals("value2", result.get("test-key2").getValue());
-		Assertions.assertFalse(result.get("test-key2").isPersisted());
+		Assertions.assertTrue(result.get("test-key2").isPersisted());
 		Assertions.assertFalse(result.get("test-key2").isSecured());
 		Assertions.assertEquals("value3", result.get("test-key3").getValue());
 		Assertions.assertEquals("value-db4", result.get("test-key4").getValue());
@@ -136,6 +150,11 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertTrue(result.get("test-key5").isPersisted());
 		Assertions.assertEquals("database", result.get("test-key5").getSource());
 		Assertions.assertNull(resource.get("test-any"));
+		Assertions.assertFalse(result.get("test-key-int").isPersisted());
+		Assertions.assertTrue(result.get("test-key7").isPersisted());
+		Assertions.assertFalse(result.get("test-key7").isOverridden());
+		Assertions.assertTrue(result.get("test-key8").isPersisted());
+		Assertions.assertFalse(result.get("test-key8").isOverridden());
 	}
 
 	@Test
@@ -313,8 +332,13 @@ class ConfigurationResourceTest extends AbstractBootTest {
 	@Test
 	void deleteWithEnvironment() {
 		resource.put("test-key00", "value-db-env", true);
+		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
+
 		resource.put("test-key00", "value-db-jpa", false);
-		Assertions.assertEquals("value-db-jpa", resource.get("test-key00"));
+		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
+
+		// System property still exists and overrides the database value
+		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
 		resource.delete("test-key00");
 		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
 		resource.delete("test-key00", true);
@@ -339,7 +363,9 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("value-db4", result.get("test-key4").getValue());
 		Assertions.assertNull(result.get("test-key5").getValue());
 		Assertions.assertEquals("value-db6", result.get("test-key6").getValue());
-		Assertions.assertEquals(5, result.size());
+		Assertions.assertEquals("only-db7", resource.get("test-key7"));
+		Assertions.assertEquals("same-value-8", resource.get("test-key8"));
+		Assertions.assertEquals(7, result.size());
 	}
 
 }
