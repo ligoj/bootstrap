@@ -268,14 +268,14 @@ public class CurlProcessor implements AutoCloseable {
 		}
 
 		// Execute the request
-		//noinspection deprecation
-		try (var response = httpClient.execute(httpRequest)) {
+		//noinspection
+		return httpClient.execute(httpRequest, response -> {
 			// Save the status
 			request.setStatus(response.getCode());
 
 			// Ask for the callback a flow control
 			return ObjectUtils.defaultIfNull(request.getCallback(), callback).onResponse(request, response);
-		}
+		});
 	}
 
 	/**

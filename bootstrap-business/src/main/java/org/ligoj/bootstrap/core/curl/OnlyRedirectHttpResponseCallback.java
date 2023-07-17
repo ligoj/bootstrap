@@ -4,7 +4,7 @@
 package org.ligoj.bootstrap.core.curl;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 
 /**
  * Only accept 302.
@@ -12,7 +12,7 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 public class OnlyRedirectHttpResponseCallback extends DefaultHttpResponseCallback {
 
 	@Override
-	protected boolean acceptResponse(final CloseableHttpResponse response) {
+	protected boolean acceptResponse(final ClassicHttpResponse response) {
 		return super.acceptResponse(response)
 				&& acceptLocation(response.getFirstHeader("location") == null ? null : response.getFirstHeader("location").getValue());
 	}

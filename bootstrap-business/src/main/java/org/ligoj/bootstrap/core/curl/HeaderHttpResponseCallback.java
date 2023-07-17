@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.core.curl;
 
 import lombok.AllArgsConstructor;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class HeaderHttpResponseCallback extends DefaultHttpResponseCallback {
 	private final String header;
 
 	@Override
-	public boolean onResponse(final CurlRequest request, final CloseableHttpResponse response) throws IOException {
+	public boolean onResponse(final CurlRequest request, final ClassicHttpResponse response) throws IOException {
 		super.onResponse(request, response);
 		// Response is pre-checked
 		final var value = response.getFirstHeader(header);

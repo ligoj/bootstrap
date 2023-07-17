@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.curl;
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 
 import java.io.IOException;
 
@@ -23,5 +24,5 @@ public interface HttpResponseCallback {
 	 * @return <code>true</code> to proceed the next request. <code>false</code> otherwise.
 	 * @throws IOException When response cannot be read.
 	 */
-	boolean onResponse(CurlRequest request, CloseableHttpResponse response) throws IOException;
+	boolean onResponse(CurlRequest request, ClassicHttpResponse response) throws IOException;
 }
