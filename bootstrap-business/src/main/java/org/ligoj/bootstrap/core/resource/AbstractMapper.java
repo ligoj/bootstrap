@@ -21,13 +21,10 @@ public abstract class AbstractMapper {
 
 	/**
 	 * Writes a JSON string corresponding to the given error to a {@link Response}.
-	 * 
-	 * @param status
-	 *            the error status.
-	 * @param errorKey
-	 *            the error key that will be used for localization.
-	 * @param ex
-	 *            the technical exception.
+	 *
+	 * @param status   the error status.
+	 * @param errorKey the error key that will be used for localization.
+	 * @param ex       the technical exception.
 	 * @return the response containing JSON entity.
 	 */
 	protected Response toResponse(final Response.StatusType status, final String errorKey, final Throwable ex) {
@@ -44,11 +41,9 @@ public abstract class AbstractMapper {
 
 	/**
 	 * Writes a JSON string corresponding to the given object a {@link Response}.
-	 * 
-	 * @param status
-	 *            the error status.
-	 * @param object
-	 *            the error object.
+	 *
+	 * @param status the error status.
+	 * @param object the error object.
 	 * @return the response containing JSON entity.
 	 */
 	protected Response toResponse(final Response.StatusType status, final Object object) {
@@ -56,10 +51,21 @@ public abstract class AbstractMapper {
 	}
 
 	/**
+	 * Writes a JSON string corresponding to the given object a {@link Response}.
+	 *
+	 * @param status the error status.
+	 * @param t      the exception object.
+	 * @return the response containing JSON entity.
+	 */
+	protected Response toResponse(final Response.StatusType status, final Throwable t) {
+		return toResponse(status, (Object) ((t.getCause() != null && "newInstance".equals(t.getStackTrace()[0].getMethodName())) ?
+				t.getCause() : t));
+	}
+
+	/**
 	 * Return a JSON string corresponding to the given object.
-	 * 
-	 * @param object
-	 *            the error object.
+	 *
+	 * @param object the error object.
 	 * @return the JSON entity.
 	 */
 	protected Object toEntity(final Object object) {
