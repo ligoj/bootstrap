@@ -85,7 +85,7 @@
 		<lombok.version>1.18.28</lombok.version>
 		<mail.version>2.1.1</mail.version>
 		<mockito.version>5.4.0</mockito.version>
-		<mysql.version>8.0.32</mysql.version>
+		<mysql.version>8.0.33</mysql.version>
 		<postgresql.version>42.6.0</postgresql.version>
 		<paranamer.version>2.8</paranamer.version>
 		<persistence.version>3.1.0</persistence.version>
