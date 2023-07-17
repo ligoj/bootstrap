@@ -71,7 +71,7 @@
 		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 		<httpclient.version>5.2.1</httpclient.version>
 		<httpcore.version>5.2.1</httpcore.version>
-		<hsqldb.version>2.7.1</hsqldb.version>
+		<hsqldb.version>2.7.2</hsqldb.version>
 		<jackson.version>2.14.2</jackson.version>
 		<jackson.databind.version>2.14.2</jackson.databind.version>
 		<jasypt.version>1.9.3</jasypt.version>
