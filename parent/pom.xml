@@ -93,10 +93,10 @@
 		<servlet.version>6.0.0</servlet.version>
 		<slf4j.version>2.0.7</slf4j.version>
 		<soap-api.version>3.0.0</soap-api.version>
-		<spring.version>6.0.10</spring.version>
+		<spring.version>6.0.11</spring.version>
 		<spring-boot.version>3.1.1</spring-boot.version>
 		<spring-cloud-context.version>4.0.3</spring-cloud-context.version>
-		<spring-data.version>3.0.6</spring-data.version>
+		<spring-data.version>3.0.8</spring-data.version>
 		<spring-security.version>6.1.1</spring-security.version>
 		<spring-security-rsa>1.1.1</spring-security-rsa>
 		<transaction-api.version>2.0.1</transaction-api.version>
