@@ -3,13 +3,11 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Map any server error to a JSON string.
@@ -58,7 +56,7 @@ public abstract class AbstractMapper {
 	 * @return the response containing JSON entity.
 	 */
 	protected Response toResponse(final Response.StatusType status, final Throwable t) {
-		return toResponse(status, (Object) ((t.getCause() != null && "newInstance".equals(t.getStackTrace()[0].getMethodName())) ?
+		return toResponse(status, (Object) ((t != null && t.getCause() != null && "newInstance".equals(t.getStackTrace()[0].getMethodName())) ?
 				t.getCause() : t));
 	}
 
