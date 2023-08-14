@@ -21,12 +21,13 @@ Key features:
 - Tuned configuration for dev, build and production
 - Spring-Data extensions for performance, minimal code and exception handling
 
-A Spring based front/back architecture
+A Spring based REST architecture
 - Spring Boot/Security/Web/Data
 - CXF
 - JPA / Hibernate
 - Hibernate Validator for JPA and RS
-- JUnit 5
+- JUnit
+- Wiremock
 
 Requirements
 - Java-17
