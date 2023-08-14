@@ -79,7 +79,7 @@
 		<jaxb-api.version>4.0.0</jaxb-api.version>
 		<jetty.version>11.0.15</jetty.version>
 		<jodd-bean.version>5.1.6</jodd-bean.version>
-		<jsoup.version>1.15.4</jsoup.version>
+		<jsoup.version>1.16.1</jsoup.version>
 		<log4j.version>2.20.0</log4j.version>
 		<log4j-api.version>2.20.0</log4j-api.version>
 		<lombok.version>1.18.28</lombok.version>
