@@ -32,3 +32,9 @@ A Spring based REST architecture
 Requirements
 - Java-17
 - Maven 3.8
+
+# Verify new version
+
+``` bash
+mvn versions:display-dependency-updates -Pjacoco,eclipse
+```
