@@ -45,7 +45,7 @@
 		<annotation-api.version>2.1.1</annotation-api.version>
 		<ant.version>1.10.13</ant.version>
 		<activation.version>2.0.1</activation.version>
-		<activation-api.version>2.1.1</activation-api.version>
+		<activation-api.version>2.1.2</activation-api.version>
 		<apacheds.version>1.5.5</apacheds.version>
 		<asm.version>9.5</asm.version>
 		<aspectj.version>1.9.19</aspectj.version>
@@ -83,7 +83,7 @@
 		<log4j.version>2.20.0</log4j.version>
 		<log4j-api.version>2.20.0</log4j-api.version>
 		<lombok.version>1.18.28</lombok.version>
-		<mail.version>2.1.1</mail.version>
+		<mail.version>2.1.2</mail.version>
 		<mockito.version>5.4.0</mockito.version>
 		<mysql.version>8.0.33</mysql.version>
 		<postgresql.version>42.6.0</postgresql.version>
