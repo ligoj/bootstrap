@@ -111,7 +111,7 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	 * @throws IOException Read issue occurred.
 	 * @deprecated Use #persistEntities
 	 */
-	@Deprecated
+	@Deprecated(since = "3.0.4")
 	protected UriInfo persistEntities(final String csvRoot, final Class<?>[] entityModel, final String encoding)
 			throws IOException {
 		return persistEntities(csvRoot,entityModel, Charset.forName(encoding));

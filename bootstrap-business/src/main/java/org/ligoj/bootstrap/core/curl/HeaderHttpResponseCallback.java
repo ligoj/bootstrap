@@ -4,7 +4,6 @@
 package org.ligoj.bootstrap.core.curl;
 
 import lombok.AllArgsConstructor;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 
 import java.io.IOException;

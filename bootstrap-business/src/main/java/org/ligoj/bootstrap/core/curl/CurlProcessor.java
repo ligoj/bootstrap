@@ -169,6 +169,8 @@ public class CurlProcessor implements AutoCloseable {
 	 * Prepare a processor with callback.
 	 *
 	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
+	 * @param connectionTimeout Max connection timeout, milliseconds.
+	 * @param responseTimeout Max response timeout, milliseconds.
 	 */
 	public CurlProcessor(final HttpResponseCallback callback, long connectionTimeout, long responseTimeout) {
 		this.callback = callback;

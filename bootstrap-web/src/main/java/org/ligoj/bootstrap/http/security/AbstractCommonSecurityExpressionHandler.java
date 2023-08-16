@@ -10,6 +10,7 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 
 /**
  * Custom expression handler using a different expression manager.
+ * @param <T> Intercepted object type.
  */
 public abstract class AbstractCommonSecurityExpressionHandler<T> extends AbstractSecurityExpressionHandler<T> {
 

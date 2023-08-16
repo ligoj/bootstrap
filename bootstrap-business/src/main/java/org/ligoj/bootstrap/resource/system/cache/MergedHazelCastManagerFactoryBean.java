@@ -9,7 +9,6 @@ import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import lombok.Setter;
-import org.ligoj.bootstrap.core.GlobalPropertyUtils;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -20,15 +19,11 @@ import org.springframework.context.ApplicationContext;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
-import javax.cache.expiry.AccessedExpiryPolicy;
-import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 import javax.cache.expiry.ModifiedExpiryPolicy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
-
-import static java.util.concurrent.TimeUnit.HOURS;
 
 /**
  * Factory of cache with modular {@link CacheConfig} creation delegate to

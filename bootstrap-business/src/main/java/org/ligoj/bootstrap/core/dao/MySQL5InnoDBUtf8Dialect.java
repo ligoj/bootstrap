@@ -11,6 +11,9 @@ import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
  */
 public class MySQL5InnoDBUtf8Dialect extends MySQLDialect {
 
+	/**
+	 * Default constructor with additional registered keywords.
+	 */
 	public MySQL5InnoDBUtf8Dialect() {
 		registerKeyword("USAGE");
 	}

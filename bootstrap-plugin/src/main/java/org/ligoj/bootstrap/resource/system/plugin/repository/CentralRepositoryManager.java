@@ -3,21 +3,18 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ligoj.bootstrap.core.curl.CurlProcessor;
+import org.springframework.stereotype.Component;
+
+import javax.cache.annotation.CacheRemoveAll;
+import javax.cache.annotation.CacheResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import javax.cache.annotation.CacheRemoveAll;
-import javax.cache.annotation.CacheResult;
-
-import org.apache.commons.lang3.StringUtils;
-import org.ligoj.bootstrap.core.curl.CurlProcessor;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Maven central repository.
