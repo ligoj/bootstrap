@@ -185,28 +185,8 @@
 				<version>${cxf.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>javax.xml.soap</groupId>
-						<artifactId>javax.xml.soap-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.annotation</groupId>
-						<artifactId>javax.annotation-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.xml.ws</groupId>
-						<artifactId>jaxws-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>javax.activation</artifactId>
-					</exclusion>
-					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>org.jboss.spec.javax.rmi</groupId>
@@ -220,25 +200,9 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-rt-rs-service-description-swagger</artifactId>
+				<artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
 				<version>${cxf.version}</version>
 				<exclusions>
-					<exclusion>
-						<groupId>javax.xml.soap</groupId>
-						<artifactId>javax.xml.soap-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.annotation</groupId>
-						<artifactId>javax.annotation-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.xml.ws</groupId>
-						<artifactId>jaxws-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>javax.activation</artifactId>
-					</exclusion>
 					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -248,8 +212,8 @@
 						<artifactId>jboss-rmi-api_1.0_spec</artifactId>
 					</exclusion>
 					<exclusion>
-						<groupId>javax.validation</groupId>
-						<artifactId>validation-api</artifactId>
+						<groupId>org.glassfish.jaxb</groupId>
+						<artifactId>jaxb-xjc</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -259,20 +223,8 @@
 				<version>${cxf.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>javax.annotation</groupId>
-						<artifactId>javax.annotation-api</artifactId>
-					</exclusion>
-					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.xml.ws</groupId>
-						<artifactId>jaxws-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>javax.activation</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -282,20 +234,8 @@
 				<version>${cxf.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>javax.xml.ws</groupId>
-						<artifactId>jaxws-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.annotation</groupId>
-						<artifactId>javax.annotation-api</artifactId>
-					</exclusion>
-					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>javax.activation</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -305,20 +245,8 @@
 				<version>${cxf.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>javax.xml.ws</groupId>
-						<artifactId>jaxws-api</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.annotation</groupId>
-						<artifactId>javax.annotation-api</artifactId>
-					</exclusion>
-					<exclusion>
 						<groupId>org.apache.geronimo.specs</groupId>
 						<artifactId>geronimo-jta_1.1_spec</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.activation</groupId>
-						<artifactId>javax.activation</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -788,6 +716,12 @@
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
+				<version>${mockito.version}</version>
+			</dependency>
+
 			<!-- Mock & Test -->
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
@@ -907,6 +841,7 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>

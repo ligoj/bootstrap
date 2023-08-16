@@ -47,4 +47,5 @@
 	<bean id="unixTimestampParameterHandler" class="org.ligoj.bootstrap.core.resource.handler.UnixTimestampParameterHandler" />
 	<bean id="caseInsensitiveEnumInterceptor"  class="org.ligoj.bootstrap.core.resource.handler.CaseInsensitiveEnumInterceptor"/>
 	<bean id="insensitiveEnumParameterHandler"  class="org.ligoj.bootstrap.core.resource.handler.InsensitiveEnumParameterHandler"/>
+	<bean id="openApiFeature" class="org.ligoj.bootstrap.core.resource.LigojOpenApiFeature"/>
 </beans>
