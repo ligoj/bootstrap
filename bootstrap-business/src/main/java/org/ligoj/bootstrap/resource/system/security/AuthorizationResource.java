@@ -143,7 +143,7 @@ public class AuthorizationResource {
 		authorization.setRole(role);
 		authorization.setPattern(entity.getPattern());
 		authorization.setType(entity.getType());
-		repository.save(authorization);
+		repository.saveAndFlush(authorization);
 		Optional.ofNullable(cacheManager.getCache("user-details")).ifPresent(Cache::clear);
 	}
 
