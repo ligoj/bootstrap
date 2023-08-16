@@ -35,6 +35,12 @@ Requirements
 
 # Verify new version
 
-``` bash
+```bash
 mvn versions:display-dependency-updates -Pjacoco,eclipse
+```
+
+# List dependencies of modules
+
+```bash
+mvn dependency:tree
 ```
