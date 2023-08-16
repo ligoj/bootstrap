@@ -270,6 +270,7 @@ class BackendProxyServletTest {
 		Assertions.assertNull(headers.get("x-api-key"));
 	}
 
+	@SuppressWarnings("unchecked")
 	private Request setupRequest(final HttpServletRequest request, final Map<String, Object> headers) {
 		final var exchange = Mockito.mock(Request.class);
 		final Map<String, Object> attributes = Map.of("org.eclipse.jetty.proxy.clientRequest", request);
@@ -283,9 +284,7 @@ class BackendProxyServletTest {
 			return mHeaders;
 		});
 
-		//noinspection unchecked
 		Mockito.when(exchange.headers(Mockito.any(Consumer.class))).thenAnswer(invocation -> {
-			//noinspection unchecked
 			((Consumer<HttpFields.Mutable>) invocation.getArgument(0)).accept(mHeaders);
 			return null;
 		});

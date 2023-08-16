@@ -24,6 +24,7 @@ import java.io.InputStream;
 class TestAbstractRestTest extends AbstractRestTest {
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testStartRestServer2() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
@@ -31,7 +32,6 @@ class TestAbstractRestTest extends AbstractRestTest {
 		Mockito.when(response.getCode()).thenReturn(HttpStatus.SC_OK);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenAnswer(
 				invocation -> {
-					//noinspection unchecked
 					return ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response);
 				}
 		);
@@ -43,6 +43,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void testStartRestServerKo1() throws IOException {
 		retries = 1;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
@@ -50,7 +51,6 @@ class TestAbstractRestTest extends AbstractRestTest {
 		Mockito.when(response.getCode()).thenReturn(HttpStatus.SC_GATEWAY_TIMEOUT);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenAnswer(
 				invocation -> {
-					//noinspection unchecked
 					return ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response);
 				}
 		);

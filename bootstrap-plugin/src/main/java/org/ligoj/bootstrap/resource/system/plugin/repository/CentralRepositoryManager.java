@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.cache.annotation.CacheRemoveAll;
@@ -37,7 +38,7 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 	@CacheResult(cacheName = "plugins-last-version-central")
 	public Map<String, Artifact> getLastPluginVersions() throws IOException {
 		try (var processor = new CurlProcessor()) {
-			final var searchResult = StringUtils.defaultString(processor.get(getSearchUrl(DEFAULT_SEARCH_URL + getGroupId(DEFAULT_GROUP_ID))),
+			final var searchResult = Objects.toString(processor.get(getSearchUrl(DEFAULT_SEARCH_URL + getGroupId(DEFAULT_GROUP_ID))),
 					"{\"response\":{\"docs\":[]}}}");
 			// Extract artifacts
 			final var jsonMapper = new ObjectMapper();

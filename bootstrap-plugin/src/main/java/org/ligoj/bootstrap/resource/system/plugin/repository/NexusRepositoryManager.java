@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.cache.annotation.CacheRemoveAll;
@@ -32,7 +33,7 @@ public class NexusRepositoryManager extends AbstractRemoteRepositoryManager {
 	@CacheResult(cacheName = "plugins-last-version-nexus")
 	public Map<String, Artifact> getLastPluginVersions() throws IOException {
 		try (var processor = new CurlProcessor()) {
-			final var searchResult = StringUtils.defaultString(
+			final var searchResult = Objects.toString(
 					processor.get(getSearchUrl(DEFAULT_SEARCH_URL + getGroupId(DEFAULT_GROUP_ID)), "Accept:application/json"), "{\"data\":[]}");
 			// Extract artifacts
 			final var jsonMapper = new ObjectMapper();
