@@ -203,7 +203,7 @@ class RoleResourceTest extends AbstractBootTest {
 
 	@Test
 	void isAdmin() {
-		Assertions.assertTrue(userRepository.isAdmin("alongchu"));
+		Assertions.assertTrue(userRepository.isAdmin("admin-test"));
 		Assertions.assertFalse(userRepository.isAdmin("jdupont"));
 	}
 

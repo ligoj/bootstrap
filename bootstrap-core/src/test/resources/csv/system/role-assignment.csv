@@ -1,1 +1,4 @@
-role.name;user.loginAdministrateur;alongchuAdministrateur;fdauganGestionnaire;jdupont
+role.name;user.login
+Administrator;admin-test
+Administrator;fdaugan
+Manager;jdupont
