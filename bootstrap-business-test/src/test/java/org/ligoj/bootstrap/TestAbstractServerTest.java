@@ -3,11 +3,13 @@
  */
 package org.ligoj.bootstrap;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,6 +54,15 @@ class TestAbstractServerTest extends AbstractServerTest {
 		httpServer.start();
 		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 		httpServer.stop();
+	}
+
+	/**
+	 * Stop a stopped server.
+	 */
+	@Test
+	void stopTwice() {
+		httpServer = Mockito.mock(WireMockServer.class);
+		Mockito.doThrow(new RuntimeException()).when(httpServer).stop();
 	}
 
 	/**

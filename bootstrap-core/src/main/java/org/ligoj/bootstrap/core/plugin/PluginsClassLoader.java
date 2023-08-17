@@ -40,7 +40,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Safe mode property flag.
 	 */
-	private static final String ENABLED_PROPERTY = "ligoj.plugin.enabled";
+	public static final String ENABLED_PROPERTY = "ligoj.plugin.enabled";
 
 	/**
 	 * System property name pointing to the home directory. When undefined, system user home directory will be used
