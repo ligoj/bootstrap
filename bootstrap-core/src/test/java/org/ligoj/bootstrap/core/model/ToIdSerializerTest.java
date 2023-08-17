@@ -28,11 +28,11 @@ class ToIdSerializerTest {
 		private BeanB asIdString;
 	}
 
-	class BeanA extends AbstractPersistable<Integer> {
+	static class BeanA extends AbstractPersistable<Integer> {
 		// Only a template class implementation
 	}
 
-	class BeanB extends AbstractPersistable<String> {
+	static class BeanB extends AbstractPersistable<String> {
 		// Only a template class implementation
 	}
 

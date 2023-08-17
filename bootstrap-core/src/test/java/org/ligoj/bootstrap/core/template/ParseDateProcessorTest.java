@@ -15,7 +15,7 @@ import org.ligoj.bootstrap.core.DateUtils;
  */
 class ParseDateProcessorTest {
 
-	private ParseDateProcessor processor = new ParseDateProcessor("yyyy/MM/dd HH:mm:ss");
+	private final ParseDateProcessor processor = new ParseDateProcessor("yyyy/MM/dd HH:mm:ss");
 
 	@BeforeAll
 	static void init() {

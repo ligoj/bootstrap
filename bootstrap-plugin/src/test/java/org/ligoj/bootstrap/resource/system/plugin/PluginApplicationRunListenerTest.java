@@ -3,11 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.NoSuchAlgorithmException;
-
 import org.eclipse.jetty.util.thread.ThreadClassLoaderScope;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,23 +10,27 @@ import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringApplication;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Test class of {@link PluginApplicationRunListener}
  */
 class PluginApplicationRunListenerTest {
 
 	@Test
-	void noPluginClassLoader() throws IOException, NoSuchAlgorithmException {
-		try (ThreadClassLoaderScope scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
-			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]).starting(null);
+	void noPluginClassLoader() {
+		try (ThreadClassLoaderScope ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
+			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class)).starting(null);
 		}
 	}
 
 	@Test
 	void pluginClassLoader() throws IOException, NoSuchAlgorithmException {
-		final var scope = new ThreadClassLoaderScope(new PluginsClassLoader());
-		try {
-			final var listener = new PluginApplicationRunListener(Mockito.mock(SpringApplication.class), new String[0]);
+		try (ThreadClassLoaderScope ignored = new ThreadClassLoaderScope(new PluginsClassLoader())) {
+			final var listener = new PluginApplicationRunListener(Mockito.mock(SpringApplication.class));
 			listener.starting(null);
 			Assertions.assertTrue(listener.getOrder() < 0);
 			listener.environmentPrepared(null, null);
@@ -40,8 +39,6 @@ class PluginApplicationRunListenerTest {
 			listener.started(null, null);
 			listener.ready(null, null);
 			listener.failed(null, null);
-		} finally {
-			scope.close();
 		}
 	}
 }

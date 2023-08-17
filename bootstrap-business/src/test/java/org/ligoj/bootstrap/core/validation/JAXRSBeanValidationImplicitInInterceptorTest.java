@@ -328,8 +328,6 @@ class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 	 */
 	@Test
 	void jsr349ObjectInvalid() {
-		final var userDto = new SystemUser();
-		userDto.setLogin("junit");
 		final var method = fromName("jsr349Object");
 		final var objects = Arrays.asList(new Object[] { null });
 		final var cve = Assertions.assertThrows(ConstraintViolationException.class,

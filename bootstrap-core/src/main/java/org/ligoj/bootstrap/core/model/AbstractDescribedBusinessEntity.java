@@ -32,7 +32,7 @@ public abstract class AbstractDescribedBusinessEntity<K extends Serializable> ex
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Human readable description. Accepting safe HTML content.
+	 * Human-readable description. Accepting safe HTML content.
 	 */
 	@Length(max = 250)
 	@SafeHtml

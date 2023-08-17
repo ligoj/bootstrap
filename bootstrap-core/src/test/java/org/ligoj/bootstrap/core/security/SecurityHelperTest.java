@@ -14,11 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 class SecurityHelperTest {
 
-	/**
-	 * The system user name.
-	 */
-	static final String SYSTEM_USERNAME = "_system";
-
 	@BeforeEach
 	void setUp() {
 		SecurityContextHolder.clearContext();
@@ -30,7 +25,7 @@ class SecurityHelperTest {
 	}
 
 	/**
-	 * Test null user name.
+	 * Test null username.
 	 */
 	@Test
 	void setUserNameNull() {
@@ -38,7 +33,7 @@ class SecurityHelperTest {
 	}
 
 	/**
-	 * Test user name.
+	 * Test username.
 	 */
 	@Test
 	void setUserName() {

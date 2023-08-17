@@ -158,7 +158,7 @@ class ValidationJsonExceptionTest {
 	void addErrorUnwrapArray2() {
 		final var validationJsonException = new ValidationJsonException();
 		validationJsonException.addError("p1", "text",
-				new Serializable[] { new String[] { "param1", "value1" }, new String[] { "param2", "value2" } });
+				new String[] { "param1", "value1" }, new String[] { "param2", "value2" });
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
 		Assertions.assertTrue(validationJsonException.getErrors().toString()
 				.startsWith("{p1=[{rule=text, parameters={[Ljava.lang.String;"));
@@ -167,7 +167,7 @@ class ValidationJsonExceptionTest {
 	@Test
 	void addErrorUnwrapArrayIncomplete() {
 		final var validationJsonException = new ValidationJsonException();
-		validationJsonException.addError("p1", "text", new Serializable[] { "param1" });
+		validationJsonException.addError("p1", "text", "param1");
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
 		Assertions.assertEquals("{p1=[{rule=text}]}", validationJsonException.getErrors().toString());
 	}

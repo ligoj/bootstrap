@@ -34,7 +34,7 @@ public class SystemUserSetting extends AbstractNamedValue<Integer> {
 	private String login;
 
 	/**
-	 * When true, the value will be be exposed as a JSON property, but a cookie.
+	 * When true, the value will be exposed as a JSON property, but a cookie.
 	 */
 	private boolean cookie;
 }

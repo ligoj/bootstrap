@@ -16,7 +16,7 @@ public interface INamableBean<K extends Serializable> extends Comparable<INamabl
 	/**
 	 * Bean name.
 	 * 
-	 * @return human readable name.
+	 * @return human-readable name.
 	 */
 	String getName();
 

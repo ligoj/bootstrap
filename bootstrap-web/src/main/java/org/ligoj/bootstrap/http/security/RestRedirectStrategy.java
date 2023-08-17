@@ -16,7 +16,7 @@ import org.springframework.security.web.RedirectStrategy;
 import lombok.Setter;
 
 /**
- * This strategy replace the standard 302 code by a simple JSON data since the client is an hidden Ajax thread. More
+ * This strategy replace the standard 302 code by a simple JSON data since the client is a hidden Ajax thread. More
  * information could be added later in the JSON stream.
  */
 public class RestRedirectStrategy implements RedirectStrategy {

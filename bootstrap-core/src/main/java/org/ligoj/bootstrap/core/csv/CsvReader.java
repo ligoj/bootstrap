@@ -70,7 +70,7 @@ public class CsvReader {
 		readWords();
 
 		// EOF management
-		if (value.length() != 0) {
+		if (!value.isEmpty()) {
 			// Commit last value
 			addValue(value.toString());
 		}
@@ -139,7 +139,7 @@ public class CsvReader {
 	 * Read outside wrapper.
 	 */
 	private boolean readOutsideWrapper() {
-		if (value.length() == 0 && isWrapper()) {
+		if (value.isEmpty() && isWrapper()) {
 			// Open simple or double quote wrapper and ignore this character
 			wrapper = current;
 			current = '\0';
@@ -149,8 +149,8 @@ public class CsvReader {
 		} else if (isNewLine()) {
 			// EOL
 			return endOfLine();
-		} else if (value.length() > 0 || !Character.isWhitespace(current)) {
-			// Non empty char outside wrapper
+		} else if (!value.isEmpty() || !Character.isWhitespace(current)) {
+			// Non-empty char outside wrapper
 			// Normal character to add to current value
 			value.append(current);
 		}
@@ -158,7 +158,7 @@ public class CsvReader {
 	}
 
 	private boolean endOfLine() {
-		if (value.length() != 0) {
+		if (!value.isEmpty()) {
 			// Commit last value
 			addValue(value.toString().trim());
 			return true;
@@ -190,7 +190,7 @@ public class CsvReader {
 	}
 
 	/**
-	 * Is a end of word char.
+	 * Is an end of word char.
 	 */
 	private boolean isEndOfWord() {
 		return current == separator || isNewLine() || current == 65535;

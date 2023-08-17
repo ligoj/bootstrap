@@ -322,7 +322,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            Any string used as salt.
 	 * @param enumClass
 	 *            enumeration class.
-	 * @return a enumeration literal from a salt.
+	 * @return An enumeration literal from a salt.
 	 * @param <T>
 	 *            the type of the enum.
 	 */
@@ -408,7 +408,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
-	 * Check and execute coverage test on an utility class.
+	 * Check and execute coverage test on a utility class.
 	 *
 	 * @param singletonClass
 	 *            The utility class.

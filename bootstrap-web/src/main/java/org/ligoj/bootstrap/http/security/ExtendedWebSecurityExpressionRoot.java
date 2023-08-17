@@ -43,7 +43,7 @@ public class ExtendedWebSecurityExpressionRoot extends WebSecurityExpressionRoot
 	 * Validate the current request a defined parameter.
 	 *
 	 * @param parameter
-	 *            the expected non blank parameter.
+	 *            the expected non-blank parameter.
 	 * @return true if the parameter of the current request is not blank.
 	 */
 	public boolean hasParameter(final String parameter) {
@@ -54,7 +54,7 @@ public class ExtendedWebSecurityExpressionRoot extends WebSecurityExpressionRoot
 	 * Validate the current request a defined header.
 	 *
 	 * @param header
-	 *            the expected non blank header.
+	 *            the expected non-blank header.
 	 * @return true if the header of the current request is not blank.
 	 */
 	public boolean hasHeader(final String header) {

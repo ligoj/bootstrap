@@ -214,7 +214,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	}
 
 	/**
-	 * Create a new query buffer from a "... FROM %s WHERE " or "FROM %s WHERE %s .. %s" alike template string and add
+	 * Create a new query buffer from a "... FROM %s WHERE " or "FROM %s WHERE %s ... %s" alike template string and add
 	 * this filters (<code>AND</code>).
 	 */
 	private StringBuilder newQueryString(final String patternQuery, final String property, final Object value,

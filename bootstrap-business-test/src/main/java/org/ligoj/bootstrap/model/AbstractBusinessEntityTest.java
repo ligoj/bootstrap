@@ -104,7 +104,7 @@ public abstract class AbstractBusinessEntityTest {
 	 * Generates all combinations and returns them in a list of lists.
 	 */
 	private List<List<String>> combinations(final String... array) {
-		final long count = 2 << array.length - 1;
+		final long count = 2L << array.length - 1;
 		final List<List<String>> totalCombinations = new LinkedList<>();
 
 		for (var i = 0; i < count; i++) {

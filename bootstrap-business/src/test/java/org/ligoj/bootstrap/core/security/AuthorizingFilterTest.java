@@ -72,8 +72,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	void doFilterPlentyAuthority() throws Exception {
 
 		for (final var method : HttpMethod.values()) {
-			addSystemAuthorization(method.name(), "role1", "^myurl");
-			addSystemAuthorization(method.name(), "role2", "^myurl");
+			addSystemAuthorization(method.name(), "role1", "^my_url");
+			addSystemAuthorization(method.name(), "role2", "^my_url");
 		}
 		em.flush();
 		em.clear();
@@ -141,10 +141,10 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	void doFilterAttachedAuthority2() throws Exception {
 		attachRole(DEFAULT_ROLE, "role1", "role2", "role3");
 		for (final var method : HttpMethod.values()) {
-			addSystemAuthorization(method.name(), "role1", "^myurl");
-			addSystemAuthorization(method.name(), "role2", "^myurl");
-			addSystemAuthorization(null, "role1", "^youurl");
-			addSystemAuthorization(null, "role2", "^yoururl");
+			addSystemAuthorization(method.name(), "role1", "^my_url");
+			addSystemAuthorization(method.name(), "role2", "^my_url");
+			addSystemAuthorization(null, "role1", "^you_url");
+			addSystemAuthorization(null, "role2", "^your_url");
 		}
 		em.flush();
 		em.clear();

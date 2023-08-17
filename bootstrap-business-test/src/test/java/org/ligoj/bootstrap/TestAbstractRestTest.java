@@ -31,9 +31,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		final var response = Mockito.mock(CloseableHttpResponse.class);
 		Mockito.when(response.getCode()).thenReturn(HttpStatus.SC_OK);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenAnswer(
-				invocation -> {
-					return ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response);
-				}
+				invocation -> ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response)
 		);
 		final var entity = Mockito.mock(HttpEntity.class);
 		final var content = Mockito.mock(InputStream.class);
@@ -50,9 +48,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		final var response = Mockito.mock(CloseableHttpResponse.class);
 		Mockito.when(response.getCode()).thenReturn(HttpStatus.SC_GATEWAY_TIMEOUT);
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenAnswer(
-				invocation -> {
-					return ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response);
-				}
+				invocation -> ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response)
 		);
 		final var entity = Mockito.mock(HttpEntity.class);
 		final var content = Mockito.mock(InputStream.class);

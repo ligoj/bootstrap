@@ -3,6 +3,8 @@
  */
 package org.ligoj.bootstrap.core;
 
+import lombok.Getter;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -14,8 +16,9 @@ public final class DateUtils {
 	/**
 	 * The default application {@link TimeZone}
 	 */
+	@Getter
 	private static TimeZone applicationTimeZone = TimeZone.getDefault();
-	
+
 	/**
 	 * The original {@link TimeZone} before any change.
 	 */
@@ -34,15 +37,6 @@ public final class DateUtils {
 	public static void setApplicationTimeZone(final TimeZone timeZone) {
 		applicationTimeZone = timeZone; // NOSONAR
 		TimeZone.setDefault(timeZone);
-	}
-
-	/**
-	 * Return the application {@link TimeZone}
-	 * 
-	 * @return the application {@link TimeZone}
-	 */
-	public static TimeZone getApplicationTimeZone() {
-		return applicationTimeZone;
 	}
 
 	/**

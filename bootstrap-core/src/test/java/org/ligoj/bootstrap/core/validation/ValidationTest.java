@@ -6,12 +6,10 @@ package org.ligoj.bootstrap.core.validation;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Check JSR-303 features. Also check over @Service beans.
@@ -106,23 +104,18 @@ class ValidationTest {
 				constraintViolation.getMessage());
 	}
 
-	private class SampleBean {
+	@Getter
+	@Setter
+	private static class SampleBean {
 
 		@LowerCase
-		@Getter
-		@Setter
 		private String lower;
 
 		@UpperCase
-		@Getter
-		@Setter
 		private String upper;
 
 		@SafeHtml
-		@Getter
-		@Setter
 		private String safe;
-
 	}
 
 	/**

@@ -28,7 +28,7 @@ public interface RepositoryManager {
 	String getId();
 
 	/**
-	 * Return the inputstream corresponding to the remote artifact archive.
+	 * Return the input stream corresponding to the remote artifact archive.
 	 * 
 	 * @param artifact The Maven artifact identifier and also corresponding to the plug-in simple name.
 	 * @param version  The version to install.

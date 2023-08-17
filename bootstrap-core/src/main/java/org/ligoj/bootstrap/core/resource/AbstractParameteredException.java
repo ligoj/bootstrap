@@ -8,6 +8,7 @@ import lombok.Getter;
 /**
  * An exception having optional object parameters.
  */
+@Getter
 public abstract class AbstractParameteredException extends RuntimeException {
 
 	/**
@@ -18,7 +19,6 @@ public abstract class AbstractParameteredException extends RuntimeException {
 	/**
 	 * Optional parameters.
 	 */
-	@Getter
 	private final Object[] parameters;
 
 	/**

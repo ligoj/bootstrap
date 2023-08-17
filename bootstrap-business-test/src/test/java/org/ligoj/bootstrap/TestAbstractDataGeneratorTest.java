@@ -21,7 +21,7 @@ import java.util.TimeZone;
 class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@BeforeAll
-    static void setApplicationTimeZone() {
+	static void setApplicationTimeZone() {
 		// Fix UTC time zone for this test
 		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("UTC"));
 	}
@@ -39,7 +39,7 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 	@Test
 	void testGetDate() {
 		final var instance = DateUtils.newCalendar();
-		instance.set(1970, 0, 1, 0, 0, 0);
+		instance.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
 		instance.set(Calendar.MILLISECOND, 0);
 		Assertions.assertEquals(instance.getTime(), getDate(""));
 	}
@@ -47,7 +47,7 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 	@Test
 	void testGetDate2() {
 		final var instance = DateUtils.newCalendar();
-		instance.set(1970, 0, 1, 0, 0, 0);
+		instance.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
 		instance.set(Calendar.MILLISECOND, 0);
 		Assertions.assertEquals(instance.getTime(), getDate(1970, 1, 1));
 	}
@@ -84,34 +84,27 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void testGetItem() {
-		final List<String> list = new ArrayList<>();
-		list.add("test");
-		Assertions.assertEquals("test", getItem("", list));
+		Assertions.assertEquals("test", getItem("", List.of("test")));
 	}
 
 	@Test
 	void testGetItem2() {
-		final List<String> list = new ArrayList<>();
-		list.add("test");
-		Assertions.assertEquals("test", getItem(0, list));
+		Assertions.assertEquals("test", getItem(0, List.of("test")));
 	}
 
 	@Test
-	void testGetItemArrray() {
-		Assertions.assertEquals("test", getItem("", new String[] { "test" }));
+	void testGetItemArray() {
+		Assertions.assertEquals("test", getItem("", "test"));
 	}
 
 	@Test
 	void testGetItemOrNull() {
-		final List<String> list = new ArrayList<>();
-		Assertions.assertNotSame(0, getItemOrNull("", list));
+		Assertions.assertNotSame(0, getItemOrNull("", new ArrayList<>()));
 	}
 
 	@Test
 	void testGetItemOrNull2() {
-		final List<String> list = new ArrayList<>();
-		list.add("test");
-		Assertions.assertEquals("test", getItemOrNull("1", list));
+		Assertions.assertEquals("test", getItemOrNull("1", List.of("test")));
 	}
 
 	@Test
@@ -122,19 +115,17 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void testGetItemOrNullInt2() {
-		final List<String> list = new ArrayList<>();
-		list.add("test");
-		Assertions.assertEquals("test", getItemOrNull(1, list));
+		Assertions.assertEquals("test", getItemOrNull(1, List.of("test")));
 	}
 
 	@Test
 	void testGetItemOrNullArray() {
-		Assertions.assertNull(getItemOrNull("", new String[0]));
+		Assertions.assertNull(getItemOrNull(""));
 	}
 
 	@Test
 	void testGetItemOrNullArray2() {
-		Assertions.assertEquals("test", getItemOrNull("1", new String[] { "test" }));
+		Assertions.assertEquals("test", getItemOrNull("1", "test"));
 	}
 
 	@Test
@@ -149,19 +140,14 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void testGetItems2() {
-		final List<String> list = new ArrayList<>();
-		list.add("test");
-		Assertions.assertEquals(list, getItems("", list, 1, 1));
+		final var list = List.of("test");
+		Assertions.assertEquals(list, getItems("", List.of("test"), 1, 1));
 	}
 
 	@Test
 	void testGetItems3() {
-		final List<String> list = new ArrayList<>();
-		list.add("test");
-		list.add("test2");
-		final List<String> result = new ArrayList<>();
-		result.add("test2");
-		result.add("test");
+		final var list = List.of("test", "test2");
+		final var result = List.of("test2", "test");
 		Assertions.assertEquals(result, getItems("1", list, 1, 7));
 	}
 

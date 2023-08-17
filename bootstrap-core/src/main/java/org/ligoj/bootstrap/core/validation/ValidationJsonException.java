@@ -3,41 +3,32 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ElementKind;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.internal.engine.path.PathImpl;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ElementKind;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.Getter;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.internal.engine.path.PathImpl;
+
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * An exception containing validation errors into a {@link Map}.
  */
 @JsonAutoDetect(fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
+@Getter
 public class ValidationJsonException extends RuntimeException {
 
 	/**
@@ -65,7 +56,6 @@ public class ValidationJsonException extends RuntimeException {
 	 * JSR-303/349 errors, Key is the property name. Values is the associated translated message errors.
 	 */
 	@JsonProperty
-	@Getter
 	private final Map<String, List<Map<String, Serializable>>> errors = new LinkedHashMap<>();
 
 	/**
@@ -117,7 +107,7 @@ public class ValidationJsonException extends RuntimeException {
 			final String rule) {
 		this(message);
 		final var propertyPath = buildPropertyPath(mappingException.getPath());
-		if (propertyPath.length() > 0) {
+		if (!propertyPath.isEmpty()) {
 
 			// Add the error.
 			final var error = new HashMap<String, Serializable>();

@@ -3,18 +3,11 @@
  */
 package org.ligoj.bootstrap.model.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-
-import org.ligoj.bootstrap.core.model.AbstractAudited;
-import org.springframework.http.HttpMethod;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractAudited;
 
 /**
  * A dynamic authorization for a role on a specified module.

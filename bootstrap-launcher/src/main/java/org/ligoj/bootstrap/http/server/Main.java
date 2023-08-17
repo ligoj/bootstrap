@@ -3,20 +3,21 @@
  */
 package org.ligoj.bootstrap.http.server;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Jetty Http server launcher.
  */
 @Slf4j
+@Getter
 public final class Main {
 
 	private static final String SETTINGS = "META-INF/jetty/jetty-dev.properties";
@@ -29,6 +30,7 @@ public final class Main {
 	/**
 	 * Attached the last started server instance. Take care of thread safe issues. This enables server shutdown.
 	 */
+	@Getter
 	private static Server lastStartedServer;
 
 	/**
@@ -40,28 +42,10 @@ public final class Main {
 	public Main() throws Exception {
 		server = new Server();
 		final var jettyPropertiesFile = System.getProperty("jetty.properties", SETTINGS);
-		try (var propertiesInput = configure(jettyPropertiesFile)) {
+		try (var ignored = configure(jettyPropertiesFile)) {
 			// Load the properties file
 			log.debug("Loading Jetty Settings from {}", SETTINGS);
 		}
-	}
-
-	/**
-	 * Return attached server.
-	 *
-	 * @return attached server.
-	 */
-	public Server getServer() {
-		return server;
-	}
-
-	/**
-	 * Return the last started server instance. Take care of thread safe issues. This enables server shutdown.
-	 *
-	 * @return the last started server instance. Take care of thread safe issues. This enables server shutdown.
-	 */
-	public static Server getLastStartedServer() {
-		return lastStartedServer;
 	}
 
 	/**

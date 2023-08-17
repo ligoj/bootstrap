@@ -95,7 +95,7 @@ public class UserSettingResource {
 	/**
 	 * Save or update a setting of a given user.
 	 * 
-	 * @param user  the related user name.
+	 * @param user  the related username.
 	 * @param name  the setting name.
 	 * @param value the new value.
 	 */

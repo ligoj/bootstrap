@@ -28,7 +28,7 @@ class ToNameSerializerTest {
 		private BeanA entity;
 	}
 
-	class BeanA extends NamedBean<Integer> {
+	static class BeanA extends NamedBean<Integer> {
 
 		/**
 		 * SID

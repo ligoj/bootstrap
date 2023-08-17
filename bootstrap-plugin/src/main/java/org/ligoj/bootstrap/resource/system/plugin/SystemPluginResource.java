@@ -145,7 +145,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 *
 	 * @param repository The repository identifier to query.
 	 * @return All plug-ins with details.
-	 * @throws IOException When the last version index file cannot be be retrieved.
+	 * @throws IOException When the last version index file cannot be retrieved.
 	 */
 	@GET
 	public List<PluginVo> findAll(@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository)
@@ -261,10 +261,10 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	/**
 	 * Search plug-ins in repository which can be installed.
 	 *
-	 * @param query      The optional searched term..
+	 * @param query      The optional searched term.
 	 * @param repository The repository identifier to query.
 	 * @return All plug-ins artifacts name.
-	 * @throws IOException When the last version index file cannot be be retrieved.
+	 * @throws IOException When the last version index file cannot be retrieved.
 	 */
 	@GET
 	@Path("search")
@@ -435,10 +435,10 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * Handle the newly installed plug-ins implementing {@link FeaturePlugin}. Note the plug-ins are installed in a
 	 * natural order based on their key's name to ensure the parents plug-ins are configured first. <br>
 	 * Note the transactional behavior of this process : if one plug-in failed to be configured, then the entire process
-	 * is cancelled. The previously and the not processed discovered plug-ins are not configured.
+	 * is cancelled. The previously plug-ins and the not processed discovered one are not configured.
 	 *
 	 * @param event The Spring event.
-	 * @throws Exception When the context can not be refreshed because of plug-in updates or configurations..
+	 * @throws Exception When the context can not be refreshed because of plug-in updates or configurations.
 	 */
 	@EventListener
 	public void refreshPlugins(final ContextRefreshedEvent event) throws Exception {
@@ -549,7 +549,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 */
 	private void installInternal(final Map<String, FeaturePlugin> newFeatures) throws Exception {
 		for (final var feature : newFeatures.values()) {
-			// Do not trigger the install event when corresponding node is already there
+			// Do not trigger the installation event when corresponding node is already there
 			if (context.getBeansOfType(PluginListener.class).values().stream().allMatch(l -> l.install(feature))) {
 				feature.install();
 			}
@@ -636,7 +636,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * "plugin".
 	 *
 	 * @param plugin The plugin class.
-	 * @return The Maven "artifactId" as it should be be when naming convention is respected. Required to detect the new
+	 * @return The Maven "artifactId" as it should be when naming convention is respected. Required to detect the new
 	 *         version.
 	 */
 	public String toArtifactId(final FeaturePlugin plugin) {

@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 /**
  * Represents an operation that accepts four input arguments and returns no result. This is the four-arity
  * specialization of {@link Consumer}. Unlike most other functional interfaces, {@code BiConsumer} is expected to
- * operate via side-effects.
+ * operate via side effects.
  *
  * <p>
  * This is a <a href="package-summary.html">functional interface</a> whose functional method is

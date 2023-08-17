@@ -128,7 +128,7 @@ class TemplateTest {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>("value"));
 		new Template<>("{{tag}}..{{/tag}}").write(writer, tags, null);
-		Assertions.assertEquals("..", new String(bos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("..", bos.toString(StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -153,7 +153,7 @@ class TemplateTest {
 		tags.put("name", new BeanProcessor<>(SystemRole.class, "name"));
 		new Template<>("{{user}}1{{username/}}2{{assignments}}3{{role}}4{{name/}}5{{/role}}6{{/assignments}}7{{/user}}").write(writer, tags,
 				null);
-		Assertions.assertEquals("1junit234myRole567", new String(bos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("1junit234myRole567", bos.toString(StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -164,7 +164,7 @@ class TemplateTest {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("user", new Processor<>("junit"));
 		new Template<>("0{{user}}1{{user/}}2{{/user}}3").write(writer, tags, null);
-		Assertions.assertEquals("01junit23", new String(bos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("01junit23", bos.toString(StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -197,7 +197,7 @@ class TemplateTest {
 		final Map<String, Processor<?>> tags = new HashMap<>();
 		tags.put("tag", new Processor<>(new String[] { "value" }));
 		new Template<>("{{tag}}..{{/tag}}").write(writer, tags, null);
-		Assertions.assertEquals("..", new String(bos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("..", bos.toString(StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -211,6 +211,6 @@ class TemplateTest {
 		tags.put("sub-tag", new Processor<>(Arrays.asList("john", "doe")));
 		tags.put("sub-tag-value", new Processor<>());
 		new Template<>("0{{tag}}1{{tag-value/}}2{{sub-tag}}{{sub-tag-value/}}{{/sub-tag}}{{/tag}}3").write(writer, tags, null);
-		Assertions.assertEquals("01A2johndoe1B2johndoe3", new String(bos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("01A2johndoe1B2johndoe3", bos.toString(StandardCharsets.UTF_8));
 	}
 }

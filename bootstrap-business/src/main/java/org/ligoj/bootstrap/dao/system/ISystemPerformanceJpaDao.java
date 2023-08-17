@@ -41,14 +41,14 @@ public interface ISystemPerformanceJpaDao {
 	BenchResult benchReadAll();
 
 	/**
-	 * Perform a update for each data in the {@link org.ligoj.bootstrap.model.system.SystemBench} entity.
+	 * Perform an update for each data in the {@link org.ligoj.bootstrap.model.system.SystemBench} entity.
 	 * 
 	 * @return the update result.
 	 */
 	BenchResult benchUpdate();
 
 	/**
-	 * Perform a delete for each data in the {@link org.ligoj.bootstrap.model.system.SystemBench} entity.
+	 * Perform a deletion for each data in the {@link org.ligoj.bootstrap.model.system.SystemBench} entity.
 	 * 
 	 * @return the delete result.
 	 */

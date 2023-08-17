@@ -10,7 +10,7 @@
 	<!-- Http Configuration. -->
 	<!-- This is a common configuration instance used by all -->
 	<!-- connectors that can carry HTTP semantics (HTTP, HTTPS, SPDY) -->
-	<!-- It configures the non wire protocol aspects of the HTTP -->
+	<!-- It configures the non-wire protocol aspects of the HTTP -->
 	<!-- semantic. -->
 	<!-- -->
 	<!-- This configuration is only defined here and is used by -->
@@ -38,7 +38,7 @@
 	</New>
 
 	<!-- =========================================================== -->
-	<!-- Add a HTTP Connector. -->
+	<!-- Add an HTTP Connector. -->
 	<!-- Configure an o.e.j.server.ServerConnector with a single -->
 	<!-- HttpConnectionFactory instance using the common httpConfig -->
 	<!-- instance defined in jetty.xml -->

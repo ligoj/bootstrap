@@ -9,7 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Test class of {@link SystemEnvironmentAndFilePBEConfig} using a FS file.
+ * Test class of {@link SystemEnvironmentAndFilePBEConfig} using a local file.
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")

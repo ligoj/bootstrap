@@ -22,7 +22,7 @@ public class MapProcessor<T> extends BeanProcessor<T> {
 	 * Property bean access constructor.
 	 * 
 	 * @param map
-	 *            the {@link Map} hold final values..
+	 *            the {@link Map} hold final values.
 	 * @param beanType
 	 *            the source bean type.
 	 * @param property

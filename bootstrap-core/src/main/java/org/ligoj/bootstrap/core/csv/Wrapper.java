@@ -3,9 +3,12 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
+import lombok.Getter;
+
 /**
  * Supported CSV wrappers.
  */
+@Getter
 public enum Wrapper {
 
 	/**
@@ -25,15 +28,6 @@ public enum Wrapper {
 
 	Wrapper(final char delimiter) {
 		this.delimiter = delimiter;
-	}
-
-	/**
-	 * Return the {@link #delimiter} value.
-	 * 
-	 * @return the {@link #delimiter} value.
-	 */
-	public char getDelimiter() {
-		return delimiter;
 	}
 
 }

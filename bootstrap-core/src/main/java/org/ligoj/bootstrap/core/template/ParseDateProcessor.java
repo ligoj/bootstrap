@@ -20,7 +20,7 @@ public class ParseDateProcessor extends Processor<String> {
 	 * Pattern and data constructor.
 	 * 
 	 * @param pattern
-	 *            the pattern used to parse the input..
+	 *            the pattern used to parse the input.
 	 * @param data
 	 *            the context data or another {@link Processor} instance.
 	 */
@@ -33,7 +33,7 @@ public class ParseDateProcessor extends Processor<String> {
 	 * Pattern constructor.
 	 * 
 	 * @param pattern
-	 *            the pattern used to parse the input..
+	 *            the pattern used to parse the input.
 	 */
 	public ParseDateProcessor(final String pattern) {
 		this(pattern, null);

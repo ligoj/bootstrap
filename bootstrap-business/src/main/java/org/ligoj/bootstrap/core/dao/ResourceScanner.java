@@ -3,20 +3,19 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.archive.scan.internal.StandardScanner;
 import org.hibernate.boot.archive.scan.spi.ScanEnvironment;
 import org.hibernate.boot.archive.scan.spi.ScanOptions;
 import org.hibernate.boot.archive.scan.spi.ScanParameters;
 import org.hibernate.boot.archive.scan.spi.ScanResult;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
 
 /**
  * Special scanner handling the VFS protocol.
@@ -42,10 +41,11 @@ public class ResourceScanner extends StandardScanner {
 	public ScanResult scan(final ScanEnvironment environment, final ScanOptions scanOptions, final ScanParameters parameters) {
 
 		try {
-			final Set<URL> urls = new LinkedHashSet<>(environment.getNonRootUrls()); // NOSONAR - Requested by Hibernate
+			final var urls = new LinkedHashSet<>(environment.getNonRootUrls()); // NOSONAR - Requested by Hibernate
 			urls.addAll(Collections.list(getOrmUrls()).stream().map(this::getJarUrlSafe).toList());
 
-			// Remove the root URL from the non root list
+			// Remove the root URL from the non-root list
+			//noinspection UrlHashCode
 			urls.remove(environment.getRootUrl());
 
 			// Replace the URL with the new set

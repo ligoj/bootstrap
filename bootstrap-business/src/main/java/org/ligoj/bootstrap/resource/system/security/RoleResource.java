@@ -92,7 +92,7 @@ public class RoleResource {
 	}
 
 	/**
-	 * Retrieve all elements without pagination and includes authorizations..
+	 * Retrieve all elements without pagination and includes authorizations.
 	 *
 	 * @return all elements without pagination.
 	 */

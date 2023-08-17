@@ -14,6 +14,7 @@ import lombok.Getter;
 /**
  * Authentication token with back-office cookies to forward to end-user.
  */
+@Getter
 public class CookieUsernamePasswordAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
 	/**
@@ -24,8 +25,7 @@ public class CookieUsernamePasswordAuthenticationToken extends UsernamePasswordA
 	/**
 	 * List of forwarded cookies' names.
 	 */
-	@Getter
-	private List<String> cookies;
+	private final List<String> cookies;
 
 	/**
 	 * This constructor should only be used by <code>AuthenticationManager</code> or <code>AuthenticationProvider</code>

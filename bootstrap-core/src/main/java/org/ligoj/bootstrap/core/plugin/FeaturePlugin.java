@@ -35,7 +35,7 @@ public interface FeaturePlugin extends Comparable<FeaturePlugin> {
 	}
 
 	/**
-	 * Return the plug-in name. By default the name is computed from the <code>MANIFEST.MF#Implementation-Title</code>
+	 * Return the plug-in name. By default, the name is computed from the <code>MANIFEST.MF#Implementation-Title</code>
 	 * attribute. When not available, the last capitalized part (after the last <code>:</code> separator) of plug-in's
 	 * key is used.
 	 *

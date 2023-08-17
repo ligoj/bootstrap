@@ -73,7 +73,7 @@ class SystemEntitiesTest {
 	}
 
 	@EqualsAndHashCode(of = "other", callSuper = true)
-	private class DummySystemUser extends SystemUser {
+	private static class DummySystemUser extends SystemUser {
 		/**
 		 * 
 		 */

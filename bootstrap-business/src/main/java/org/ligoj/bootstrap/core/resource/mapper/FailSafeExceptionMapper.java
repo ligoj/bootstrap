@@ -26,7 +26,7 @@ public class FailSafeExceptionMapper extends AbstractMapper implements Exception
 
 		/*
 		 * Check LDAP communication issue. As this exception is wrapped by a runtime exception brought bySpring-LDAP
-		 * (optional dependency), there is no way a create a specific Mapper.
+		 * (optional dependency), there is no way to create a specific Mapper.
 		 */
 		if (exception.getCause() instanceof CommunicationException) {
 			log.error("LDAP exception", exception);

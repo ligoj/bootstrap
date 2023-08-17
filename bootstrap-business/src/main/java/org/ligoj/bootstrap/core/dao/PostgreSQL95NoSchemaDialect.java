@@ -7,7 +7,7 @@ import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
 
 /**
- * PostgreSQL dialect with disabled schema.
+ * "PostgreSql" dialect with disabled schema.
  */
 public class PostgreSQL95NoSchemaDialect extends PostgreSQLDialect {
 

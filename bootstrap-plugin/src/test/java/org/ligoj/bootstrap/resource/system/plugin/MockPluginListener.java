@@ -17,11 +17,6 @@ import org.ligoj.bootstrap.model.system.SystemPlugin;
 public class MockPluginListener implements PluginListener {
 
 	@Override
-	public boolean install(FeaturePlugin feature) {
-		return true;
-	}
-
-	@Override
 	public void configure(FeaturePlugin plugin, SystemPlugin entity) {
 		// Nothing to do
 	}

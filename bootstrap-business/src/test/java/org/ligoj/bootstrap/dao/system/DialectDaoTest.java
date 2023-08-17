@@ -3,13 +3,7 @@
  */
 package org.ligoj.bootstrap.dao.system;
 
-import java.util.GregorianCalendar;
-
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceContextType;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,17 +11,14 @@ import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemDialect;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * JDBC bench test.
  */
 @ExtendWith(SpringExtension.class)
 class DialectDaoTest extends AbstractBootTest {
-
-	/**
-	 * Entity manager.
-	 */
-	@PersistenceContext(type = PersistenceContextType.TRANSACTION)
-	private EntityManager em;
 
 	@Test
 	void testJavaTypes() {
@@ -35,7 +26,7 @@ class DialectDaoTest extends AbstractBootTest {
 		final var dial = new SystemDialect();
 		dial.setDialBool(true);
 		dial.setDialChar("char");
-		dial.setDialDate(new GregorianCalendar(2012, 2, 10).getTime());
+		dial.setDialDate(new GregorianCalendar(2012, Calendar.MARCH, 10).getTime());
 		dial.setDialDouble(15.0);
 		dial.setDialEnum(CascadeType.PERSIST);
 		dial.setDialLong(15L);

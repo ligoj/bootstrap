@@ -49,7 +49,7 @@ public class ApiTokenAuthenticationFilter extends RequestHeaderAuthenticationFil
 
 	/**
 	 * Credentials aren't usually applicable, but if a {@code credentialsRequestHeader} is
-	 * set, this will be read and used as the credentials value. Otherwise a dummy not <code>null</code> value
+	 * set, this will be read and used as the credentials value. Otherwise, a dummy not <code>null</code> value
 	 * will be used.
 	 */
 	@Override

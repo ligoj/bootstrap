@@ -126,7 +126,7 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings.getApiAuthorizations());
 		Assertions.assertEquals(1, settings.getApiAuthorizations().size());
 		Assertions.assertEquals("^myurl1", settings.getApiAuthorizations().get(0).getPattern());
-		Assertions.assertEquals("GET", settings.getApiAuthorizations().get(0).getMethod().toString());
+		Assertions.assertEquals("GET", settings.getApiAuthorizations().get(0).getMethod());
 		Assertions.assertNotNull(settings.getUserSettings());
 		Assertions.assertFalse(settings.getUserSettings().isEmpty());
 		Assertions.assertEquals("v", settings.getUserSettings().get("k"));

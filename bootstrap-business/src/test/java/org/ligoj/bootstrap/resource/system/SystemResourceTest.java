@@ -34,11 +34,11 @@ class SystemResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(DateUtils.getApplicationTimeZone().getID(), systemVo.getDate().getTimeZone());
 		Assertions.assertTrue(System.currentTimeMillis() >= systemVo.getDate().getDate().getTime());
 		Assertions.assertTrue(System.currentTimeMillis() - 1000 < systemVo.getDate().getDate().getTime());
-		Assertions.assertTrue(systemVo.getFiles().size() > 0);
+		Assertions.assertFalse(systemVo.getFiles().isEmpty());
 		Assertions.assertTrue(systemVo.getFiles().get(0).getFreeSpace() > 0);
 		Assertions.assertTrue(systemVo.getFiles().get(0).getTotalSpace() > 0);
 		Assertions.assertTrue(systemVo.getFiles().get(0).getUsableSpace() > 0);
-		Assertions.assertTrue(systemVo.getFiles().get(0).getAbsolutePath().length() > 0);
+		Assertions.assertFalse(systemVo.getFiles().get(0).getAbsolutePath().isEmpty());
 	}
 
 	@Test

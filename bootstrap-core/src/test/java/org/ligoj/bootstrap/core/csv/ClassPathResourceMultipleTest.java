@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.csv.ClassPathResourceMultiple;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Test class of {@link ClassPathResourceMultiple}
@@ -35,7 +35,7 @@ class ClassPathResourceMultipleTest {
 	void testGetInputStreamNotFound() {
 		final var resource = new ClassPathResourceMultiple("csv/demo", DummyEntity3.class);
 		Assertions.assertThrows(FileNotFoundException.class, () -> {
-			try (var stream = resource.getInputStream()) {
+			try (var ignored = resource.getInputStream()) {
 				// Should not happen
 			}
 		});

@@ -3,12 +3,10 @@
  */
 package org.ligoj.bootstrap.resource.validation;
 
-import java.time.Duration;
-import java.util.Collections;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +17,11 @@ import org.ligoj.bootstrap.core.validation.Wine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.Duration;
+import java.util.Collections;
 
 /**
  * Check JSR-303 features. Also check over @Service beans.
- * 
  */
 @ExtendWith(SpringExtension.class)
 class ValidationTest extends AbstractBootTest {
@@ -47,7 +44,7 @@ class ValidationTest extends AbstractBootTest {
 	void testPerformance() {
 		var newWine = newWine();
 		Assertions.assertTimeout(Duration.ofSeconds(7), () -> {
-			for (var i = 10000; i-- > 0;) {
+			for (var i = 10000; i-- > 0; ) {
 				validator.validateCheck(newWine);
 			}
 		});
@@ -68,7 +65,7 @@ class ValidationTest extends AbstractBootTest {
 
 	@Test
 	void testValidateCheckArray() {
-		validator.validateCheck(new Wine[] { newWine() });
+		validator.validateCheck(new Wine[]{newWine()});
 	}
 
 	@Test
@@ -170,13 +167,12 @@ class ValidationTest extends AbstractBootTest {
 		Assertions.assertTrue(constraints.get("name").contains("org.ligoj.bootstrap.core.validation.UpperCase"));
 	}
 
-	private class SampleBean {
+	@Getter
+	@Setter
+	private static class SampleBean {
 
 		@LowerCase
-		@Getter
-		@Setter
 		private String lowerOnly;
-
 	}
 
 	/**

@@ -28,7 +28,7 @@ public interface SystemUserRepository extends RestRepository<SystemUser, String>
 	 * pattern.
 	 *
 	 * @param user
-	 *            The user name requesting the operation.
+	 *            The username requesting the operation.
 	 * @return <code>true</code> when the current user is an administrator.
 	 */
 	@Query("SELECT COUNT(s)>0 FROM SystemUser s WHERE " + SystemUser.IS_ADMIN)

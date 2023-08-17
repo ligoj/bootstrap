@@ -7,9 +7,9 @@ import org.springframework.data.domain.Persistable;
 
 /**
  * Interface for auditable entities. Allows storing and retrieving creation and modification information. The changing
- * instance (typically some user) is to be defined by a generics definition.
+ * instance (typically some user) is to be defined by a generic definition.
  * 
- * @param <U> the auditing type. Typically some kind of user.
+ * @param <U> the auditing type. Typically, some kind of user.
  * @param <K> the type of the audited type's identifier.
  * @param <D> the type of the audit date.
  */

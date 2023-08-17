@@ -39,8 +39,8 @@ public final class CryptoHelper {
 		try {
 			// Try a decryption
 			return decrypt(value);
-		} catch (final EncryptionOperationNotPossibleException e) { // NOSONAR - Ignore raw value
-			// Value could be encrypted, but was not
+		} catch (final EncryptionOperationNotPossibleException ignored) {
+			// This value could be encrypted, but was not
 			return value;
 		}
 	}
@@ -76,7 +76,7 @@ public final class CryptoHelper {
 	}
 
 	/**
-	 * Encrypt a clear value. Try to decrypt the value, and if succeed, return the formal parameter without encrypting
+	 * Encrypt a clear value. Try to decrypt the value, and if succeeded, return the formal parameter without encrypting
 	 * again the value.
 	 *
 	 * @param value A potentially raw value to encrypt.
@@ -89,8 +89,8 @@ public final class CryptoHelper {
 
 			// Value is already encrypted
 			return value;
-		} catch (final EncryptionOperationNotPossibleException e) { // NOSONAR - Ignore raw value
-			// Value could be encrypted, but was not
+		} catch (final EncryptionOperationNotPossibleException ignored) {
+			// This value could be encrypted, but was not
 			return encrypt(value);
 		}
 	}

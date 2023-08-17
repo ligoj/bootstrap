@@ -15,7 +15,7 @@ import org.ligoj.bootstrap.core.DateUtils;
  */
 class DecimalDateProcessorTest {
 
-	private DecimalDateProcessor processor = new DecimalDateProcessor();
+	private final DecimalDateProcessor processor = new DecimalDateProcessor();
 
 	@BeforeAll
 	static void init() {

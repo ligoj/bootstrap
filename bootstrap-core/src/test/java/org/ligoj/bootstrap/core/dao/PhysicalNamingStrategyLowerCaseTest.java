@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test non spring integration behaviors of {@link PhysicalNamingStrategyLowerCase} class.
+ * Test non-spring integration behaviors of {@link PhysicalNamingStrategyLowerCase} class.
  */
 class PhysicalNamingStrategyLowerCaseTest {
 

@@ -24,7 +24,7 @@ public class CurlRequest {
 	private boolean saveResponse;
 
 	/**
-	 * Two way relationship.
+	 * Two ways relationship.
 	 */
 	protected CurlProcessor processor;
 

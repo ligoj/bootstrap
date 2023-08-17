@@ -100,7 +100,7 @@ public class ApiTokenResource {
 	/**
 	 * Check the given token.
 	 *
-	 * @param user  The user name. Will be used to build the hash.
+	 * @param user  The username. Will be used to build the hash.
 	 * @param token The user password or token.
 	 * @return <code>true</code> if the token matches.
 	 */

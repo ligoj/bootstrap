@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
- * A a cache manager for token used by the {@link CurlProcessor}
+ * A cache manager for token used by the {@link CurlProcessor}
  */
 @Component
 public class CurlCacheToken {

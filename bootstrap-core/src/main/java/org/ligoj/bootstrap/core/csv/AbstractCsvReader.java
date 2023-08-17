@@ -122,7 +122,7 @@ public abstract class AbstractCsvReader<T> {
 	/**
 	 * Local {@link Field} cache.
 	 */
-	protected Map<Class<?>, Map<String, Field>> fields = new WeakHashMap<>();
+	protected final Map<Class<?>, Map<String, Field>> fields = new WeakHashMap<>();
 
 	/**
 	 * All fields constructor.
@@ -234,11 +234,11 @@ public abstract class AbstractCsvReader<T> {
 			}
 
 			// Read only data of mapped column
-			if (property.length() > 0) {
+			if (!property.isEmpty()) {
 
 				// Read the mapped column value
 				final var rawValue = values.get(index);
-				if (rawValue.length() > 0) {
+				if (!rawValue.isEmpty()) {
 					setProperty(bean, property, rawValue, setter);
 				}
 			}

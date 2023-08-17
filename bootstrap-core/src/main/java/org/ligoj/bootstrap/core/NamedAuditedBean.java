@@ -17,7 +17,7 @@ import lombok.ToString;
  * @param <K>
  *            The type of the identifier
  * @param <U>
- *            he type of the author
+ *            The type of the author
  */
 @Getter
 @Setter

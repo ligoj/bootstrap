@@ -25,11 +25,8 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 	 *
 	 * @param application The current application.
 	 * @param args        The application arguments.
-	 * @throws IOException              When reading plug-ins directory
-	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
-	public PluginApplicationRunListener(final SpringApplication application, final String... args)
-			throws IOException, NoSuchAlgorithmException {
+	public PluginApplicationRunListener(final SpringApplication application, final String... args) {
 		try {
 			if (PluginsClassLoader.getInstance() == null) {
 				// Replace the main class loader

@@ -21,18 +21,18 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityHelper {
 
 	/**
-	 * The system user name.
+	 * The system username.
 	 */
 	public static final String SYSTEM_USERNAME = "_system";
 
 	/**
-	 * Replace the user name of current authentication by the given one. This is performed by creating a partial copy of
+	 * Replace the username of current authentication by the given one. This is performed by creating a partial copy of
 	 * current {@link SecurityContext}. Is equivalent to a "su" linux command, but without "exit" solution but calling
 	 * again this function.
 	 * 
 	 * @param username
 	 *            UserName to set.
-	 * @return the previous {@link SecurityContext} to be able restore it later.
+	 * @return the previous {@link SecurityContext} to be able to restore it later.
 	 */
 	public SecurityContext setUserName(final String username) {
 		if (username == null) {
@@ -65,9 +65,9 @@ public class SecurityHelper {
 	}
 
 	/**
-	 * Return the current user name.
+	 * Return the current username.
 	 * 
-	 * @return the current user name.
+	 * @return the current username.
 	 */
 	public String getLogin() {
 		final var context = SecurityContextHolder.getContext();

@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.core.plugin;
 import lombok.Getter;
 
 /**
- * An exception of plug-in management.
+ * An exception in plug-in management.
  */
 @Getter
 class PluginException extends RuntimeException {

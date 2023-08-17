@@ -28,7 +28,7 @@ class SecurityContextUtilTest {
 		securityHelper.setUserName(USER_NAME);
 		securityHelper.setUserName(null);
 
-		// make the assertion of untouched user name
+		// make the assertion of untouched username
 		final var nameAuthenticated = SecurityContextHolder.getContext().getAuthentication().getName();
 		Assertions.assertEquals(USER_NAME, nameAuthenticated);
 	}

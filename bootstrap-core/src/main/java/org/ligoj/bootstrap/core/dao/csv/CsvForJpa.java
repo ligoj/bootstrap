@@ -358,7 +358,7 @@ public class CsvForJpa extends AbstractCsvManager {
 			final var update = em.getMetamodel().managedType(entityClass).getAttributes().stream()
 					.filter(a -> a.getJavaType().equals(entityClass)).map(Attribute::getName)
 					.map(name -> name + "=NULL").collect(Collectors.joining(", "));
-			if (update.length() > 0) {
+			if (!update.isEmpty()) {
 				// Clear the self referencing rows
 				em.createQuery("UPDATE " + entityClass.getName() + " SET " + update).executeUpdate();
 			}

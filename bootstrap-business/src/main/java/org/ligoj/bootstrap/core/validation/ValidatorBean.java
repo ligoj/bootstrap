@@ -3,19 +3,15 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 /**
  * Validation utility.
@@ -24,6 +20,7 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
+@Getter
 public class ValidatorBean {
 
 	/**
@@ -104,14 +101,4 @@ public class ValidatorBean {
 			throw new ConstraintViolationException(StringUtils.join(errors, ','), errors);
 		}
 	}
-
-	/**
-	 * Return the {@link #validator} value.
-	 * 
-	 * @return the {@link #validator} value.
-	 */
-	public Validator getValidator() {
-		return validator;
-	}
-
 }

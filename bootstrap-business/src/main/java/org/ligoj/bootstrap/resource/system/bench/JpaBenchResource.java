@@ -49,7 +49,7 @@ public class JpaBenchResource {
 	 *            the BLOB file to attach.
 	 * @param nb
 	 *            the amount of data to persist.
-	 * @return the the bench result. The return type is text/html for IE7 support.
+	 * @return The bench result. The return type is text/html for IE7 support.
 	 * @throws IOException
 	 *             When the blob cannot be read.
 	 */

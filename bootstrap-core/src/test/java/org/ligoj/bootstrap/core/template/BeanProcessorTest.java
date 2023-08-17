@@ -36,7 +36,7 @@ class BeanProcessorTest {
 	}
 
 	/**
-	 * Simple test of a invalid property name.
+	 * Simple test of an invalid property name.
 	 */
 	@Test
 	void getValueInvalidProperty() {

@@ -7,7 +7,7 @@ import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
 
 /**
- * MySQL dialect with enforced UTF-8 encoding.
+ * "MySql" dialect with enforced UTF-8 encoding.
  */
 public class MySQL5InnoDBUtf8Dialect extends MySQLDialect {
 

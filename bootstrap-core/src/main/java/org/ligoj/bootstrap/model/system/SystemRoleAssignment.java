@@ -15,7 +15,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * An assignment. Currently is only managing a many-to-many (2 many-to-one) relationship, but should handle assignment
+ * An assignment. Currently, is only managing a many-to-many (2 many-to-one) relationship, but should handle assignment
  * on a specific organization unit, as described in ORBAC.
  */
 @Entity

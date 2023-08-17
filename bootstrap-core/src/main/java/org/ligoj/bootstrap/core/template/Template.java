@@ -182,19 +182,9 @@ public class Template<T> {
 			// End of template
 			return null;
 		}
-		final var nextEndTag = input.indexOf("}}", nextTag);
-		if (nextEndTag == -1 || nextEndTag >= end) {
-			// Opening tag syntax
-			throw new IllegalStateException("Invalid opening tag syntax '{{' without '}}' at position " + nextTag);
-		}
-		if (nextEndTag - nextTag > MAX_TAG_LENGTH) {
-			// Too long tag
-			throw new IllegalStateException(
-					"Too long (max is " + MAX_TAG_LENGTH + " tag " + input.substring(nextTag + 2, nextTag + 30) + "...}} found at position " + start);
-		}
-		final var tag = input.substring(nextTag + 2, nextEndTag);
+		final var tag = getNextTag(start, end, nextTag);
 		final var tagClean = StringUtils.removeEnd(tag, "/");
-		if (StringUtils.trimToEmpty(tagClean).length() == 0) {
+		if (StringUtils.trimToEmpty(tagClean).isEmpty()) {
 			// Empty tag
 			throw new IllegalStateException("Empty tag {{}} found at position " + start);
 		}
@@ -205,8 +195,22 @@ public class Template<T> {
 		return new TagContext(nextTag, processor, tag, tagClean.length() == tag.length());
 	}
 
+	private String getNextTag(int start, int end, int nextTag) {
+		final var nextEndTag = input.indexOf("}}", nextTag);
+		if (nextEndTag == -1 || nextEndTag >= end) {
+			// Opening tag syntax
+			throw new IllegalStateException("Invalid opening tag syntax '{{' without '}}' at position " + nextTag);
+		}
+		if (nextEndTag - nextTag > MAX_TAG_LENGTH) {
+			// Too long tag
+			throw new IllegalStateException(
+					"Too long (max is " + MAX_TAG_LENGTH + " tag " + input.substring(nextTag + 2, nextTag + 30) + "...}} found at position " + start);
+		}
+		return input.substring(nextTag + 2, nextEndTag);
+	}
+
 	@AllArgsConstructor
-	private class TagContext {
+	private static class TagContext {
 
 		private int cursor;
 		private Processor<?> processor;

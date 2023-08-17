@@ -3,24 +3,11 @@
  */
 package org.ligoj.bootstrap.core.dao.csv;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,6 +24,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Check all CSV to/from JPA entities or simple beans of {@link CsvForJpa} utility.
@@ -88,8 +82,7 @@ class CsvForJpaTest {
 		Assertions.assertEquals("id;name;wneCnty;wneDesc;wneGrpe;wnePict;wneRegn;wneYear\n", result.toString());
 
 		// Only there for coverage
-		Wrapper.values();
-		Wrapper.valueOf(Wrapper.DOUBLE_QUOTE.name());
+		Assertions.assertEquals("DOUBLE_QUOTE", Wrapper.values()[Wrapper.valueOf(Wrapper.DOUBLE_QUOTE.name()).ordinal()].name());
 	}
 
 	@Test
@@ -243,7 +236,7 @@ class CsvForJpaTest {
 	@Test
 	void toJpaSpecialChars() throws Exception {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
-				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"\'\',';4;\"Château d\"\"Yquem\";6;7;8\n"),
+						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"'',';4;\"Château d\"\"Yquem\";6;7;8\n"),
 				true);
 		Assertions.assertEquals(1, jpa.size());
 		final var newWine = newWine();
@@ -259,7 +252,7 @@ class CsvForJpaTest {
 	@Test
 	void toJpaSpecialCharsEnds() throws Exception {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
-				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"\'\',';4;\"Château d\"\"Yquem\";6;7;\"8\n"),
+						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World, hold on\";2;'3\"\"'',';4;\"Château d\"\"Yquem\";6;7;\"8\n"),
 				true);
 		Assertions.assertEquals(1, jpa.size());
 		final var newWine = newWine();
@@ -275,7 +268,7 @@ class CsvForJpaTest {
 	@Test
 	void toJpaIgnoreSpaces() throws Exception {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
-				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"1\"    ; 2 ; 3;4 ; \t  \"5\";   ' 6 '   ; 7 \"   ;  8   \n"),
+						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"1\"    ; 2 ; 3;4 ; \t  \"5\";   ' 6 '   ; 7 \"   ;  8   \n"),
 				true);
 		Assertions.assertEquals(1, jpa.size());
 		final var newWine = newWine();
@@ -290,7 +283,7 @@ class CsvForJpaTest {
 	@Test
 	void toJpaEmbeddedNewLine() throws Exception {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(
-				"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World\n, hold\non\";2;3;4;5;6;7;8\n"),
+						"wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n\"World\n, hold\non\";2;3;4;5;6;7;8\n"),
 				true);
 		Assertions.assertEquals(1, jpa.size());
 		final var newWine = newWine();
@@ -352,7 +345,7 @@ class CsvForJpaTest {
 	void toJpaPerformance() throws Exception {
 		final var stringBuilder = new StringBuilder();
 		stringBuilder.append("wneCnty;wneDesc;wneGrpe;id;name;wnePict;wneRegn;wneYear\n");
-		for (var i = 10000; i-- > 0;) {
+		for (var i = 10000; i-- > 0; ) {
 			stringBuilder.append("1;2;3;4;5;6;7;");
 			stringBuilder.append(i);
 			stringBuilder.append('\r');
@@ -364,7 +357,7 @@ class CsvForJpaTest {
 	@Test
 	void toJpatoJpaEntityPerformance() {
 		final var stringBuilder = new StringBuilder();
-		for (var i = 10000; i-- > 0;) {
+		for (var i = 10000; i-- > 0; ) {
 			stringBuilder.append("1;4;5;3;7;8;6;2\n");
 		}
 		Assertions.assertTimeout(Duration.ofSeconds(2), () -> Assertions.assertEquals(10000,
@@ -512,8 +505,8 @@ class CsvForJpaTest {
 	@Test
 	void getJpaHeaders() {
 		final var jpaHeaders = csvForJpa.getJpaHeaders(DummyEntity2.class);
-		Assertions.assertArrayEquals(new String[] { "id", "dialChar", "dialBool", "dialShort", "dialLong", "dialDouble",
-				"dialDate", "localDate", "dialEnum", "link", "user" }, jpaHeaders);
+		Assertions.assertArrayEquals(new String[]{"id", "dialChar", "dialBool", "dialShort", "dialLong", "dialDouble",
+				"dialDate", "localDate", "dialEnum", "link", "user"}, jpaHeaders);
 	}
 
 	@Test
@@ -594,7 +587,7 @@ class CsvForJpaTest {
 	private List<DummyEntity> newWines() {
 		final List<DummyEntity> items = new ArrayList<>();
 		final var newWine = newWine();
-		for (var i = 10000; i-- > 0;) {
+		for (var i = 10000; i-- > 0; ) {
 			items.add(newWine);
 		}
 		return items;

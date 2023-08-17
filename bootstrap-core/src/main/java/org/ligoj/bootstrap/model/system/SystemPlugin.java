@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Data model representing a plug-in and its state. The key corresponds to the feature key. A plug-in may includes
+ * Data model representing a plug-in and its state. The key corresponds to the feature key. A plug-in may include
  * several services or features.
  */
 @Getter

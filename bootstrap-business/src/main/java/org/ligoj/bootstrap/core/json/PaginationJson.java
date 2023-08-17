@@ -121,7 +121,7 @@ public class PaginationJson {
 	 * @param ormMapping
 	 *            Optional JSon to ORM property mapping.
 	 * @param caseSensitiveColumns
-	 *            Optional JSon columns name where the case sensitive ordering is requested. The "lower" function will
+	 *            Optional JSon columns name where the case-sensitive ordering is requested. The "lower" function will
 	 *            not be used for the "ORDER BY" in this case.
 	 * @return a {@link PageRequest} instance containing sort and page sizes.
 	 */
@@ -227,7 +227,7 @@ public class PaginationJson {
 	 * @param column
 	 *            The sorted column name.
 	 * @param caseSensitiveColumns
-	 *            Optional JSon columns name where the case sensitive ordering is requested. The "lower" function will
+	 *            Optional JSon columns name where the case-sensitive ordering is requested. The "lower" function will
 	 *            not be used for the "ORDER BY" in this case.
 	 * @return The new {@link PageRequest} with pagination and order.
 	 */

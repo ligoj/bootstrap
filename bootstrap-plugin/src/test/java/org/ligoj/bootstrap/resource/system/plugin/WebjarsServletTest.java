@@ -35,6 +35,7 @@ class WebjarsServletTest {
 
 	@BeforeEach
 	void saveClassloader() {
+		//noinspection resource
 		Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/resources/webjars/image.png");
 		classloader = Thread.currentThread().getContextClassLoader();
 	}
@@ -83,7 +84,7 @@ class WebjarsServletTest {
 		Mockito.when(classLoader.getResources("META-INF/resources/webjars/image.png")).thenReturn(urls);
 		Thread.currentThread().setContextClassLoader(classLoader);
 		getServlet("false").doGet(request, response);
-		Assertions.assertEquals("image-content", new String(baos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
 		Mockito.verify(response).setContentType("image/x-png");
 		Mockito.verify(response, Mockito.never()).setStatus(ArgumentMatchers.anyInt());
 		Mockito.verify(response, Mockito.never()).sendError(ArgumentMatchers.anyInt());
@@ -98,7 +99,7 @@ class WebjarsServletTest {
 		final var servlet = getServlet("false");
 		servlet.serveFile(response, "image.bin",
 				new ByteArrayInputStream("image-content".getBytes(StandardCharsets.UTF_8)));
-		Assertions.assertEquals("image-content", new String(baos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
 		Mockito.verify(response).setContentType("application/octet-stream");
 	}
 
@@ -111,7 +112,7 @@ class WebjarsServletTest {
 		final var servlet = getServlet("false");
 		servlet.serveFile(response, "image.woff2",
 				new ByteArrayInputStream("image-content".getBytes(StandardCharsets.UTF_8)));
-		Assertions.assertEquals("image-content", new String(baos.toByteArray(), StandardCharsets.UTF_8));
+		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
 		Mockito.verify(response).setContentType("font/woff2");
 	}
 

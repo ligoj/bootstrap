@@ -429,7 +429,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all, plenty of integer rules and 2 depth grouping : eq, lt, gt, ne.
+	 * Default find all, plenty of integer rules and 2 depth grouping : 'eq', 'lt', 'gt', 'ne'.
 	 */
 	@Test
 	void testFindAllWithRules2() {
@@ -471,7 +471,7 @@ class PaginationDaoTest extends AbstractBootTest {
 
 		// LT-GT-1 - 1*NE + 2*EQ
 		// Since there are two "amet" out of LT/GT/NE range
-		Assertions.assertEquals(Integer.valueOf(ruleLT.getData()) - Integer.valueOf(ruleGT.getData()) - 1 - 1 + 2,
+		Assertions.assertEquals(Integer.parseInt(ruleLT.getData()) - Integer.parseInt(ruleGT.getData()) - 1 - 1 + 2,
 				findAll.getTotalElements());
 		Assertions.assertEquals(4, findAll.getTotalPages());
 	}
@@ -841,12 +841,11 @@ class PaginationDaoTest extends AbstractBootTest {
 	@Test
 	void testEnum() {
 		// Only there for coverage
-		RuleOperator.values();
 		RuleOperator.valueOf(RuleOperator.BW.name());
+		Assertions.assertEquals("BW", RuleOperator.values()[RuleOperator.valueOf(RuleOperator.BW.name()).ordinal()].name());
 
 		// Only there for coverage
-		FilterOperator.values();
-		FilterOperator.valueOf(FilterOperator.AND.name());
+		Assertions.assertEquals("AND", FilterOperator.values()[FilterOperator.valueOf(FilterOperator.AND.name()).ordinal()].name());
 	}
 
 	/**

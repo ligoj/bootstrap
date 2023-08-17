@@ -85,7 +85,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	private final String digestVersion;
 
 	/**
-	 * Read only plug-in safe mode. When <code>false</code>, external plug-ins are not participating to the classpath.
+	 * Read only plug-in safe mode. When <code>false</code>, external plug-ins are not participating in the classpath.
 	 */
 	@Getter
 	protected final boolean enabled;
@@ -284,14 +284,14 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Copy a resource needed to be exported from the JAR plug-in to the home.
 	 *
 	 * @param from The source file to the destination file. Directories are not supported.
-	 * @param dest The destination file.
+	 * @param to The destination file.
 	 * @throws IOException When plug-in file cannot be copied.
 	 */
-	protected void copy(final Path from, final Path dest) throws IOException {
+	protected void copy(final Path from, final Path to) throws IOException {
 		if (Files.isDirectory(from)) {
-			Files.createDirectories(dest);
+			Files.createDirectories(to);
 		} else {
-			Files.copy(from, dest);
+			Files.copy(from, to);
 		}
 	}
 
@@ -318,11 +318,11 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Convert a version to a comparable string and following the semver specification. Maximum 4 version ranges are
+	 * Convert a version to a comparable string and following the 'server' specification. Maximum 4 version ranges are
 	 * accepted.
 	 *
 	 * @param version The version string to convert. May be <code>null</code>
-	 * @return The given version to be comparable with another version. Handle the 'SNAPSHOT' case considered has oldest
+	 * @return The given version to be comparable with another version. Handle the 'SNAPSHOT' case considered as older
 	 *         than the one without this suffix.
 	 * @see PluginsClassLoader#toExtendedVersion(String)
 	 */
@@ -344,7 +344,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	protected Path computeHome() {
 		final Path homeDir;
 		if (System.getProperty(HOME_DIR_PROPERTY) == null) {
-			// Non standard home directory
+			// Non-standard home directory
 			homeDir = Paths.get(System.getProperty("user.home"), HOME_DIR_FOLDER);
 			log.info(
 					"Home directory is '{}', resolved from current home user location. Use '{}' system property to override this path",

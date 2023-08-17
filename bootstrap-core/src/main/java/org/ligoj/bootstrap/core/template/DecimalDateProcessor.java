@@ -45,7 +45,7 @@ public class DecimalDateProcessor extends Processor<String> {
 			final var millisecondsInDay = (int) Math.round((date - wholeDays) * DateUtils.MILLIS_PER_DAY);
 
 			// Excel thinks 2/29/1900 is a valid date, which it isn't
-			calendar.set(1900, 0, wholeDays - 1, 0, 0, 0);
+			calendar.set(1900, Calendar.JANUARY, wholeDays - 1, 0, 0, 0);
 			calendar.set(Calendar.MILLISECOND, millisecondsInDay);
 			calendar.add(Calendar.MILLISECOND, 500);
 			calendar.clear(Calendar.MILLISECOND);

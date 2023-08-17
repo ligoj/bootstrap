@@ -3,13 +3,8 @@
  */
 package org.ligoj.bootstrap.http.security;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -17,6 +12,10 @@ import org.springframework.mock.web.DelegatingServletOutputStream;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Custom redirection test of class {@link RestRedirectStrategy}
@@ -56,7 +55,7 @@ class RedirectStrategyTest {
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
-		initSpringSecurityContext("user", Mockito.mock(Authentication.class));
+		initSpringSecurityContext( Mockito.mock(Authentication.class));
 		final var redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(true);
 		redirectStrategy.setStatus(1);
@@ -70,8 +69,8 @@ class RedirectStrategyTest {
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
-		initSpringSecurityContext("user",
-				new CookieUsernamePasswordAuthenticationToken("user", "N/A", null, Arrays.asList(new String[] { "key=value; path=/" })));
+		initSpringSecurityContext(
+				new CookieUsernamePasswordAuthenticationToken("user", "N/A", null, List.of("key=value; path=/")));
 		final var redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(true);
 		redirectStrategy.setStatus(1);
@@ -82,18 +81,14 @@ class RedirectStrategyTest {
 	/**
 	 * Initialize {@link SecurityContextHolder} for given user.
 	 * 
-	 * @param user
-	 *            The user to set in the context.
 	 * @param authentication
 	 *            The optional current authentication.
-	 * @return The configured {@link SecurityContext}.
 	 */
-	private SecurityContext initSpringSecurityContext(final String user, final Authentication authentication) {
+	private void initSpringSecurityContext(final Authentication authentication) {
 		SecurityContextHolder.clearContext();
 		final var context = Mockito.mock(SecurityContext.class);
 		Mockito.when(context.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(context);
-		return context;
 	}
 
 }
