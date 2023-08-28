@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.util.thread.ThreadClassLoaderScope;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,8 @@ class PluginApplicationRunListenerTest {
 	void pluginClassLoaderFail() {
 		final var oldValue = System.getProperty(PluginsClassLoader.HOME_DIR_PROPERTY);
 		try (ThreadClassLoaderScope ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
-			System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY, StringUtils.repeat("../_not_valid_/", 257));
+			// Inject an invalid path
+			System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY,"\u0000");
 			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class));
 		} finally {
 			if (oldValue == null) {
@@ -60,4 +60,6 @@ class PluginApplicationRunListenerTest {
 		}
 		Assertions.assertNull(PluginsClassLoader.getInstance());
 	}
+
+
 }
