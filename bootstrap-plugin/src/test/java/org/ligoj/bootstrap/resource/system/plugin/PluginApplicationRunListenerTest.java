@@ -26,6 +26,7 @@ class PluginApplicationRunListenerTest {
 		try (ThreadClassLoaderScope ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
 			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class)).starting(null);
 		}
+		Assertions.assertEquals("app", Thread.currentThread().getContextClassLoader().getName());
 	}
 
 	@Test
@@ -41,6 +42,7 @@ class PluginApplicationRunListenerTest {
 			listener.ready(null, null);
 			listener.failed(null, null);
 		}
+		Assertions.assertEquals("app", Thread.currentThread().getContextClassLoader().getName());
 	}
 
 	@Test
@@ -56,5 +58,6 @@ class PluginApplicationRunListenerTest {
 				System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY, oldValue);
 			}
 		}
+		Assertions.assertNull(PluginsClassLoader.getInstance());
 	}
 }
