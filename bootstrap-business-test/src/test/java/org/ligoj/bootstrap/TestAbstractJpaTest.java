@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Test of {@link AbstractJpaTest}
@@ -27,10 +26,10 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 	void persistEntities() throws IOException {
 		em = Mockito.mock(EntityManager.class);
 		csvForJpa = Mockito.mock(CsvForJpa.class);
-		final List<SystemUser> entities = new ArrayList<>();
+		final var entities = new ArrayList<SystemUser>();
 		entities.add(new SystemUser());
-		Mockito.when(csvForJpa.toJpa(ArgumentMatchers.eq(SystemUser.class), ArgumentMatchers.any(Reader.class), ArgumentMatchers.eq(true))).thenReturn(entities);
-		super.persistEntities(SystemUser.class, "log4j2.json");
+		Mockito.when(csvForJpa.toJpa(ArgumentMatchers.eq(SystemUser.class), ArgumentMatchers.any(Reader.class), ArgumentMatchers.eq(true), ArgumentMatchers.eq(true))).thenReturn(entities);
+		Assertions.assertEquals(entities, super.persistEntities(SystemUser.class, "log4j2.json"));
 	}
 
 	@Test
@@ -40,6 +39,7 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 	}
 
 	@Test
+	@Deprecated
 	void persistEntitiesDeprecated() throws IOException {
 		csvForJpa = Mockito.mock(CsvForJpa.class);
 		super.persistEntities(".", new Class[]{SystemUser.class}, StandardCharsets.UTF_8.name());
