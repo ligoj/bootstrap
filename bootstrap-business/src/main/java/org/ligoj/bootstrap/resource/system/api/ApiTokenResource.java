@@ -135,18 +135,22 @@ public class ApiTokenResource {
 	 *
 	 * @param name The token's name.
 	 * @return raw token value corresponding to the requested name and owned by current user.
-	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@GET
 	@Path("{name:\\w+}")
 	@OnNullReturn404
-	public String getToken(@PathParam("name") final String name) throws GeneralSecurityException {
+	public String getToken(@PathParam("name") final String name) {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
 		if (entity.getHash().equals(PLAIN_HASH) && entity.getToken().startsWith(PREFIX_TOKEN)) {
 			// Unsecured plain token. Useful for initial SQL injected token
 			return entity.getToken();
 		}
-		return decrypt(entity.getToken(), newSecretKey(entity.getUser(), entity.getName()));
+		try {
+			return decrypt(entity.getToken(), newSecretKey(entity.getUser(), entity.getName()));
+		} catch (Exception e) {
+			log.error("Unable to decrypt token {}", name, e);
+			return null;
+		}
 	}
 
 	/**
