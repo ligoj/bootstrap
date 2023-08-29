@@ -104,8 +104,8 @@ class SessionResourceTest extends AbstractBootTest {
 		assignment.setUser(user);
 		em.persist(assignment);
 
-		addSystemAuthorization(HttpMethod.GET.name(), role, "^myurl1", AuthorizationType.API);
-		addSystemAuthorization(null, role, "^myurl2", AuthorizationType.UI);
+		addSystemAuthorization(HttpMethod.GET.name(), role, "^my_url1", AuthorizationType.API);
+		addSystemAuthorization(null, role, "^my_url2", AuthorizationType.UI);
 
 		// Invalidate cache of previous test
 		cacheResource.invalidate("authorizations");
@@ -122,10 +122,10 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_ROLE, settings.getRoles().get(0));
 		Assertions.assertNotNull(settings.getUiAuthorizations());
 		Assertions.assertEquals(1, settings.getUiAuthorizations().size());
-		Assertions.assertEquals("^myurl2", settings.getUiAuthorizations().iterator().next());
+		Assertions.assertEquals("^my_url2", settings.getUiAuthorizations().iterator().next());
 		Assertions.assertNotNull(settings.getApiAuthorizations());
 		Assertions.assertEquals(1, settings.getApiAuthorizations().size());
-		Assertions.assertEquals("^myurl1", settings.getApiAuthorizations().get(0).getPattern());
+		Assertions.assertEquals("^my_url1", settings.getApiAuthorizations().get(0).getPattern());
 		Assertions.assertEquals("GET", settings.getApiAuthorizations().get(0).getMethod());
 		Assertions.assertNotNull(settings.getUserSettings());
 		Assertions.assertFalse(settings.getUserSettings().isEmpty());

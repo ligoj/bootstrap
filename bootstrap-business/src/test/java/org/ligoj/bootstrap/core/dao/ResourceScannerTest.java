@@ -70,7 +70,7 @@ class ResourceScannerTest {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
-				return Collections.enumeration(List.of(new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/mycompany/MyClass.class")));
+				return Collections.enumeration(List.of(new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/my_company/MyClass.class")));
 			}
 
 		};
@@ -88,7 +88,7 @@ class ResourceScannerTest {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
 				return Collections.enumeration(
-						List.of(new URL("jar:file:/c://my.jar!/com/mycompany/MyClass.class")));
+						List.of(new URL("jar:file:/c://my.jar!/com/my_company/MyClass.class")));
 			}
 
 		};

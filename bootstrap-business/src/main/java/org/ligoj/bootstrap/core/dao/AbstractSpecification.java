@@ -20,7 +20,6 @@ import org.hibernate.spi.NavigablePath;
 import org.hibernate.type.AssociationType;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -155,10 +154,7 @@ public abstract class AbstractSpecification {
 
 		// Bind the data to the correct type
 		final Object result;
-		if (expressionType == Date.class) {
-			// For Date, only milliseconds are managed
-			result = new Date(Long.parseLong(data));
-		} else if (expressionType.isEnum()) {
+		if (expressionType.isEnum()) {
 			// Manage Enum type
 			result = toEnum(data, (Expression<Enum>) expression);
 		} else {
