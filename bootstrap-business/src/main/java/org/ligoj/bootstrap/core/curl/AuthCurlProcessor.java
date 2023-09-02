@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.curl;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +32,7 @@ public class AuthCurlProcessor extends CurlProcessor {
 	public AuthCurlProcessor(final String username, final String password, final HttpResponseCallback callback) {
 		super(callback);
 		this.username = StringUtils.trimToNull(username);
-		this.password = StringUtils.defaultString(password);
+		this.password = Objects.toString(password);
 	}
 
 	/**
