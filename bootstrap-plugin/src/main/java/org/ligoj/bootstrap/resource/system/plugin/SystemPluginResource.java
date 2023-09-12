@@ -373,7 +373,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * @param repository The repository identifier to query.
 	 */
 	@POST
-	@Path("{artifact:[\\w-]+}/{version:[\\w-]+}")
+	@Path("{artifact:[\\w-]+}/{version:[\\w\\.-]+}")
 	public void install(@PathParam("artifact") final String artifact, @PathParam("version") final String version,
 			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) {
 		install(null, artifact, version, repository);
