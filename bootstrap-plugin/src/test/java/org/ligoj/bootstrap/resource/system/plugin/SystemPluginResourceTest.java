@@ -26,6 +26,7 @@ import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.*;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.plugin.repository.Artifact;
+import org.ligoj.bootstrap.resource.system.plugin.repository.RepositoryManager;
 import org.ligoj.bootstrap.resource.system.session.ApplicationSettings;
 import org.ligoj.bootstrap.resource.system.session.SessionSettings;
 import org.mockito.ArgumentMatchers;
@@ -113,6 +114,29 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
+	void findAllOffline() throws IOException {
+		final var repo = Mockito.mock(RepositoryManager.class);
+		final var cl = Mockito.mock(PluginsClassLoader.class);
+		Mockito.doThrow(IOException.class).when(repo).getLastPluginVersions();
+		Mockito.doReturn(Collections.emptyMap()).when(cl).getInstalledPlugins();
+		final var resource = new SystemPluginResource() {
+			@Override
+			protected RepositoryManager getRepositoryManager(final String repository) {
+				return repo;
+			}
+
+			@Override
+			protected PluginsClassLoader getPluginClassLoader() {
+				return cl;
+			}
+		};
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
+		final var plugin = resource.findAll("any").stream().findFirst().get();
+		Assertions.assertNull(plugin.getNewVersion());
+	}
+
+
+	@Test
 	void getRepositoryManager() throws IOException {
 		Assertions.assertTrue(resource.getRepositoryManager("not-exist").getLastPluginVersions().isEmpty());
 		Assertions.assertNull(resource.getRepositoryManager("not-exist").getArtifactInputStream("any", "1.2.3"));
@@ -160,6 +184,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertNull(pluginVo.getNewVersion());
 		Assertions.assertEquals("Foo", pluginVo.getName());
 	}
+
 	@Test
 	void findAllInstalledNextNewPlugin() throws IOException {
 		final var resource = mockCentral("search.json");
@@ -413,8 +438,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		httpServer.start();
 
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
-				new URL[] { Thread.currentThread().getContextClassLoader()
-						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar") },
+				new URL[]{Thread.currentThread().getContextClassLoader()
+						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar")},
 				Thread.currentThread().getContextClassLoader()))) {
 
 			// Register a feature from a JAR
@@ -438,8 +463,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		httpServer.start();
 
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
-				new URL[] { Thread.currentThread().getContextClassLoader()
-						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar") },
+				new URL[]{Thread.currentThread().getContextClassLoader()
+						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar")},
 				Thread.currentThread().getContextClassLoader()))) {
 
 			// Register a feature from a JAR
@@ -735,7 +760,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void configurePluginEntityNotFound() throws MalformedURLException {
 		final var resource = new SystemPluginResource();
-		final var urls = Arrays.stream(new URL[] { new URL("file://tmp") });
+		final var urls = Arrays.stream(new URL[]{new URL("file://tmp")});
 		Assertions.assertThrows(TechnicalException.class,
 				() -> resource.configurePluginEntity(urls, SystemUser.class, "---"));
 	}
@@ -743,15 +768,15 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void configurePluginEntityFromJar() throws IOException {
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
-				new URL[] { Thread.currentThread().getContextClassLoader()
-						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar") },
+				new URL[]{Thread.currentThread().getContextClassLoader()
+						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar")},
 				Thread.currentThread().getContextClassLoader()))) {
 			final var url = Thread.currentThread().getContextClassLoader()
 					.getResource("csv/sample-business-entity.csv");
 			final var pluginResource = new SystemPluginResource();
 			pluginResource.em = Mockito.mock(EntityManager.class);
 			pluginResource.csvForJpa = Mockito.mock(CsvForJpa.class);
-			pluginResource.configurePluginEntity(Arrays.stream(new URL[] { url }), SampleBusinessEntity.class,
+			pluginResource.configurePluginEntity(Arrays.stream(new URL[]{url}), SampleBusinessEntity.class,
 					url.getPath());
 		}
 	}
@@ -763,7 +788,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		final var pluginResource = new SystemPluginResource();
 		pluginResource.em = Mockito.mock(EntityManager.class);
 		pluginResource.csvForJpa = csvForJpa;
-		pluginResource.configurePluginEntity(Arrays.stream(new URL[] { url }), SampleBusinessEntity.class,
+		pluginResource.configurePluginEntity(Arrays.stream(new URL[]{url}), SampleBusinessEntity.class,
 				url.toString());
 	}
 
@@ -778,7 +803,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Mockito.doReturn(new ArrayList<SystemUser>()).when(query).getResultList();
 
 		pluginResource.csvForJpa = csvForJpa;
-		pluginResource.configurePluginEntity(Arrays.stream(new URL[] { url }), SystemUser.class, url.toString());
+		pluginResource.configurePluginEntity(Arrays.stream(new URL[]{url}), SystemUser.class, url.toString());
 	}
 
 	@Test
@@ -838,16 +863,16 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	void installNexus() throws IOException {
 		httpServer.stubFor(get(urlEqualTo(
 				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-								.withBody(IOUtils.toByteArray(
-										new ClassPathResource("mock-server/nexus-repo/plugin-sample-0.0.1.jar")
-												.getInputStream()))));
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
+						.withBody(IOUtils.toByteArray(
+								new ClassPathResource("mock-server/nexus-repo/plugin-sample-0.0.1.jar")
+										.getInputStream()))));
 		httpServer.stubFor(get(urlEqualTo(
 				"/service/local/lucene/search?g=org.ligoj.plugin&collapseresults=true&repositoryId=releases&p=jar&c=sources"))
-						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-								.withBody(IOUtils.toString(
-										new ClassPathResource("mock-server/nexus-repo/search.json").getInputStream(),
-										StandardCharsets.UTF_8))));
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
+						.withBody(IOUtils.toString(
+								new ClassPathResource("mock-server/nexus-repo/search.json").getInputStream(),
+								StandardCharsets.UTF_8))));
 		httpServer.start();
 
 		newPluginResourceInstall().install("plugin-sample", "nexus");
