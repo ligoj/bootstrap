@@ -3,45 +3,10 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import jakarta.persistence.EntityManager;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -74,13 +39,27 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Manage plug-in life-cycle.
  *
  * @see <a href="https://repository.sonatype.org/nexus-indexer-lucene-plugin/default/docs/path__lucene_search.html">OSS
- *      lucene_search</a>
+ * lucene_search</a>
  */
 @Path("/system/plugin")
 @Slf4j
@@ -151,12 +130,18 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	public List<PluginVo> findAll(@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository)
 			throws IOException {
 		// Get the available plug-ins
-		final var lastVersion = getLastPluginVersions(repository);
+		Map<String, Artifact> lastVersion = new HashMap<>();
+		try {
+			lastVersion = getLastPluginVersions(repository);
+		} catch (IOException ioe) {
+			log.warn("Unable to get latest version from repository {}", repository, ioe);
+		}
 		final var enabledFeatures = context.getBeansOfType(FeaturePlugin.class);
+		final var lastVersionF = lastVersion;
 
 		// Get the enabled plug-in features
 		final var enabled = this.repository.findAll().stream()
-				.map(p -> toVo(lastVersion, p,
+				.map(p -> toVo(lastVersionF, p,
 						enabledFeatures.values().stream().filter(f -> p.getKey().equals(f.getKey())).findFirst()
 								.orElse(null)))
 				.filter(Objects::nonNull)
@@ -571,7 +556,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 *
 	 * @param plugin The plug-in class. Will be used to find the related container archive or class file.
 	 * @return a {@code String} representing the time the file was last modified, or a default time stamp to indicate
-	 *         the time of last modification is not supported by the file system
+	 * the time of last modification is not supported by the file system
 	 * @throws URISyntaxException if an I/O error occurs
 	 * @throws IOException        if an I/O error occurs
 	 */
@@ -637,7 +622,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 *
 	 * @param plugin The plugin class.
 	 * @return The Maven "artifactId" as it should be when naming convention is respected. Required to detect the new
-	 *         version.
+	 * version.
 	 */
 	public String toArtifactId(final FeaturePlugin plugin) {
 		return "plugin-" + Arrays.stream(plugin.getKey().split(":")).skip(1).collect(Collectors.joining("-"));
@@ -662,7 +647,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			// Build the required CSV file
 			final var csv = "csv/"
 					+ String.join("-", StringUtils.splitByCharacterTypeCamelCase(entityClass.getSimpleName()))
-							.toLowerCase(Locale.ENGLISH)
+					.toLowerCase(Locale.ENGLISH)
 					+ ".csv";
 			configurePluginEntity(Collections.list(classLoader.getResources(csv)).stream(), entityClass,
 					pluginLocation);
@@ -682,10 +667,10 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	/**
 	 * Configure a plug-in from a given class and CSV. Its content is converted into target entity's type and inserted
 	 * with JPA. The CSV file must be located inside the scope of the target plug-in.
-	 * 
-	 * @param <T> Target class type.
-	 * @param csv List of URL of CSV. Only the first one matching to plug-in location is read.
-	 * @param entityClass Target class of the CSV.
+	 *
+	 * @param <T>            Target class type.
+	 * @param csv            List of URL of CSV. Only the first one matching to plug-in location is read.
+	 * @param entityClass    Target class of the CSV.
 	 * @param pluginLocation The plug-in owner's location
 	 * @throws IOException When the CSV management failed.
 	 */
