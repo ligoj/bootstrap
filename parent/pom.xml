@@ -100,7 +100,7 @@
 		<spring-security.version>6.1.2</spring-security.version>
 		<spring-security-rsa>1.1.1</spring-security-rsa>
 		<transaction-api.version>2.0.1</transaction-api.version>
-		<wiremock.version>3.0.0-beta-10</wiremock.version>
+		<wiremock.version>3.0.1</wiremock.version>
 	</properties>
 
 	<dependencyManagement>
