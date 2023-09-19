@@ -24,7 +24,9 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 
 	private static final String DEFAULT_ARTIFACT_URL = "https://repo.maven.apache.org/maven2/org/ligoj/plugin/";
 	private static final String DEFAULT_GROUP_ID = "org.ligoj.plugin";
-	private static final String DEFAULT_SEARCH_URL = "https://search.maven.org/solrsearch/select?wt=json&rows=100&q=";
+
+	// See https://central.sonatype.org/search/rest-api-guide/
+	private static final String DEFAULT_SEARCH_URL = "https://search.maven.org/solrsearch/select?wt=json&rows=100&q=g:";
 
 	@Override
 	public String getId() {
@@ -34,7 +36,7 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 	@Override
 	@CacheResult(cacheName = "plugins-last-version-central")
 	public Map<String, Artifact> getLastPluginVersions() throws IOException {
-		try (var processor = new CurlProcessor()) {
+		try (var processor = new CurlProcessor(getSearchProxyHost(), getSearchProxyPort())) {
 			final var searchResult = Objects.toString(processor.get(getSearchUrl(DEFAULT_SEARCH_URL + getGroupId(DEFAULT_GROUP_ID))),
 					"{\"response\":{\"docs\":[]}}}");
 			// Extract artifacts

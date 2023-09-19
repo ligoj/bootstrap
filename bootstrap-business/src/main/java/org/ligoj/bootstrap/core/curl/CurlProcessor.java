@@ -46,6 +46,15 @@ import java.util.function.Function;
 public class CurlProcessor implements AutoCloseable {
 
 	/**
+	 * Default connection timeout (ms).
+	 */
+	public static final int DEFAULT_CONNECTION_TIMEOUT = 2000;
+	/**
+	 * Default response timeout (ms).
+	 */
+	public static final int DEFAULT_RESPONSE_TIMEOUT = 20000;
+
+	/**
 	 * Dummy SSL manager.
 	 */
 	public static class TrustedX509TrustManager implements javax.net.ssl.X509TrustManager {
@@ -75,7 +84,7 @@ public class CurlProcessor implements AutoCloseable {
 	/**
 	 * Default callback.
 	 */
-	private static final DefaultHttpResponseCallback DEFAULT_CALLBACK = new DefaultHttpResponseCallback();
+	public static final DefaultHttpResponseCallback DEFAULT_CALLBACK = new DefaultHttpResponseCallback();
 
 	/**
 	 * Support HTTP methods.
@@ -162,37 +171,64 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
 	 */
 	public CurlProcessor(final HttpResponseCallback callback) {
-		this(callback, 2000, 20000);
+		this(callback, DEFAULT_CONNECTION_TIMEOUT, DEFAULT_RESPONSE_TIMEOUT);
 	}
 
 	/**
 	 * Prepare a processor with callback.
 	 *
-	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
+	 * @param callback          Not <code>null</code> {@link HttpResponseCallback} used for each response.
 	 * @param connectionTimeout Max connection timeout, milliseconds.
-	 * @param responseTimeout Max response timeout, milliseconds.
+	 * @param responseTimeout   Max response timeout, milliseconds.
 	 */
 	public CurlProcessor(final HttpResponseCallback callback, long connectionTimeout, long responseTimeout) {
+		this(callback, connectionTimeout, responseTimeout, false, null, null);
+	}
+
+	/**
+	 * Prepare a processor with proxy settings.
+	 *
+	 * @param proxyHost Custom proxy host for this process.
+	 * @param proxyPort Custom proxy port for this process. Default (when <code>null</code></.code>) is <code>8080</code> when proxy host is defined.
+	 */
+	public CurlProcessor(final String proxyHost, final Integer proxyPort) {
+		this(DEFAULT_CALLBACK, DEFAULT_CONNECTION_TIMEOUT, DEFAULT_RESPONSE_TIMEOUT, false, proxyHost, proxyPort);
+	}
+
+	/**
+	 * Prepare a processor with callback.
+	 *
+	 * @param callback          Not <code>null</code> {@link HttpResponseCallback} used for each response.
+	 * @param connectionTimeout Max connection timeout, milliseconds.
+	 * @param responseTimeout   Max response timeout, milliseconds.
+	 * @param noVerifySsl       When <code>true</code> SSL checks are ignored.
+	 * @param proxyHost         Custom proxy host for this process.
+	 * @param proxyPort         Custom proxy port for this process. Default (when <code>null</code>) is <code>8080</code> when proxy host is defined.
+	 */
+	public CurlProcessor(final HttpResponseCallback callback, long connectionTimeout, long responseTimeout, final boolean noVerifySsl, final String proxyHost, final Integer proxyPort) {
 		this.callback = callback;
 		this.clientBuilder = HttpClientBuilder.create();
 
 		// Initialize proxy
-		final var proxyHost = System.getProperty(HTTPS_PROXY_HOST);
-		if (proxyHost != null) {
-			final var proxy = new HttpHost(proxyHost, Integer.parseInt(System.getProperty(HTTPS_PROXY_PORT)));
+		final var proxyHostResolved = StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_HOST), proxyHost);
+		if (proxyHostResolved != null) {
+			final var proxyPortResolved = ObjectUtils.defaultIfNull(proxyPort, StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_PORT),"8080")).toString();
+			final var proxy = new HttpHost(proxyHostResolved, Integer.parseInt(proxyPortResolved));
 			final var httpRoutePlanner = new DefaultProxyRoutePlanner(proxy);
 			clientBuilder.setRoutePlanner(httpRoutePlanner);
 		}
 
-		// Initialize connection manager
-		final var connectionManager = new BasicHttpClientConnectionManager(newSslContext());
-		clientBuilder.setConnectionManager(connectionManager);
-		clientBuilder.setDefaultRequestConfig(RequestConfig.custom()
-				.setCookieSpec(StandardCookieSpec.RELAXED)
-				.setRedirectsEnabled(false)
-				.setResponseTimeout(responseTimeout, TimeUnit.MILLISECONDS)
-				.setConnectionRequestTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
-				.build());
+		if (noVerifySsl) {
+			// Initialize connection manager to bypass some SSL checks
+			final var connectionManager = new BasicHttpClientConnectionManager(newSslContext());
+			clientBuilder.setConnectionManager(connectionManager);
+			clientBuilder.setDefaultRequestConfig(RequestConfig.custom()
+					.setCookieSpec(StandardCookieSpec.RELAXED)
+					.setRedirectsEnabled(false)
+					.setResponseTimeout(responseTimeout, TimeUnit.MILLISECONDS)
+					.setConnectionRequestTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+					.build());
+		}
 
 
 		// Initialize cookie strategy

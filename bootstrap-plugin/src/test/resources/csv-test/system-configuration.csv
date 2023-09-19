@@ -1,5 +1,5 @@
 name;value
-plugins.repository-manager.central.search.url;http://localhost:8120/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin
+plugins.repository-manager.central.search.url;http://localhost:8120/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin
 plugins.repository-manager.central.artifact.url;http://localhost:8120/maven2/org/ligoj/plugin
 plugins.repository-manager.nexus.search.url;http://localhost:8120/service/local/lucene/search?g=org.ligoj.plugin&collapseresults=true&repositoryId=releases&p=jar&c=sources
 plugins.repository-manager.nexus.artifact.url;http://localhost:8120/service/local/repositories/releases/content/org/ligoj/plugin

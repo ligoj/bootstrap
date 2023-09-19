@@ -339,6 +339,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 		try (final var processor = new CurlProcessor()) {
 			final var downloadPage = processor.get("http://localhost:" + PROXY_PORT);
 			Assertions.assertEquals("CONTENT", downloadPage);
+		} finally {
 			// clean proxy configuration
 			System.clearProperty("https.proxyHost");
 			System.clearProperty("https.proxyPort");

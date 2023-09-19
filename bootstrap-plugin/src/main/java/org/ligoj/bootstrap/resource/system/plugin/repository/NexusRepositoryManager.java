@@ -29,7 +29,7 @@ public class NexusRepositoryManager extends AbstractRemoteRepositoryManager {
 	@Override
 	@CacheResult(cacheName = "plugins-last-version-nexus")
 	public Map<String, Artifact> getLastPluginVersions() throws IOException {
-		try (var processor = new CurlProcessor()) {
+		try (var processor = new CurlProcessor(getSearchProxyHost(), getSearchProxyPort())) {
 			final var searchResult = Objects.toString(
 					processor.get(getSearchUrl(DEFAULT_SEARCH_URL + getGroupId(DEFAULT_GROUP_ID)), "Accept:application/json"), "{\"data\":[]}");
 			// Extract artifacts

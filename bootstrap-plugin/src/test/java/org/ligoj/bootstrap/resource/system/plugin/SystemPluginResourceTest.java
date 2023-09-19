@@ -146,7 +146,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void findAllNewVersion() throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
+		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
@@ -364,7 +364,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	private SystemPluginResource mockCentral(final String body) throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
+		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
 								new ClassPathResource("mock-server/maven-repo/" + body).getInputStream(),
@@ -840,7 +840,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		httpServer.stubFor(get(urlEqualTo("/maven2/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toByteArray(
 						new ClassPathResource("mock-server/maven-repo/plugin-sample-0.0.1.jar").getInputStream()))));
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
+		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
@@ -1014,7 +1014,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	private List<Artifact> searchPluginsInMavenRepo(final String query) throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
+		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
@@ -1025,7 +1025,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void invalidateLastPluginVersions() throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
+		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
 						.withBody(IOUtils.toString(
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
