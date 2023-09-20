@@ -136,6 +136,9 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		} catch (IOException ioe) {
 			log.warn("Unable to get latest version from repository {}", repository, ioe);
 		}
+		if (lastVersion.isEmpty()) {
+			log.warn("Unable to get latest version from repository {}", repository);
+		}
 		final var enabledFeatures = context.getBeansOfType(FeaturePlugin.class);
 		final var lastVersionF = lastVersion;
 
