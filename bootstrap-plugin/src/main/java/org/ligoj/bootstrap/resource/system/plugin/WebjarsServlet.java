@@ -39,7 +39,7 @@ public class WebjarsServlet extends HttpServlet {
 	/**
 	 * Additional mime types
 	 */
-	private final Map<String, String> mimeTypes = new HashMap<>();
+	private transient final Map<String, String> mimeTypes = new HashMap<>();
 
 	/**
 	 * Constructor registering additional MIME types.

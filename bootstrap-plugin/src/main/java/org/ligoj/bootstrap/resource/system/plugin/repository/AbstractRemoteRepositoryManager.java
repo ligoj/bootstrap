@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.URL;
+import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -131,7 +131,7 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 			throws IOException {
 		final var url = getArtifactUrl(artifact, version, defaultUrl);
 		log.info("Resolved remote URL is {}", url);
-		final var urlObj = new URL(url);
+		final var urlObj = URI.create(url).toURL();
 		final var proxyHost = getArtifactProxyHost();
 		final Proxy proxy;
 		if (proxyHost == null) {

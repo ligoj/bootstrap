@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -28,7 +28,8 @@ class TestAbstractServerTest extends AbstractServerTest {
 		httpServer.stubFor(
 				WireMock.get(WireMock.urlPathEqualTo("/")).willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_OK).withBody("ok")));
 		httpServer.start();
-		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
+
+		Assertions.assertEquals("ok", IOUtils.toString(URI.create("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -39,7 +40,7 @@ class TestAbstractServerTest extends AbstractServerTest {
 		httpServer.stubFor(
 				WireMock.get(WireMock.urlPathEqualTo("/")).willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_OK).withBody("ok")));
 		httpServer.start();
-		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
+		Assertions.assertEquals("ok", IOUtils.toString(URI.create("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 		httpServer.stop();
 		httpServer = null;
 	}
@@ -52,7 +53,7 @@ class TestAbstractServerTest extends AbstractServerTest {
 		httpServer.stubFor(
 				WireMock.get(WireMock.urlPathEqualTo("/")).willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_OK).withBody("ok")));
 		httpServer.start();
-		Assertions.assertEquals("ok", IOUtils.toString(new URL("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
+		Assertions.assertEquals("ok", IOUtils.toString(URI.create("http://localhost:" + MOCK_PORT + "/"), StandardCharsets.UTF_8));
 		httpServer.stop();
 	}
 

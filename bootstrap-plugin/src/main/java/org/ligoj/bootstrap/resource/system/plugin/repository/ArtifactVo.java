@@ -31,12 +31,12 @@ public class ArtifactVo implements Artifact {
 
 	/**
 	 * Constructor for a copy of the given artifact
-	 * 
+	 *
 	 * @param artifact The artifact to clone.
 	 */
 	public ArtifactVo(final Artifact artifact) {
 		this();
-		setArtifact(artifact.getArtifact());
-		setVersion(artifact.getVersion());
+		this.artifact = artifact.getArtifact();
+		this.version = artifact.getVersion();
 	}
 }

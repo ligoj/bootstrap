@@ -49,7 +49,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 	/**
 	 * Default constructor overriding the default annotation introspector.
 	 */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({"this-escape", "deprecation"})
 	public ObjectMapperTrim() {
 		final var module = new SimpleModule("BootstrapModule", new Version(1, 0, 1, null, null, null));
 		module.addDeserializer(Date.class, DateDeserializer.INSTANCE);

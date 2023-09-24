@@ -29,6 +29,6 @@ public class SystemRoleVo extends NamedBean<Integer> {
 	 * authorizations.
 	 */
 	@NotEmpty
-	private List<AuthorizationEditionVo> authorizations = new ArrayList<>();
+	private transient List<AuthorizationEditionVo> authorizations = new ArrayList<>();
 
 }

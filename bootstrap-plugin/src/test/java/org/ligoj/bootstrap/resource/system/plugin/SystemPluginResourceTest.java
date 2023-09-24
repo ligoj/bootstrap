@@ -44,10 +44,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -760,14 +757,14 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void configurePluginEntityNotFound() throws MalformedURLException {
 		final var resource = new SystemPluginResource();
-		final var urls = Arrays.stream(new URL[]{new URL("file://tmp")});
+		final var urls = Arrays.stream(new URL[]{URI.create("file://tmp").toURL()});
 		Assertions.assertThrows(TechnicalException.class,
 				() -> resource.configurePluginEntity(urls, SystemUser.class, "---"));
 	}
 
 	@Test
 	void configurePluginEntityFromJar() throws IOException {
-		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
+		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(
 				new URL[]{Thread.currentThread().getContextClassLoader()
 						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar")},
 				Thread.currentThread().getContextClassLoader()))) {
@@ -895,7 +892,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void getPluginClassLoader() {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
+		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertNotNull(resource.getPluginClassLoader());
 		}
 	}
@@ -933,7 +930,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	private SystemPluginResource newPluginResourceDelete() {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
+		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
 			Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 					Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));

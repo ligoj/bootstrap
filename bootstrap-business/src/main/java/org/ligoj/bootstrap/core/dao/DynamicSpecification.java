@@ -75,7 +75,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * Business to ORM field mapping.
 	 */
-	private final Map<String, String> mapping;
+	private final transient Map<String, String> mapping;
 
 	/**
 	 * Business to ORM field mapping.

@@ -14,6 +14,7 @@ public class MySQL5InnoDBUtf8Dialect extends MySQLDialect {
 	/**
 	 * Default constructor with additional registered keywords.
 	 */
+	@SuppressWarnings({"this-escape"})
 	public MySQL5InnoDBUtf8Dialect() {
 		registerKeyword("USAGE");
 	}
