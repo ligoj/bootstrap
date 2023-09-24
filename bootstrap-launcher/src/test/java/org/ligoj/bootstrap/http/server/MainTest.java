@@ -90,10 +90,10 @@ class MainTest {
 		thread.start();
 		Thread.sleep(1500); // NOSONAR -- Have to pause the thread for the test
 		Assertions.assertTrue(Main.getLastStartedServer().isStarted());
-		thread.stop();
 		Assertions.assertTrue(Main.getLastStartedServer().isRunning());
 		Thread.sleep(500); // NOSONAR -- Have to pause the thread for the test
 		Main.getLastStartedServer().stop();
+		Thread.sleep(500); // NOSONAR -- Have to pause the thread for the test
 		Assertions.assertTrue(Main.getLastStartedServer().isStopped());
 	}
 
