@@ -330,7 +330,7 @@ public class ApiTokenResource {
 	 *
 	 * @param login The related username.
 	 */
-	public void removeAll(@PathParam("name") final String login) {
+	public void removeAll(final String login) {
 		repository.deleteAllBy("user", login);
 	}
 }
