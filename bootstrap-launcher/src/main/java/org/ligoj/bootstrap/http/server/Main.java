@@ -36,8 +36,7 @@ public final class Main {
 	/**
 	 * Constructor : load property and XmlConfiguration
 	 *
-	 * @throws Exception
-	 *             server start error.
+	 * @throws Exception server start error.
 	 */
 	public Main() throws Exception {
 		server = new Server();
@@ -79,13 +78,12 @@ public final class Main {
 	}
 
 	// CHECKSTYLE:OFF This is a real application entry
+
 	/**
 	 * Main launcher. Equals to <code>mvn jetty:start</code> command.
 	 *
-	 * @param args
-	 *            by design arguments, but not used.
-	 * @throws Exception
-	 *             server start error.
+	 * @param args by design arguments, but not used.
+	 * @throws Exception server start error.
 	 */
 	public static void main(final String... args) throws Exception {
 		// CHECKSTYLE:ON
@@ -94,10 +92,6 @@ public final class Main {
 
 		// Update the last started server instance.
 		lastStartedServer = main.server;
-		try {
-			main.server.join();
-		} catch (final ThreadDeath td) {
-			log.error("Unexpected server shutdown", td);
-		}
+		main.server.join();
 	}
 }
