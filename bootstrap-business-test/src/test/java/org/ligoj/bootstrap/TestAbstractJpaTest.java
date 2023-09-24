@@ -42,7 +42,7 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 	@Deprecated
 	void persistEntitiesDeprecated() throws IOException {
 		csvForJpa = Mockito.mock(CsvForJpa.class);
-		super.persistEntities(".", new Class[]{SystemUser.class}, StandardCharsets.UTF_8.name());
+		super.persistEntities(".", new Class<?>[]{SystemUser.class}, StandardCharsets.UTF_8.name());
 	}
 
 	@Test

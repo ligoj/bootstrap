@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.ligoj.bootstrap.core.curl.CurlProcessor;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -42,7 +41,7 @@ class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTes
 
 	@BeforeEach
 	void prepareData() throws IOException {
-		persistEntities("csv-test", new Class[]{SystemConfiguration.class}, StandardCharsets.UTF_8);
+		persistEntities("csv-test", new Class<?>[]{SystemConfiguration.class}, StandardCharsets.UTF_8);
 	}
 
 	@Test

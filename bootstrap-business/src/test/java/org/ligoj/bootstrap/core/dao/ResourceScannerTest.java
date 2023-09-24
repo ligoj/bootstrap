@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +71,7 @@ class ResourceScannerTest {
 		final ResourceScanner scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
-				return Collections.enumeration(List.of(new URL("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/my_company/MyClass.class")));
+				return Collections.enumeration(List.of(URI.create("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/my_company/MyClass.class").toURL()));
 			}
 
 		};
@@ -88,7 +89,7 @@ class ResourceScannerTest {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
 				return Collections.enumeration(
-						List.of(new URL("jar:file:/c://my.jar!/com/my_company/MyClass.class")));
+						List.of(URI.create("jar:file:/c://my.jar!/com/my_company/MyClass.class").toURL()));
 			}
 
 		};

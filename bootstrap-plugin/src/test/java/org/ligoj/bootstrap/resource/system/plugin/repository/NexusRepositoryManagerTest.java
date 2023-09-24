@@ -37,7 +37,7 @@ class NexusRepositoryManagerTest extends AbstractServerTest {
 
 	@BeforeEach
 	void prepareData() throws IOException {
-		persistEntities("csv-test", new Class[] { SystemConfiguration.class }, StandardCharsets.UTF_8);
+		persistEntities("csv-test", new Class<?>[] { SystemConfiguration.class }, StandardCharsets.UTF_8);
 	}
 
 	@Test

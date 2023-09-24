@@ -3,23 +3,12 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.metadata.ConstraintDescriptor;
 import jakarta.ws.rs.QueryParam;
-
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.logging.FaultListener;
 import org.apache.cxf.logging.NoOpFaultListener;
@@ -32,6 +21,11 @@ import org.hibernate.validator.internal.metadata.location.ConstraintLocation.Con
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.*;
 
 /**
  * Enforces correct parameters regarding JSR-303 and JSR-349. Eligible beans are all JSR-349 annotated parameters plus
@@ -71,7 +65,7 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 				@SuppressWarnings("unchecked")
 				@Override
 				public Class<? extends Payload>[] payload() {
-					return new Class[0];
+					return (Class<? extends Payload>[])new Class<?>[0];
 				}
 			}), ConstraintLocationKind.PARAMETER);
 
