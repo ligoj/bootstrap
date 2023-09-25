@@ -8,7 +8,7 @@
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>bootstrap-web-test</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<properties>
 		<jetty.properties>${project.build.outputDirectory}/META-INF/jetty/jetty-dev.properties</jetty.properties>
