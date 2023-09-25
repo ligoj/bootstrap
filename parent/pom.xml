@@ -39,6 +39,7 @@
 		<url>https://travis-ci.com/ligoj/bootstrap</url>
 	</ciManagement>
 	<properties>
+		<junit.jupiter.version>5.9.2</junit.jupiter.version>
 		<gitRepositoryName>bootstrap</gitRepositoryName>
 		<plugin.jacoco>0.8.10</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
 
