@@ -27,12 +27,6 @@ jobs:
                 ]'
           plugin_repositories: '[{ "id": "spring-milestone", "url": "https://repo.spring.io/milestone/"}]'
           active_profiles: '["github"]'
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
       - name: Extract Maven project version
         run: |
           echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
