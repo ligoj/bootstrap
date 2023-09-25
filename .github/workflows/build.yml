@@ -14,7 +14,7 @@ jobs:
         with:
           checkout-fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           java-version: 21
-          distribution: 'corretto'
+          java-distribution: 'corretto'
           cache-path-add: ~/.sonar/cache
           cache-prefix: ${{ runner.os }}-sonar
           maven-version: 3.9.4
