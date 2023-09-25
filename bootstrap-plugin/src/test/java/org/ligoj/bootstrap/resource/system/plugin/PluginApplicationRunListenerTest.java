@@ -22,7 +22,8 @@ class PluginApplicationRunListenerTest {
 
 	@Test
 	void noPluginClassLoader() {
-		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
+		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
+			Assertions.assertTrue(classLoader.getScopedClassLoader() instanceof URLClassLoader);
 			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class)).starting(null);
 		}
 		Assertions.assertEquals("app", Thread.currentThread().getContextClassLoader().getName());
@@ -30,7 +31,8 @@ class PluginApplicationRunListenerTest {
 
 	@Test
 	void pluginClassLoader() throws IOException, NoSuchAlgorithmException {
-		try (var ignored = new ThreadClassLoaderScope(new PluginsClassLoader())) {
+		try (var classLoader = new ThreadClassLoaderScope(new PluginsClassLoader())) {
+			Assertions.assertTrue(classLoader.getScopedClassLoader() instanceof URLClassLoader);
 			final var listener = new PluginApplicationRunListener(Mockito.mock(SpringApplication.class));
 			listener.starting(null);
 			Assertions.assertTrue(listener.getOrder() < 0);
@@ -47,7 +49,8 @@ class PluginApplicationRunListenerTest {
 	@Test
 	void pluginClassLoaderFail() {
 		final var oldValue = System.getProperty(PluginsClassLoader.HOME_DIR_PROPERTY);
-		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
+		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(new URL[0]))) {
+			Assertions.assertTrue(classLoader.getScopedClassLoader() instanceof URLClassLoader);
 			// Inject an invalid path
 			System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY,"\u0000");
 			new PluginApplicationRunListener(Mockito.mock(SpringApplication.class));

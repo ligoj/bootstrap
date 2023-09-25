@@ -36,7 +36,8 @@ class ClassPathResourceMultipleTest {
 		final var resource = new ClassPathResourceMultiple("csv/demo", DummyEntity3.class);
 		Assertions.assertThrows(FileNotFoundException.class, () -> {
 			try (var ignored = resource.getInputStream()) {
-				// Should not happen
+				Assertions.assertNull(ignored);
+				Assertions.fail();
 			}
 		});
 	}

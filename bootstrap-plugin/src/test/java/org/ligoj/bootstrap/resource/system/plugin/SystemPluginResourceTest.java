@@ -764,10 +764,11 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void configurePluginEntityFromJar() throws IOException {
-		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(
+		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(
 				new URL[]{Thread.currentThread().getContextClassLoader()
 						.getResource("home-test/.ligoj/plugins/plugin-bar-1.0.0.jar")},
 				Thread.currentThread().getContextClassLoader()))) {
+			Assertions.assertTrue(classLoader.getScopedClassLoader() instanceof URLClassLoader);
 			final var url = Thread.currentThread().getContextClassLoader()
 					.getResource("csv/sample-business-entity.csv");
 			final var pluginResource = new SystemPluginResource();
@@ -892,7 +893,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void getPluginClassLoader() {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
+		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
+			Assertions.assertTrue(classLoader.getScopedClassLoader() instanceof URLClassLoader);
 			Assertions.assertNotNull(resource.getPluginClassLoader());
 		}
 	}
@@ -930,8 +932,9 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	private SystemPluginResource newPluginResourceDelete() {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		try (var ignored = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
+		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
+			Assertions.assertTrue(classLoader.getScopedClassLoader() instanceof URLClassLoader);
 			Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 					Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));
 			final var resource = new SystemPluginResource() {

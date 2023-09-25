@@ -41,30 +41,27 @@ public final class Main {
 	public Main() throws Exception {
 		server = new Server();
 		final var jettyPropertiesFile = System.getProperty("jetty.properties", SETTINGS);
-		try (var ignored = configure(jettyPropertiesFile)) {
-			// Load the properties file
-			log.debug("Loading Jetty Settings from {}", SETTINGS);
-		}
+		configure(jettyPropertiesFile);
+		// Load the properties file
+		log.debug("Loading Jetty Settings from {}", SETTINGS);
 	}
 
 	/**
 	 * Configure the server from properties and XML.
 	 */
-	private InputStream configure(final String jettyPropertiesFile) throws Exception {
-		final var propertiesInput = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(jettyPropertiesFile);
-		if (propertiesInput == null) {
-			log.error("Unable to find jetty properties file : " + jettyPropertiesFile);
-		} else {
+	private void configure(final String jettyPropertiesFile) throws Exception {
+		try (var propertiesInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(jettyPropertiesFile)) {
+			if (propertiesInput == null) {
+				log.error("Unable to find jetty properties file : " + jettyPropertiesFile);
+			} else {
+				// Copy the properties
+				copyProperties(propertiesInput);
 
-			// Copy the properties
-			copyProperties(propertiesInput);
-
-			// Configure the server
-			new XmlConfiguration(Resource.newResource(Thread.currentThread().getContextClassLoader()
-					.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml")))).configure(server);
+				// Configure the server
+				new XmlConfiguration(Resource.newResource(Thread.currentThread().getContextClassLoader()
+						.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml")))).configure(server);
+			}
 		}
-		return propertiesInput;
 	}
 
 	/**

@@ -84,7 +84,7 @@ class PluginsClassLoaderTest {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			try (var classLoader = checkClassLoader()) {
-				// Nothing to do
+				Assertions.assertTrue(classLoader.isEnabled());
 			}
 		} finally {
 			System.clearProperty("ligoj.home");
@@ -159,13 +159,13 @@ class PluginsClassLoaderTest {
 		try {
 			System.setProperty("ligoj.home", USER_HOME_DIRECTORY + "/.ligoj");
 			Assertions.assertThrows(PluginException.class, () -> {
-				try (PluginsClassLoader classLoader = new PluginsClassLoader() {
+				try (var classLoader = new PluginsClassLoader() {
 					@Override
 					protected void copy(final Path from, final Path to) throws IOException {
 						throw new IOException();
 					}
 				}) {
-					// Ignore
+					Assertions.assertTrue(classLoader.isEnabled());
 				}
 			});
 		} finally {
