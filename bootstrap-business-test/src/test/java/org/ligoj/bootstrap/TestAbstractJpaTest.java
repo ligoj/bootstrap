@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
@@ -36,13 +35,6 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 	void persistEntities2() throws IOException {
 		csvForJpa = Mockito.mock(CsvForJpa.class);
 		super.persistEntities("log4j2.json");
-	}
-
-	@Test
-	@Deprecated
-	void persistEntitiesDeprecated() throws IOException {
-		csvForJpa = Mockito.mock(CsvForJpa.class);
-		super.persistEntities(".", new Class<?>[]{SystemUser.class}, StandardCharsets.UTF_8.name());
 	}
 
 	@Test

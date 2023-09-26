@@ -39,7 +39,7 @@ public class WebjarsServlet extends HttpServlet {
 	/**
 	 * Additional mime types
 	 */
-	private transient final Map<String, String> mimeTypes = new HashMap<>();
+	private final transient Map<String, String> mimeTypes = new HashMap<>();
 
 	/**
 	 * Constructor registering additional MIME types.
@@ -84,14 +84,10 @@ public class WebjarsServlet extends HttpServlet {
 	/**
 	 * Copy the file stream to the response using the right mime type.
 	 *
-	 * @param response
-	 *            Target response.
-	 * @param webjarsResourceURI
-	 *            Source URI used to determine the MIME type.
-	 * @param inputStream
-	 *            The source input stream.
-	 * @throws IOException
-	 *             When related resource cannot be read.
+	 * @param response           Target response.
+	 * @param webjarsResourceURI Source URI used to determine the MIME type.
+	 * @param inputStream        The source input stream.
+	 * @throws IOException When related resource cannot be read.
 	 */
 	protected void serveFile(final HttpServletResponse response, final String webjarsResourceURI,
 			final InputStream inputStream) throws IOException {
@@ -106,8 +102,7 @@ public class WebjarsServlet extends HttpServlet {
 	/**
 	 * Guess the MIME type from the file name.
 	 *
-	 * @param filename
-	 *            The requested file name.
+	 * @param filename The requested file name.
 	 * @return The resolved MIME type. May be <code>null</code>.
 	 */
 	protected String guessMimeType(final String filename) {
@@ -127,8 +122,7 @@ public class WebjarsServlet extends HttpServlet {
 	/**
 	 * Is it a directory request ?
 	 *
-	 * @param uri
-	 *            Requested resource's URI.
+	 * @param uri Requested resource's URI.
 	 * @return <code>true</code> when URI is a directory request
 	 */
 	private static boolean isDirectoryRequest(final String uri) {
@@ -138,8 +132,7 @@ public class WebjarsServlet extends HttpServlet {
 	/**
 	 * Retrieve file name from given URI.
 	 *
-	 * @param webjarsResourceURI
-	 *            Requested resource's URI.
+	 * @param webjarsResourceURI Requested resource's URI.
 	 * @return The resolved file name.
 	 */
 	private String getFileName(final String webjarsResourceURI) {

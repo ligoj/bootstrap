@@ -36,7 +36,7 @@ public class ArtifactVo implements Artifact {
 	 */
 	public ArtifactVo(final Artifact artifact) {
 		this();
-		this.artifact = artifact.getArtifact();
-		this.version = artifact.getVersion();
+		setArtifact(artifact.getArtifact());
+		setVersion(artifact.getVersion());
 	}
 }

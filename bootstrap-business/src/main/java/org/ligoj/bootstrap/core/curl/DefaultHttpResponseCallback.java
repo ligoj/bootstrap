@@ -6,7 +6,6 @@ package org.ligoj.bootstrap.core.curl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class DefaultHttpResponseCallback implements HttpResponseCallback {
 					request.setResponse(EntityUtils.toString(entity, StandardCharsets.UTF_8));
 				}
 
-			} catch(final ParseException pe) {
+			} catch (final Exception pe) {
 				log.error("Unable to parse the response", pe);
 				return false;
 			} finally {
@@ -51,9 +50,8 @@ public class DefaultHttpResponseCallback implements HttpResponseCallback {
 
 	/**
 	 * Indicate the response is accepted.
-	 * 
-	 * @param response
-	 *            The received response.
+	 *
+	 * @param response The received response.
 	 * @return <code>true</code> to proceed the next request. <code>false</code> otherwise.
 	 */
 	protected boolean acceptResponse(final ClassicHttpResponse response) {
@@ -62,9 +60,8 @@ public class DefaultHttpResponseCallback implements HttpResponseCallback {
 
 	/**
 	 * Indicate the status is accepted.
-	 * 
-	 * @param status
-	 *            The received status to accept.
+	 *
+	 * @param status The received status to accept.
 	 * @return <code>true</code> to proceed the next request. <code>false</code> otherwise.
 	 */
 	protected boolean acceptStatus(final int status) {

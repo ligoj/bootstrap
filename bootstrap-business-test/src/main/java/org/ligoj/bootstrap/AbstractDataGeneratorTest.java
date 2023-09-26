@@ -3,18 +3,7 @@
  */
 package org.ligoj.bootstrap;
 
-import java.lang.reflect.Modifier;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
 import jakarta.ws.rs.core.UriInfo;
-
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +13,10 @@ import org.ligoj.bootstrap.core.SpringUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.lang.reflect.Modifier;
+import java.security.SecureRandom;
+import java.util.*;
 
 /**
  * Provides convenient methods to generate pseudo-generated data. Assuming a given salt, generated data will be always
@@ -348,7 +341,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	protected <T> List<T> getItems(final String salt, final List<T> items, final int lower, final int upper) {
 		final List<T> result = new ArrayList<>(upper);
 		final var size = Math.min(items.size(), getInt(salt, lower, upper));
-		final Set<Integer> added = new HashSet<>(upper);
+		final Set<Integer> added = HashSet.newHashSet(upper);
         var counter = size;
         var saltIncrement = 0;
 		while (counter != 0) {

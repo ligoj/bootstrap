@@ -105,22 +105,6 @@ public abstract class AbstractJpaTest extends AbstractSecurityTest {
 	 *
 	 * @param csvRoot     the root path of CSV resources. Lower case file name will be used.
 	 * @param entityModel the ordered set to clean, and also to refill from CSV files.
-	 * @param encoding    the encoding used to read the CSV resources. The name of a supported {@link java.nio.charset.Charset
-	 *                    charset}
-	 * @return the pagination object.
-	 * @throws IOException Read issue occurred.
-	 * @deprecated Use #persistEntities
-	 */
-	@Deprecated(since = "3.0.4")
-	protected UriInfo persistEntities(final String csvRoot, final Class<?>[] entityModel, final String encoding)
-			throws IOException {
-		return persistEntities(csvRoot,entityModel, Charset.forName(encoding));
-	}
-	/**
-	 * Persist the managed entities using CSV file corresponding to the entity name, inside the given root path.
-	 *
-	 * @param csvRoot     the root path of CSV resources. Lower case file name will be used.
-	 * @param entityModel the ordered set to clean, and also to refill from CSV files.
 	 * @param encoding {@link java.nio.charset.Charset charset} for read.
 	 * @return the pagination object.
 	 * @throws IOException Read issue occurred.

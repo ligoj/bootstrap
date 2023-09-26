@@ -146,7 +146,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT").withFixedDelay(4000)));
 		httpServer.start();
 
-        var start = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 
 		// Would succeed
 		final var curlRequest1 = new CurlRequest("POST", "http://localhost:" + MOCK_PORT + "/success",
@@ -325,15 +325,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 		// set proxy configuration and proxy server
 		System.setProperty("https.proxyHost", "localhost");
 		System.setProperty("https.proxyPort", String.valueOf(PROXY_PORT));
-		final var proxyServer = new WireMockServer(PROXY_PORT);
-		proxyServer.stubFor(
-				get(WireMock.urlMatching(".*")).willReturn(aResponse().proxiedFrom("http://localhost:" + MOCK_PORT)));
-		proxyServer.start();
-
-		// set main http server
-		httpServer.stubFor(
-				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
-		httpServer.start();
+		final var proxyServer = stubProxy();
 
 		// launch request
 		try (final var processor = new CurlProcessor()) {
@@ -344,6 +336,44 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 			System.clearProperty("https.proxyHost");
 			System.clearProperty("https.proxyPort");
 			proxyServer.stop();
+		}
+	}
+
+	private WireMockServer stubProxy() {
+		final var proxyServer = new WireMockServer(PROXY_PORT);
+		proxyServer.stubFor(
+				get(WireMock.urlMatching(".*")).willReturn(aResponse().proxiedFrom("http://localhost:" + MOCK_PORT)));
+		proxyServer.start();
+
+		// set main http server
+		httpServer.stubFor(
+				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
+		httpServer.start();
+		return proxyServer;
+	}
+
+	@Test
+	void testProxyExplicit() {
+		final var proxyServer = stubProxy();
+
+		// launch request
+		try (final var processor = new CurlProcessor("localhost", PROXY_PORT)) {
+			final var downloadPage = processor.get("http://localhost:" + PROXY_PORT);
+			Assertions.assertEquals("CONTENT", downloadPage);
+		} finally {
+			proxyServer.stop();
+		}
+	}
+
+	@Test
+	void testSsl() {
+		httpServer.stubFor(
+				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));
+		httpServer.start();
+
+		try (final var processor = new CurlProcessor(CurlProcessor.DEFAULT_CALLBACK, 1000, 1000, true, null, null)) {
+			final var downloadPage = processor.get("http://localhost:" + MOCK_PORT);
+			Assertions.assertEquals("CONTENT", downloadPage);
 		}
 	}
 

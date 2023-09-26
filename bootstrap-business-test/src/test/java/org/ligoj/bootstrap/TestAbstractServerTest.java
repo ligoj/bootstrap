@@ -64,6 +64,8 @@ class TestAbstractServerTest extends AbstractServerTest {
 	void stopTwice() {
 		httpServer = Mockito.mock(WireMockServer.class);
 		Mockito.doThrow(new RuntimeException()).when(httpServer).stop();
+		shutDownMockServer();
+		Mockito.verify(httpServer, Mockito.times(1)).stop();
 	}
 
 	/**
