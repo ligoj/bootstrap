@@ -54,8 +54,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlets</artifactId>
+			<groupId>org.eclipse.jetty.ee10</groupId>
+			<artifactId>jetty-ee10-servlets</artifactId>
 		</dependency>
 
 		<!-- Aspects & Proxy -->
@@ -140,7 +140,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.wiremock</groupId>
-			<artifactId>wiremock</artifactId>
+			<artifactId>wiremock-standalone</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

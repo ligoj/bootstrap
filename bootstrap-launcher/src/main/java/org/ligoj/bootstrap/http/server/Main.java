@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.http.server;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.URLResourceFactory;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ public final class Main {
 				copyProperties(propertiesInput);
 
 				// Configure the server
-				new XmlConfiguration(Resource.newResource(Thread.currentThread().getContextClassLoader()
+				new XmlConfiguration(new URLResourceFactory().newResource(Thread.currentThread().getContextClassLoader()
 						.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml")))).configure(server);
 			}
 		}

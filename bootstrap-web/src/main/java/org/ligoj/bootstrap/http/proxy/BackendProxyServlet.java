@@ -14,11 +14,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.ee10.proxy.ProxyServlet;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
-import org.eclipse.jetty.proxy.ProxyServlet;
 import org.eclipse.jetty.util.Callback;
 
 import java.io.IOException;
