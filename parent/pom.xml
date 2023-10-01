@@ -111,7 +111,7 @@
         <spring-security-rsa>1.1.1</spring-security-rsa>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
-        <wiremock.version>3.1.0</wiremock.version>
+        <wiremock.version>3.2.0</wiremock.version>
     </properties>
 
     <dependencyManagement>
