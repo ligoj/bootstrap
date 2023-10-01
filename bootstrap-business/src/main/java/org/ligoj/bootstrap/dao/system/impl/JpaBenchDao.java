@@ -47,7 +47,7 @@ public class JpaBenchDao implements ISystemPerformanceJpaDao {
 	@Override
 	public byte[] getLastAvailableLob() {
 		final var resultList = em
-				.createQuery("FROM " + SystemBench.class.getName() + " WHERE picture != null ORDER BY id DESC", SystemBench.class).setMaxResults(1)
+				.createQuery("FROM " + SystemBench.class.getName() + " WHERE picture IS NOT NULL ORDER BY id DESC", SystemBench.class).setMaxResults(1)
 				.getResultList();
 		if (resultList.isEmpty()) {
 			return new byte[0];

@@ -4,7 +4,6 @@
 		<validation-mode>NONE</validation-mode>
 		<properties>
 			<property name="hibernate.archive.autodetection" value="class" />
-			<property name="jakarta.persistence.validation.group.pre-update" value="NONE" />
 			<property name="hibernate.validator.apply_to_ddl" value="false" />
 			<property name="hibernate.validator.autoregister_listeners" value="false" />
 			<property name="hibernate.check_nullability" value="true" />

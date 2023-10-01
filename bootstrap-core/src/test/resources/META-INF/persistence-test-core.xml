@@ -4,7 +4,7 @@
 	<persistence-unit name="pu" transaction-type="RESOURCE_LOCAL">
 		<properties>
 			<property name="hibernate.archive.autodetection" value="class" />
-			<property name="jakarta.persistence.validation.group.pre-update" value="AUTO" />
+			<property name="jakarta.persistence.validation.group.pre-update" value="jakarta.validation.groups.Default" />
 			<property name="hibernate.validator.apply_to_ddl" value="true" />
 			<property name="hibernate.validator.autoregister_listeners" value="false" />
 			<property name="hibernate.check_nullability" value="true" />
