@@ -30,7 +30,7 @@ A Spring based REST architecture
 - Wiremock
 
 Requirements
-- Java-17
+- Java-21
 - Maven 3.8
 
 # Verify new version
