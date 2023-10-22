@@ -4,11 +4,7 @@
 	<display-name>bootstrap-business</display-name>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:META-INF/spring/application-context.xml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jExposeWebAppRoot</param-name>
-		<param-value>false</param-value>
+		<param-value>classpath:/META-INF/spring/jpa-context-test.xml,classpath:/META-INF/spring/business-context-test.xml,classpath:META-INF/spring/rest-context-test.xml,classpath:/META-INF/spring/security-context-admin-test.xml</param-value>
 	</context-param>
 	<servlet>
 		<servlet-name>RestServlet</servlet-name>
@@ -30,18 +26,8 @@
 	<listener>
 		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
-	</listener>
 	<servlet-mapping>
 		<servlet-name>RestServlet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
-	<session-config>
-		<session-timeout>30</session-timeout>
-	</session-config>
-
 </web-app>

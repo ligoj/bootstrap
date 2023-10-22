@@ -4,10 +4,12 @@
 package org.ligoj.bootstrap;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.HttpHostConnectException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
@@ -15,24 +17,25 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * An integration test.
  */
 @Slf4j
-abstract class AbstractRestTest extends AbstractTest {
+public abstract class AbstractRestTest extends AbstractTest {
 	/**
 	 * URI
 	 */
 	private static final String PORT = "6380";
-	private static final String BASE_URI = "http://localhost:" + PORT + "/bootstrap-business/rest";
+	protected static final String BASE_URI = "http://localhost:" + PORT + "/bootstrap-business/rest";
 
 	protected static final String DEFAULT_USER = "junit";
 
 	private static final int DEFAULT_RETRIES = 20;
 
 	int retries = DEFAULT_RETRIES;
-	CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+	protected CloseableHttpClient httpclient = HttpClientBuilder.create().build();
 
 	/**
 	 * Initialize overridden values.
@@ -73,7 +76,7 @@ abstract class AbstractRestTest extends AbstractTest {
 	 * @param webDescriptor location of Jetty Web descriptor file
 	 * @return Jetty server object built from the web descriptor.
 	 */
-	Server startRestServer(final String webDescriptor) {
+	protected Server startRestServer(final String webDescriptor) {
 		initProperties(webDescriptor);
 		try {
 			final var server = new org.ligoj.bootstrap.http.server.Main().getServer();
@@ -107,6 +110,12 @@ abstract class AbstractRestTest extends AbstractTest {
 		}
 	}
 
+	protected String execute(final ClassicHttpRequest httpRequest) throws IOException {
+		return httpclient.execute(httpRequest, response -> {
+			// Ask for the callback a flow control
+			return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		});
+	}
 
 	/**
 	 * Check the maximum reach of tries.

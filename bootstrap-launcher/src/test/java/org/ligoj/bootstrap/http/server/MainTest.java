@@ -3,11 +3,7 @@
  */
 package org.ligoj.bootstrap.http.server;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * Test class of {@link Main}
@@ -29,6 +25,10 @@ class MainTest {
     static void cleanup() {
 		System.clearProperty("jetty.properties");
 		System.clearProperty("jetty.xml");
+		System.clearProperty("jetty.port");
+		System.clearProperty("jetty.webapp");
+		System.clearProperty("jetty.target");
+		System.clearProperty("jetty.contextPath");
 	}
 
 	/**
@@ -49,7 +49,6 @@ class MainTest {
 	@Test
     void testCorrectConfiguration() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-empty-test.properties");
-		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
 		final var main = new Main();
 		Assertions.assertFalse(main.getServer().isStarting());
 		Assertions.assertFalse(main.getServer().isStopping());
@@ -61,13 +60,12 @@ class MainTest {
 	 */
 	@Test
     void testInvalidXmlFile() throws Exception {
-		System.setProperty("jetty.properties", "META-INF/jetty/jetty-empty-test.properties");
-		System.setProperty("jetty.xml", "META-INF/jetty/jetty-fail-test.xml");
+		System.setProperty("jetty.properties", "META-INF/jetty/jetty-fail.properties");
 		try {
 			Main.main();
 			Assertions.fail("Server should failed to start");
-		} catch (java.lang.NoSuchMethodException e) {
-			Assertions.assertEquals("class org.eclipse.jetty.server.Server.setUnknownProperty(class java.lang.Object)", e.getMessage());
+		} catch (NumberFormatException e) {
+			Assertions.assertEquals("For input string: \"\"INVALID\"\"", e.getMessage());
 		}
 	}
 
@@ -79,7 +77,6 @@ class MainTest {
     void testKillServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
 		System.setProperty("test.test2", "original");
-		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
 		final var thread = new Thread(() -> {
 			try {
 				Main.main();
@@ -105,7 +102,6 @@ class MainTest {
     void testStartServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
 		System.setProperty("test.test2", "original");
-		System.setProperty("jetty.xml", "META-INF/jetty/jetty-test.xml");
 		final var thread = new Thread(() -> {
 			try {
 				Main.main();

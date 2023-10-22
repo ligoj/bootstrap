@@ -5,9 +5,11 @@ package org.ligoj.bootstrap.http.server;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.resource.URLResourceFactory;
-import org.eclipse.jetty.xml.XmlConfiguration;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.resource.PathResourceFactory;
+import org.eclipse.jetty.util.resource.VisibleCombinedResource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,9 +59,45 @@ public final class Main {
 				// Copy the properties
 				copyProperties(propertiesInput);
 
-				// Configure the server
-				new XmlConfiguration(new URLResourceFactory().newResource(Thread.currentThread().getContextClassLoader()
-						.getResource(System.getProperty("jetty.xml", "META-INF/jetty/jetty.xml")))).configure(server);
+				if (System.getProperty("jetty.port") != null) {
+					// Configure the server
+					final var httpConfig = new org.eclipse.jetty.server.HttpConfiguration();
+					httpConfig.setSecureScheme("https");
+					httpConfig.setSecurePort(8443);
+					httpConfig.setOutputBufferSize(32768);
+					httpConfig.setResponseHeaderSize(8192);
+					httpConfig.setRequestHeaderSize(8192);
+
+					final var factory = new org.eclipse.jetty.server.HttpConnectionFactory(httpConfig);
+					final var connector = new org.eclipse.jetty.server.ServerConnector(server, factory);
+					connector.setHost(System.getProperty("jetty.host", "localhost"));
+					connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8080")));
+					connector.setIdleTimeout(30000);
+					server.setConnectors(new Connector[]{connector});
+				}
+
+				// Declare server handler collection
+				if (System.getProperty("jetty.webapp") != null) {
+					final var contexts = new ContextHandlerCollection();
+					server.setHandler(contexts);
+
+					final var webContext = new org.eclipse.jetty.ee10.webapp.WebAppContext();
+					webContext.setContextPath(System.getProperty("jetty.contextPath", "/bootstrap-business"));
+					webContext.setDescriptor(System.getProperty("etty.descriptor"));
+
+					final var pathFactory = new PathResourceFactory();
+					final var resourceCollection = VisibleCombinedResource.combine(
+							pathFactory.newResource(System.getProperty("jetty.webapp", ".")),
+							pathFactory.newResource(System.getProperty("jetty.target", "./WEB-INF/classes"))
+					);
+					webContext.setBaseResource(resourceCollection);
+					webContext.setResourceAlias("/WEB-INF/classes/", "/classes/");
+					webContext.setExtraClasspath("./target/classes/");
+					contexts.addHandler(webContext);
+				}
+
+				server.setAttribute("stopAtShutdown", true);
+
 			}
 		}
 	}
