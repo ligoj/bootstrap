@@ -56,7 +56,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@BeforeAll
 	static void startServer() {
-		server = new CrudRestIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
+		server = new CrudRestIT().startRestServer("");
 	}
 
 	/**
@@ -71,14 +71,15 @@ public class CrudRestIT extends AbstractRestTest {
 	 * create a wine
 	 */
 	private int create() throws IOException {
-		final var httppost = new HttpPost(BASE_URI + RESOURCE);
-		httppost.setEntity(new StringEntity(
+		final var message = new HttpPost(BASE_URI + RESOURCE);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		message.setEntity(new StringEntity(
 				"{\"name\":\"JUNIT" + "\",\"grapes\":\"Grenache / Syrah\"," + "\"country\":\"France\"," + "\"region\":\"Southern Rhone / Gigondas\","
 						+ "\"year\":2009,\"picture\":\"saint_cosme.jpg\"," + "\"description\":\"The aromas of fruit ...\"}",
 				ContentType.APPLICATION_JSON));
-		return HTTP_CLIENT.execute(httppost, response -> {
+		return HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			Assertions.assertTrue(NumberUtils.isDigits(content));
 			return Integer.valueOf(content);
 		});
@@ -88,8 +89,9 @@ public class CrudRestIT extends AbstractRestTest {
 	 * Delete all wines
 	 */
 	private void deleteAll() throws IOException {
-		final HttpDelete httpdelete = new HttpDelete(BASE_URI + RESOURCE);
-		HTTP_CLIENT.execute(httpdelete, response -> {
+		final var message = new HttpDelete(BASE_URI + RESOURCE);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
 			return null;
 		});
@@ -100,8 +102,9 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@Test
 	void testFindByUnknownId() throws IOException {
-		final var httpget = new HttpGet(BASE_URI + RESOURCE + "/0");
-		HTTP_CLIENT.execute(httpget, response -> {
+		final var message = new HttpGet(BASE_URI + RESOURCE + "/0");
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
 			return null;
 		});
@@ -119,8 +122,9 @@ public class CrudRestIT extends AbstractRestTest {
 	 * wine : test read by id service
 	 */
 	private void testFindById(final int id) throws IOException {
-		final HttpGet httpget = new HttpGet(BASE_URI + RESOURCE + "/" + id);
-		HTTP_CLIENT.execute(httpget, response -> {
+		final var message = new HttpGet(BASE_URI + RESOURCE + "/" + id);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
 
 			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
@@ -143,11 +147,12 @@ public class CrudRestIT extends AbstractRestTest {
 	 * @param id wine id
 	 */
 	private void testUpdate(final int id) throws IOException {
-		final var httpput = new HttpPut(BASE_URI + RESOURCE);
-		httpput.setEntity(new StringEntity("{\"id\":" + id + ",\"name\":\"JU" + id + "\",\"grapes\":\"Grenache / Syrah\"," + "\"country\":\"France\","
+		final var message = new HttpPut(BASE_URI + RESOURCE);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		message.setEntity(new StringEntity("{\"id\":" + id + ",\"name\":\"JU" + id + "\",\"grapes\":\"Grenache / Syrah\"," + "\"country\":\"France\","
 				+ "\"region\":\"Southern Rhone / Gigondas\"," + "\"year\":2009,\"picture\":\"saint_cosme.jpg\","
 				+ "\"description\":\"The aromas of fruit ...\"}", ContentType.APPLICATION_JSON));
-		HTTP_CLIENT.execute(httpput, response -> {
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
 			return null;
 		});
@@ -159,18 +164,19 @@ public class CrudRestIT extends AbstractRestTest {
 	@Test
 	void testFindAll() throws IOException {
 		testCreate();
-		final var httpget = new HttpGet(BASE_URI + RESOURCE + FIND_ALL_PARAMETERS);
-		HTTP_CLIENT.execute(httpget, response -> {
+		final var message = new HttpGet(BASE_URI + RESOURCE + FIND_ALL_PARAMETERS);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
 
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
+			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assertions.assertEquals("1", result.get("draw"));
 			Assertions.assertTrue((Integer) result.get("recordsFiltered") > 0);
 			Assertions.assertTrue((Integer) result.get("recordsTotal") > 0);
-			@SuppressWarnings("unchecked") final List<Map<String, Object>> list = (List<Map<String, Object>>) result.get("data");
+			@SuppressWarnings("unchecked") final var list = (List<Map<String, Object>>) result.get("data");
 			Assertions.assertFalse(list.isEmpty());
-			final Map<String, Object> item = list.get(0);
+			final var item = list.get(0);
 			Assertions.assertTrue((Integer) item.get("id") >= 0);
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("name")));
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("grapes")));
@@ -188,18 +194,19 @@ public class CrudRestIT extends AbstractRestTest {
 	@Test
 	void testFindAllQueryAlias() throws IOException {
 		testCreate();
-		final var httpget = new HttpGet(BASE_URI + RESOURCE + "/query/alias" + FIND_ALL_PARAMETERS);
-		HTTP_CLIENT.execute(httpget, response -> {
+		final var message = new HttpGet(BASE_URI + RESOURCE + "/query/alias" + FIND_ALL_PARAMETERS);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
 
-			final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final Map<?, ?> result = new ObjectMapperTrim().readValue(content, HashMap.class);
+			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assertions.assertEquals("1", result.get("draw"));
 			Assertions.assertTrue((Integer) result.get("recordsFiltered") > 0);
 			Assertions.assertTrue((Integer) result.get("recordsTotal") > 0);
-			@SuppressWarnings("unchecked") final List<Map<String, Object>> list = (List<Map<String, Object>>) result.get("data");
+			@SuppressWarnings("unchecked") final var list = (List<Map<String, Object>>) result.get("data");
 			Assertions.assertFalse(list.isEmpty());
-			final Map<String, Object> item = list.get(0);
+			final var item = list.get(0);
 			Assertions.assertTrue((Integer) item.get("id") >= 0);
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("name")));
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("grapes")));
@@ -225,8 +232,9 @@ public class CrudRestIT extends AbstractRestTest {
 	 * @param id wine id
 	 */
 	private void testDelete(final int id) throws IOException {
-		final var httpdelete = new HttpDelete(BASE_URI + RESOURCE + "/" + id);
-		HTTP_CLIENT.execute(httpdelete, response -> {
+		final var message = new HttpDelete(BASE_URI + RESOURCE + "/" + id);
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		HTTP_CLIENT.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
 			return null;
 		});
@@ -245,8 +253,8 @@ public class CrudRestIT extends AbstractRestTest {
 	 * Initialize the data base
 	 */
 	private List<Integer> testCreateAll() throws IOException {
-		final List<Integer> identifiers = new ArrayList<>();
-		for (int i = NB_ITERATION; i-- > 0; ) {
+		final var identifiers = new ArrayList<Integer>();
+		for (var i = NB_ITERATION; i-- > 0; ) {
 			identifiers.add(create());
 		}
 		return identifiers;
@@ -258,7 +266,7 @@ public class CrudRestIT extends AbstractRestTest {
 	@Test
 	@Timed(millis = 4000)
 	void testMultipleUpdate() throws IOException {
-		for (final int id : testCreateAll()) {
+		for (final var id : testCreateAll()) {
 			testUpdate(id);
 		}
 	}
@@ -270,7 +278,7 @@ public class CrudRestIT extends AbstractRestTest {
 	@Timed(millis = 8000)
 	void testMultipleFindAll() throws IOException {
 		testCreateAll();
-		for (int loop = NB_ITERATION; loop-- > 0; ) {
+		for (var loop = NB_ITERATION; loop-- > 0; ) {
 			testFindAll();
 		}
 	}
@@ -281,7 +289,7 @@ public class CrudRestIT extends AbstractRestTest {
 	@Test
 	@Timed(millis = 8000)
 	void testMultipleFindById() throws IOException {
-		for (final int id : testCreateAll()) {
+		for (final var id : testCreateAll()) {
 			testFindById(id);
 		}
 	}
@@ -292,7 +300,7 @@ public class CrudRestIT extends AbstractRestTest {
 	@Test
 	@Timed(millis = 8000)
 	void testMultipleDelete() throws IOException {
-		for (final int id : testCreateAll()) {
+		for (final var id : testCreateAll()) {
 			testDelete(id);
 		}
 	}

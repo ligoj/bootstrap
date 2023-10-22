@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.bootstrap.resource.test;
+package org.ligoj.bootstrap.resource.system.bench;
 
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -13,7 +13,6 @@ import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.test.WineRepository;
 import org.ligoj.bootstrap.model.test.Wine;
-import org.ligoj.bootstrap.resource.system.bench.WineVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

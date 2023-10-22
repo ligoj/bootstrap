@@ -14,7 +14,7 @@
 		<jaxrs:serviceBeans>
 			<bean class="org.ligoj.bootstrap.core.resource.mapper.ExceptionMapperResource" />
 			<bean class="org.ligoj.bootstrap.resource.validation.ValidationTestResource" />
-			<bean class="org.ligoj.bootstrap.resource.test.CrudTestResource" />
+			<bean class="org.ligoj.bootstrap.resource.system.bench.CrudTestResource" />
 			<bean class="org.ligoj.bootstrap.resource.system.session.SessionResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
