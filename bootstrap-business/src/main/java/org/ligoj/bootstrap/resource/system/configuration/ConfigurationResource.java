@@ -199,7 +199,7 @@ public class ConfigurationResource {
 	 * Save or update a configuration.
 	 *
 	 * @param name    The configuration name.
-	 * @param value   The new value.
+	 * @param value   The new value. When <code>null</code>, the configuration is deleted.
 	 * @param system  When <code>true</code>, the system variable is also updated.
 	 * @param secured When <code>true</code>, the stored value will be secured: never returned to the end user. For
 	 *                <code>system</code> variable, a clear value will be used.
@@ -210,16 +210,18 @@ public class ConfigurationResource {
 	@CacheRemove(cacheName = "configuration")
 	public void put(@CacheKey @PathParam("name") final String name, @NotBlank final String value,
 			@PathParam("system") final boolean system, @PathParam("secured") final boolean secured) {
-		final var setting = repository.findByName(name);
-		final var storedValue = secured ? cryptoHelper.encrypt(value) : value;
-		if (setting == null) {
-			final var entity = new SystemConfiguration();
-			entity.setName(name);
-			entity.setValue(storedValue);
-			repository.saveAndFlush(entity);
-		} else {
-			setting.setValue(storedValue);
+		if (value == null) {
+			self.delete(name, system);
+			return;
 		}
+		var setting = repository.findByName(name);
+		if (setting == null) {
+			setting = new SystemConfiguration();
+			setting.setName(name);
+		}
+		final var storedValue = secured ? cryptoHelper.encrypt(value) : value;
+		setting.setValue(storedValue);
+		repository.saveAndFlush(setting);
 
 		if (system) {
 			// Also set the value in the system, not hashed form
@@ -234,11 +236,12 @@ public class ConfigurationResource {
 	 */
 	@POST
 	@PUT
+	@CacheRemoveAll(cacheName = "configuration")
 	public void put(final ConfigurationEditionVo conf) {
 		self.put(conf.getName(), conf.getValue(), conf.isSystem(), conf.isSecured());
 		if (StringUtils.isNotBlank(conf.getOldName()) && !conf.getOldName().equals(conf.getName())) {
 			// This is a renaming, delete the previous name
-			self.delete(conf.getOldName(), conf.isSystem());
+			self.put(conf.getOldName(), null, conf.isSystem(), conf.isSecured());
 		}
 	}
 
