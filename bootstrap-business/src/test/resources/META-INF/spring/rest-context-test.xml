@@ -37,6 +37,7 @@
 			<ref bean="mailSendExceptionMapper" />
 			<ref bean="jacksonProvider" />
 			<ref bean="notFoundResponseFilter" />
+			<ref bean="hookResponseFilter" />
 			<ref bean="forbiddenExceptionMapper" />
 			<ref bean="transactionSystemExceptionMapper" />
 			<ref bean="cannotAcquireLockExceptionMapper" />

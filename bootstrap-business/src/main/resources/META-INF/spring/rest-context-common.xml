@@ -44,6 +44,8 @@
 
 	<bean id="notFoundResponseFilter" class="org.ligoj.bootstrap.core.resource.filter.NotFoundResponseFilter" />
 
+	<bean id="hookResponseFilter" class="org.ligoj.bootstrap.core.resource.filter.HookResponseFilter" />
+
 	<bean id="unixTimestampParameterHandler" class="org.ligoj.bootstrap.core.resource.handler.UnixTimestampParameterHandler" />
 	<bean id="caseInsensitiveEnumInterceptor"  class="org.ligoj.bootstrap.core.resource.handler.CaseInsensitiveEnumInterceptor"/>
 	<bean id="insensitiveEnumParameterHandler"  class="org.ligoj.bootstrap.core.resource.handler.InsensitiveEnumParameterHandler"/>

@@ -15,6 +15,7 @@
 		</jaxrs:inInterceptors>
 		<jaxrs:serviceBeans>
 			<bean class="org.ligoj.bootstrap.core.resource.filter.NotFoundResponseFilterResource" />
+			<bean class="org.ligoj.bootstrap.core.resource.filter.HookResponseFilter" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
 			<ref bean="jsr303ExceptionMapper" />
@@ -35,6 +36,7 @@
 			<ref bean="unrecognizedPropertyExceptionMapper" />
 			<ref bean="mailSendExceptionMapper" />
 			<ref bean="jacksonProvider" />
+			<ref bean="hookResponseFilter" />
 			<ref bean="notFoundResponseFilter" />
 			<ref bean="forbiddenExceptionMapper" />
 			<ref bean="transactionSystemExceptionMapper" />

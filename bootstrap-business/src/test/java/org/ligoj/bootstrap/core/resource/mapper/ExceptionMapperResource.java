@@ -3,30 +3,24 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
-import javax.naming.CommunicationException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.ForbiddenException;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.NotImplementedException;
 import org.ligoj.bootstrap.core.SpringUtils;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
+import org.ligoj.bootstrap.dao.system.SystemHookRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemDialect;
+import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.model.test.Wine;
+import org.ligoj.bootstrap.resource.system.cache.CacheResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,6 +33,11 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedC
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.transaction.TransactionSystemException;
 
+import javax.naming.CommunicationException;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+
 /**
  * Mapper exception resource test.
  */
@@ -48,13 +47,19 @@ public class ExceptionMapperResource {
 	@Autowired
 	private SystemRoleRepository repository;
 
+	@Autowired
+	protected SystemHookRepository hookRepository;
+
+	@Autowired
+	protected CacheResource cacheResource;
+
 	/**
 	 * Manual validation exception with parameters.
 	 */
 	@DELETE
 	@Path("jsr-303")
 	public void throwJsr303() {
-		final ValidationJsonException exception = new ValidationJsonException();
+		final var exception = new ValidationJsonException();
 		exception.addError("jsr303", "NotNull");
 		throw exception;
 	}
@@ -65,9 +70,9 @@ public class ExceptionMapperResource {
 	@DELETE
 	@Path("jsr-303-jpa")
 	public void throwJsr303FromJpa() {
-		final SystemRole entity = new SystemRole();
+		final var entity = new SystemRole();
 
-		// Name over 200 char --> BVAL exception
+		// Name over 200 char --> Bean validation exception
 		entity.setName("-".repeat(210));
 		repository.save(entity);
 	}
@@ -87,7 +92,7 @@ public class ExceptionMapperResource {
 	@DELETE
 	@Path("business")
 	public void throwBusiness() {
-		throw new BusinessException(BusinessException.KEY_UNKNOW_ID, new IOException(), "parameter1", "parameter2");
+		throw new BusinessException(BusinessException.KEY_UNKNOWN_ID, new IOException(), "parameter1", "parameter2");
 	}
 
 	/**
@@ -101,9 +106,8 @@ public class ExceptionMapperResource {
 
 	/**
 	 * Unrecognized property.
-	 * 
-	 * @param user
-	 *            User with invalid property.
+	 *
+	 * @param user User with invalid property.
 	 */
 	@POST
 	@Path("unrecognized-property")
@@ -145,6 +149,24 @@ public class ExceptionMapperResource {
 		throw new WebApplicationException();
 	}
 
+	protected static final File MOCK_PATH = new File("target/test-classes/any").getAbsoluteFile();
+
+	@DELETE
+	@Path("hook/{param1}/{param2}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Wine hook(@PathParam("param1") final String param1, @PathParam("param2") final String param2, Wine vo) {
+		final var hook = new SystemHook();
+		hook.setName("mock-test");
+		hook.setCommand("java org.ligoj.bootstrap.core.resource.mapper.Main");
+		hook.setMatch("{\"path\":\"throw/hook/p1/p.*\"}");
+		hook.setWorkingDirectory(MOCK_PATH.getParent());
+		hookRepository.saveAndFlush(hook);
+		cacheResource.invalidate("hooks");
+		final var result = new Wine();
+		result.setName("new_name");
+		return result;
+	}
+
 	@DELETE
 	@Path("json-mapping")
 	public void throwJSonMapping() throws IOException {
@@ -175,7 +197,7 @@ public class ExceptionMapperResource {
 	public void throwCommunicationException() {
 		/*
 		 * As this exception is wrapped by a runtime exception brought
-		 * bySpring-LDAP (optional dependency), there is no way a create a
+		 * bySpring-LDAP (optional dependency), there is no way to create a
 		 * specific Mapper.
 		 */
 		throw new RuntimeException(new CommunicationException("Connection refused"));
@@ -227,7 +249,7 @@ public class ExceptionMapperResource {
 	@Path("integrity-foreign")
 	public void throwDataIntegrityException() {
 		throw new DataIntegrityViolationException("",
-				new IllegalStateException("bla `assignment`, CONSTRAINT `FK3D2B86CDAF555D0B` FOREIGN KEY (`project`) bla"));
+				new IllegalStateException("bla `assignment`, CONSTRAINT `FK000000000` FOREIGN KEY (`project`) bla"));
 	}
 
 	@DELETE
