@@ -20,6 +20,7 @@ public class ConfigurationCache implements CacheManagerAware {
 	@Override
 	public void onCreate(HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
 		cacheManager.createCache("configuration", provider.apply("configuration"));
+		cacheManager.createCache("hooks", provider.apply("hooks"));
 	}
 
 }
