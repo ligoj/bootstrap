@@ -103,11 +103,11 @@
         <servlet.version>6.0.0</servlet.version>
         <slf4j.version>2.0.9</slf4j.version>
         <soap-api.version>3.0.0</soap-api.version>
-        <spring.version>6.0.12</spring.version>
-        <spring-boot.version>3.1.4</spring-boot.version>
+        <spring.version>6.0.13</spring.version>
+        <spring-boot.version>3.1.5</spring-boot.version>
         <spring-cloud-context.version>4.0.4</spring-cloud-context.version>
         <spring-data.version>3.0.8</spring-data.version>
-        <spring-security.version>6.1.4</spring-security.version>
+        <spring-security.version>6.1.5</spring-security.version>
         <spring-security-rsa>1.1.1</spring-security-rsa>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
