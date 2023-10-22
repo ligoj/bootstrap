@@ -55,7 +55,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * server creation.
 	 */
 	@BeforeAll
-	public static void startServer() {
+	static void startServer() {
 		server = new CrudRestIT().startRestServer("./src/test/resources/WEB-INF/web-test-nosecurity.xml");
 	}
 
@@ -63,7 +63,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * wine : test creation
 	 */
 	@Test
-	public void testCreate() throws IOException {
+	void testCreate() throws IOException {
 		create();
 	}
 
@@ -99,7 +99,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * wine : test read by id service
 	 */
 	@Test
-	public void testFindByUnknownId() throws IOException {
+	void testFindByUnknownId() throws IOException {
 		final var httpget = new HttpGet(BASE_URI + RESOURCE + "/0");
 		HTTP_CLIENT.execute(httpget, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
@@ -111,7 +111,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * wine : test read by id service
 	 */
 	@Test
-	public void testFindById() throws IOException {
+	void testFindById() throws IOException {
 		testFindById(create());
 	}
 
@@ -133,7 +133,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * wine : test update
 	 */
 	@Test
-	public void testUpdate() throws IOException {
+	void testUpdate() throws IOException {
 		testUpdate(create());
 	}
 
@@ -157,7 +157,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * test find all service
 	 */
 	@Test
-	public void testFindAll() throws IOException {
+	void testFindAll() throws IOException {
 		testCreate();
 		final var httpget = new HttpGet(BASE_URI + RESOURCE + FIND_ALL_PARAMETERS);
 		HTTP_CLIENT.execute(httpget, response -> {
@@ -186,7 +186,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * test find all service
 	 */
 	@Test
-	public void testFindAllQueryAlias() throws IOException {
+	void testFindAllQueryAlias() throws IOException {
 		testCreate();
 		final var httpget = new HttpGet(BASE_URI + RESOURCE + "/query/alias" + FIND_ALL_PARAMETERS);
 		HTTP_CLIENT.execute(httpget, response -> {
@@ -215,7 +215,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * wine : test delete
 	 */
 	@Test
-	public void testDelete() throws IOException {
+	void testDelete() throws IOException {
 		testDelete(create());
 	}
 
@@ -237,7 +237,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@Test
 	@Timed(millis = 4000)
-	public void testMultipleCreate() throws IOException {
+	void testMultipleCreate() throws IOException {
 		testCreateAll();
 	}
 
@@ -257,7 +257,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@Test
 	@Timed(millis = 4000)
-	public void testMultipleUpdate() throws IOException {
+	void testMultipleUpdate() throws IOException {
 		for (final int id : testCreateAll()) {
 			testUpdate(id);
 		}
@@ -268,7 +268,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@Test
 	@Timed(millis = 8000)
-	public void testMultipleFindAll() throws IOException {
+	void testMultipleFindAll() throws IOException {
 		testCreateAll();
 		for (int loop = NB_ITERATION; loop-- > 0; ) {
 			testFindAll();
@@ -280,7 +280,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@Test
 	@Timed(millis = 8000)
-	public void testMultipleFindById() throws IOException {
+	void testMultipleFindById() throws IOException {
 		for (final int id : testCreateAll()) {
 			testFindById(id);
 		}
@@ -291,7 +291,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 */
 	@Test
 	@Timed(millis = 8000)
-	public void testMultipleDelete() throws IOException {
+	void testMultipleDelete() throws IOException {
 		for (final int id : testCreateAll()) {
 			testDelete(id);
 		}
@@ -301,7 +301,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * Clean objects
 	 */
 	@BeforeEach
-	public void cleanup() throws Exception {
+	void cleanup() throws Exception {
 		deleteAll();
 	}
 
@@ -309,7 +309,7 @@ public class CrudRestIT extends AbstractRestTest {
 	 * shutdown server
 	 */
 	@AfterAll
-	public static void tearDown() throws Exception {
+	static void tearDown() throws Exception {
 		server.stop();
 	}
 }
