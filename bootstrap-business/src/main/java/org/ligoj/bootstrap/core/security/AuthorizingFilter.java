@@ -96,7 +96,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 		// Check the authorization
 		if (authorizationsCache != null) {
-			for (final GrantedAuthority authority : authorities) {
+			for (final var authority : authorities) {
 				final var authorizations = authorizationsCache.get(authority.getAuthority());
 				if (authorizations != null && match(authorizations.get(method), request)) {
 					// Granted access

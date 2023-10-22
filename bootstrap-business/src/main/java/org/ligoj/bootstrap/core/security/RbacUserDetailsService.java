@@ -74,7 +74,7 @@ public class RbacUserDetailsService implements UserDetailsService {
 	 * @return the collected role names.
 	 */
 	private Set<GrantedAuthority> toSimpleRoles(final Object[][] results, final int index) {
-		final Set<GrantedAuthority> result = new HashSet<>();
+		final var result = new HashSet<GrantedAuthority>();
 		for (final var object : results) {
 			final var role = (SystemRole) object[index];
 			if (role != null) {
