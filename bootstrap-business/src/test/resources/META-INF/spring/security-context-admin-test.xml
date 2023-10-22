@@ -39,7 +39,7 @@
 		<property name="userDetailsService" ref="rbacUserDetailsService" />
 	</bean>
 
-	<jdbc:initialize-database data-source="dataSource">
+	<jdbc:initialize-database>
 		<jdbc:script location="classpath:sql/init-security.sql"/>
 	</jdbc:initialize-database>
 </beans>
