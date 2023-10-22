@@ -25,14 +25,13 @@ class HookResourceTest extends AbstractBootTest {
 		final var hook = new SystemHook();
 		hook.setName("hook1");
 		hook.setCommand("ls");
-		hook.setMatch("{}");
-		hook.setMatch("{}");
+		hook.setMatch("{\"path\":\"foo/bar\"}");
 		resource.create(hook);
 		final var  all = resource.findAll(newUriInfo());
 		final var first = all.getData().getFirst();
 		Assertions.assertEquals("hook1",first.getName());
 		Assertions.assertEquals("ls",first.getCommand());
-		Assertions.assertEquals("{}",first.getMatch());
+		Assertions.assertEquals("{\"path\":\"foo/bar\"}",first.getMatch());
 		Assertions.assertNull(first.getMatchObject());
 		hook.setName("hook2");
 		resource.create(hook);

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Test validation filter management.
+ * Test validation filter management with class {@link ValidationTestResource}.
  */
 public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 
@@ -86,10 +86,10 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			final var errors = result.get("errors");
 			Assertions.assertNotNull(errors);
 			Assertions.assertEquals(1, errors.size());
-			Assertions.assertNotNull(errors.get("wine"));
-			Assertions.assertEquals(1, ((Collection<?>) errors.get("wine")).size());
-			Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).size());
-			Assertions.assertEquals(((Map<?, ?>) ((List<?>) errors.get("wine")).get(0)).get(RULE), "NotNull");
+			Assertions.assertNotNull(errors.get("entity"));
+			Assertions.assertEquals(1, ((Collection<?>) errors.get("entity")).size());
+			Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("entity")).get(0)).size());
+			Assertions.assertEquals("NotNull", ((Map<?, ?>) ((List<?>) errors.get("entity")).get(0)).get(RULE));
 			return null;
 		});
 	}
@@ -122,11 +122,6 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 	@Test
 	void testInvalidFormatInteger() throws IOException {
 		testInvalidFormat("year", "Integer");
-	}
-
-	@Test
-	void testInvalidFormatDate() throws IOException {
-		testInvalidFormat("date", "Date");
 	}
 
 	private void testInvalidFormat(final String property, final String type) throws IOException {

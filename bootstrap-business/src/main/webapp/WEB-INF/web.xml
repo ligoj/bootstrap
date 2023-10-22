@@ -4,7 +4,7 @@
 	<display-name>bootstrap-business</display-name>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:/META-INF/spring/jpa-context-test.xml,classpath:/META-INF/spring/business-context-test.xml,classpath:META-INF/spring/rest-context-test.xml,classpath:/META-INF/spring/security-context-test.xml</param-value>
+		<param-value>classpath:/META-INF/spring/jpa-context-test.xml,classpath:/META-INF/spring/business-context-test.xml,classpath:META-INF/spring/rest-context-test.xml,classpath:/META-INF/spring/security-context-it.xml</param-value>
 	</context-param>
 	<servlet>
 		<servlet-name>RestServlet</servlet-name>

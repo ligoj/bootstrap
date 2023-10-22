@@ -12,5 +12,5 @@ import org.junit.platform.suite.api.*;
 @SelectPackages({"org.ligoj.bootstrap"})
 @IncludeClassNamePatterns({"^.*Test.*$"})
 @ExcludeClassNamePatterns({"^(Abstract.*|.*IT)$"})
-public class UnitSuite {
+public class UTSuite {
 }

@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core.resource.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
@@ -52,7 +51,7 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 		final var patterns = repository.findAll().stream().peek(
 				h -> {
 					try {
-						h.setMatchObject(new ObjectMapper().readValue(h.getMatch(), HookMatch.class));
+						h.setMatchObject(objectMapper.readValue(h.getMatch(), HookMatch.class));
 					} catch (final IOException ioe) {
 						// Ignore
 					}

@@ -11,7 +11,7 @@ import org.junit.platform.suite.api.Suite;
 /**
  * Integration tests
  */
-@Suite
+@Suite()
 @SelectPackages({"org.ligoj.bootstrap"})
 @IncludeClassNamePatterns({"^.*IT$"})
 @ExcludeClassNamePatterns({"^.*(Abstract.*|.*Test)$"})

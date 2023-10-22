@@ -12,9 +12,6 @@
     <artifactId>bootstrap-business</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <surefire.includes>**/.*Suite.java</surefire.includes>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.junit.platform</groupId>
@@ -113,5 +110,32 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>it</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <test>org.ligoj.bootstrap.ITSuite</test>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unit</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <test>org.ligoj.bootstrap.UTSuite</test>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+        </plugins>
     </build>
 </project>

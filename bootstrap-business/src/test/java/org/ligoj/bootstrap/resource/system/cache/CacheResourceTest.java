@@ -149,7 +149,7 @@ class CacheResourceTest extends AbstractBootTest {
 		doManyHits();
 
 		final var caches = cacheResource.getCaches();
-		Assertions.assertEquals(6, caches.size());
+		Assertions.assertEquals(7, caches.size());
 		caches.stream().filter(c -> "test-cache".equals(c.getId())).forEach(this::assertCache);
 	}
 

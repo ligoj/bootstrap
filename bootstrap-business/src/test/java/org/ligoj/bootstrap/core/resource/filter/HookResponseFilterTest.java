@@ -63,13 +63,13 @@ class HookResponseFilterTest extends AbstractBootTest {
 	void findAll() {
 		final var hook = new SystemHook();
 		hook.setName("hook1");
-		hook.setMatch("foo/bar.+");
+		hook.setMatch("{\"path\":\"foo/bar.+\"}");
 		hook.setWorkingDirectory("./home");
 		hook.setCommand("any");
 		repository.saveAndFlush(hook);
 		final var hook2 = new SystemHook();
 		hook2.setName("hook2");
-		hook2.setMatch("foo/bar.+");
+		hook2.setMatch("{\"path\":\"foo/bar.+\"}");
 		hook2.setWorkingDirectory("./home2");
 		hook2.setCommand("any2");
 		repository.saveAndFlush(hook2);
