@@ -37,12 +37,13 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	 */
 	@BeforeAll
 	public static void startServer() {
-		server = new NotFoundResponseFilterIT().startRestServer("./src/test/resources/WEB-INF/web-test-nodb.xml");
+		server = new NotFoundResponseFilterIT().startRestServer("");
 	}
 
 	@Test
 	public void testReturnNull() throws IOException {
 		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/null");
+		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, response.getCode());
 			Assertions.assertNull(response.getEntity());
@@ -52,7 +53,8 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 
 	@Test
 	public void testReturnNull404() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404");
+		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404");
+		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getCode());
 			Assertions.assertEquals("{\"code\":\"data\"}", IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
@@ -62,7 +64,8 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 
 	@Test
 	public void testReturnNull404Id() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404/789");
+		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404/789");
+		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
 			Assertions.assertEquals(HttpStatus.SC_NOT_FOUND, response.getCode());
 			Assertions.assertEquals("{\"code\":\"entity\",\"message\":\"789\"}",
@@ -73,7 +76,8 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 
 	@Test
 	public void testReturnNotNull() throws IOException {
-		final HttpGet httpGet = new HttpGet(BASE_URI + RESOURCE + "/not-null");
+		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/not-null");
+		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
 			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
 			try (InputStream input = response.getEntity().getContent()) {
