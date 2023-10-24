@@ -37,7 +37,7 @@ class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTes
 	@Autowired
 	private CentralRepositoryManager resource;
 
-	private static final Integer PROXY_PORT = 8080;
+	private static final Integer PROXY_PORT = 8122;
 
 	@BeforeEach
 	void prepareData() throws IOException {
@@ -96,7 +96,11 @@ class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTes
 			System.clearProperty("plugins.repository-manager.central.search.proxy.port");
 			System.clearProperty("plugins.repository-manager.central.artifact.proxy.host");
 			System.clearProperty("plugins.repository-manager.central.artifact.proxy.port");
-			proxyServer.stop();
+			try {
+				proxyServer.stop();
+			} catch (Exception e) {
+				// Ignore
+			}
 		}
 	}
 }
