@@ -49,7 +49,7 @@
         <junit.platform.version>1.10.0</junit.platform.version>
 
         <gitRepositoryName>bootstrap</gitRepositoryName>
-        <plugin.jacoco>0.8.10</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+        <plugin.jacoco>0.8.11</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
 
         <annotation-api.version>2.1.1</annotation-api.version>
         <ant.version>1.10.14</ant.version>
