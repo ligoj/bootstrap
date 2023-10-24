@@ -3,10 +3,7 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
@@ -32,8 +29,9 @@ public class DummyEntity {
 	private Integer wneYear;
 	private String wnePict;
 	
-	@Length(max=500)
-	@Size(max = 500)
+	@Length(max=800)
+	@Size(max = 800)
+	@Column(length = 800)
 	private String wneDesc;
 
 }

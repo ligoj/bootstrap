@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.model.system;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -43,7 +44,7 @@ public class SystemHook extends AbstractNamedEntity<Integer> {
 	/**
 	 * JSON string representing the match
 	 */
-	@Length(max = 1024)
+	@Column(length = 1024)
 	private String match;
 
 	/**

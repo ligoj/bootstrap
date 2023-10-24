@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -46,6 +47,6 @@ public class SampleEntity {
 	@Length(max = 255)
 	private String picture;
 
-	@Length(max = 500)
+	@Column(length = 500)
 	private String description;
 }
