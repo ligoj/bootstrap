@@ -174,12 +174,20 @@ class BackendProxyServletTest {
 	private void setupRedirection(final String prefix, final String proxyTo) throws ServletException {
 		final var servletConfig = Mockito.mock(ServletConfig.class);
 		Mockito.when(servletConfig.getServletName()).thenReturn("a");
-		System.setProperty("endpoint.rest", proxyTo);
 		Mockito.when(servletContext.getContextPath()).thenReturn("context");
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
-		Mockito.when(servletConfig.getInitParameter("proxyToKey")).thenReturn("endpoint.rest");
+		Mockito.when(servletConfig.getInitParameter("proxyTo")).thenReturn(proxyTo);
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn(prefix);
 		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn(MAX_THREADS);
+		Mockito.when(servletConfig.getInitParameter("idleTimeout")).thenReturn("120000");
+		Mockito.when(servletConfig.getInitParameter("timeout")).thenReturn("0");
+		Mockito.when(servletConfig.getInitParameter("apiKeyParameter")).thenReturn("api-key");
+		Mockito.when(servletConfig.getInitParameter("apiKeyHeader")).thenReturn("x-api-key");
+		Mockito.when(servletConfig.getInitParameter("apiUserParameter")).thenReturn("api-user");
+		Mockito.when(servletConfig.getInitParameter("apiUserHeader")).thenReturn("x-api-user");
+		Mockito.when(servletConfig.getInitParameter("responseBufferSize")).thenReturn(String.valueOf(16 * 1024));
+		Mockito.when(servletConfig.getInitParameter("requestBufferSize")).thenReturn(String.valueOf(4 * 1024));
+		Mockito.when(servletConfig.getInitParameter("maxConnections")).thenReturn("512");
 		servlet.init(servletConfig);
 	}
 
@@ -446,6 +454,7 @@ class BackendProxyServletTest {
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
 		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
 	}
+
 	@Test
 	void isApiRequestFromBrowser() {
 		final var request = Mockito.mock(HttpServletRequest.class);
@@ -597,6 +606,16 @@ class BackendProxyServletTest {
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn("prefix");
 		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn(MAX_THREADS);
 		Assertions.assertThrows(UnavailableException.class, () -> servlet.init(servletConfig));
+	}
+
+
+	@Test
+	void sendProxyRequest() {
+		final var clientRequest = Mockito.mock(HttpServletRequest.class);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var proxyRequest = Mockito.mock(Request.class);
+		servlet.sendProxyRequest(clientRequest, proxyResponse, proxyRequest);
+		Mockito.verify(proxyRequest).send(ArgumentMatchers.any(Response.CompleteListener.class));
 	}
 
 	@Test

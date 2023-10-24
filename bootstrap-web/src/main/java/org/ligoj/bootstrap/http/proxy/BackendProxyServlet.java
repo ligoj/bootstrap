@@ -88,6 +88,11 @@ public class BackendProxyServlet extends ProxyServlet {
 	private String proxyTo; // NOSONAR - Initialized once, from #init()
 
 	/**
+	 * Response buffer size override due to Spring-Security buffer issue.
+	 */
+	private int responseBufferSize; // NOSONAR - Initialized once, from #init()
+
+	/**
 	 * Prefix activating this backend
 	 */
 	private String prefix; // NOSONAR - Initialized once, from #init()
@@ -194,36 +199,19 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Check, and return the lower value of given parameter.
 	 *
-	 * @param parameter    the expected "init" parameter.
-	 * @param defaultValue the optional default value. May be <code>null</code>.
+	 * @param parameter the expected "init" parameter.
 	 * @return the lower value of given parameter.
 	 * @throws UnavailableException when required parameter is not defined.
 	 */
-	protected String getRequiredInitParameter(final String parameter, final String defaultValue)
+	protected String getRequiredInitParameter(final String parameter)
 			throws UnavailableException {
-		final var value = ObjectUtils
-				.defaultIfNull(StringUtils.trimToNull(getServletConfig().getInitParameter(parameter)), defaultValue);
+		final var value = StringUtils.trimToNull(getServletConfig().getInitParameter(parameter));
 		if (value == null) {
 			throw new UnavailableException("Init parameter '" + parameter + "' is required.");
 		}
 		return value;
 	}
 
-	/**
-	 * Check, and return the lower value of given parameter.
-	 *
-	 * @param parameter the expected "init" parameter.
-	 * @return the lower value of given parameter.
-	 */
-	private String getRequiredSystemInitParameter(final String parameter) throws UnavailableException {
-		final var parameterValue = StringUtils.trimToNull(getRequiredInitParameter(parameter, null));
-		final var value = StringUtils.trimToNull(System.getProperty(parameterValue));
-		if (value == null) {
-			throw new UnavailableException("Init parameter '" + parameter
-					+ "' is defined, but points to a non defined system property '" + parameterValue + "'");
-		}
-		return value;
-	}
 
 	@Override
 	public void init() throws ServletException {
@@ -232,15 +220,16 @@ public class BackendProxyServlet extends ProxyServlet {
 
 		// Read "proxy to" end point URL from "Servlet" configuration and system
 		this.prefix = getServletContext().getContextPath() + StringUtils.trimToEmpty(config.getInitParameter("prefix"));
-		this.proxyTo = getRequiredSystemInitParameter("proxyToKey");
 
 		// Read API configuration
-		this.apiUserParameter = getRequiredInitParameter("apiUserParameter", "api-user");
-		this.apiUserHeader = getRequiredInitParameter("apiUserHeader", "x-api-user");
-		this.apiKeyParameter = getRequiredInitParameter("apiKeyParameter", "api-key");
-		this.apiKeyHeader = getRequiredInitParameter("apiKeyHeader", "x-api-key");
+		this.proxyTo = getRequiredInitParameter("proxyTo");
+		this.apiUserParameter = getRequiredInitParameter("apiUserParameter");
+		this.apiUserHeader = getRequiredInitParameter("apiUserHeader");
+		this.apiKeyParameter = getRequiredInitParameter("apiKeyParameter");
+		this.apiKeyHeader = getRequiredInitParameter("apiKeyHeader");
 		this.apiKeyCleanPattern = newCleanParameter(apiKeyParameter);
 		this.apiUserCleanPattern = newCleanParameter(apiUserParameter);
+		this.responseBufferSize = Integer.parseInt(getRequiredInitParameter("responseBufferSize"), 10);
 
 		_log.info("Proxying {} --> {}", this.prefix, this.proxyTo);
 	}
@@ -355,6 +344,12 @@ public class BackendProxyServlet extends ProxyServlet {
 				callback.failed(e);
 			}
 		}
+	}
+
+	@Override
+	protected void sendProxyRequest(HttpServletRequest clientRequest, HttpServletResponse proxyResponse, Request proxyRequest) {
+		proxyResponse.setBufferSize(responseBufferSize);
+		super.sendProxyRequest(clientRequest, proxyResponse, proxyRequest);
 	}
 
 	/**
