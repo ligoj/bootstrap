@@ -188,6 +188,8 @@ class BackendProxyServletTest {
 		Mockito.when(servletConfig.getInitParameter("responseBufferSize")).thenReturn(String.valueOf(16 * 1024));
 		Mockito.when(servletConfig.getInitParameter("requestBufferSize")).thenReturn(String.valueOf(4 * 1024));
 		Mockito.when(servletConfig.getInitParameter("maxConnections")).thenReturn("512");
+		Mockito.when(servletConfig.getInitParameter("cors-origin")).thenReturn("*");
+		Mockito.when(servletConfig.getInitParameter("cors-vary")).thenReturn("Origin");
 		servlet.init(servletConfig);
 	}
 
