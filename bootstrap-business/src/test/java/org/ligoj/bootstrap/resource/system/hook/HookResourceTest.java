@@ -22,22 +22,35 @@ class HookResourceTest extends AbstractBootTest {
 
 	@Test
 	void findAll() {
+		em.persist(newHook());
+		final var all = resource.findAll(newUriInfo());
+		final var first = all.getData().getFirst();
+		Assertions.assertEquals("hook1", first.getName());
+		Assertions.assertEquals("ls", first.getCommand());
+		Assertions.assertEquals("{\"path\":\"foo/bar\"}", first.getMatch());
+		Assertions.assertNull(first.getMatchObject());
+	}
+
+	private SystemHook newHook() {
 		final var hook = new SystemHook();
 		hook.setName("hook1");
 		hook.setCommand("ls");
 		hook.setMatch("{\"path\":\"foo/bar\"}");
+		return hook;
+	}
+
+
+	@Test
+	void create() {
+		final var hook = newHook();
 		resource.create(hook);
-		final var  all = resource.findAll(newUriInfo());
-		final var first = all.getData().getFirst();
-		Assertions.assertEquals("hook1",first.getName());
-		Assertions.assertEquals("ls",first.getCommand());
-		Assertions.assertEquals("{\"path\":\"foo/bar\"}",first.getMatch());
-		Assertions.assertNull(first.getMatchObject());
-		hook.setName("hook2");
-		resource.create(hook);
-		Assertions.assertEquals("hook2",resource.findAll(newUriInfo()).getData().getFirst().getName());
+		Assertions.assertEquals("hook1", resource.findAll(newUriInfo()).getData().getFirst().getName());
+	}
+	@Test
+	void delete() {
+		final var hook = newHook();
+		em.persist(hook);
 		resource.delete(hook.getId());
 		Assertions.assertTrue(resource.findAll(newUriInfo()).getData().isEmpty());
 	}
-
 }

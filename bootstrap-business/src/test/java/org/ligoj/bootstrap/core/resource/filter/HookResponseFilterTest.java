@@ -67,20 +67,43 @@ class HookResponseFilterTest extends AbstractBootTest {
 		hook.setWorkingDirectory("./home");
 		hook.setCommand("any");
 		repository.saveAndFlush(hook);
+
 		final var hook2 = new SystemHook();
 		hook2.setName("hook2");
 		hook2.setMatch("{\"path\":\"foo/bar.+\"}");
 		hook2.setWorkingDirectory("./home2");
 		hook2.setCommand("any2");
 		repository.saveAndFlush(hook2);
+
+		// This hook will not be considered
+		final var hookBadJson = new SystemHook();
+		hookBadJson.setName("hook_bad_json");
+		hookBadJson.setMatch("{_invalid_json_}");
+		hookBadJson.setWorkingDirectory("./home3");
+		hookBadJson.setCommand("any3");
+		repository.saveAndFlush(hookBadJson);
+
 		final var all = filter.findAll();
-		final var entry = all.entrySet().stream().findFirst().get();
 		Assertions.assertEquals(1, all.size());
+		final var entry = all.entrySet().stream().findFirst().get();
 		Assertions.assertEquals("foo/bar.+", entry.getKey().pattern());
 		Assertions.assertEquals(2, entry.getValue().size());
 		Assertions.assertEquals("hook1", entry.getValue().getFirst().getName());
+		Assertions.assertEquals("hook2", entry.getValue().getLast().getName());
 		Assertions.assertEquals("any", entry.getValue().getFirst().getCommand());
 		Assertions.assertEquals("./home", entry.getValue().getFirst().getWorkingDirectory());
+	}
+
+	@Test
+	void execute() throws InterruptedException {
+		new HookResponseFilter().execute(new HookProcessRunnable(null, null, null, null, null, null, null) {
+			@Override
+			public void run() {
+				executed.set(true);
+			}
+		});
+		Thread.sleep(1500);
+		Assertions.assertTrue(executed.get());
 	}
 
 	@Test

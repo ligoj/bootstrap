@@ -7,6 +7,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.cxf.jaxrs.impl.AbstractPropertiesImpl;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
@@ -18,10 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.cache.annotation.CacheResult;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,23 +42,23 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 	@Autowired
 	private ObjectMapperTrim objectMapper;
 
-	private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
 	void execute(final HookProcessRunnable runnable) {
-		executor.execute(runnable);
+		CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(runnable);
 	}
 
 	@CacheResult(cacheName = "hooks")
 	public Map<Pattern, List<SystemHook>> findAll() {
 		final var patterns = repository.findAll().stream().peek(
-				h -> {
-					try {
-						h.setMatchObject(objectMapper.readValue(h.getMatch(), HookMatch.class));
-					} catch (final IOException ioe) {
-						// Ignore
-					}
-				}
-		).collect(Collectors.groupingBy(h -> h.getMatchObject().getPath()));
+						h -> {
+							h.setMatchObject(null);
+							try {
+								h.setMatchObject(objectMapper.readValue(h.getMatch(), HookMatch.class));
+							} catch (final IOException ioe) {
+								// Ignore
+							}
+						}
+				).filter(h -> h.getMatchObject() != null)
+				.collect(Collectors.groupingBy(h -> h.getMatchObject().getPath()));
 		return patterns.entrySet().stream().collect(Collectors.toMap(e -> Pattern.compile(e.getKey()), Map.Entry::getValue));
 	}
 
@@ -66,8 +68,9 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 			final var hooks = self.findAll();
 			final var path = requestContext.getUriInfo().getPath();
 			if (hooks.entrySet().stream().anyMatch(e -> e.getKey().matcher(path).matches())) {
-				execute(new HookProcessRunnable(objectMapper, hooks, requestContext, responseContext,
-						((AbstractPropertiesImpl) requestContext).getMessage().getExchange()));
+				final var now = DateFormatUtils.formatUTC(new Date(), DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern());
+				execute(new HookProcessRunnable(now, objectMapper, hooks, requestContext, responseContext,
+						((AbstractPropertiesImpl) requestContext).getMessage().getExchange(), requestContext.getSecurityContext().getUserPrincipal()));
 			}
 		}
 	}

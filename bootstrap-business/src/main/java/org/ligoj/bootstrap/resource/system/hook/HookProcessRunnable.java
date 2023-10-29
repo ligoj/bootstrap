@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,13 +24,15 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 public class HookProcessRunnable implements Runnable {
 
-	private static final Base64 BASE64_CODEC = new Base64(0);
+	static final Base64 BASE64_CODEC = new Base64(0);
 
+	private final String now;
 	private final ObjectMapper objectMapper;
 	private final Map<Pattern, List<SystemHook>> hooks;
 	private final ContainerRequestContext requestContext;
 	private final ContainerResponseContext responseContext;
 	private final Exchange exchange;
+	private final Principal principal;
 
 	@Override
 	public void run() {
@@ -42,22 +45,24 @@ public class HookProcessRunnable implements Runnable {
 	 * @param hook The hook configuration.
 	 * @return The new {@link ProcessBuilder} instance.
 	 */
-	public ProcessBuilder newBuilder(SystemHook hook) {
+	ProcessBuilder newBuilder(final SystemHook hook) {
 		return new ProcessBuilder(ArrayUtils.addAll(hook.getCommand().split(" "))).directory(new File(hook.getWorkingDirectory()));
 	}
 
-	void process(String path, SystemHook h, OutputStream out) {
+	void process(final String path, final SystemHook h, final OutputStream out) {
 		log.info("Executing hook {} -> {}", path, h.getName());
 		try {
 			// Create Map object
-			final var payload = Map.of(
+
+			final var payload = new HashMap<>(Map.of(
+					"now", now,
 					"path", requestContext.getUriInfo().getPath(),
 					"method", requestContext.getMethod(),
 					"api", exchange.get("org.apache.cxf.resource.operation.name"),
-					"params", exchange.getInMessage().getContent(List.class),
-					"result", responseContext.getEntity(),
-					"user", Optional.ofNullable(requestContext.getSecurityContext().getUserPrincipal()).map(Principal::getName).orElse(null)
-			);
+					"params", exchange.getInMessage().getContent(List.class)
+			));
+			payload.put("user", Optional.ofNullable(principal).map(Principal::getName).orElse(null));
+			payload.put("result", responseContext.getEntity());
 			final var payloadJson = objectMapper.writeValueAsString(payload);
 			final var payload64 = BASE64_CODEC.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 			final var pb = newBuilder(h);
