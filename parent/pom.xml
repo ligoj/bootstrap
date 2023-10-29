@@ -47,6 +47,11 @@
         -->
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
         <junit.platform.version>1.10.0</junit.platform.version>
+        <sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria.e1.ruleKey>Web:BoldAndItalicTagsCheck</sonar.issue.ignore.multicriteria.e1.ruleKey>
+        <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e1.resourceKey>
+        <sonar.issue.ignore.multicriteria.e2.ruleKey>java:S6813</sonar.issue.ignore.multicriteria.e2.ruleKey>
+        <sonar.issue.ignore.multicriteria.e2.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e2.resourceKey>
 
         <gitRepositoryName>bootstrap</gitRepositoryName>
         <plugin.jacoco>0.8.11</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
