@@ -9,12 +9,14 @@ import jakarta.ws.rs.core.UriInfo;
 import org.apache.cxf.jaxrs.impl.ContainerRequestContextImpl;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
+import org.ligoj.bootstrap.model.system.HookMatch;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.mockito.Mockito;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -91,19 +94,25 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Assertions.assertEquals("hook1", entry.getValue().getFirst().getName());
 		Assertions.assertEquals("hook2", entry.getValue().getLast().getName());
 		Assertions.assertEquals("any", entry.getValue().getFirst().getCommand());
+		Assertions.assertEquals("{\"path\":\"foo/bar.+\"}", entry.getValue().getFirst().getMatch());
 		Assertions.assertEquals("./home", entry.getValue().getFirst().getWorkingDirectory());
+
+		// Coverage
+		final var match = new HookMatch();
+		match.setPath("foo");
+		Assertions.assertEquals("foo", match.getPath());
+
 	}
 
 	@Test
-	void execute() throws InterruptedException {
+	void execute() {
 		new HookResponseFilter().execute(new HookProcessRunnable(null, null, null, null, null, null, null) {
 			@Override
 			public void run() {
 				executed.set(true);
 			}
 		});
-		Thread.sleep(1500);
-		Assertions.assertTrue(executed.get());
+		Awaitility.waitAtMost(Duration.ofSeconds(2)).until(executed::get);
 	}
 
 	@Test

@@ -52,7 +52,7 @@ public final class Main {
 	 * Configure the server from properties and XML.
 	 */
 	private void configure(final String jettyPropertiesFile) throws Exception {
-		try (var propertiesInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(jettyPropertiesFile)) {
+		try (final var propertiesInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(jettyPropertiesFile)) {
 			if (propertiesInput == null) {
 				log.error("Unable to find jetty properties file : " + jettyPropertiesFile);
 			} else {
@@ -71,7 +71,7 @@ public final class Main {
 					final var factory = new org.eclipse.jetty.server.HttpConnectionFactory(httpConfig);
 					final var connector = new org.eclipse.jetty.server.ServerConnector(server, factory);
 					connector.setHost(System.getProperty("jetty.host", "localhost"));
-					connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8080")));
+					connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8080"),10));
 					connector.setIdleTimeout(30000);
 					server.setConnectors(new Connector[]{connector});
 				}
@@ -83,7 +83,7 @@ public final class Main {
 
 					final var webContext = new org.eclipse.jetty.ee10.webapp.WebAppContext();
 					webContext.setContextPath(System.getProperty("jetty.contextPath", "/bootstrap-business"));
-					webContext.setDescriptor(System.getProperty("etty.descriptor"));
+					webContext.setDescriptor(System.getProperty("jetty.descriptor"));
 
 					final var pathFactory = new PathResourceFactory();
 					final var resourceCollection = VisibleCombinedResource.combine(

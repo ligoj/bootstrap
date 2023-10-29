@@ -1,3 +1,6 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.bootstrap.resource.system.hook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+/**
+ * Runnable dedicated to hook processor.
+ */
 @Slf4j
 @AllArgsConstructor
 public class HookProcessRunnable implements Runnable {

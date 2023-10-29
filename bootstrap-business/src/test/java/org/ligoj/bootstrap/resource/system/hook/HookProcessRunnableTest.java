@@ -9,12 +9,12 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.UriInfo;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
-import org.hsqldb.lib.StringInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -54,7 +54,7 @@ class HookProcessRunnableTest {
 		Mockito.when(principal.getName()).thenReturn("junit");
 		Mockito.when(processBuilder.environment()).thenReturn(environment);
 		Mockito.when(processBuilder.start()).thenReturn(process);
-		Mockito.when(process.getInputStream()).thenReturn(new StringInputStream("process_response"));
+		Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream("process_response".getBytes(StandardCharsets.UTF_8)));
 
 		final var hook1 = new SystemHook();
 		hook1.setCommand("some args");

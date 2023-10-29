@@ -15,8 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Test of {@link AbstractRestTest}
@@ -34,10 +36,12 @@ class TestAbstractRestTest extends AbstractRestTest {
 				invocation -> ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response)
 		);
 		final var entity = Mockito.mock(HttpEntity.class);
-		final var content = Mockito.mock(InputStream.class);
 		Mockito.when(response.getEntity()).thenReturn(entity);
-		Mockito.when(entity.getContent()).thenReturn(content);
+		Mockito.when(entity.getContent()).thenAnswer(var1 -> new ByteArrayInputStream("response".getBytes(StandardCharsets.UTF_8)));
 		Assertions.assertNotNull(startRestServer("log4j2.json"));
+
+		final var httpGet = new HttpGet(BASE_URI + "/null");
+		Assertions.assertEquals("response", execute(httpGet));
 	}
 
 	@Test
@@ -73,4 +77,5 @@ class TestAbstractRestTest extends AbstractRestTest {
 		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenThrow(new HttpHostConnectException(""));
 		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
 	}
+
 }

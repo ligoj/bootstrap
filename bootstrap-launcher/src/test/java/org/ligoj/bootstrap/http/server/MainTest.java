@@ -72,7 +72,6 @@ class MainTest {
 	/**
 	 * Test valid XML file.
 	 */
-	@SuppressWarnings("deprecation")
 	@Test
     void testKillServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
@@ -94,7 +93,6 @@ class MainTest {
 		Assertions.assertTrue(Main.getLastStartedServer().isStopped());
 	}
 
-
 	/**
 	 * Test valid server start .
 	 */
@@ -106,7 +104,7 @@ class MainTest {
 			try {
 				Main.main();
 			} catch (final Exception e) {
-				Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
+				Assertions.fail("Server failed to start", e); // NOSONAR - This a special thread
 			}
 		});
 		thread.start();
