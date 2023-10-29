@@ -94,6 +94,7 @@
         <log4j-api.version>2.21.1</log4j-api.version>
         <lombok.version>1.18.30</lombok.version>
         <mail.version>2.1.2</mail.version>
+        <maven-artifact.version>3.9.5</maven-artifact.version>
         <mockito.version>5.6.0</mockito.version>
         <mariadb.version>3.2.0</mariadb.version>
         <mysql.version>8.0.33</mysql.version>
@@ -506,7 +507,7 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
-                <version>3.9.4</version>
+                <version>${maven-artifact.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.codehaus.plexus</groupId>
