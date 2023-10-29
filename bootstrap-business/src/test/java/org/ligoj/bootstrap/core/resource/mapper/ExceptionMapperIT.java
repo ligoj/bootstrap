@@ -3,6 +3,8 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -10,6 +12,7 @@ import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -19,11 +22,15 @@ import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.model.test.Wine;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Exception mapper test using {@link ExceptionMapperResource}
@@ -346,21 +353,20 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 * @see ExceptionMapperResource#hook(String, String, Wine)
 	 */
 	@Test
-	void testHook() throws IOException, InterruptedException {
+	void testHook() throws IOException {
 		final var message = new HttpDelete(BASE_URI + RESOURCE + "/hook/p1/p2");
 		message.setEntity(new StringEntity("{\"name\":\"JUNIT\"}", ContentType.APPLICATION_JSON));
 		message.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(message, response -> {
-			try {
-				// Wait for async execution
-				Thread.sleep(2000);
-			} catch (final Exception e) {
-				// Ignore
-			}
 			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
 			return null;
 		});
-		Thread.sleep(2000);
+		// Wait for async execution
+		Awaitility.waitAtMost(Duration.ofSeconds(3)).until(()-> Files.exists(new File("target/test-classes/hook.log").toPath()));
+		final var payload = FileUtils.readFileToString(new File("target/test-classes/hook.log"), StandardCharsets.UTF_8);
+		final var jsonString = new String(Base64.decodeBase64(payload));
+		Assertions.assertTrue(Pattern.matches("\\{\"result\":\\{\"name\":\"new_name\"},\"path\":\"throw/hook/p1/p2\",\"method\":\"DELETE\",\"now\":\".*\",\"api\":\"ExceptionMapperResource#hook\",\"params\":\\[\"p1\",\"p2\",\\{\"name\":\"JUNIT\"}],\"user\":\"junit\"}", jsonString));
+
 	}
 
 	/**
