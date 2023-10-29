@@ -93,7 +93,7 @@
         <log4j-api.version>2.20.0</log4j-api.version>
         <lombok.version>1.18.30</lombok.version>
         <mail.version>2.1.2</mail.version>
-        <mockito.version>5.5.0</mockito.version>
+        <mockito.version>5.6.0</mockito.version>
         <mariadb.version>3.2.0</mariadb.version>
         <mysql.version>8.0.33</mysql.version>
         <postgresql.version>42.6.0</postgresql.version>
