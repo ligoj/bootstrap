@@ -81,7 +81,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	 * @return The created  {@link CacheConfig} with the policy.
 	 */
 	protected CacheConfig<?, ?> newCacheConfig(final String name) {
-		final CacheConfig<?, ?> config = new CacheConfig<>(name);
+		final var config = new CacheConfig<>(name);
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU));
 		// Post configuration
 		postConfigure(config);
