@@ -126,6 +126,15 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * Pattern capturing the API user to filter.
 	 */
 	private Pattern apiUserCleanPattern; // NOSONAR - Initialized once, from #init()
+	/**
+	 * `Access-Control-Allow-Origin` value of response from this route.
+	 */
+	private String corsOrigin; // NOSONAR - Initialized once, from #init()
+
+	/**
+	 * `Vary` value of response from this route.
+	 */
+	private String corsVary; // NOSONAR - Initialized once, from #init()
 
 	private void addHeader(final Request proxyRequest, final String name, final String value) {
 		proxyRequest.headers(headers -> headers.add(name, value));
@@ -229,6 +238,8 @@ public class BackendProxyServlet extends ProxyServlet {
 		this.apiKeyHeader = getRequiredInitParameter("apiKeyHeader");
 		this.apiKeyCleanPattern = newCleanParameter(apiKeyParameter);
 		this.apiUserCleanPattern = newCleanParameter(apiUserParameter);
+		this.corsOrigin = getRequiredInitParameter("cors-origin");
+		this.corsVary = getRequiredInitParameter("cors-vary");
 		this.responseBufferSize = Integer.parseInt(getRequiredInitParameter("responseBufferSize"), 10);
 
 		_log.info("Proxying {} --> {}", this.prefix, this.proxyTo);
@@ -383,7 +394,8 @@ public class BackendProxyServlet extends ProxyServlet {
 			// Standard 404 page
 			response.addHeader("Content-Type", "text/html");
 		}
-		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Origin", corsOrigin);
+		response.addHeader("Vary", corsVary);
 	}
 
 	/**
