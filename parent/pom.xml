@@ -104,7 +104,7 @@
         <slf4j.version>2.0.9</slf4j.version>
         <soap-api.version>3.0.0</soap-api.version>
         <spring.version>6.1.0-RC2</spring.version>
-        <spring-boot.version>3.2.0-M3</spring-boot.version>
+        <spring-boot.version>3.2.0-RC1</spring-boot.version>
         <spring-cloud-context.version>4.0.4</spring-cloud-context.version>
         <spring-data.version>3.2.0-RC1</spring-data.version>
         <spring-security.version>6.2.0-RC2</spring-security.version>
