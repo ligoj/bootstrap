@@ -105,6 +105,7 @@
         <servlet.version>6.0.0</servlet.version>
         <slf4j.version>2.0.9</slf4j.version>
         <soap-api.version>3.0.1</soap-api.version>
+        <spotbugs-annotations>4.8.0</spotbugs-annotations>
         <spring.version>6.1.0-RC2</spring.version>
         <spring-boot.version>3.2.0-M3</spring-boot.version>
         <spring-cloud-context.version>4.0.4</spring-cloud-context.version>
@@ -855,7 +856,7 @@
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
-                <version>4.7.3</version>
+                <version>${spotbugs-annotations}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
