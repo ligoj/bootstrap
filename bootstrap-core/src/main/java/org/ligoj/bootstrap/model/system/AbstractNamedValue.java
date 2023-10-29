@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.model.system;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -38,6 +39,7 @@ public abstract class AbstractNamedValue<K extends Serializable> extends Abstrac
 	 */
 	@NotBlank
 	@Size(max = 1024)
+	@Column(length = 1024)
 	private String value;
 
 }

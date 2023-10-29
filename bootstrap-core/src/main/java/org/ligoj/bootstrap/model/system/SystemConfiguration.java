@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.model.system;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -33,6 +34,7 @@ public class SystemConfiguration extends AbstractNamedAuditedEntity<Integer> {
 	 */
 	@NotBlank
 	@Size(max = 8192)
+	@Column(length = 8192)
 	private String value;
 
 }
