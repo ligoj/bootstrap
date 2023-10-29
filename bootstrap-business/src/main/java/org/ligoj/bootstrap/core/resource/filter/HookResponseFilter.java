@@ -46,6 +46,10 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 		CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(runnable);
 	}
 
+	/**
+	 * Return cached hooks grouped by matching patterns.
+	 * @return cached hooks grouped by matching patterns.
+	 */
 	@CacheResult(cacheName = "hooks")
 	public Map<Pattern, List<SystemHook>> findAll() {
 		final var patterns = repository.findAll().stream().peek(

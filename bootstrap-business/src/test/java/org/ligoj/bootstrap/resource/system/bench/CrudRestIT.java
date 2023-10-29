@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * CRUD Integration REST tests.
  */
-public class CrudRestIT extends AbstractRestTest {
+class CrudRestIT extends AbstractRestTest {
 
 	/**
 	 * URI

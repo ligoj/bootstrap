@@ -22,7 +22,7 @@ import java.io.IOException;
  * Spring Security configuration and {@link SessionResource} access from REST
  * interface.
  */
-public class SessionResourceRestIT extends AbstractRestTest {
+class SessionResourceRestIT extends AbstractRestTest {
 
 	/**
 	 * URI
@@ -43,7 +43,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	 * server creation.
 	 */
 	@BeforeAll
-	public static void startServer() {
+	static void startServer() {
 		server = new SessionResourceRestIT().startRestServer("");
 	}
 
@@ -51,7 +51,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	 * No username provided gives 403
 	 */
 	@Test
-	public void testProtectedResourceAnonymousMeans403() throws IOException {
+	void testProtectedResourceAnonymousMeans403() throws IOException {
 		final var message = new HttpPost(BASE_URI + RESOURCE);
 		message.setEntity(new StringEntity("{\"id\":0}", ContentType.APPLICATION_JSON));
 		httpclient.execute(message, response -> {
@@ -65,7 +65,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	 * 403
 	 */
 	@Test
-	public void testProtectedResourceNotAuthorizedMeans403() throws IOException {
+	void testProtectedResourceNotAuthorizedMeans403() throws IOException {
 		final var message = new HttpPost(BASE_URI + "/" + SESSION_RESOURCE);
 		message.addHeader("sm_universalid", "session");
 		message.setEntity(new StringEntity("{\"id\":0}", ContentType.APPLICATION_JSON));
@@ -79,7 +79,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	 * Username is provided, without authority but in white list gives 200
 	 */
 	@Test
-	public void testProtectedWithAuthorization() throws IOException {
+	void testProtectedWithAuthorization() throws IOException {
 		final var message = new HttpGet(BASE_URI + "/" + SESSION_RESOURCE);
 
 		// Add TARS headers
@@ -110,7 +110,7 @@ public class SessionResourceRestIT extends AbstractRestTest {
 	 * shutdown server
 	 */
 	@AfterAll
-	public static void tearDown() throws Exception {
+	static void tearDown() throws Exception {
 		server.stop();
 	}
 }

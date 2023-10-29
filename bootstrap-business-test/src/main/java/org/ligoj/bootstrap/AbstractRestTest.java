@@ -111,10 +111,9 @@ public abstract class AbstractRestTest extends AbstractTest {
 	}
 
 	protected String execute(final ClassicHttpRequest httpRequest) throws IOException {
-		return httpclient.execute(httpRequest, response -> {
-			// Ask for the callback a flow control
-			return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		});
+		return httpclient.execute(httpRequest, response ->
+				// Ask for the callback a flow control
+				IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
 	}
 
 	/**

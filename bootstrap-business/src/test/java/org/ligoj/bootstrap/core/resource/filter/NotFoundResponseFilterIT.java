@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * ContainerResponseFilter resource test, includes {@link NotFoundResponseFilter}
  */
-public class NotFoundResponseFilterIT extends AbstractRestTest {
+class NotFoundResponseFilterIT extends AbstractRestTest {
 
 	/**
 	 * URI
@@ -36,12 +36,12 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	 * server creation.
 	 */
 	@BeforeAll
-	public static void startServer() {
+	 static void startServer() {
 		server = new NotFoundResponseFilterIT().startRestServer("");
 	}
 
 	@Test
-	public void testReturnNull() throws IOException {
+	 void testReturnNull() throws IOException {
 		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/null");
 		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
@@ -52,7 +52,7 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	}
 
 	@Test
-	public void testReturnNull404() throws IOException {
+	 void testReturnNull404() throws IOException {
 		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404");
 		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
@@ -63,7 +63,7 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	}
 
 	@Test
-	public void testReturnNull404Id() throws IOException {
+	void testReturnNull404Id() throws IOException {
 		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/null404/789");
 		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
@@ -75,7 +75,7 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	}
 
 	@Test
-	public void testReturnNotNull() throws IOException {
+	void testReturnNotNull() throws IOException {
 		final var httpGet = new HttpGet(BASE_URI + RESOURCE + "/not-null");
 		httpGet.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(httpGet, response -> {
@@ -92,7 +92,7 @@ public class NotFoundResponseFilterIT extends AbstractRestTest {
 	 * shutdown server
 	 */
 	@AfterAll
-	public static void tearDown() throws Exception {
+	static void tearDown() throws Exception {
 		server.stop();
 	}
 }
