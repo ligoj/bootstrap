@@ -39,23 +39,22 @@
         <url>https://travis-ci.com/ligoj/bootstrap</url>
     </ciManagement>
     <properties>
-        <!--
-        <junit.platform.version>1.7.2</junit.platform.version>
-        <junit.jupiter.version>5.7.2</junit.jupiter.version>
-        <junit.jupiter.version>5.9.3</junit.jupiter.version>
-        <junit.platform.version>1.9.3</junit.platform.version>
-        -->
-        <junit.jupiter.version>5.10.0</junit.jupiter.version>
-        <junit.platform.version>1.10.0</junit.platform.version>
+        <!-- Sonar configuration -->
         <sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
         <sonar.issue.ignore.multicriteria.e1.ruleKey>Web:BoldAndItalicTagsCheck</sonar.issue.ignore.multicriteria.e1.ruleKey>
         <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e1.resourceKey>
         <sonar.issue.ignore.multicriteria.e2.ruleKey>java:S6813</sonar.issue.ignore.multicriteria.e2.ruleKey>
         <sonar.issue.ignore.multicriteria.e2.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e2.resourceKey>
+        <sonar.coverage.exclusions>**/*.js,**/org/eclipse/**/*.java</sonar.coverage.exclusions>
 
         <gitRepositoryName>bootstrap</gitRepositoryName>
-        <plugin.jacoco>0.8.11</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
 
+        <!-- BOM overrides -->
+        <plugin.jacoco>0.8.11</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+        <junit.jupiter.version>5.10.0</junit.jupiter.version>
+        <junit.platform.version>1.10.0</junit.platform.version>
+
+        <!-- BOM -->
         <annotation-api.version>2.1.1</annotation-api.version>
         <ant.version>1.10.14</ant.version>
         <activation.version>2.0.1</activation.version>
