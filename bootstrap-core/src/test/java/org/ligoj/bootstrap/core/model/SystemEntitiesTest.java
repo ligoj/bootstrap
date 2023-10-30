@@ -3,23 +3,14 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.model.system.SystemApiToken;
-import org.ligoj.bootstrap.model.system.SystemAuthorization;
-import org.ligoj.bootstrap.model.system.SystemBench;
-import org.ligoj.bootstrap.model.system.SystemConfiguration;
-import org.ligoj.bootstrap.model.system.SystemDialect;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
-import org.ligoj.bootstrap.model.system.SystemUser;
-import org.ligoj.bootstrap.model.system.SystemUserSetting;
-
 import jodd.bean.BeanCopy;
 import lombok.EqualsAndHashCode;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.model.system.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 /**
  * Test all system entities. (not really test)
@@ -38,6 +29,8 @@ class SystemEntitiesTest {
 		testEntity(SystemUserSetting.class);
 		testEntity(SystemConfiguration.class);
 		testEntity(SystemApiToken.class);
+		testEntity(SystemHook.class);
+		testEntity(HookMatch.class);
 	}
 
 	@Test

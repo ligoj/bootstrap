@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
-import org.ligoj.bootstrap.model.system.HookMatch;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.mockito.Mockito;
@@ -96,12 +95,6 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Assertions.assertEquals("any", entry.getValue().getFirst().getCommand());
 		Assertions.assertEquals("{\"path\":\"foo/bar.+\"}", entry.getValue().getFirst().getMatch());
 		Assertions.assertEquals("./home", entry.getValue().getFirst().getWorkingDirectory());
-
-		// Coverage
-		final var match = new HookMatch();
-		match.setPath("foo");
-		Assertions.assertEquals("foo", match.getPath());
-
 	}
 
 	@Test
