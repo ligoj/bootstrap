@@ -5,6 +5,7 @@ package org.ligoj.bootstrap;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.HttpHostConnectException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -55,7 +56,11 @@ public abstract class AbstractRestTest extends AbstractTest {
 	}
 
 	private void initProperties(final String webDescriptor) {
-		System.setProperty("jetty.descriptor", webDescriptor);
+		if (StringUtils.isBlank(webDescriptor )) {
+			System.clearProperty("jetty.descriptor");
+		} else {
+			System.setProperty("jetty.descriptor", webDescriptor);
+		}
 		System.setProperty("jetty.port", PORT);
 		System.setProperty("user.language", "en_en");
 		System.setProperty("org.eclipse.jetty.server.webapp.parentLoaderPriority", "true");

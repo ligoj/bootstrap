@@ -56,7 +56,7 @@ class CrudRestIT extends AbstractRestTest {
 	 */
 	@BeforeAll
 	static void startServer() {
-		server = new CrudRestIT().startRestServer("");
+		server = new CrudRestIT().startRestServer(null);
 	}
 
 	/**

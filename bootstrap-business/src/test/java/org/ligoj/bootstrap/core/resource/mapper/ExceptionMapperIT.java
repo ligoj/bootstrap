@@ -64,22 +64,13 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			server.stop();
 		}
 	}
+
 	/**
 	 * @see ExceptionMapperResource#throwFailSafe()
 	 */
 	@Test
 	void testInternalError() throws IOException {
-		final var message = new HttpDelete(BASE_URI + RESOURCE + "/failsafe");
-		message.addHeader("sm_universalid", DEFAULT_USER);
-		httpclient.execute(message, response -> {
-			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getCode());
-			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assertions.assertEquals("internal", result.get("code"));
-			Assertions.assertNull(result.get("message"));
-			Assertions.assertNull(result.get("cause"));
-			return content;
-		});
+		internalError("/failsafe");
 	}
 
 	/**
@@ -87,17 +78,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 */
 	@Test
 	void testInternalError2() throws IOException {
-		final var message = new HttpDelete(BASE_URI + RESOURCE + "/failsafe2");
-		message.addHeader("sm_universalid", DEFAULT_USER);
-		httpclient.execute(message, response -> {
-			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getCode());
-			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
-			Assertions.assertEquals("internal", result.get("code"));
-			Assertions.assertNull(result.get("message"));
-			Assertions.assertNull(result.get("cause"));
-			return content;
-		});
+		internalError("/failsafe2");
 	}
 
 	/**
@@ -105,7 +86,11 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 */
 	@Test
 	void testInternalError3() throws IOException {
-		final var message = new HttpDelete(BASE_URI + RESOURCE + "/failsafe3");
+		internalError("/failsafe3");
+	}
+
+	private void internalError(final String path) throws IOException {
+		final var message = new HttpDelete(BASE_URI + RESOURCE + path);
 		message.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getCode());
@@ -362,7 +347,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			return null;
 		});
 		// Wait for async execution
-		Awaitility.waitAtMost(Duration.ofSeconds(3)).until(()-> Files.exists(new File("target/test-classes/hook.log").toPath()));
+		Awaitility.waitAtMost(Duration.ofSeconds(3)).until(() -> Files.exists(new File("target/test-classes/hook.log").toPath()));
 		final var payload = FileUtils.readFileToString(new File("target/test-classes/hook.log"), StandardCharsets.UTF_8);
 		final var jsonString = new String(Base64.decodeBase64(payload));
 		Assertions.assertTrue(Pattern.matches("\\{\"result\":\\{\"name\":\"new_name\"},\"path\":\"throw/hook/p1/p2\",\"method\":\"DELETE\",\"now\":\".*\",\"api\":\"ExceptionMapperResource#hook\",\"params\":\\[\"p1\",\"p2\",\\{\"name\":\"JUNIT\"}],\"user\":\"junit\"}", jsonString));

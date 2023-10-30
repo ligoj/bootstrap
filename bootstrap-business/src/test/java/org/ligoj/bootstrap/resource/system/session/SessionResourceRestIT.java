@@ -44,7 +44,7 @@ class SessionResourceRestIT extends AbstractRestTest {
 	 */
 	@BeforeAll
 	static void startServer() {
-		server = new SessionResourceRestIT().startRestServer("");
+		server = new SessionResourceRestIT().startRestServer(null);
 	}
 
 	/**
