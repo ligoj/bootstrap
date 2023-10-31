@@ -38,7 +38,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		final var entity = Mockito.mock(HttpEntity.class);
 		Mockito.when(response.getEntity()).thenReturn(entity);
 		Mockito.when(entity.getContent()).thenAnswer(var1 -> new ByteArrayInputStream("response".getBytes(StandardCharsets.UTF_8)));
-		Assertions.assertNotNull(startRestServer("log4j2.json"));
+		Assertions.assertNotNull(startRestServer(null));
 
 		final var httpGet = new HttpGet(BASE_URI + "/null");
 		Assertions.assertEquals("response", execute(httpGet));

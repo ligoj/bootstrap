@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.model.system;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Test class of bean.
@@ -26,6 +26,8 @@ class BeanTest {
 		testPojo(SystemAuthorization.class).toString();
 		testPojo(SystemRole.class).toString();
 		testPojo(SystemUser.class).toString();
+		testPojo(SystemHook.class).toString();
+		testPojo(HookMatch.class).toString();
 	}
 
 	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {
