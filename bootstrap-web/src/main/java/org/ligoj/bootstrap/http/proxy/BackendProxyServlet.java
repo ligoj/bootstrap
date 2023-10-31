@@ -144,29 +144,29 @@ public class BackendProxyServlet extends ProxyServlet {
 	protected void addProxyHeaders(final HttpServletRequest clientRequest, final Request proxyRequest) {
 		super.addProxyHeaders(clientRequest, proxyRequest);
 
-		if (clientRequest.getUserPrincipal() != null) {
-			// Stateful authenticated user
-			addHeader(proxyRequest, HEADER_USER, clientRequest.getUserPrincipal().getName());
-			addHeader(proxyRequest, "SM_SESSIONID", clientRequest.getSession(false).getId());
-		} else {
+		if (clientRequest.getUserPrincipal() == null) {
 			// Forward API user, if defined.
 			final var apiUser = getIdData(clientRequest, apiUserParameter, apiUserHeader);
 			final var apiKey = getIdData(clientRequest, apiKeyParameter, apiKeyHeader);
 
-			if (apiUser != null && apiKey != null) {
+			if (StringUtils.isNotBlank(apiUser) && StringUtils.isNotBlank(apiKey)) {
 				// When there is an API user,
 				addHeader(proxyRequest, HEADER_USER, apiUser);
 				addHeader(proxyRequest, apiKeyHeader, apiKey);
 			}
+		} else {
+			// Stateful authenticated user
+			addHeader(proxyRequest, HEADER_USER, clientRequest.getUserPrincipal().getName());
+			addHeader(proxyRequest, "SM_SESSIONID", clientRequest.getSession(false).getId());
 		}
 
 		// Forward all cookies but JSESSIONID.
-		final var cookies = clientRequest.getHeader(HEADER_COOKIE);
+		final var cookies = StringUtils.trimToNull(Arrays.stream(
+						Objects.requireNonNullElse(clientRequest.getHeader(HEADER_COOKIE), "").split(";"))
+				.map(String::trim).filter(cookie -> !cookie.split("=")[0].trim().equals(COOKIE_JEE))
+				.collect(Collectors.joining("; ")));
 		if (cookies != null) {
-			addHeader(proxyRequest, HEADER_COOKIE,
-					StringUtils.trimToNull(Arrays.stream(cookies.split(";"))
-							.filter(cookie -> !cookie.split("=")[0].trim().equals(COOKIE_JEE)).map(String::trim)
-							.collect(Collectors.joining("; "))));
+			addHeader(proxyRequest, HEADER_COOKIE, cookies);
 		}
 	}
 
