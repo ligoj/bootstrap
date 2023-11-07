@@ -137,7 +137,7 @@ public class ApiTokenResource {
 	 * @return raw token value corresponding to the requested name and owned by current user.
 	 */
 	@GET
-	@Path("{name:\\w+}")
+	@Path("{name:[\\w.-]+}")
 	@OnNullReturn404
 	public String getToken(@PathParam("name") final String name) {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
@@ -300,7 +300,7 @@ public class ApiTokenResource {
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("{name:[\\w\\-\\.]+}")
+	@Path("{name:[\\w.-]+}")
 	public String update(@PathParam("name") final String name) throws GeneralSecurityException {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
 		if (entity == null) {
@@ -320,7 +320,7 @@ public class ApiTokenResource {
 	 * @param name The API token's name.
 	 */
 	@DELETE
-	@Path("{name}")
+	@Path("{name:[\\w.-]+}")
 	public void remove(@PathParam("name") final String name) {
 		repository.deleteByUserAndName(securityHelper.getLogin(), name);
 	}
