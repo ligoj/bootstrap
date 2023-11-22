@@ -55,27 +55,19 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Header will be ignored when the value starts with the
 	 */
-	private static final Map<String, String> IGNORE_HEADER_VALUE = new HashMap<>();
-
-	static {
-		IGNORE_HEADER_VALUE.put("set-cookie", COOKIE_JEE);
-	}
+	private static final Map<String, String> IGNORE_HEADER_VALUE = Map.of("set-cookie", COOKIE_JEE);
 
 	/**
 	 * Managed plain page error.
 	 */
-	private static final Map<Integer, Integer> MANAGED_PLAIN_ERROR = new HashMap<>();
-
-	// Initialize the mappings
-	static {
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_NOT_FOUND, HttpServletResponse.SC_NOT_FOUND);
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_METHOD_NOT_ALLOWED, HttpServletResponse.SC_NOT_FOUND);
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_FORBIDDEN, HttpServletResponse.SC_FORBIDDEN);
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-				HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_BAD_REQUEST, HttpServletResponse.SC_BAD_REQUEST);
-		MANAGED_PLAIN_ERROR.put(HttpServletResponse.SC_SERVICE_UNAVAILABLE, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-	}
+	private static final Map<Integer, Integer> MANAGED_PLAIN_ERROR = Map.of(
+			HttpServletResponse.SC_NOT_FOUND, HttpServletResponse.SC_NOT_FOUND,
+			HttpServletResponse.SC_METHOD_NOT_ALLOWED, HttpServletResponse.SC_NOT_FOUND,
+			HttpServletResponse.SC_FORBIDDEN, HttpServletResponse.SC_FORBIDDEN,
+			HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+			HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+			HttpServletResponse.SC_BAD_REQUEST, HttpServletResponse.SC_BAD_REQUEST,
+			HttpServletResponse.SC_SERVICE_UNAVAILABLE, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 
 	/**
 	 * SID
@@ -200,8 +192,9 @@ public class BackendProxyServlet extends ProxyServlet {
 				}
 			}
 			proxyResponse.setHeader(HttpHeader.CONNECTION.asString(), HttpHeaderValue.CLOSE.asString());
-			final var asyncContext = clientRequest.getAsyncContext();
-			asyncContext.complete();
+			if (clientRequest.isAsyncStarted()) {
+				clientRequest.getAsyncContext().complete();
+			}
 		}
 	}
 
