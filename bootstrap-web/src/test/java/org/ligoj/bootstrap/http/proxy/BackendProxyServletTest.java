@@ -358,7 +358,19 @@ class BackendProxyServletTest {
 		Mockito.when(response.getOutputStream()).thenReturn(os);
 		final var request = Mockito.mock(HttpServletRequest.class);
 		final var asyncContext = Mockito.mock(AsyncContext.class);
+		Mockito.when(request.isAsyncStarted()).thenReturn(true);
 		Mockito.when(request.getAsyncContext()).thenReturn(asyncContext);
+		servlet.onProxyResponseFailure(request, response, null, new Exception());
+	}
+
+	@Test
+	void onProxyResponseFailureAsyncNotStarted() throws IOException, ServletException {
+		init();
+		final var response = Mockito.mock(HttpServletResponse.class);
+		final var os = Mockito.mock(ServletOutputStream.class);
+		Mockito.doThrow(new IOException()).when(os).write(ArgumentMatchers.any(byte[].class));
+		Mockito.when(response.getOutputStream()).thenReturn(os);
+		final var request = Mockito.mock(HttpServletRequest.class);
 		servlet.onProxyResponseFailure(request, response, null, new Exception());
 	}
 
