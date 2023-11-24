@@ -12,6 +12,8 @@ import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.RegEx;
+
 /**
  * Simple authorization for creation and update operations.
  */
@@ -41,6 +43,7 @@ public class AuthorizationEditionVo implements Serializable{
 	/**
 	 * Authorized URL.
 	 */
+	@RegEx
 	private String pattern;
 
 }

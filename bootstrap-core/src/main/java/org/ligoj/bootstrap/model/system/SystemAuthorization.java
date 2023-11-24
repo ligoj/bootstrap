@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.ligoj.bootstrap.core.model.AbstractAudited;
 
+import javax.annotation.RegEx;
+
 /**
  * A dynamic authorization for a role on a specified module.
  */
@@ -48,6 +50,7 @@ public class SystemAuthorization extends AbstractAudited<Integer> {
 	 * Authorized URL as pattern.
 	 */
 	@NotNull
+	@RegEx
 	private String pattern;
 
 	/**
