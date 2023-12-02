@@ -85,6 +85,13 @@ class HookResponseFilterTest extends AbstractBootTest {
 		hookBadJson.setCommand("any3");
 		repository.saveAndFlush(hookBadJson);
 
+		final var hookBadRegEx = new SystemHook();
+		hookBadRegEx.setName("hook_bad_reg_ex");
+		hookBadRegEx.setMatch("{\"path\":\"bad_reg_ex([{\"}");
+		hookBadRegEx.setWorkingDirectory("./home2");
+		hookBadRegEx.setCommand("any4");
+		repository.saveAndFlush(hookBadRegEx);
+
 		final var all = filter.findAll();
 		Assertions.assertEquals(1, all.size());
 		final var entry = all.entrySet().stream().findFirst().get();
