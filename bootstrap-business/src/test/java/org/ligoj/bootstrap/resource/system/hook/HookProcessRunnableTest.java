@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.resource.system.hook;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
@@ -41,7 +42,7 @@ class HookProcessRunnableTest {
 		final var uriInfo = Mockito.mock(UriInfo.class);
 		final var inMessage = Mockito.mock(Message.class);
 		final var process = Mockito.mock(Process.class);
-		final var inList = List.of("in1", "in2");
+		final var inList = List.of("in1", "in2", uriInfo, Mockito.mock(SecurityContext.class));
 		final var local = new ThreadLocal<ProcessBuilder>();
 		final var environment = new HashMap<String, String>();
 		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);

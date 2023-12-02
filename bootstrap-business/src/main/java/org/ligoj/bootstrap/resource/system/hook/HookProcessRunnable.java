@@ -6,6 +6,8 @@ package org.ligoj.bootstrap.resource.system.hook;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Runnable dedicated to hook processor.
@@ -59,13 +62,14 @@ public class HookProcessRunnable implements Runnable {
 		log.info("Executing hook {} -> {}", path, h.getName());
 		try {
 			// Create Map object
-
+			@SuppressWarnings("unchecked") final var params = exchange.getInMessage().getContent(List.class).stream()
+					.filter(p -> !(p instanceof UriInfo || p instanceof SecurityContext)).collect(Collectors.toList());
 			final var payload = new HashMap<>(Map.of(
 					"now", now,
 					"path", requestContext.getUriInfo().getPath(),
 					"method", requestContext.getMethod(),
 					"api", exchange.get("org.apache.cxf.resource.operation.name"),
-					"params", exchange.getInMessage().getContent(List.class)
+					"params", params
 			));
 			payload.put("user", Optional.ofNullable(principal).map(Principal::getName).orElse(null));
 			payload.put("result", responseContext.getEntity());
