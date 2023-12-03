@@ -3,9 +3,11 @@
  */
 package org.ligoj.bootstrap.model.system;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -28,6 +30,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "S_HOOK")
+@JsonIgnoreProperties
 public class SystemHook extends AbstractNamedEntity<Integer> {
 
 	/**
@@ -57,11 +60,12 @@ public class SystemHook extends AbstractNamedEntity<Integer> {
 	 */
 	@Convert(converter = StringListConverter.class)
 	@Column(length = 1024)
-	private List<String> injects;
+	private List<String> inject;
 
 	/**
 	 * Maximum integration delay. Default value is managed by `LIGOJ_HOOK_TIMEOUT` configuration.
 	 */
+	@Positive
 	private Integer timeout;
 
 	/**

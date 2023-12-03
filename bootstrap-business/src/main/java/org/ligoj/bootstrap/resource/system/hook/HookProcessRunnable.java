@@ -15,7 +15,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.apache.commons.lang3.time.DurationUtils;
 import org.apache.cxf.message.Exchange;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
@@ -82,7 +81,7 @@ public class HookProcessRunnable implements Runnable {
 					"method", requestContext.getMethod(),
 					"api", exchange.get("org.apache.cxf.resource.operation.name"),
 					"inject",
-					CollectionUtils.emptyIfNull(h.getInjects()).stream().collect(Collectors.toMap(
+					CollectionUtils.emptyIfNull(h.getInject()).stream().collect(Collectors.toMap(
 							Function.identity(),
 							name -> configuration.get(name, ""))),
 

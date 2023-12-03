@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 class HookProcessRunnableTest {
 
 	@Test
-	void run() throws IOException, InterruptedException {
+	void run() throws IOException {
 		final var requestContext = Mockito.mock(ContainerRequestContext.class);
 		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		final var configuration = Mockito.mock(ConfigurationResource.class);
@@ -62,7 +62,7 @@ class HookProcessRunnableTest {
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
 		hook1.setCommand("some args");
-		hook1.setInjects(List.of("conf1", "conf2"));
+		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
 
 
