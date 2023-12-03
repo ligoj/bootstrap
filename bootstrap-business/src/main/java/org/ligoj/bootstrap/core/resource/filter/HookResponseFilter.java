@@ -15,6 +15,7 @@ import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
 import org.ligoj.bootstrap.model.system.HookMatch;
 import org.ligoj.bootstrap.model.system.SystemHook;
+import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,6 +45,9 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 
 	@Autowired
 	private ObjectMapperTrim objectMapper;
+
+	@Autowired
+	private ConfigurationResource configurationResource;
 
 	void execute(final HookProcessRunnable runnable) {
 		CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(runnable);
@@ -87,7 +91,9 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 			if (hooks.entrySet().stream().anyMatch(e -> e.getKey().matcher(path).matches())) {
 				final var now = DateFormatUtils.formatUTC(new Date(), DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern());
 				execute(new HookProcessRunnable(now, objectMapper, hooks, requestContext, responseContext,
-						((AbstractPropertiesImpl) requestContext).getMessage().getExchange(), requestContext.getSecurityContext().getUserPrincipal()));
+						((AbstractPropertiesImpl) requestContext).getMessage().getExchange(),
+						requestContext.getSecurityContext().getUserPrincipal(),
+						configurationResource));
 			}
 		}
 	}

@@ -3,14 +3,15 @@
  */
 package org.ligoj.bootstrap.model.system;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.ligoj.bootstrap.core.model.AbstractNamedEntity;
+
+import java.util.List;
 
 /**
  * Event based action.
@@ -33,19 +34,35 @@ public class SystemHook extends AbstractNamedEntity<Integer> {
 	 * Current directory for execution
 	 */
 	@Length(max = 255)
+	@Pattern(regexp = "\\S*")
+	@NotBlank
 	private String workingDirectory;
 
 	/**
 	 * Command to execute.
 	 */
 	@Length(max = 255)
+	@NotBlank
 	private String command;
 
 	/**
 	 * JSON string representing the match
 	 */
 	@Column(length = 1024)
+	@NotBlank
 	private String match;
+
+	/**
+	 * Optional list of injected configuration values from the name. Secured data is decrypted at the invocation time.
+	 */
+	@Convert(converter = StringListConverter.class)
+	@Column(length = 1024)
+	private List<String> injects;
+
+	/**
+	 * Maximum integration delay. Default value is managed by `LIGOJ_HOOK_TIMEOUT` configuration.
+	 */
+	private Integer timeout;
 
 	/**
 	 * Converted JSON object of <code>match</code> JSON string.

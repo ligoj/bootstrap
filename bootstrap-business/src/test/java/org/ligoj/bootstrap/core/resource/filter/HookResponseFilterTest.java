@@ -106,7 +106,7 @@ class HookResponseFilterTest extends AbstractBootTest {
 
 	@Test
 	void execute() {
-		new HookResponseFilter().execute(new HookProcessRunnable(null, null, null, null, null, null, null) {
+		new HookResponseFilter().execute(new HookProcessRunnable(null, null, null, null, null, null, null, null) {
 			@Override
 			public void run() {
 				executed.set(true);
