@@ -3,10 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.security.GeneralSecurityException;
-
 import jakarta.persistence.EntityNotFoundException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,8 @@ import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.security.GeneralSecurityException;
 
 /**
  * Test class of {@link ApiTokenResource}
@@ -87,6 +86,11 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void getTokenNotExist() {
+		Assertions.assertNull( resource.getToken("any"));
+	}
+
+	@Test
 	void getToken() {
 		final var tokens = resource.getToken("name");
 		Assertions.assertEquals(TOKEN, tokens);
@@ -96,7 +100,7 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	void getTokenNames() {
 		final var tokensName = resource.getTokenNames();
 		Assertions.assertEquals(4, tokensName.size());
-		Assertions.assertEquals("name", tokensName.get(0));
+		Assertions.assertEquals("name", tokensName.getFirst());
 	}
 
 	@Test
@@ -177,14 +181,14 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	void update() throws GeneralSecurityException {
         var tokens = resource.getTokenNames();
 		Assertions.assertEquals(4, tokens.size());
-		Assertions.assertEquals("name", tokens.get(0));
+		Assertions.assertEquals("name", tokens.getFirst());
 		final var token = resource.update("name");
 
 		// Check new state
 		Assertions.assertNotNull(token);
 		tokens = resource.getTokenNames();
 		Assertions.assertEquals(4, tokens.size());
-		Assertions.assertEquals("name", tokens.get(0));
+		Assertions.assertEquals("name", tokens.getFirst());
 		Assertions.assertEquals(token, resource.getToken("name"));
 		final var newToken = repository.findByUserAndName(DEFAULT_USER, "name");
 		Assertions.assertNotNull(newToken);

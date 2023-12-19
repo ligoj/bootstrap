@@ -141,6 +141,9 @@ public class ApiTokenResource {
 	@OnNullReturn404
 	public String getToken(@PathParam("name") final String name) {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
+		if (entity == null) {
+			return null;
+		}
 		if (entity.getHash().equals(PLAIN_HASH) && entity.getToken().startsWith(PREFIX_TOKEN)) {
 			// Unsecured plain token. Useful for initial SQL injected token
 			return entity.getToken();
