@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.cache.annotation.CacheRemoveAll;
 import javax.cache.annotation.CacheResult;
+
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -59,8 +61,7 @@ public class AuthorizationResource {
 	/**
 	 * Retrieve an authorization from its identifier.
 	 *
-	 * @param id
-	 *            Element's identifier.
+	 * @param id Element's identifier.
 	 * @return Found element. May be <code>null</code>.
 	 */
 	@GET
@@ -73,8 +74,7 @@ public class AuthorizationResource {
 	/**
 	 * Retrieve all UI authorizations of current user.
 	 *
-	 * @param context
-	 *            security context.
+	 * @param context security context.
 	 * @return all UI authorizations of current user.
 	 */
 	@GET
@@ -87,8 +87,7 @@ public class AuthorizationResource {
 	/**
 	 * Retrieve all API authorizations of current user.
 	 *
-	 * @param context
-	 *            Security context.
+	 * @param context Security context.
 	 * @return All API authorizations of current user.
 	 */
 	@GET
@@ -101,8 +100,7 @@ public class AuthorizationResource {
 	/**
 	 * Create a new authorization.
 	 *
-	 * @param entity
-	 *            New object to persist.
+	 * @param entity New object to persist.
 	 * @return identifier of created object.
 	 */
 	@POST
@@ -117,10 +115,8 @@ public class AuthorizationResource {
 	/**
 	 * Update element from its identifier.
 	 *
-	 * @param entity
-	 *            Element to update.
-	 * @param id
-	 *            Element's identifier.
+	 * @param entity Element to update.
+	 * @param id     Element's identifier.
 	 */
 	@PUT
 	@Path("{id:\\d+}")
@@ -133,10 +129,8 @@ public class AuthorizationResource {
 	/**
 	 * Prepare for create a new element.
 	 *
-	 * @param authorization
-	 *            Target new object to persist.
-	 * @param entity
-	 *            New object to persist.
+	 * @param authorization Target new object to persist.
+	 * @param entity        New object to persist.
 	 */
 	private void prepareCreate(final SystemAuthorization authorization, final AuthorizationEditionVo entity) {
 		final var role = resource.findById(entity.getRole());
@@ -150,10 +144,8 @@ public class AuthorizationResource {
 	/**
 	 * Prepare for update element from its identifier.
 	 *
-	 * @param entity
-	 *            Element to update.
-	 * @param id
-	 *            Element's identifier.
+	 * @param entity Element to update.
+	 * @param id     Element's identifier.
 	 */
 	private void prepareUpdate(final int id, final AuthorizationEditionVo entity) {
 		final var authorization = repository.findOneExpected(id);
@@ -163,8 +155,7 @@ public class AuthorizationResource {
 	/**
 	 * Delete Role from its ID
 	 *
-	 * @param id
-	 *            Identifier of element to delete.
+	 * @param id Identifier of element to delete.
 	 */
 	@DELETE
 	@Path("{id:\\d+}")
@@ -213,9 +204,7 @@ public class AuthorizationResource {
 	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final SystemAuthorization authorization) {
 		if (authorization.getMethod() == null) {
 			// All methods
-			for (final var method : methods) {
-				addAuthorization(existingAuthorizations, method, authorization.getPattern());
-			}
+			Stream.of(methods).forEach(m -> addAuthorization(existingAuthorizations, m, authorization.getPattern()));
 		} else {
 			// Only this specific method
 			addAuthorization(existingAuthorizations, authorization.getMethod(), authorization.getPattern());
