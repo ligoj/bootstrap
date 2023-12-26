@@ -13,7 +13,6 @@ import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.Callback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,8 +43,6 @@ class BackendProxyServletTest {
 
 	private ServletContext servletContext;
 
-	private Callback callback;
-
 	@BeforeEach
 	void setup() throws IllegalAccessException {
 		servletContext = Mockito.mock(ServletContext.class);
@@ -66,7 +63,6 @@ class BackendProxyServletTest {
 		};
 
 		FieldUtils.writeField(servlet, "_log", Mockito.mock(Logger.class), true);
-		callback = Mockito.mock(Callback.class);
 	}
 
 	@Test
@@ -81,7 +77,7 @@ class BackendProxyServletTest {
 
 	@Test
 	void rewriteURINotMatch() throws ServletException {
-		setupRedirection("/nomatch", "any");
+		setupRedirection("/noMatch", "any");
 
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("/some");
@@ -112,8 +108,8 @@ class BackendProxyServletTest {
 	 */
 	@Test
 	void rewriteURIInvalidTarget() throws ServletException {
-		servlet.getBlackListHosts().add("proxified:1");
-		setupRedirection("/rest", "http://proxified:1/endpoint");
+		servlet.getBlackListHosts().add("proxy:1");
+		setupRedirection("/rest", "http://proxy:1/endpoint");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		final var rewriteURI = servlet.rewriteTarget(request);
@@ -122,7 +118,7 @@ class BackendProxyServletTest {
 
 	@Test
 	void rewriteURIInvalidUri() throws ServletException {
-		servlet.getBlackListHosts().add("proxified:1");
+		servlet.getBlackListHosts().add("proxy:1");
 		setupRedirection("/rest", ":invalid:uri");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
@@ -132,12 +128,12 @@ class BackendProxyServletTest {
 
 	@Test
 	void rewriteURIWithQuery() throws ServletException {
-		setupRedirection("/rest", "http://proxified:1/endpoint");
+		setupRedirection("/rest", "http://proxy:1/endpoint");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getRequestURI()).thenReturn("context/rest/any");
 		Mockito.when(request.getQueryString()).thenReturn("query");
 		final var rewriteURI = servlet.rewriteTarget(request);
-		Assertions.assertEquals("http://proxified:1/endpoint/any?query", rewriteURI);
+		Assertions.assertEquals("http://proxy:1/endpoint/any?query", rewriteURI);
 	}
 
 	private void rewriteURI(final String proxy, final String query, final String rewrite) throws ServletException {
@@ -493,121 +489,122 @@ class BackendProxyServletTest {
 	 * 404 Error for non Ajax request forward to the normal 404 page.
 	 */
 	@Test
-	void onResponseContentForward() throws ServletException, IOException {
+	void onProxyResponseSuccessForward() throws ServletException, IOException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
 		final var dispatcher = Mockito.mock(RequestDispatcher.class);
 		final var outputStream = Mockito.mock(ServletOutputStream.class);
 		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
-		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
+		Mockito.when(proxyResponse.getOutputStream()).thenReturn(outputStream);
 		Mockito.when(servletContext.getRequestDispatcher("/404.html")).thenReturn(dispatcher);
-		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
-		servlet.onResponseContent(new HttpServletRequestWrapper(request), response, proxyResponse, null, 0, 0,
-				callback);
-		Mockito.verify(dispatcher, Mockito.times(1)).forward(request, response);
-
+		Mockito.when(response.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
+		final var asyncContext = Mockito.mock(AsyncContext.class);
+		Mockito.when(request.getAsyncContext()).thenReturn(asyncContext);
+		servlet.onProxyResponseSuccess(request, proxyResponse, response);
+		Mockito.verify(dispatcher, Mockito.times(1)).forward(request, proxyResponse);
 	}
 
 	@Test
-	void onResponseContentForwardError() throws ServletException, IOException {
+	void onProxyResponseSuccessForwardError() throws ServletException, IOException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
 		final var dispatcher = Mockito.mock(RequestDispatcher.class);
 		final var toBeThrown = new ServletException();
 		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
-		Mockito.doThrow(toBeThrown).when(dispatcher).forward(request, response);
+		Mockito.doThrow(toBeThrown).when(dispatcher).forward(request, proxyResponse);
 		Mockito.when(servletContext.getRequestDispatcher("/404.html")).thenReturn(dispatcher);
-		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
-		servlet.onResponseContent(new HttpServletRequestWrapper(request), response, proxyResponse, null, 0, 0,
-				callback);
-		Mockito.verify(callback, Mockito.times(1)).failed(ArgumentMatchers.any(Exception.class));
+		Mockito.when(response.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
+		final var asyncContext = Mockito.mock(AsyncContext.class);
+		Mockito.when(request.getAsyncContext()).thenReturn(asyncContext);
+		servlet.onProxyResponseSuccess(request, proxyResponse, response);
+		Mockito.verify(dispatcher, Mockito.times(1)).forward(ArgumentMatchers.any(ServletRequest.class), ArgumentMatchers.same(proxyResponse));
 	}
 
 	@Test
-	void onResponseContent() throws IOException {
+	void onProxyResponseSuccess() throws IOException {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
 		final var outputStream = Mockito.mock(ServletOutputStream.class);
-		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
-		final var proxyResponse = Mockito.mock(Response.class);
-		servlet.onResponseContent(new HttpServletRequestWrapper(request), response, proxyResponse, null, 0, 0,
-				callback);
-		Mockito.verify(outputStream, Mockito.times(1)).write(null, 0, 0);
-
+		Mockito.when(proxyResponse.getOutputStream()).thenReturn(outputStream);
+		final var asyncContext = Mockito.mock(AsyncContext.class);
+		Mockito.when(request.getAsyncContext()).thenReturn(asyncContext);
+		servlet.onProxyResponseSuccess(request, proxyResponse, response);
+		Mockito.verify(asyncContext, Mockito.times(1)).complete();
 	}
 
 	@Test
-	void onResponseContentForbiddenAjax() throws IOException {
+	void onProxyResponseSuccessContentForbiddenAjax() throws IOException {
 		checkStatusForward(HttpServletResponse.SC_FORBIDDEN);
 	}
 
 	@Test
-	void onResponseContentUnAuthorizedAjax() throws IOException {
+	void onProxyResponseSuccessContentUnAuthorizedAjax() throws IOException {
 		checkStatusForward(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 
 	@Test
-	void onResponseContentNotFoundAjax() throws IOException {
+	void onProxyResponseSuccessContentNotFoundAjax() throws IOException {
 		checkStatusForward(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	@Test
-	void onResponseContentServerErrorAjax() throws IOException {
+	void onProxyResponseSuccessServerErrorAjax() throws IOException {
 		checkStatusForward(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
-	void onResponseContentMethodErrorAjax() throws IOException {
+	void onProxyResponseSuccessMethodErrorAjax() throws IOException {
 		checkStatusForward(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 	}
 
 	private void checkStatusForward(final int status) throws IOException {
 		final var request = Mockito.mock(HttpServletRequest.class);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		final var response = Mockito.mock(HttpServletResponse.class);
 		final var outputStream = Mockito.mock(ServletOutputStream.class);
-		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
-		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getStatus()).thenReturn(status);
-		servlet.onResponseContent(new HttpServletRequestWrapper(request), response, proxyResponse, null, 0, 0,
-				callback);
-		Mockito.verify(outputStream, Mockito.times(1)).write(null, 0, 0);
-		Mockito.verify(callback, Mockito.times(1)).succeeded();
+		Mockito.when(proxyResponse.getOutputStream()).thenReturn(outputStream);
+		final var asyncContext = Mockito.mock(AsyncContext.class);
+		Mockito.when(request.getAsyncContext()).thenReturn(asyncContext);
+		Mockito.when(response.getStatus()).thenReturn(status);
+		servlet.onProxyResponseSuccess(request, proxyResponse, response);
+		Mockito.verify(asyncContext, Mockito.times(1)).complete();
 	}
 
 	@Test
 	void onResponseHeaders() {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var response = Mockito.mock(HttpServletResponse.class);
-		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getHeaders()).thenReturn(HttpFields.build());
-		servlet.onServerResponseHeaders(request, response, proxyResponse);
-		Mockito.verify(response, Mockito.never()).addHeader("Content-Type", "text/html");
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
+		Mockito.when(response.getHeaders()).thenReturn(HttpFields.build());
+		servlet.onServerResponseHeaders(request, proxyResponse, response);
+		Mockito.verify(proxyResponse, Mockito.never()).addHeader("Content-Type", "text/html");
 	}
 
 	@Test
 	void onResponseHeadersNotFoundAjax() {
 		final var request = Mockito.mock(HttpServletRequest.class);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		final var response = Mockito.mock(HttpServletResponse.class);
-		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
-		Mockito.when(proxyResponse.getHeaders()).thenReturn(HttpFields.build());
-		servlet.onServerResponseHeaders(request, response, proxyResponse);
-		Mockito.verify(response, Mockito.never()).addHeader("Content-Type", "text/html");
+		Mockito.when(response.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
+		Mockito.when(response.getHeaders()).thenReturn(HttpFields.build());
+		servlet.onServerResponseHeaders(request, proxyResponse, response);
+		Mockito.verify(proxyResponse, Mockito.never()).addHeader("Content-Type", "text/html");
 	}
 
 	@Test
 	void onResponseHeadersNotFound() {
 		final var request = Mockito.mock(HttpServletRequest.class);
-		final var response = Mockito.mock(HttpServletResponse.class);
-		final var proxyResponse = Mockito.mock(Response.class);
-		Mockito.when(proxyResponse.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
+		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
+		final var response = Mockito.mock(Response.class);
+		Mockito.when(response.getStatus()).thenReturn(HttpServletResponse.SC_NOT_FOUND);
 		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
-		servlet.onServerResponseHeaders(request, response, proxyResponse);
-		Mockito.verify(response, Mockito.times(1)).addHeader("Content-Type", "text/html");
+		servlet.onServerResponseHeaders(request, proxyResponse, response);
+		Mockito.verify(proxyResponse, Mockito.times(1)).addHeader("Content-Type", "text/html");
 	}
 
 	@Test
@@ -620,16 +617,6 @@ class BackendProxyServletTest {
 		Mockito.when(servletConfig.getInitParameter("prefix")).thenReturn("prefix");
 		Mockito.when(servletConfig.getInitParameter("maxThreads")).thenReturn(MAX_THREADS);
 		Assertions.assertThrows(UnavailableException.class, () -> servlet.init(servletConfig));
-	}
-
-
-	@Test
-	void sendProxyRequest() {
-		final var clientRequest = Mockito.mock(HttpServletRequest.class);
-		final var proxyResponse = Mockito.mock(HttpServletResponse.class);
-		final var proxyRequest = Mockito.mock(Request.class);
-		servlet.sendProxyRequest(clientRequest, proxyResponse, proxyRequest);
-		Mockito.verify(proxyRequest).send(ArgumentMatchers.any(Response.CompleteListener.class));
 	}
 
 	@Test

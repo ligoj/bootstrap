@@ -16,10 +16,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
-import org.eclipse.jetty.ee10.proxy.ProxyServlet;
+import org.eclipse.jetty.ee10.proxy.AsyncMiddleManServlet;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
-import org.eclipse.jetty.util.Callback;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
  * Reverse proxy for business server.
  */
 @Slf4j
-public class BackendProxyServlet extends ProxyServlet {
+public class BackendProxyServlet extends AsyncMiddleManServlet {
 
 	/**
 	 * Header forwarded to back-end and containing the principal username or declared API user that will be checked on
@@ -49,13 +48,13 @@ public class BackendProxyServlet extends ProxyServlet {
 	/**
 	 * Headers will not be forwarded from the back-end.
 	 */
-	private static final String[] IGNORE_HEADERS = {"expires", "x-content-type-options", "server",
+	private static final String[] IGNORE_RESPONSE_HEADERS = {"expires", "x-content-type-options", "server",
 			"visited", "date", "x-frame-options", "x-xss-protection", "pragma", "cache-control"};
 
 	/**
 	 * Header will be ignored when the value starts with the
 	 */
-	private static final Map<String, String> IGNORE_HEADER_VALUE = Map.of("set-cookie", COOKIE_JEE);
+	private static final Map<String, String> IGNORE_RESPONSE_HEADER_VALUE = Map.of("set-cookie", COOKIE_JEE);
 
 	/**
 	 * Managed plain page error.
@@ -78,11 +77,6 @@ public class BackendProxyServlet extends ProxyServlet {
 	 * Target backend's endpoint.
 	 */
 	private String proxyTo; // NOSONAR - Initialized once, from #init()
-
-	/**
-	 * Response buffer size override due to Spring-Security buffer issue.
-	 */
-	private int responseBufferSize; // NOSONAR - Initialized once, from #init()
 
 	/**
 	 * Prefix activating this backend
@@ -168,6 +162,26 @@ public class BackendProxyServlet extends ProxyServlet {
 	}
 
 	@Override
+	protected void onProxyResponseSuccess(final HttpServletRequest clientRequest, final HttpServletResponse proxyResponse, final Response serverResponse) {
+		final var plainStatus = needPlainPageErrorStatus(clientRequest, serverResponse.getStatus());
+		if (plainStatus == 0) {
+			super.onProxyResponseSuccess(clientRequest, proxyResponse, serverResponse);
+		} else {
+			log.debug("Full HTML non zero mapped status to {}", plainStatus);
+			final var asyncContext = clientRequest.getAsyncContext();
+			try {
+				// Standard 404/... page, abort the original response
+				final var dispatcher = getServletContext().getRequestDispatcher("/" + plainStatus + ".html");
+				dispatcher.forward(getRoot(clientRequest), proxyResponse);
+			} catch (final Exception e) {
+				log.error("onProxyResponseSuccess failed", e);
+			} finally {
+				asyncContext.complete();
+			}
+		}
+	}
+
+	@Override
 	protected void onProxyResponseFailure(final HttpServletRequest clientRequest,
 			final HttpServletResponse proxyResponse, final Response serverResponse, final Throwable failure) {
 		_log.warn("Proxy error", failure);
@@ -211,7 +225,7 @@ public class BackendProxyServlet extends ProxyServlet {
 		if (value == null) {
 			throw new UnavailableException("Init parameter '" + parameter + "' is required.");
 		}
-		return value;
+		return value.toLowerCase(Locale.ENGLISH);
 	}
 
 
@@ -233,7 +247,6 @@ public class BackendProxyServlet extends ProxyServlet {
 		this.apiUserCleanPattern = newCleanParameter(apiUserParameter);
 		this.corsOrigin = getRequiredInitParameter("cors-origin");
 		this.corsVary = getRequiredInitParameter("cors-vary");
-		this.responseBufferSize = Integer.parseInt(getRequiredInitParameter("responseBufferSize"), 10);
 
 		_log.info("Proxying {} --> {}", this.prefix, this.proxyTo);
 	}
@@ -316,8 +329,8 @@ public class BackendProxyServlet extends ProxyServlet {
 			final String headerName, final String headerValue) {
 		// Filter some headers
 		final var lowerCase = StringUtils.lowerCase(headerName);
-		return ArrayUtils.contains(IGNORE_HEADERS, lowerCase) || IGNORE_HEADER_VALUE.containsKey(lowerCase)
-				&& headerValue.startsWith(IGNORE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
+		return ArrayUtils.contains(IGNORE_RESPONSE_HEADERS, lowerCase) || IGNORE_RESPONSE_HEADER_VALUE.containsKey(lowerCase)
+				&& headerValue.startsWith(IGNORE_RESPONSE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
 	}
 
 	/**
@@ -329,31 +342,6 @@ public class BackendProxyServlet extends ProxyServlet {
 	public static boolean isApiRequest(final HttpServletRequest request) {
 		return "XMLHttpRequest".equalsIgnoreCase(StringUtils.trimToEmpty(request.getHeader("X-Requested-With")))
 				|| !StringUtils.trimToEmpty(request.getHeader("User-Agent")).contains("Mozilla");
-	}
-
-	@Override
-	protected void onResponseContent(final HttpServletRequest request, final HttpServletResponse response,
-			final Response proxyResponse, final byte[] buffer, final int offset, final int length,
-			final Callback callback) {
-		final var plainStatus = needPlainPageErrorStatus(request, proxyResponse.getStatus());
-		if (plainStatus == 0) {
-			super.onResponseContent(request, response, proxyResponse, buffer, offset, length, callback);
-		} else {
-			try {
-				// Standard 404/... page, abort the original response
-				final var dispatcher = getServletContext().getRequestDispatcher("/" + plainStatus + ".html");
-				dispatcher.forward(getRoot(request), response);
-				callback.succeeded();
-			} catch (final Exception e) {
-				callback.failed(e);
-			}
-		}
-	}
-
-	@Override
-	protected void sendProxyRequest(HttpServletRequest clientRequest, HttpServletResponse proxyResponse, Request proxyRequest) {
-		proxyResponse.setBufferSize(responseBufferSize);
-		super.sendProxyRequest(clientRequest, proxyResponse, proxyRequest);
 	}
 
 	/**
@@ -379,16 +367,15 @@ public class BackendProxyServlet extends ProxyServlet {
 	}
 
 	@Override
-	protected void onServerResponseHeaders(final HttpServletRequest request, final HttpServletResponse response,
-			final Response proxyResponse) {
-		if (needPlainPageErrorStatus(request, proxyResponse.getStatus()) == 0) {
-			super.onServerResponseHeaders(request, response, proxyResponse);
+	protected void onServerResponseHeaders(final HttpServletRequest clientRequest, HttpServletResponse proxyResponse, Response serverResponse) {
+		if (needPlainPageErrorStatus(clientRequest, serverResponse.getStatus()) == 0) {
+			super.onServerResponseHeaders(clientRequest, proxyResponse, serverResponse);
 		} else {
 			// Standard 404 page
-			response.addHeader("Content-Type", "text/html");
+			proxyResponse.addHeader("Content-Type", "text/html");
 		}
-		response.addHeader("Access-Control-Allow-Origin", corsOrigin);
-		response.addHeader("Vary", corsVary);
+		proxyResponse.addHeader("Access-Control-Allow-Origin", corsOrigin);
+		proxyResponse.addHeader("Vary", corsVary);
 	}
 
 	/**
@@ -408,6 +395,10 @@ public class BackendProxyServlet extends ProxyServlet {
 
 		// Drop cookie headers forward from FRONT to BACK by default, only filtered ones will be added
 		ignoreRequestHeader.add(HEADER_COOKIE);
+
+		ignoreRequestHeader.add(HEADER_USER);
+		ignoreRequestHeader.add(apiKeyHeader);
+		ignoreRequestHeader.add(apiUserHeader);
 		return ignoreRequestHeader;
 	}
 }
