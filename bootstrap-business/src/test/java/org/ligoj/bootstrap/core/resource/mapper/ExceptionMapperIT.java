@@ -265,7 +265,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			@SuppressWarnings("unchecked") final List<Object> parameters = (List<Object>) result.get("parameters");
 			Assertions.assertNotNull(parameters);
 			Assertions.assertEquals(2, parameters.size());
-			Assertions.assertEquals("parameter1", parameters.get(0));
+			Assertions.assertEquals("parameter1", parameters.getFirst());
 			Assertions.assertEquals("parameter2", parameters.get(1));
 			return content;
 		});
@@ -350,8 +350,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 		Awaitility.waitAtMost(Duration.ofSeconds(3)).until(() -> Files.exists(new File("target/test-classes/hook.log").toPath()));
 		final var payload = FileUtils.readFileToString(new File("target/test-classes/hook.log"), StandardCharsets.UTF_8);
 		final var jsonString = new String(Base64.decodeBase64(payload));
-		Assertions.assertTrue(Pattern.matches("\\{\"result\":\\{\"name\":\"new_name\"},\"path\":\"throw/hook/p1/p2\",\"method\":\"DELETE\",\"now\":\".*\",\"api\":\"ExceptionMapperResource#hook\",\"params\":\\[\"p1\",\"p2\",\\{\"name\":\"JUNIT\"}],\"user\":\"junit\"}", jsonString));
-
+		Assertions.assertTrue(Pattern.matches("\\{\"result\":\\{\"name\":\"new_name\"},\"path\":\"throw/hook/p1/p2\",\"method\":\"DELETE\",\"now\":\"[^\"]+\",\"name\":\"mock-test\",\"api\":\"ExceptionMapperResource#hook\",\"params\":\\[\"p1\",\"p2\",\\{\"name\":\"JUNIT\"}],\"inject\":\\{},\"user\":\"junit\",\"timeout\":30}", jsonString));
 	}
 
 	/**
@@ -439,10 +438,10 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertTrue(errors.get("jsr303") instanceof List);
 			@SuppressWarnings("unchecked") final List<Map<String, String>> rules = (List<Map<String, String>>) errors.get("jsr303");
 			Assertions.assertEquals(1, rules.size());
-			Assertions.assertNotNull(rules.get(0));
-			Assertions.assertEquals(1, rules.get(0).size());
-			Assertions.assertNotNull(rules.get(0).get("rule"));
-			Assertions.assertEquals("NotNull", rules.get(0).get("rule"));
+			Assertions.assertNotNull(rules.getFirst());
+			Assertions.assertEquals(1, rules.getFirst().size());
+			Assertions.assertNotNull(rules.getFirst().get("rule"));
+			Assertions.assertEquals("NotNull", rules.getFirst().get("rule"));
 			Assertions.assertNull(result.get("cause"));
 			return content;
 		});
@@ -467,11 +466,11 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertTrue(errors.get("name") instanceof List);
 			@SuppressWarnings("unchecked") final List<Map<String, ?>> rules = (List<Map<String, ?>>) errors.get("name");
 			Assertions.assertEquals(1, rules.size());
-			Assertions.assertNotNull(rules.get(0));
-			Assertions.assertEquals(2, rules.get(0).size());
-			Assertions.assertNotNull(rules.get(0).get("rule"));
-			Assertions.assertEquals("Length", rules.get(0).get("rule"));
-			@SuppressWarnings("unchecked") final Map<String, Integer> parameters = (Map<String, Integer>) rules.get(0).get("parameters");
+			Assertions.assertNotNull(rules.getFirst());
+			Assertions.assertEquals(2, rules.getFirst().size());
+			Assertions.assertNotNull(rules.getFirst().get("rule"));
+			Assertions.assertEquals("Length", rules.getFirst().get("rule"));
+			@SuppressWarnings("unchecked") final Map<String, Integer> parameters = (Map<String, Integer>) rules.getFirst().get("parameters");
 			Assertions.assertEquals(0, parameters.get("min").intValue());
 			Assertions.assertEquals(200, parameters.get("max").intValue());
 			Assertions.assertNull(result.get("cause"));
@@ -503,7 +502,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 	@Test
 	void testUnrecognizedPropertyException() throws IOException {
 		final var message = new HttpPost(BASE_URI + RESOURCE + "/unrecognized-property");
-		message.setEntity(new StringEntity("{\"login\":\"JUNIT" + "\",\"any\":\"Grenache / Syrah\"}", ContentType.APPLICATION_JSON));
+		message.setEntity(new StringEntity("{\"login\":\"JUNIT" + "\",\"any\":\"value\"}", ContentType.APPLICATION_JSON));
 		message.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(message, response -> {
 			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getCode());
@@ -517,10 +516,10 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertTrue(errors.get("any") instanceof List);
 			@SuppressWarnings("unchecked") final List<Map<String, String>> rules = (List<Map<String, String>>) errors.get("any");
 			Assertions.assertEquals(1, rules.size());
-			Assertions.assertNotNull(rules.get(0));
-			Assertions.assertEquals(1, rules.get(0).size());
-			Assertions.assertNotNull(rules.get(0).get("rule"));
-			Assertions.assertEquals("Mapping", rules.get(0).get("rule"));
+			Assertions.assertNotNull(rules.getFirst());
+			Assertions.assertEquals(1, rules.getFirst().size());
+			Assertions.assertNotNull(rules.getFirst().get("rule"));
+			Assertions.assertEquals("Mapping", rules.getFirst().get("rule"));
 			Assertions.assertNull(result.get("cause"));
 			return content;
 		});
