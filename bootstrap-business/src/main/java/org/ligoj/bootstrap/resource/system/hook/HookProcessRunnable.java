@@ -72,7 +72,7 @@ public class HookProcessRunnable implements Runnable {
 		try {
 			// Create Map object
 			@SuppressWarnings("unchecked") final var params = exchange.getInMessage().getContent(List.class).stream()
-					.filter(p -> !(p instanceof UriInfo || p instanceof SecurityContext)).collect(Collectors.toList());
+					.filter(p -> !(p instanceof UriInfo || p instanceof SecurityContext)).toList();
 			final var timeout = ObjectUtils.defaultIfNull(h.getTimeout(), 0) > 0 ? h.getTimeout() : configuration.get("LIGOJ_HOOK_TIMEOUT", DEFAULT_TIMEOUT);
 			final var payload = new HashMap<>(Map.of(
 					"now", now,

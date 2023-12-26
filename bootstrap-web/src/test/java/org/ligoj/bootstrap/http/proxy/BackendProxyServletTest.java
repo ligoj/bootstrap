@@ -368,6 +368,7 @@ class BackendProxyServletTest {
 		Mockito.when(response.getOutputStream()).thenReturn(os);
 		final var request = Mockito.mock(HttpServletRequest.class);
 		servlet.onProxyResponseFailure(request, response, null, new Exception());
+		Mockito.verify(request, Mockito.times(0)).getAsyncContext();
 	}
 
 	@Test
