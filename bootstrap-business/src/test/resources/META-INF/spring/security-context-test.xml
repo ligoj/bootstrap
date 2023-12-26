@@ -23,7 +23,7 @@
 
 	<bean id="apiTokenFilter" class="org.ligoj.bootstrap.core.security.ApiTokenAuthenticationFilter">
 		<property name="principalRequestHeader" value="SM_UNIVERSALID" />
-		<property name="credentialsRequestHeader" value="X-api-key" />
+		<property name="credentialsRequestHeader" value="x-api-key" />
 		<property name="authenticationManager" ref="authentication-manager" />
 		<property name="exceptionIfHeaderMissing" value="false" />
 		<property name="continueFilterChainOnUnsuccessfulAuthentication" value="false" />
