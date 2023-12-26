@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A simple string to list converter based on ',' char separator.
+ * A simple string to list converter based on ';' char separator.
  */
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {
