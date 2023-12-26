@@ -59,7 +59,7 @@ class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	}
 
 	@Test
-	void testPrincipal() {
+	void testPrincipalWithoutKey() {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
 		Assertions.assertEquals(DEFAULT_USER, filter.getPreAuthenticatedPrincipal(request));
@@ -69,8 +69,18 @@ class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	void testPrincipalWithCredentialAsToken() {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
-		Mockito.when(request.getHeader("credential")).thenReturn("RFYG");
-		Mockito.when(resource.check(DEFAULT_USER, "RFYG")).thenReturn(true);
+		Mockito.when(request.getHeader("credential")).thenReturn("SECRET");
+		Mockito.when(resource.check(DEFAULT_USER, "SECRET")).thenReturn(true);
+		Assertions.assertEquals(DEFAULT_USER, filter.getPreAuthenticatedPrincipal(request));
+	}
+
+	@Test
+	void testPrincipalWithCredentialAsTokenAndVia() {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
+		Mockito.when(request.getHeader("credential")).thenReturn("SECRET");
+		Mockito.when(request.getHeader("x-api-via-user")).thenReturn("admin");
+		Mockito.when(resource.check("admin", "SECRET")).thenReturn(true);
 		Assertions.assertEquals(DEFAULT_USER, filter.getPreAuthenticatedPrincipal(request));
 	}
 
@@ -78,7 +88,7 @@ class ApiTokenAuthenticationFilterTest extends AbstractJpaTest {
 	void testInvalidToken() {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("principal")).thenReturn(DEFAULT_USER);
-		Mockito.when(request.getHeader("credential")).thenReturn("RFYG");
+		Mockito.when(request.getHeader("credential")).thenReturn("SECRET");
 		Assertions.assertNull(filter.getPreAuthenticatedPrincipal(request));
 	}
 }

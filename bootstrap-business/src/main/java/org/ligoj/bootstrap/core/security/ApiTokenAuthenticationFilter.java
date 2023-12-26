@@ -4,42 +4,41 @@
 package org.ligoj.bootstrap.core.security;
 
 import jakarta.servlet.http.HttpServletRequest;
-
+import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 
-import lombok.Setter;
+import java.util.Objects;
 
 /**
  * Authentication based on API token. It is saved with a salt, and associated to a user.
  */
+@Setter
 public class ApiTokenAuthenticationFilter extends RequestHeaderAuthenticationFilter {
 
 	@Autowired
-	@Setter
 	private ApiTokenResource resource;
 
 	/**
 	 * Default constructor with default credential header.
 	 */
 	public ApiTokenAuthenticationFilter() {
-		setCredentialsRequestHeader("X-api-key");
+		setCredentialsRequestHeader("x-api-key");
 	}
 
 	/**
 	 * Return the user corresponding to the given API Token.
-	 * 
-	 * @param request
-	 *            the current request.
+	 *
+	 * @param request the current request.
 	 * @return the current user or <code>null</code> is no match found.
 	 */
 	@Override
 	protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
 		final var principal = (String) super.getPreAuthenticatedPrincipal(request);
 		final var credential = (String) super.getPreAuthenticatedCredentials(request);
-		if (principal == null || credential == null || resource.check(principal, credential)) {
+		if (principal == null || credential == null || resource.check(Objects.requireNonNullElse(request.getHeader("x-api-via-user"), principal), credential)) {
 			return principal;
 		}
 

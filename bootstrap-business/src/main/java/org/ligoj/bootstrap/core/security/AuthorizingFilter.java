@@ -9,6 +9,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -29,6 +31,7 @@ import java.util.regex.Pattern;
  * URL based security filter based on RBAC strategy. Maintains a set of cache to determine as fast as possible the valid
  * authorizations from the incoming HTTP request.
  */
+@Slf4j
 public class AuthorizingFilter extends GenericFilterBean {
 
 	@Autowired
@@ -36,6 +39,13 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 	@Autowired
 	private AccessDeniedExceptionMapper accessDeniedHelper;
+
+	@Autowired
+	@Setter
+	private RbacUserDetailsService userDetailsService;
+
+	private static final GrantedAuthority ROLE_ANONYMOUS = new SimpleGrantedAuthority("ROLE_ANONYMOUS");
+	private static final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 
 	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
@@ -50,7 +60,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 		 * filter.
 		 */
 		final var authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		if (!authorities.contains(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))) {
+		if (!authorities.contains(ROLE_ANONYMOUS)) {
 			// Not anonymous, so we need to check using RBAC strategy.
 
 			// Build the URL
@@ -59,6 +69,13 @@ public class AuthorizingFilter extends GenericFilterBean {
 			final var method = StringUtils.upperCase(httpRequest.getMethod());
 			if (!isAuthorized(authorities, fullRequest, method)) {
 				// Forbidden access
+				updateForbiddenAccess((HttpServletResponse) response);
+				return;
+			}
+
+			final var viaUser = httpRequest.getHeader("x-api-via-user");
+			if (viaUser != null && !userDetailsService.loadUserByUsername(viaUser).getAuthorities().contains(ROLE_ADMIN)) {
+				log.info("Invalid via-user {}, not ADMIN", viaUser);
 				updateForbiddenAccess((HttpServletResponse) response);
 				return;
 			}

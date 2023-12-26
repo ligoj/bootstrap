@@ -5,6 +5,8 @@ package org.ligoj.bootstrap.core.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletContext;
@@ -12,6 +14,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
@@ -27,6 +30,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
@@ -38,11 +43,16 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	@Autowired
 	private SystemRoleRepository systemRoleRepository;
 
-	@Autowired
 	private AuthorizingFilter authorizingFilter;
 
 	@Autowired
 	private CacheResource cacheResource;
+
+	@BeforeEach
+	void prepare() {
+		authorizingFilter = new AuthorizingFilter();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(authorizingFilter);
+	}
 
 	/**
 	 * No authority
@@ -196,8 +206,69 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		Mockito.validateMockitoUsage();
 	}
 
+	/**
+	 * Plenty attached authority
+	 */
+	@Test
+	void doFilterViaUserNotAdmin() throws Exception {
+		attachRole("SOME");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME", ".*");
+		em.flush();
+		em.clear();
+		cacheResource.invalidate("authorizations");
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
+		Mockito.when(servletContext.getContextPath()).thenReturn("/context");
+		Mockito.when(request.getRequestURI()).thenReturn("/context/rest/match");
+		Mockito.when(request.getQueryString()).thenReturn("query");
+		Mockito.when(request.getMethod()).thenReturn("GET");
+		Mockito.when(request.getHeader("x-api-via-user")).thenReturn(DEFAULT_USER);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
+		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
+		authorizingFilter.setServletContext(servletContext);
+		authorizingFilter.doFilter(request, response, chain);
+		Mockito.verify(chain, Mockito.times(0)).doFilter(request, response);
+		Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+	}
+
+	/**
+	 * Plenty attached authority
+	 */
+	@Test
+	void doFilterViaUser() throws Exception {
+		attachRole("SOME");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME", ".*");
+		em.flush();
+		em.clear();
+		cacheResource.invalidate("authorizations");
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
+		Mockito.when(servletContext.getContextPath()).thenReturn("/context");
+		Mockito.when(request.getRequestURI()).thenReturn("/context/rest/match");
+		Mockito.when(request.getQueryString()).thenReturn("query");
+		Mockito.when(request.getMethod()).thenReturn("GET");
+		Mockito.when(request.getHeader("x-api-via-user")).thenReturn(DEFAULT_USER);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
+		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
+		authorizingFilter.setServletContext(servletContext);
+		final var userDetailsService = Mockito.mock(RbacUserDetailsService.class);
+		authorizingFilter.setUserDetailsService(userDetailsService);
+		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+		Mockito.when(userDetailsService.loadUserByUsername(DEFAULT_USER)).thenReturn(adminUser);
+		authorizingFilter.doFilter(request, response, chain);
+		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
+		Mockito.when(request.getMethod()).thenReturn("HEAD");
+		authorizingFilter.doFilter(request, response, chain);
+		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
+		Mockito.validateMockitoUsage();
+	}
+
 	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {
-        var role = systemRoleRepository.findByName(roleName);
+		var role = systemRoleRepository.findByName(roleName);
 		if (role == null) {
 			role = new SystemRole();
 			role.setName(roleName);
@@ -213,11 +284,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 
 	@SuppressWarnings("rawtypes")
 	private void attachRole(final String... roleNames) {
-
-		final Collection<GrantedAuthority> authorities = new ArrayList<>();
+		final var authorities = new ArrayList<>();
 		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities()).thenReturn(authorities);
-		for (final var roleName : roleNames) {
-			authorities.add(new SimpleGrantedAuthority(roleName));
-		}
+		Stream.of(roleNames).forEach(r -> authorities.add(new SimpleGrantedAuthority(r)));
 	}
 }
