@@ -186,7 +186,7 @@ class CsvForJpaTest {
 	private void toJpa(final String input, final boolean hasHeader) throws Exception {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class, new StringReader(input), hasHeader);
 		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
+		assertEquals(newWine(), jpa.getFirst());
 	}
 
 	@Test
@@ -217,7 +217,7 @@ class CsvForJpaTest {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class,
 				new BufferedReader(new StringReader("9;5;3;1;7;8;6;'2' "), "5;3;1;7;8;6;2;'4' ".length()), false);
 		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
+		assertEquals(newWine(), jpa.getFirst());
 	}
 
 	@Test
@@ -227,7 +227,7 @@ class CsvForJpaTest {
 		Assertions.assertEquals(1, jpa.size());
 		final var newWine = newWine();
 		newWine.setName(null);
-		assertEquals(newWine, jpa.get(0));
+		assertEquals(newWine, jpa.getFirst());
 	}
 
 	/**
@@ -243,7 +243,7 @@ class CsvForJpaTest {
 		newWine.setWneCnty("World, hold on");
 		newWine.setName("Château d\"Yquem");
 		newWine.setWneGrpe("3\"\"',");
-		assertEquals(newWine, jpa.get(0));
+		assertEquals(newWine, jpa.getFirst());
 	}
 
 	/**
@@ -259,7 +259,7 @@ class CsvForJpaTest {
 		newWine.setWneCnty("World, hold on");
 		newWine.setName("Château d\"Yquem");
 		newWine.setWneGrpe("3\"\"',");
-		assertEquals(newWine, jpa.get(0));
+		assertEquals(newWine, jpa.getFirst());
 	}
 
 	/**
@@ -274,7 +274,7 @@ class CsvForJpaTest {
 		final var newWine = newWine();
 		newWine.setWnePict(" 6 ");
 		newWine.setWneRegn("7 \"");
-		assertEquals(newWine, jpa.get(0));
+		assertEquals(newWine, jpa.getFirst());
 	}
 
 	/**
@@ -288,7 +288,7 @@ class CsvForJpaTest {
 		Assertions.assertEquals(1, jpa.size());
 		final var newWine = newWine();
 		newWine.setWneCnty("World\n, hold\non");
-		assertEquals(newWine, jpa.get(0));
+		assertEquals(newWine, jpa.getFirst());
 	}
 
 	@Test
@@ -296,7 +296,7 @@ class CsvForJpaTest {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class,
 				new BufferedReader(new StringReader("9;5;3;1;7;8;6;2\n"), "9;5;3;1;7;8;6;2\n".length()), false);
 		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
+		assertEquals(newWine(), jpa.getFirst());
 	}
 
 	@Test
@@ -318,7 +318,7 @@ class CsvForJpaTest {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class,
 				new BufferedReader(new StringReader("9;5;3;1;7;8;6;2;\n\n\r")), false);
 		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
+		assertEquals(newWine(), jpa.getFirst());
 	}
 
 	@Test
@@ -326,7 +326,7 @@ class CsvForJpaTest {
 		final var jpa = csvForJpa.toJpa(DummyEntity.class, new BufferedReader(new StringReader("\n\r9;5;3;1;7;8;6;2")),
 				false);
 		Assertions.assertEquals(1, jpa.size());
-		assertEquals(newWine(), jpa.get(0));
+		assertEquals(newWine(), jpa.getFirst());
 	}
 
 	@Test
@@ -412,7 +412,7 @@ class CsvForJpaTest {
 		em.flush();
 		final var jpa = csvForJpa.toJpa(DummyEntity2.class, "csv/demo/dummyentity2.csv", true, true);
 		Assertions.assertFalse(jpa.isEmpty());
-		Assertions.assertNotNull(jpa.get(0).getId());
+		Assertions.assertNotNull(jpa.getFirst().getId());
 	}
 
 	@Test
@@ -422,7 +422,7 @@ class CsvForJpaTest {
 		em.flush();
 		final var jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("link.id!\n1"), true);
 		Assertions.assertEquals(1, jpa.size());
-		Assertions.assertEquals(entity.getId(), jpa.get(0).getLink().getId());
+		Assertions.assertEquals(entity.getId(), jpa.getFirst().getLink().getId());
 	}
 
 	@Test
@@ -467,7 +467,7 @@ class CsvForJpaTest {
 		final var jpa = csvForJpa.toJpa(DummyEntity2.class,
 				new StringReader("user.login\n" + systemUser.getLogin() + "\n" + systemUser.getLogin()), true);
 		Assertions.assertEquals(2, jpa.size());
-		Assertions.assertEquals("test", jpa.get(0).getUser().getLogin());
+		Assertions.assertEquals("test", jpa.getFirst().getUser().getLogin());
 	}
 
 	@Test
@@ -626,16 +626,16 @@ class CsvForJpaTest {
 	@Test
 	void toJpaForeignKeyInSet() throws IOException {
 		final var jpa = csvForJpa.toJpa(DummyEntity2.class, "csv/demo/dummyentity2-collection.csv", true, true);
-		Assertions.assertEquals("A", jpa.get(0).getDialChar());
+		Assertions.assertEquals("A", jpa.getFirst().getDialChar());
 		Assertions.assertEquals("B", jpa.get(1).getDialChar());
-		Assertions.assertEquals(jpa.get(1).getChildren().get(0), jpa.get(0));
-		Assertions.assertTrue(jpa.get(1).getLinkedChildren().contains(jpa.get(0)));
+		Assertions.assertEquals(jpa.get(1).getChildren().getFirst(), jpa.getFirst());
+		Assertions.assertTrue(jpa.get(1).getLinkedChildren().contains(jpa.getFirst()));
 		Assertions.assertEquals("C", jpa.get(2).getDialChar());
-		Assertions.assertEquals(jpa.get(2).getChildren().get(0), jpa.get(0));
+		Assertions.assertEquals(jpa.get(2).getChildren().getFirst(), jpa.getFirst());
 		Assertions.assertEquals(jpa.get(2).getChildren().get(1), jpa.get(1));
-		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(0)));
+		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.getFirst()));
 		Assertions.assertTrue(jpa.get(2).getLinkedChildren().contains(jpa.get(1)));
-		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.get(0)));
+		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.getFirst()));
 		Assertions.assertTrue(jpa.get(2).getLinkedChildrenCollection().contains(jpa.get(1)));
 	}
 
@@ -648,7 +648,7 @@ class CsvForJpaTest {
 		final var jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialChar;children.dialChar\nB;A\nC;"),
 				true, true);
 		Assertions.assertEquals(2, jpa.size());
-		Assertions.assertEquals("B", jpa.get(0).getDialChar());
+		Assertions.assertEquals("B", jpa.getFirst().getDialChar());
 		Assertions.assertEquals("C", jpa.get(1).getDialChar());
 		Assertions.assertNull(jpa.get(1).getChildren());
 	}

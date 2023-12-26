@@ -3,34 +3,29 @@
  */
 package org.ligoj.bootstrap.core.dao.csv;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.SingularAttribute;
-
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.csv.AbstractCsvManager;
 import org.ligoj.bootstrap.core.csv.CsvBeanWriter;
 import org.ligoj.bootstrap.core.csv.CsvReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
+
+import java.io.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Component able to generate CSV data from JPA entity - the managed properties - and also the standard Java Beans. This
@@ -46,7 +41,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * Transaction manager used to manage separated CSV files.
 	 */
 	@Autowired
-	protected JpaTransactionManager transactionManager;
+	protected EntityManagerFactory emf;
 
 	@Override
 	public <T> List<T> toBean(final Class<T> beanType, final Reader input) throws IOException {
@@ -328,7 +323,7 @@ public class CsvForJpa extends AbstractCsvManager {
 
 		// Now filter the properties
 		final var descriptorsFiltered = new ArrayList<String>();
-		final var managedType = transactionManager.getEntityManagerFactory().getMetamodel()
+		final var managedType = emf.getMetamodel()
 				.managedType(beanType);
 		for (final var propertyDescriptor : orderedDescriptors) {
 			for (final Attribute<?, ?> attribute : managedType.getAttributes()) {
