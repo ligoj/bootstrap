@@ -35,6 +35,7 @@ class HookResourceTest extends AbstractBootTest {
 		final var hook = new SystemHook();
 		hook.setName("hook1");
 		hook.setCommand("ls");
+		hook.setWorkingDirectory(".");
 		hook.setMatch("{\"path\":\"foo/bar\"}");
 		return hook;
 	}
