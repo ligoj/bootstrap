@@ -209,34 +209,9 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	@Test
 	void doFilterViaUserNotAdmin() throws Exception {
 		attachRole("SOME");
-		addSystemAuthorization(HttpMethod.GET.name(), "SOME", ".*");
-		em.flush();
-		em.clear();
-		cacheResource.invalidate("authorizations");
-		final var chain = Mockito.mock(FilterChain.class);
-		final var request = Mockito.mock(HttpServletRequest.class);
-		final var servletContext = Mockito.mock(ServletContext.class);
-		Mockito.when(servletContext.getContextPath()).thenReturn("/context");
-		Mockito.when(request.getRequestURI()).thenReturn("/context/rest/match");
-		Mockito.when(request.getQueryString()).thenReturn("query");
-		Mockito.when(request.getMethod()).thenReturn("GET");
-		Mockito.when(request.getHeader("x-api-via-user")).thenReturn(DEFAULT_USER);
-		final var outputStream = Mockito.mock(ServletOutputStream.class);
-		final var response = Mockito.mock(HttpServletResponse.class);
-		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
-		authorizingFilter.setServletContext(servletContext);
-		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.times(0)).doFilter(request, response);
-		Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
-	}
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME","match" );
+		addSystemAuthorization(HttpMethod.POST.name(), "SUPER_USER", "some");
 
-	/**
-	 * Plenty attached authority
-	 */
-	@Test
-	void doFilterViaUser() throws Exception {
-		attachRole("SOME");
-		addSystemAuthorization(HttpMethod.GET.name(), "SOME", ".*");
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
@@ -254,7 +229,40 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		authorizingFilter.setServletContext(servletContext);
 		final var userDetailsService = Mockito.mock(RbacUserDetailsService.class);
 		authorizingFilter.setUserDetailsService(userDetailsService);
-		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("SUPER_USER")));
+		Mockito.when(userDetailsService.loadUserByUsername(DEFAULT_USER)).thenReturn(adminUser);
+		authorizingFilter.doFilter(request, response, chain);
+		Mockito.verify(chain, Mockito.times(0)).doFilter(request, response);
+		Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+	}
+
+	/**
+	 * Plenty attached authority
+	 */
+	@Test
+	void doFilterViaUser() throws Exception {
+		attachRole("SOME");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME","match" );
+		addSystemAuthorization(HttpMethod.POST.name(), "SUPER_USER", "system/user");
+
+		em.flush();
+		em.clear();
+		cacheResource.invalidate("authorizations");
+		final var chain = Mockito.mock(FilterChain.class);
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var servletContext = Mockito.mock(ServletContext.class);
+		Mockito.when(servletContext.getContextPath()).thenReturn("/context");
+		Mockito.when(request.getRequestURI()).thenReturn("/context/rest/match");
+		Mockito.when(request.getQueryString()).thenReturn("query");
+		Mockito.when(request.getMethod()).thenReturn("GET");
+		Mockito.when(request.getHeader("x-api-via-user")).thenReturn(DEFAULT_USER);
+		final var outputStream = Mockito.mock(ServletOutputStream.class);
+		final var response = Mockito.mock(HttpServletResponse.class);
+		Mockito.when(response.getOutputStream()).thenReturn(outputStream);
+		authorizingFilter.setServletContext(servletContext);
+		final var userDetailsService = Mockito.mock(RbacUserDetailsService.class);
+		authorizingFilter.setUserDetailsService(userDetailsService);
+		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("SUPER_USER")));
 		Mockito.when(userDetailsService.loadUserByUsername(DEFAULT_USER)).thenReturn(adminUser);
 		authorizingFilter.doFilter(request, response, chain);
 		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);

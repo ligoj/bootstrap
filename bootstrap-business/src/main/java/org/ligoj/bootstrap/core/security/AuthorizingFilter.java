@@ -45,7 +45,6 @@ public class AuthorizingFilter extends GenericFilterBean {
 	private RbacUserDetailsService userDetailsService;
 
 	private static final GrantedAuthority ROLE_ANONYMOUS = new SimpleGrantedAuthority("ROLE_ANONYMOUS");
-	private static final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 
 	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
@@ -65,17 +64,23 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 			// Build the URL
 			final var fullRequest = getFullRequest(httpRequest);
+
+			// Verify via-user is authorized to assume this right
+			final var viaUser = httpRequest.getHeader("x-api-via-user");
+			if (viaUser != null) {
+				if (isAuthorized(userDetailsService.loadUserByUsername(viaUser).getAuthorities(), "system/user", "POST")) {
+					log.info("Request for user {} via admin user {}", SecurityContextHolder.getContext().getAuthentication().getName(), viaUser);
+				} else {
+					log.info("Invalid via-user {}, not ADMIN", viaUser);
+					updateForbiddenAccess((HttpServletResponse) response);
+					return;
+				}
+			}
+
 			// Check access
 			final var method = StringUtils.upperCase(httpRequest.getMethod());
 			if (!isAuthorized(authorities, fullRequest, method)) {
 				// Forbidden access
-				updateForbiddenAccess((HttpServletResponse) response);
-				return;
-			}
-
-			final var viaUser = httpRequest.getHeader("x-api-via-user");
-			if (viaUser != null && !userDetailsService.loadUserByUsername(viaUser).getAuthorities().contains(ROLE_ADMIN)) {
-				log.info("Invalid via-user {}, not ADMIN", viaUser);
 				updateForbiddenAccess((HttpServletResponse) response);
 				return;
 			}
@@ -112,29 +117,13 @@ public class AuthorizingFilter extends GenericFilterBean {
 		final var authorizationsCache = authorizationResource.getAuthorizations().get(AuthorizationType.API);
 
 		// Check the authorization
-		if (authorizationsCache != null) {
-			for (final var authority : authorities) {
-				final var authorizations = authorizationsCache.get(authority.getAuthority());
-				if (authorizations != null && match(authorizations.get(method), request)) {
-					// Granted access
-					return true;
-				}
-			}
-		}
-
-		// No authorization found
-		return false;
+		return authorizationsCache != null
+				&& authorities.stream()
+				.map(a -> authorizationsCache.get(a.getAuthority()))
+				.anyMatch(a -> a != null && match(a.get(method), request));
 	}
 
 	private boolean match(final Collection<Pattern> patterns, final String toMatch) {
-		if (patterns != null) {
-			for (final var pattern : patterns) {
-				if (pattern.matcher(toMatch).find()) {
-					// Granted access
-					return true;
-				}
-			}
-		}
-		return false;
+		return (patterns != null && patterns.stream().anyMatch(p -> p.matcher(toMatch).find()));
 	}
 }
