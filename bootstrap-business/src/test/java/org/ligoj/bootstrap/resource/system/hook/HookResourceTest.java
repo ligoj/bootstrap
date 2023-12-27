@@ -31,6 +31,20 @@ class HookResourceTest extends AbstractBootTest {
 		Assertions.assertNull(first.getMatchObject());
 	}
 
+	@Test
+	void findById() {
+		final var hook = newHook();
+		em.persist(hook);
+		Assertions.assertEquals("hook1", resource.findById(hook.getId()).getName());
+	}
+
+	@Test
+	void findByName() {
+		final var hook = newHook();
+		em.persist(hook);
+		Assertions.assertEquals("hook1", resource.findByName("hook1").getName());
+	}
+
 	private SystemHook newHook() {
 		final var hook = new SystemHook();
 		hook.setName("hook1");

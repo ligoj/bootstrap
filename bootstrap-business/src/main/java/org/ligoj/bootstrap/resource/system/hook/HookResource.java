@@ -47,9 +47,33 @@ public class HookResource {
 	}
 
 	/**
+	 * Return a hook from ots identifier.
+	 *
+	 * @param id Hook identifier.
+	 * @return a hook from its identifier.
+	 */
+	@GET
+	@Path("{id:\\d")
+	public SystemHook findById(@PathParam("id") int id) {
+		return repository.findOneExpected(id);
+	}
+
+	/**
+	 * Return a hook from its name.
+	 *
+	 * @param name Hook name.
+	 * @return a hook from its name.
+	 */
+	@GET
+	@Path("name/{name")
+	public SystemHook findByName(@PathParam("id") String name) {
+		return repository.findByNameExpected(name);
+	}
+
+	/**
 	 * Retrieve all elements with pagination
 	 *
-	 * @param uriInfo  pagination data.
+	 * @param uriInfo pagination data.
 	 * @return all elements with pagination.
 	 */
 	@GET
