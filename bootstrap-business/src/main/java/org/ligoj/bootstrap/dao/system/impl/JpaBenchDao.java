@@ -52,7 +52,7 @@ public class JpaBenchDao implements ISystemPerformanceJpaDao {
 		if (resultList.isEmpty()) {
 			return new byte[0];
 		}
-		return resultList.get(0).getPicture();
+		return resultList.getFirst().getPicture();
 	}
 
 	@Override

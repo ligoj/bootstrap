@@ -479,7 +479,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			Assertions.assertEquals(2, plugins.size());
 
 			// Plug-in from the API
-			final var plugin0 = plugins.get(0);
+			final var plugin0 = plugins.getFirst();
 			Assertions.assertEquals("feature:bar", plugin0.getId());
 			Assertions.assertEquals("BAR", plugin0.getName());
 			Assertions.assertEquals("COMPANY", plugin0.getVendor());
@@ -515,7 +515,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertEquals(2, plugins.size());
 
 		// Plug-in in the classpath
-		final var plugin0 = plugins.get(0);
+		final var plugin0 = plugins.getFirst();
 		Assertions.assertEquals("feature:foo", plugin0.getId());
 		Assertions.assertEquals("Foo", plugin0.getName());
 		Assertions.assertNull(plugin0.getVendor());
@@ -1009,8 +1009,8 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	void searchPluginsOnMavenRepoOneResult() throws IOException {
 		final var result = searchPluginsInMavenRepo("samp");
 		Assertions.assertEquals(1, result.size());
-		Assertions.assertEquals("plugin-sample", result.get(0).getArtifact());
-		Assertions.assertEquals("0.0.1", result.get(0).getVersion());
+		Assertions.assertEquals("plugin-sample", result.getFirst().getArtifact());
+		Assertions.assertEquals("0.0.1", result.getFirst().getVersion());
 	}
 
 	private List<Artifact> searchPluginsInMavenRepo(final String query) throws IOException {

@@ -107,7 +107,7 @@ class PaginationJsonTest extends AbstractBootTest {
 		Assertions.assertEquals(FilterOperator.AND, buildFilter.getGroupOp());
 		Assertions.assertNotNull(buildFilter.getRules());
 		Assertions.assertEquals(1, buildFilter.getRules().size());
-		final var rule = (BasicRule) buildFilter.getRules().get(0);
+		final var rule = (BasicRule) buildFilter.getRules().getFirst();
 		Assertions.assertEquals("data", rule.getData());
 		Assertions.assertEquals("field", rule.getField());
 		Assertions.assertEquals(RuleOperator.EQ, rule.getOp());

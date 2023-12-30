@@ -19,18 +19,17 @@ import lombok.Setter;
  * This strategy replace the standard 302 code by a simple JSON data since the client is a hidden Ajax thread. More
  * information could be added later in the JSON stream.
  */
+@Setter
 public class RestRedirectStrategy implements RedirectStrategy {
 
 	/**
 	 * Failure redirection mode. Default is true.
 	 */
-	@Setter
 	private boolean success;
 
 	/**
 	 * Status to use.
 	 */
-	@Setter
 	private int status = HttpServletResponse.SC_OK;
 
 	@Override

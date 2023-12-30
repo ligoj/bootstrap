@@ -29,7 +29,7 @@ public class NotFoundResponseFilterResource {
 	}
 
 	/**
-	 * Null result, should gives a 404.
+	 * Null result, should give a 404.
 	 * @return <code>null</code>.
 	 */
 	@GET
@@ -40,7 +40,7 @@ public class NotFoundResponseFilterResource {
 	}
 
 	/**
-	 * Null result, should gives a 404 with a specific identifier.
+	 * Null result, should give a 404 with a specific identifier.
 	 * @param id Identifier
 	 * @return non null.
 	 */
@@ -53,7 +53,7 @@ public class NotFoundResponseFilterResource {
 	}
 
 	/**
-	 * Not null result, should gives a 200.
+	 * Not null result, should give a 200.
 	 * @return non <code>null</code>.
 	 */
 	@GET

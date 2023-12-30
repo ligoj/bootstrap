@@ -20,12 +20,12 @@ import lombok.Setter;
 /**
  * Filter able to mask the HTML extension from the URL, and forward to the master HTML file as necessary.
  */
+@Setter
 public class HtmlProxyFilter extends OncePerRequestFilter {
 
 	/**
 	 * HTML suffix.
 	 */
-	@Setter
 	private String suffix = "";
 
 	@Override

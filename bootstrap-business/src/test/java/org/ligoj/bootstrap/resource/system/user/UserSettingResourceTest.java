@@ -30,7 +30,7 @@ class UserSettingResourceTest extends AbstractBootTest {
 		em.clear();
 		final var all = repository.findAll();
 		Assertions.assertFalse(all.isEmpty());
-		final var setting = all.get(0);
+		final var setting = all.getFirst();
 		Assertions.assertEquals("k", setting.getName());
 		Assertions.assertEquals("v", setting.getValue());
 		Assertions.assertEquals(DEFAULT_USER, setting.getLogin());

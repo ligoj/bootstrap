@@ -188,7 +188,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				fetch);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getContent().size());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**
@@ -224,7 +224,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getContent().size());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**
@@ -308,7 +308,7 @@ class PaginationDaoTest extends AbstractBootTest {
 		final var findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null,
 				null);
 		assertAll(findAll);
-		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().get(0).getDialLong());
+		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().getFirst().getDialLong());
 	}
 
 	/**
@@ -321,7 +321,7 @@ class PaginationDaoTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().putSingle("sord", "desc");
 		final var findAll = paginationDao.findAll(SystemDialect.class, uriInfo, "any:dialLong");
 		assertAll(findAll);
-		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().get(0).getDialLong());
+		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().getFirst().getDialLong());
 	}
 
 	/**
@@ -334,7 +334,7 @@ class PaginationDaoTest extends AbstractBootTest {
 		uriInfo.getQueryParameters().putSingle("sord", "desc");
 		final var findAll = paginationDao.findAll(SystemDialect.class, uriInfo, "dialLong");
 		assertAll(findAll);
-		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().get(0).getDialLong());
+		Assertions.assertEquals(Long.valueOf(COUNT - 1), findAll.getContent().getFirst().getDialLong());
 	}
 
 	private void assertAll(final Page<?> findAll) {
@@ -398,7 +398,7 @@ class PaginationDaoTest extends AbstractBootTest {
 		Assertions.assertEquals(1, findAll.getTotalElements());
 		Assertions.assertEquals(1, findAll.getContent().size());
 		// 44th element is "est"
-		Assertions.assertEquals("est", findAll.getContent().get(0).getDialChar());
+		Assertions.assertEquals("est", findAll.getContent().getFirst().getDialChar());
 	}
 
 	/**
@@ -508,7 +508,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getTotalElements());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**
@@ -537,7 +537,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getTotalElements());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**
@@ -592,7 +592,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getTotalElements());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**
@@ -620,7 +620,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getTotalElements());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	private UiPageRequest newOr10() {
@@ -751,7 +751,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(21, findAll.getTotalElements());
-		Assertions.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
+		Assertions.assertEquals(AuthorizationType.API, findAll.getContent().getFirst().getAuthorization());
 	}
 
 	/**
@@ -786,7 +786,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				mapping, null, null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getTotalElements());
-		Assertions.assertEquals(1960, findAll.getContent().get(0).getId().intValue());
+		Assertions.assertEquals(1960, findAll.getContent().getFirst().getId().intValue());
 	}
 
 	/**
@@ -809,7 +809,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(21, findAll.getTotalElements());
-		Assertions.assertEquals(AuthorizationType.API, findAll.getContent().get(0).getAuthorization());
+		Assertions.assertEquals(AuthorizationType.API, findAll.getContent().getFirst().getAuthorization());
 	}
 
 	/**
@@ -891,7 +891,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				null);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getContent().size());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**
@@ -926,7 +926,7 @@ class PaginationDaoTest extends AbstractBootTest {
 				fetch);
 		Assertions.assertTrue(findAll.hasContent());
 		Assertions.assertEquals(1, findAll.getContent().size());
-		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().get(0).getId());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
 	}
 
 	/**

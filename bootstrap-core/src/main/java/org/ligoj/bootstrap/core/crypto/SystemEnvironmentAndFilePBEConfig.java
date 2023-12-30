@@ -27,15 +27,12 @@ import lombok.extern.slf4j.Slf4j;
  * </ul>
  */
 @Slf4j
+@Setter
 public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 
-	@Setter
 	private String passwordEnvName;
-	@Setter
 	private String passwordSysPropertyName;
-	@Setter
 	private String passwordFileEnvName;
-	@Setter
 	private String passwordFilePropertyName;
 
 	/**

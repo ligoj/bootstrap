@@ -175,7 +175,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	}
 
 	/**
-	 * Indicates this field is using a auto generated key or not.
+	 * Indicates this field is using an auto generated key or not.
 	 */
 	private boolean isRowNumber(final Class<?> type, final String propertyName) {
 		return getField(type, propertyName).getAnnotation(GeneratedValue.class) != null;

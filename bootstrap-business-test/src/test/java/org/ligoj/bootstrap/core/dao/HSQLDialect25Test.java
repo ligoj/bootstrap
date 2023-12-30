@@ -11,9 +11,8 @@ import org.junit.jupiter.api.Test;
  */
 class HSQLDialect25Test {
 
-	@SuppressWarnings("deprecation")
 	@Test
-	void constr() {
+	void constructor() {
 		Assertions.assertTrue(new HSQLDialect25().getKeywords().contains("period"));
 	}
 

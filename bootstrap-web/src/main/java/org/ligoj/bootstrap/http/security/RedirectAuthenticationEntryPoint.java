@@ -19,18 +19,17 @@ import lombok.Setter;
 /**
  * Allow to choose a redirection strategy depending on the current request.
  */
+@Setter
 public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
 	/**
 	 * JSON redirection strategy, used when the pattern "redirectJson" matches to the current request.
 	 */
-	@Setter
 	private RedirectStrategy redirectStrategy;
 
 	/**
 	 * Servlet URLs to redirect.
 	 */
-	@Setter
 	private Set<String> redirectUrls;
 
 	/**

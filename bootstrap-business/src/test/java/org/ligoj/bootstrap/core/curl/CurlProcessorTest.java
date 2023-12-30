@@ -74,7 +74,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 		final var vse = Assertions.assertThrows(ValidationJsonException.class,
 				() -> CurlProcessor.validateAndClose("http://localhost:" + MOCK_PORT, "parameter", "value"));
-		Assertions.assertEquals("value", vse.getErrors().get("parameter").get(0).get("rule"));
+		Assertions.assertEquals("value", vse.getErrors().get("parameter").getFirst().get("rule"));
 	}
 
 	@Test

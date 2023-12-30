@@ -13,10 +13,10 @@ import lombok.Setter;
 /**
  * Utility managing {@link StringEncryptor}
  */
+@Setter
 public final class CryptoHelper {
 
 	@Autowired
-	@Setter
 	private StringEncryptor encryptor;
 
 	/**

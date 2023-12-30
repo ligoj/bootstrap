@@ -73,7 +73,7 @@ class SessionResourceTest extends AbstractBootTest {
 			return null;
 		}).when(provider).decorate(settings);
 		resource.details();
-		Assertions.assertEquals("test", applicationSettings.getPlugins().get(0));
+		Assertions.assertEquals("test", applicationSettings.getPlugins().getFirst());
 	}
 
 	/**
@@ -119,14 +119,14 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings);
 		Assertions.assertNotNull(settings.getRoles());
 		Assertions.assertEquals(1, settings.getRoles().size());
-		Assertions.assertEquals(DEFAULT_ROLE, settings.getRoles().get(0));
+		Assertions.assertEquals(DEFAULT_ROLE, settings.getRoles().getFirst());
 		Assertions.assertNotNull(settings.getUiAuthorizations());
 		Assertions.assertEquals(1, settings.getUiAuthorizations().size());
 		Assertions.assertEquals("^my_url2", settings.getUiAuthorizations().iterator().next());
 		Assertions.assertNotNull(settings.getApiAuthorizations());
 		Assertions.assertEquals(1, settings.getApiAuthorizations().size());
-		Assertions.assertEquals("^my_url1", settings.getApiAuthorizations().get(0).getPattern());
-		Assertions.assertEquals("GET", settings.getApiAuthorizations().get(0).getMethod());
+		Assertions.assertEquals("^my_url1", settings.getApiAuthorizations().getFirst().getPattern());
+		Assertions.assertEquals("GET", settings.getApiAuthorizations().getFirst().getMethod());
 		Assertions.assertNotNull(settings.getUserSettings());
 		Assertions.assertFalse(settings.getUserSettings().isEmpty());
 		Assertions.assertEquals("v", settings.getUserSettings().get("k"));
@@ -164,7 +164,7 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(settings);
 		Assertions.assertNotNull(settings.getRoles());
 		Assertions.assertEquals(1, settings.getRoles().size());
-		Assertions.assertEquals("SOLO", settings.getRoles().get(0));
+		Assertions.assertEquals("SOLO", settings.getRoles().getFirst());
 		Assertions.assertNotNull(settings.getUiAuthorizations());
 		Assertions.assertEquals(0, settings.getUiAuthorizations().size());
 		Assertions.assertNotNull(settings.getApiAuthorizations());

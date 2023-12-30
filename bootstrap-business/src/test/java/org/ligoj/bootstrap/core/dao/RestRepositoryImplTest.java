@@ -223,7 +223,7 @@ class RestRepositoryImplTest extends AbstractBootTest {
 		var roles = roleRepository.findAllBy("name", "value1");
 		Assertions.assertNotNull(roles);
 		Assertions.assertEquals(1, roles.size());
-		Assertions.assertEquals("value1", roles.get(0).getName());
+		Assertions.assertEquals("value1", roles.getFirst().getName());
 	}
 
 	/**

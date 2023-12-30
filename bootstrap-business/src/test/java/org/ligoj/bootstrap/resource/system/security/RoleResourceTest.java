@@ -47,7 +47,7 @@ class RoleResourceTest extends AbstractBootTest {
 		persistEntities(SystemUser.class, "csv/system-test/user.csv");
 		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
 		final var role = em.createQuery("FROM SystemRole", SystemRole.class).setMaxResults(1).getResultList()
-				.get(0);
+				.getFirst();
 		roleTestId = role.getId();
 		roleTestName = role.getName();
 		em.flush();
@@ -70,7 +70,7 @@ class RoleResourceTest extends AbstractBootTest {
 	void findAllFetchAuth() {
 		final var result = resource.findAllFetchAuth();
 		Assertions.assertEquals(5, result.getData().size());
-		Assertions.assertEquals(2, result.getData().get(0).getAuthorizations().size());
+		Assertions.assertEquals(2, result.getData().getFirst().getAuthorizations().size());
 	}
 
 	/**
@@ -121,7 +121,7 @@ class RoleResourceTest extends AbstractBootTest {
 
 	/**
 	 * create new roleVo
-	 * 
+	 *
 	 * @return roleVo
 	 */
 	private SystemRoleVo newRoleVo() {
@@ -135,7 +135,7 @@ class RoleResourceTest extends AbstractBootTest {
 
 	/**
 	 * create an authorization
-	 * 
+	 *
 	 * @return authorization
 	 */
 	private AuthorizationEditionVo newAuthorization() {
@@ -166,8 +166,8 @@ class RoleResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(AuthorizationType.API, auth.getType());
 
 		// check keep existing auth
-		roleVo.getAuthorizations().get(0).setId(auth.getId());
-		roleVo.getAuthorizations().add(0, newAuthorization());
+		roleVo.getAuthorizations().getFirst().setId(auth.getId());
+		roleVo.getAuthorizations().addFirst(newAuthorization());
 		resource.update(roleVo);
 		// check result
 		em.flush();

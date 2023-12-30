@@ -47,7 +47,7 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
 		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
 		authorizationId = em.createQuery("FROM SystemAuthorization", SystemAuthorization.class).setMaxResults(1)
-				.getResultList().get(0).getId();
+				.getResultList().getFirst().getId();
 	}
 
 	/**
@@ -103,10 +103,10 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		// Also check the lazy lading issue
 		em.clear();
 		Assertions.assertEquals(1, result.size());
-		Assertions.assertEquals(authorization.getId(), result.get(0).getId());
-		Assertions.assertEquals(role.getId(), result.get(0).getRole().getId());
-		Assertions.assertEquals(AuthorizationType.UI, result.get(0).getType());
-		Assertions.assertEquals("pattern", result.get(0).getPattern());
+		Assertions.assertEquals(authorization.getId(), result.getFirst().getId());
+		Assertions.assertEquals(role.getId(), result.getFirst().getRole().getId());
+		Assertions.assertEquals(AuthorizationType.UI, result.getFirst().getType());
+		Assertions.assertEquals("pattern", result.getFirst().getPattern());
 	}
 
 	/**
@@ -148,10 +148,10 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		// Also check the lazy lading issue
 		em.clear();
 		Assertions.assertEquals(1, result.size());
-		Assertions.assertEquals(authorization.getId(), result.get(0).getId());
-		Assertions.assertEquals(role.getId(), result.get(0).getRole().getId());
-		Assertions.assertEquals(AuthorizationType.API, result.get(0).getType());
-		Assertions.assertEquals("pattern", result.get(0).getPattern());
+		Assertions.assertEquals(authorization.getId(), result.getFirst().getId());
+		Assertions.assertEquals(role.getId(), result.getFirst().getRole().getId());
+		Assertions.assertEquals(AuthorizationType.API, result.getFirst().getType());
+		Assertions.assertEquals("pattern", result.getFirst().getPattern());
 	}
 
 	/**

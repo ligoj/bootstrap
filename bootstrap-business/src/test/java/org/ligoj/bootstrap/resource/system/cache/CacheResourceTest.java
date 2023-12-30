@@ -214,7 +214,7 @@ class CacheResourceTest extends AbstractBootTest {
 		final var cluster = node.getCluster();
 		Assertions.assertNotNull(cluster.getId());
 		Assertions.assertEquals(1, cluster.getMembers().size());
-		Assertions.assertNull(cluster.getMembers().get(0).getCluster());
+		Assertions.assertNull(cluster.getMembers().getFirst().getCluster());
 		Assertions.assertNotNull(cluster.getState());
 	}
 

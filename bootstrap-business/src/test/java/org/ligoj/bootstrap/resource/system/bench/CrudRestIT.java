@@ -176,7 +176,7 @@ class CrudRestIT extends AbstractRestTest {
 			Assertions.assertTrue((Integer) result.get("recordsTotal") > 0);
 			@SuppressWarnings("unchecked") final var list = (List<Map<String, Object>>) result.get("data");
 			Assertions.assertFalse(list.isEmpty());
-			final var item = list.get(0);
+			final var item = list.getFirst();
 			Assertions.assertTrue((Integer) item.get("id") >= 0);
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("name")));
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("grapes")));
@@ -206,7 +206,7 @@ class CrudRestIT extends AbstractRestTest {
 			Assertions.assertTrue((Integer) result.get("recordsTotal") > 0);
 			@SuppressWarnings("unchecked") final var list = (List<Map<String, Object>>) result.get("data");
 			Assertions.assertFalse(list.isEmpty());
-			final var item = list.get(0);
+			final var item = list.getFirst();
 			Assertions.assertTrue((Integer) item.get("id") >= 0);
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("name")));
 			Assertions.assertTrue(StringUtils.isNotEmpty((CharSequence) item.get("grapes")));

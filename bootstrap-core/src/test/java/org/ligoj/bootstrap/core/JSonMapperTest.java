@@ -241,7 +241,7 @@ class JSonMapperTest {
 		final var end = System.currentTimeMillis();
 		Assertions.assertNotNull(lastObject);
 		Assertions.assertEquals(20, lastObject.size());
-		final var object = lastObject.get(0);
+		final var object = lastObject.getFirst();
 		Assertions.assertNotNull(object);
 		Assertions.assertEquals("Val", object.get("value"));
 		Assertions.assertEquals(6, ((Integer) object.get("key")).intValue());

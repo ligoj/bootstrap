@@ -57,4 +57,10 @@ public abstract class AbstractAudited<K extends Serializable> extends AbstractPe
 	@LastModifiedDate
 	private Date lastModifiedDate;
 
+	/**
+	 * A free form text at creation time only.
+	 */
+	@Column(length = 1024, updatable = false)
+	private String creationContext;
+
 }

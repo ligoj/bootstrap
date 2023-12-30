@@ -88,8 +88,8 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertEquals(1, errors.size());
 			Assertions.assertNotNull(errors.get("entity"));
 			Assertions.assertEquals(1, ((Collection<?>) errors.get("entity")).size());
-			Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("entity")).get(0)).size());
-			Assertions.assertEquals("NotNull", ((Map<?, ?>) ((List<?>) errors.get("entity")).get(0)).get(RULE));
+			Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("entity")).getFirst()).size());
+			Assertions.assertEquals("NotNull", ((Map<?, ?>) ((List<?>) errors.get("entity")).getFirst()).get(RULE));
 			return null;
 		});
 	}
@@ -143,7 +143,7 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertNotNull(errorsOnYear);
 			Assertions.assertEquals(1, errorsOnYear.size());
 
-			final var errorOnYear = errorsOnYear.get(0);
+			final var errorOnYear = errorsOnYear.getFirst();
 			Assertions.assertEquals(type, errorOnYear.get(RULE));
 			Assertions.assertNull(errorOnYear.get(PARAMETERS2));
 			return null;
@@ -196,7 +196,7 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 		final var errorsOnYear = errors.get("year");
 		Assertions.assertNotNull(errorsOnYear);
 		Assertions.assertEquals(1, errorsOnYear.size());
-		Assertions.assertNotNull(errorsOnYear.get(0));
+		Assertions.assertNotNull(errorsOnYear.getFirst());
 		return errorsOnName;
 	}
 

@@ -106,7 +106,7 @@ class CsvForBeanTest {
 		final var items = csvForBean.toBean(DummyEntity.class,
 				new StringReader("id;wneCnty;wneDesc;wneGrpe;name;wnePict;wneRegn;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
-		assertEquals(newWine(), items.get(0));
+		assertEquals(newWine(), items.getFirst());
 	}
 
 	@Test
@@ -131,7 +131,7 @@ class CsvForBeanTest {
 		}
 		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()));
 		Assertions.assertEquals(count, items.size());
-		Assertions.assertNotNull(items.get(0).getName());
+		Assertions.assertNotNull(items.getFirst().getName());
 	}
 
 	@Test
@@ -151,7 +151,7 @@ class CsvForBeanTest {
 		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()),
 				(item, p, v) -> item.setName(v));
 		Assertions.assertEquals(count, items.size());
-		Assertions.assertNotNull(items.get(0).getName());
+		Assertions.assertNotNull(items.getFirst().getName());
 	}
 
 	@Test
@@ -159,7 +159,7 @@ class CsvForBeanTest {
 		final var items = csvForBean.toBean(DummyEntity.class,
 				new StringReader("name;;;   ;;;;wneYear\n4;1;2;3;5;6;7;'8'"));
 		Assertions.assertEquals(1, items.size());
-		var wine2 = items.get(0);
+		var wine2 = items.getFirst();
 		Assertions.assertEquals("4", wine2.getName());
 		Assertions.assertEquals(8, wine2.getWneYear().intValue());
 
@@ -175,7 +175,7 @@ class CsvForBeanTest {
 	void toBeanTrimHeader() throws Exception {
 		final var items = csvForBean.toBean(DummyEntity.class, new StringReader("name; wneYear \n4;1"));
 		Assertions.assertEquals(1, items.size());
-		var wine2 = items.get(0);
+		var wine2 = items.getFirst();
 		Assertions.assertEquals("4", wine2.getName());
 		Assertions.assertEquals(1, wine2.getWneYear().intValue());
 	}
@@ -255,9 +255,9 @@ class CsvForBeanTest {
 		final var items = csvForBean.toBean(DummyEntity3.class,
 				new StringReader("login;map$key1;map$key2\nfdaugan;value1;value2"));
 		Assertions.assertEquals(1, items.size());
-		Assertions.assertEquals(2, items.get(0).getMap().size());
-		Assertions.assertEquals("value1", items.get(0).getMap().get("key1"));
-		Assertions.assertEquals("value2", items.get(0).getMap().get("key2"));
+		Assertions.assertEquals(2, items.getFirst().getMap().size());
+		Assertions.assertEquals("value1", items.getFirst().getMap().get("key1"));
+		Assertions.assertEquals("value2", items.getFirst().getMap().get("key2"));
 	}
 
 	@Test
@@ -265,12 +265,12 @@ class CsvForBeanTest {
 		final var items = csvForBean.toBean(DummyEntity3.class,
 				new StringReader("login;list;setEnum\nfdaugan;value1,value2;PERSIST,MERGE"));
 		Assertions.assertEquals(1, items.size());
-		Assertions.assertEquals(2, items.get(0).getList().size());
-		Assertions.assertEquals("value1", items.get(0).getList().get(0));
-		Assertions.assertEquals("value2", items.get(0).getList().get(1));
-		Assertions.assertEquals(2, items.get(0).getSetEnum().size());
-		Assertions.assertTrue(items.get(0).getSetEnum().contains(CascadeType.PERSIST));
-		Assertions.assertTrue(items.get(0).getSetEnum().contains(CascadeType.MERGE));
+		Assertions.assertEquals(2, items.getFirst().getList().size());
+		Assertions.assertEquals("value1", items.getFirst().getList().get(0));
+		Assertions.assertEquals("value2", items.getFirst().getList().get(1));
+		Assertions.assertEquals(2, items.getFirst().getSetEnum().size());
+		Assertions.assertTrue(items.getFirst().getSetEnum().contains(CascadeType.PERSIST));
+		Assertions.assertTrue(items.getFirst().getSetEnum().contains(CascadeType.MERGE));
 	}
 
 	@Test

@@ -68,7 +68,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
-	 * Return a salt from a integer.
+	 * Return a salt from an integer.
 	 *
 	 * @param salt
 	 *            Any integer.
@@ -76,7 +76,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 *            lower value.
 	 * @param upper
 	 *            upper value. Excluded value.
-	 * @return a salt from a integer.
+	 * @return a salt from an integer.
 	 */
 	protected int getInt(final int salt, final int lower, final int upper) {
 		if (lower >= upper) {

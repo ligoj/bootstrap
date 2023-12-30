@@ -41,7 +41,7 @@ public class NotFoundResponseFilter extends AbstractMapper implements ContainerR
 		if (requestContext.getUriInfo().getPathParameters().size() == 1) {
 			// Single parameter ---> entity identifier or whatever identifying a data
 			serverError.setCode("entity");
-			serverError.setMessage(requestContext.getUriInfo().getPathParameters().values().iterator().next().get(0));
+			serverError.setMessage(requestContext.getUriInfo().getPathParameters().values().iterator().next().getFirst());
 		} else {
 			serverError.setCode("data");
 		}

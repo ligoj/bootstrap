@@ -69,7 +69,7 @@ class UserResourceTest extends AbstractBootTest {
 		final var uriInfo = newUriInfo();
 		final var users = resource.findAll(uriInfo);
 		Assertions.assertEquals(1, users.getData().size());
-		Assertions.assertEquals(DEFAULT_USER, users.getData().get(0));
+		Assertions.assertEquals(DEFAULT_USER, users.getData().getFirst());
 	}
 
 	@Test
@@ -77,8 +77,8 @@ class UserResourceTest extends AbstractBootTest {
 		final var uriInfo = newUriInfo();
 		final var users = resource.findAllWithRoles(uriInfo);
 		Assertions.assertEquals(1, users.getData().size());
-		Assertions.assertEquals(DEFAULT_USER, users.getData().get(0).getLogin());
-		Assertions.assertEquals(DEFAULT_ROLE, users.getData().get(0).getRoles().get(0).getName());
+		Assertions.assertEquals(DEFAULT_USER, users.getData().getFirst().getLogin());
+		Assertions.assertEquals(DEFAULT_ROLE, users.getData().getFirst().getRoles().getFirst().getName());
 	}
 
 	@Test

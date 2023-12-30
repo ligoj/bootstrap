@@ -127,10 +127,10 @@ public abstract class AbstractSpecification {
 		var parent = path;
 		var reversePath = new ArrayList<NavigablePath>();
 		do {
-			reversePath.add(0, parent);
+			reversePath.addFirst(parent);
 			parent = parent.getParent();
 		} while (parent != null);
-		var model = metaModel.getEntityDescriptor(reversePath.get(0).getLocalName()).getEntityMetamodel();
+		var model = metaModel.getEntityDescriptor(reversePath.getFirst().getLocalName()).getEntityMetamodel();
 		for (int i = 1; i < reversePath.size() - 1; i++) {
 			final var join = reversePath.get(i).getLocalName();
 			final var type = model.getPropertyTypes()[model.getPropertyIndex(join)];
