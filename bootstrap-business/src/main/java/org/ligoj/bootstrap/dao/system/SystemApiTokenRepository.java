@@ -22,7 +22,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	 * @return <code>true</code> when there is match between user and API token.
 	 */
 	@Query(value = "SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
-			+ "FROM #{#entityName} WHERE user=:user AND hash=:hash")
+			+ "FROM SystemApiToken WHERE user=:user AND hash=:hash")
 	boolean checkByUserAndHash(String user, String hash);
 
 	/**
@@ -33,7 +33,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	 * @return <code>true</code> when there is match between user and API token.
 	 */
 	@Query(value = "SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
-			+ "FROM #{#entityName} WHERE user=:user AND hash ='_plain_' AND token=:token")
+			+ "FROM SystemApiToken WHERE user=:user AND hash ='_plain_' AND token=:token")
 	boolean checkByUserAndToken(String user, String token);
 
 	/**
