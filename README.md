@@ -36,7 +36,7 @@ Requirements
 # Verify new version
 
 ```bash
-mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="^(.*-(alpha|rc)-?[0-9]?|[0-9]{8}.*)$"
+mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="^(.*-(alpha|beta|rc)-?[0-9]*|[0-9]{8}.*)$"
 ```
 
 # List dependencies of modules
