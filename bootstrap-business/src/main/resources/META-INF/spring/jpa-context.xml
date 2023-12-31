@@ -21,6 +21,8 @@
 				<prop key="hibernate.hbm2ddl.auto">${jpa.hbm2ddl:none}</prop>
 				<prop key="hibernate.ejb.entitymanager_factory_name">entityManagerFactory</prop>
 				<prop key="hibernate.default_schema">${jpa.schema:}</prop>
+				<prop key="hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS">${jpa.log_queries_slower_than_ms:}</prop>
+				<prop key="hibernate.generate_statistics">${jpa.generate_statistics:}</prop>
 			</props>
 		</property>
 	</bean>
