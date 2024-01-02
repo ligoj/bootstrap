@@ -10,11 +10,15 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link PostgreSQL95NoSchemaDialect}
  */
-class PostgreSQL95NoSchemaDialectTest {
+class PostgreSQL95NoSchemaDialectTest extends AbstractDialectTest{
 
 	@Test
 	void getNameQualifierSupport() {
 		Assertions.assertEquals(NameQualifierSupport.NONE, new PostgreSQL95NoSchemaDialect().getNameQualifierSupport());
 	}
 
+	@Test
+	void initializeFunctionRegistry() {
+		new PostgreSQL95NoSchemaDialect().initializeFunctionRegistry(newFunctionContributions());
+	}
 }

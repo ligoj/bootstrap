@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class of {@link MySQL8InnoDBUtf8Dialect}
  */
-class MySQL8InnoDBUtf8DialectTest {
+class MySQL8InnoDBUtf8DialectTest  extends AbstractDialectTest{
 
 	@Test
 	void getTableTypeString() {
@@ -22,5 +22,8 @@ class MySQL8InnoDBUtf8DialectTest {
 	void getNameQualifierSupport() {
 		Assertions.assertEquals(NameQualifierSupport.NONE, new MySQL8InnoDBUtf8Dialect().getNameQualifierSupport());
 	}
-
+	@Test
+	void initializeFunctionRegistry() {
+		new MySQL8InnoDBUtf8Dialect().initializeFunctionRegistry(newFunctionContributions());
+	}
 }

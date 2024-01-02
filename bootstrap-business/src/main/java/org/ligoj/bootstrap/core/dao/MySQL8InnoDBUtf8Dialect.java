@@ -4,13 +4,11 @@
 package org.ligoj.bootstrap.core.dao;
 
 import org.hibernate.dialect.DatabaseVersion;
-import org.hibernate.dialect.MySQLDialect;
-import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
 
 /**
  * "MySql" dialect with enforced UTF-8 encoding.
  */
-public class MySQL8InnoDBUtf8Dialect extends MySQLDialect {
+public class MySQL8InnoDBUtf8Dialect extends AbstractMySQLInnoDBUtDialect {
 
 	/**
 	 * Default constructor with additional registered keywords.
@@ -35,17 +33,6 @@ public class MySQL8InnoDBUtf8Dialect extends MySQLDialect {
 		registerKeyword("PERSIST_ONLY");
 		registerKeyword("RANK");
 		registerKeyword("ROW_NUMBER");
-		registerKeyword("USAGE");
-	}
-
-	@Override
-	public String getTableTypeString() {
-		return super.getTableTypeString() + " DEFAULT CHARSET=utf8";
-	}
-
-	@Override
-	public NameQualifierSupport getNameQualifierSupport() {
-		return NameQualifierSupport.NONE;
 	}
 
 }
