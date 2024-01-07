@@ -19,6 +19,7 @@ abstract class AbstractMySQLInnoDBUtDialect extends MySQLDialect {
 	protected AbstractMySQLInnoDBUtDialect(DatabaseVersion version) {
 		super(version);
 		registerKeyword("USAGE");
+		registerKeyword("LIMIT");
 	}
 
 	@Override
