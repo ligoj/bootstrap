@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.function.Function;
 
+import jakarta.persistence.Column;
 import org.ligoj.bootstrap.core.model.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -56,6 +57,12 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	private U lastModifiedBy;
 
 	/**
+	 * A free form text at creation time only.
+	 */
+	@Column(length = 1024, updatable = false)
+	private String creationContext;
+
+	/**
 	 * Define the modifiable state of a valued object.
 	 * 
 	 * @param <T>
@@ -87,6 +94,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 			this.lastModifiedDate = from.getLastModifiedDate();
 			this.createdBy = userConverter.apply(from.getCreatedBy());
 			this.lastModifiedBy = userConverter.apply(from.getLastModifiedBy());
+			this.creationContext =from.getCreationContext();
 		}
 	}
 
@@ -116,6 +124,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 			to.setLastModifiedDate(from.getLastModifiedDate());
 			to.setCreatedBy(from.getCreatedBy());
 			to.setLastModifiedBy(from.getLastModifiedBy());
+			to.setCreationContext(from.getCreationContext());
 		}
 	}
 }

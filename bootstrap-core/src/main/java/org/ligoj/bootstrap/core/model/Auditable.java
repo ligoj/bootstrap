@@ -70,4 +70,18 @@ public interface Auditable<U, K, D> extends Persistable<K> {
 	 * @param lastModifiedDate the date of the last modification to set
 	 */
 	void setLastModifiedDate(D lastModifiedDate);
+
+	/**
+	 * Set the free form text at creation time only.
+	 * @param context The free form text at creation time only.
+	 */
+	void setCreationContext(String context);
+
+	/**
+	 * Returns A free form text at creation time only.
+	 *
+	 * @return a free form text at creation time only.
+	 */
+	String getCreationContext();
+
 }

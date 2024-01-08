@@ -32,6 +32,7 @@ class AuditableTest extends AbstractBootTest {
 		Assertions.assertNull(entity.getCreatedDate());
 		Assertions.assertNull(entity.getLastModifiedBy());
 		Assertions.assertNull(entity.getLastModifiedDate());
+		Assertions.assertNull(entity.getCreationContext());
 	}
 
 	/**
@@ -111,11 +112,13 @@ class AuditableTest extends AbstractBootTest {
 		object.setLastModifiedBy(DEFAULT_ROLE);
 		object.setCreatedDate(new Date());
 		object.setLastModifiedDate(new Date());
+		object.setCreationContext("SOME");
 		auditedVo.copyAuditData(object);
 		Assertions.assertEquals(DEFAULT_USER, auditedVo.getCreatedBy());
 		Assertions.assertEquals(DEFAULT_ROLE, auditedVo.getLastModifiedBy());
 		Assertions.assertEquals(object.getCreatedDate(), auditedVo.getCreatedDate());
 		Assertions.assertEquals(object.getLastModifiedDate(), auditedVo.getLastModifiedDate());
+		Assertions.assertEquals(object.getCreationContext(), auditedVo.getCreationContext());
 	}
 
 	/**
@@ -129,6 +132,7 @@ class AuditableTest extends AbstractBootTest {
 		Assertions.assertNull(auditedVo.getLastModifiedBy());
 		Assertions.assertNull(auditedVo.getCreatedDate());
 		Assertions.assertNull(auditedVo.getLastModifiedDate());
+		Assertions.assertNull(auditedVo.getCreationContext());
 	}
 
 	/**
@@ -149,12 +153,14 @@ class AuditableTest extends AbstractBootTest {
 		from.setLastModifiedBy(DEFAULT_ROLE);
 		from.setCreatedDate(new Date());
 		from.setLastModifiedDate(new Date());
+		from.setCreationContext("SOME");
 		final var to = new SystemBench();
 		AuditedBean.copyAuditData(from, to);
 		Assertions.assertEquals(DEFAULT_USER, to.getCreatedBy());
 		Assertions.assertEquals(DEFAULT_ROLE, to.getLastModifiedBy());
 		Assertions.assertEquals(from.getCreatedDate(), to.getCreatedDate());
 		Assertions.assertEquals(from.getLastModifiedDate(), to.getLastModifiedDate());
+		Assertions.assertEquals(from.getCreationContext(), to.getCreationContext());
 	}
 
 }
