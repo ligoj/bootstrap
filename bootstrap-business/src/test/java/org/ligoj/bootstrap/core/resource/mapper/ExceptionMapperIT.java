@@ -255,7 +255,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 		final var message = new HttpDelete(BASE_URI + RESOURCE + "/business");
 		message.addHeader("sm_universalid", DEFAULT_USER);
 		httpclient.execute(message, response -> {
-			Assertions.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getCode());
+			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getCode());
 			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assertions.assertEquals(BusinessException.KEY_UNKNOWN_ID, result.get("message"));
@@ -431,11 +431,11 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assertions.assertNotNull(result.get("errors"));
-			Assertions.assertTrue(result.get("errors") instanceof Map<?, ?>);
+			Assertions.assertInstanceOf(Map.class, result.get("errors"));
 			@SuppressWarnings("unchecked") final Map<?, ?> errors = (Map<String, Object>) result.get("errors");
 			Assertions.assertEquals(1, errors.size());
 			Assertions.assertNotNull(errors.get("jsr303"));
-			Assertions.assertTrue(errors.get("jsr303") instanceof List);
+			Assertions.assertInstanceOf(List.class, errors.get("jsr303"));
 			@SuppressWarnings("unchecked") final List<Map<String, String>> rules = (List<Map<String, String>>) errors.get("jsr303");
 			Assertions.assertEquals(1, rules.size());
 			Assertions.assertNotNull(rules.getFirst());
@@ -459,11 +459,11 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assertions.assertNotNull(result.get("errors"));
-			Assertions.assertTrue(result.get("errors") instanceof Map<?, ?>);
+			Assertions.assertInstanceOf(Map.class, result.get("errors"));
 			@SuppressWarnings("unchecked") final var errors = (Map<String, Object>) result.get("errors");
 			Assertions.assertEquals(1, errors.size());
 			Assertions.assertNotNull(errors.get("name"));
-			Assertions.assertTrue(errors.get("name") instanceof List);
+			Assertions.assertInstanceOf(List.class, errors.get("name"));
 			@SuppressWarnings("unchecked") final List<Map<String, ?>> rules = (List<Map<String, ?>>) errors.get("name");
 			Assertions.assertEquals(1, rules.size());
 			Assertions.assertNotNull(rules.getFirst());
@@ -509,11 +509,11 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			final var result = new ObjectMapperTrim().readValue(content, HashMap.class);
 			Assertions.assertNotNull(result.get("errors"));
-			Assertions.assertTrue(result.get("errors") instanceof Map<?, ?>);
+			Assertions.assertInstanceOf(Map.class, result.get("errors"));
 			@SuppressWarnings("unchecked") final var errors = (Map<String, Object>) result.get("errors");
 			Assertions.assertEquals(1, errors.size());
 			Assertions.assertNotNull(errors.get("any"));
-			Assertions.assertTrue(errors.get("any") instanceof List);
+			Assertions.assertInstanceOf(List.class, errors.get("any"));
 			@SuppressWarnings("unchecked") final List<Map<String, String>> rules = (List<Map<String, String>>) errors.get("any");
 			Assertions.assertEquals(1, rules.size());
 			Assertions.assertNotNull(rules.getFirst());

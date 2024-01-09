@@ -19,7 +19,7 @@ public class BusinessExceptionMapper extends AbstractMapper implements Exception
 
 	@Override
 	public Response toResponse(final BusinessException exception) {
-		return toResponse(Status.INTERNAL_SERVER_ERROR, "business", exception);
+		return toResponse(Status.BAD_REQUEST, "business", exception);
 	}
 
 }
