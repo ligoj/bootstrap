@@ -17,7 +17,7 @@ class BusinessExceptionMapperTest extends AbstractMapperTest {
 	@Test
 	void toResponse() {
 		final var exception = new BusinessException(BusinessException.KEY_UNKNOWN_ID, new IOException(), "parameter1", "parameter2");
-		check(mock(new BusinessExceptionMapper()).toResponse(exception), 500,
+		check(mock(new BusinessExceptionMapper()).toResponse(exception), 400,
 				"{\"code\":\"business\",\"message\":\"unknown-id\",\"parameters\":[\"parameter1\",\"parameter2\"],\"cause\":null}");
 	}
 
