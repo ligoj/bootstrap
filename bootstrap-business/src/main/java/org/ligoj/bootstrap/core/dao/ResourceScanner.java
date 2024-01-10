@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.archive.scan.internal.StandardScanner;
 import org.hibernate.boot.archive.scan.spi.ScanEnvironment;
@@ -24,6 +25,7 @@ import java.util.LinkedHashSet;
  * 
  * @author Fabrice Daugan
  */
+@Slf4j
 public class ResourceScanner extends StandardScanner {
 
 	/**
@@ -34,7 +36,7 @@ public class ResourceScanner extends StandardScanner {
 	/**
 	 * Perform the scanning against the described persistence unit using the defined options, and return the scan
 	 * results.
-	 * 
+	 *
 	 * @param scanOptions
 	 *            The scan options
 	 * @return The scan results.
@@ -72,7 +74,7 @@ public class ResourceScanner extends StandardScanner {
 
 	/**
 	 * Return JAR URL from ORM URL.
-	 * 
+	 *
 	 * @param ormUrl
 	 *            ORM URL.
 	 * @return the URL of JAR containing the given ORM file.
@@ -85,13 +87,16 @@ public class ResourceScanner extends StandardScanner {
 		if ("jar".equals(ormUrl.getProtocol())) {
 			if (StringUtils.countMatches(ormUrl.getPath(), "!") > 1) {
 				// Cascaded JAR URL, remove only the last fragment
+				log.info("Hibernate ORM, remove nested part from {}", ormUrl);
 				ormJarUrl = URI.create(StringUtils.substringBeforeLast(urlStr, "!"));
 			} else {
 				// Extract the jar containing this file
+				log.info("Hibernate ORM, remove nested part from file URL from {}", ormUrl);
 				ormJarUrl = new URI("file", ormUrl.getHost(), ormUrl.getPath().substring("file:".length(), ormUrl.getPath().indexOf('!')), null);
 			}
 		} else {
 			// Remove the trailing path
+			log.info("Hibernate ORM, remove trailing /orm.xml from {}", ormUrl);
 			ormJarUrl = URI.create(urlStr.substring(0, urlStr.length() - META_INF_ORM_XML.length() - 1));
 		}
 		return ormJarUrl.toURL();
