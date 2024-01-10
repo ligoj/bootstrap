@@ -51,6 +51,9 @@
 
         <!-- BOM overrides -->
         <plugin.jacoco>0.8.11</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+        <plugin.failsafe>3.2.5</plugin.failsafe>
+        <plugin.surefire>3.2.5</plugin.surefire> <!-- http://maven.apache.org/surefire/summary.html -->
+        <plugin.surefire.report>3.2.5</plugin.surefire.report> <!--http://maven.apache.org/surefire/maven-surefire-report-plugin/summary.html -->
         <junit.jupiter.version>5.10.1</junit.jupiter.version>
         <junit.platform.version>1.10.1</junit.platform.version>
 
