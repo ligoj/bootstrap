@@ -3,13 +3,15 @@
  */
 package org.ligoj.bootstrap.resource.system.session;
 
-import java.util.List;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Application settings.
@@ -55,4 +57,10 @@ public class ApplicationSettings {
 	 */
 	@Setter
 	private List<String> plugins;
+
+	/**
+	 * Extra-data available for all sessions.
+	 */
+	private final Map<String, String> data = new ConcurrentHashMap<>();
+
 }
