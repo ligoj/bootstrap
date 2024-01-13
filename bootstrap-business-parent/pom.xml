@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.1.13-SNAPSHOT</version>
+		<version>3.1.13</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
@@ -16,17 +16,17 @@
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business</artifactId>
-				<version>3.1.13-SNAPSHOT</version>
+				<version>3.1.13</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-business-test</artifactId>
-				<version>3.1.13-SNAPSHOT</version>
+				<version>3.1.13</version>
 			</dependency>
 			<dependency>
 				<groupId>org.ligoj.bootstrap</groupId>
 				<artifactId>bootstrap-plugin</artifactId>
-				<version>3.1.13-SNAPSHOT</version>
+				<version>3.1.13</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
