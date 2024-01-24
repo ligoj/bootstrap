@@ -43,7 +43,7 @@ public class AuthCurlProcessor extends CurlProcessor {
 	 *                 used when user is not empty.
 	 */
 	public AuthCurlProcessor(final String username, final String password) {
-		this(username, password, new DefaultHttpResponseCallback());
+		this(username, password, DEFAULT_CALLBACK);
 	}
 
 	/**

@@ -82,6 +82,11 @@ public class CurlProcessor implements AutoCloseable {
 	private static final String HTTPS_PROXY_HOST = "https.proxyHost";
 
 	/**
+	 * SSL verify option.
+	 */
+	private static final String SSL_VERIFY = "ligoj.sslVerify";
+
+	/**
 	 * Default callback.
 	 */
 	public static final DefaultHttpResponseCallback DEFAULT_CALLBACK = new DefaultHttpResponseCallback();
@@ -136,10 +141,26 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param errorText    I18N key of the validation message.
 	 */
 	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
-		try (final var curlProcessor = new CurlProcessor()) {
+		validateAndClose(url, propertyName, errorText,false, null, null);
+	}
+
+	/**
+	 * Create a new processor, check the URL, and if failed, throw a {@link ValidationJsonException}
+	 *
+	 * @param url          The URL to check.
+	 * @param propertyName Name of the validation JSon property
+	 * @param errorText    I18N key of the validation message.
+	 * @param noVerifySsl       When <code>true</code> SSL checks are ignored.
+	 * @param proxyHost         Custom proxy host for this process.
+	 * @param proxyPort         Custom proxy port for this process. Default (when <code>null</code>) is <code>8080</code> when proxy host is defined.
+	 */
+	public static void validateAndClose(final String url, final String propertyName, final String errorText,final boolean noVerifySsl, final String proxyHost, final Integer proxyPort) {
+		try (final var curlProcessor = new CurlProcessor(DEFAULT_CALLBACK, DEFAULT_CONNECTION_TIMEOUT,
+				DEFAULT_RESPONSE_TIMEOUT, noVerifySsl, proxyHost, proxyPort)) {
 			curlProcessor.validate(url, propertyName, errorText);
 		}
 	}
+
 
 	@Getter
 	protected final CloseableHttpClient httpClient;
@@ -218,7 +239,8 @@ public class CurlProcessor implements AutoCloseable {
 			clientBuilder.setRoutePlanner(httpRoutePlanner);
 		}
 
-		if (noVerifySsl) {
+		final var verifySslResolved = Boolean.parseBoolean(StringUtils.defaultIfBlank(System.getProperty(SSL_VERIFY), String.valueOf(!noVerifySsl)));
+		if (!verifySslResolved) {
 			// Initialize connection manager to bypass some SSL checks
 			final var connectionManager = new BasicHttpClientConnectionManager(newSslContext());
 			clientBuilder.setConnectionManager(connectionManager);

@@ -31,7 +31,7 @@ public class SessionAuthCurlProcessor extends AuthCurlProcessor {
 	 *            the user password or API token.
 	 */
 	public SessionAuthCurlProcessor(final String username, final String password) {
-		this(username, password, new DefaultHttpResponseCallback());
+		this(username, password, DEFAULT_CALLBACK);
 	}
 
 	/**
