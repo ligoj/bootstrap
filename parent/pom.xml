@@ -104,7 +104,7 @@
         <lombok.version>1.18.30</lombok.version>
         <mail.version>2.1.2</mail.version>
         <maven-artifact.version>3.9.5</maven-artifact.version>
-        <mockito.version>5.9.0</mockito.version>
+        <mockito.version>5.10.0</mockito.version>
         <mariadb.version>3.3.2</mariadb.version>
         <mysql.version>8.3.0</mysql.version>
         <postgresql.version>42.7.1</postgresql.version>
