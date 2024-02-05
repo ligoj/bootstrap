@@ -86,7 +86,7 @@ public class HookResource {
 	}
 
 	/**
-	 * Create a delegate.
+	 * Create a hook.
 	 *
 	 * @param vo the object to create.
 	 * @return the entity's identifier.
