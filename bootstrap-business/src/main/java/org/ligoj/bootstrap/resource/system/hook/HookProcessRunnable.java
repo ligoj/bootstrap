@@ -68,6 +68,12 @@ public class HookProcessRunnable implements Runnable {
 
 	void process(final String path, final SystemHook h, final OutputStream out) {
 		log.info("[Hook {} -> {}] Triggered", path, h.getName());
+		if (!HookResource.isAllowedCommand(configuration, h.getCommand())) {
+			log.info("[Hook {} -> {}] Triggered but skipped because command is not within one of allowed ${ligoj.hook.path} value ", path, h.getName());
+			return;
+		}
+		log.info("[Hook {} -> {}] Triggered", path, h.getName());
+
 		final var start = System.currentTimeMillis();
 		try {
 			// Create Map object

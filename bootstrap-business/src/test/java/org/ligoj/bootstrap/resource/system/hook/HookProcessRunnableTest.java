@@ -36,10 +36,36 @@ import java.util.regex.Pattern;
 class HookProcessRunnableTest {
 
 	@Test
+	void processNotAllowed() {
+		final var hook  = new SystemHook();
+		hook.setCommand("/path/to/any");
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn("^/path/other/.*").when(configuration).get("ligoj.hook.path","^$");
+		final var exchange =  Mockito.mock(Exchange.class);
+		new HookProcessRunnable("NOW", new ObjectMapper(), null, null, null,
+				exchange, null, configuration).process(null,hook,null);
+		Mockito.verify(exchange,Mockito.never()).getInMessage();
+	}
+
+	@Test
+	void processAllowed() {
+		final var hook  = new SystemHook();
+		hook.setCommand("/path/to/foo");
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path","^$");
+		final var exchange =  Mockito.mock(Exchange.class);
+		new HookProcessRunnable("NOW", new ObjectMapper(), null, null, null,
+				exchange, null, configuration).process(null,hook,null);
+		Mockito.verify(exchange,Mockito.atLeastOnce()).getInMessage();
+	}
+
+	@Test
 	void run() throws IOException {
 		final var requestContext = Mockito.mock(ContainerRequestContext.class);
 		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path","^$");
+
 		final var exchange = Mockito.mock(Exchange.class);
 		final var principal = Mockito.mock(Principal.class);
 		final var uriInfo = Mockito.mock(UriInfo.class);
@@ -61,17 +87,18 @@ class HookProcessRunnableTest {
 
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
-		hook1.setCommand("some args");
+		hook1.setCommand("/path/to/some args");
 		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
 
 
 		final var hookNPE = new SystemHook();
 		hookNPE.setName("hookNPE");
+		hookNPE.setCommand("/path/to/some args");
 
 		final var hookTimeout = new SystemHook();
 		hookTimeout.setName("hookTimeout");
-		hookTimeout.setCommand("some args");
+		hookTimeout.setCommand("/path/to/some args");
 		hookTimeout.setWorkingDirectory("working/directory");
 		hookTimeout.setTimeout(1);
 
@@ -105,7 +132,7 @@ class HookProcessRunnableTest {
 		final var executedProcessBuilder = local.get().get("hook1");
 		Assertions.assertNotNull(executedProcessBuilder);
 		Assertions.assertEquals("working/directory", executedProcessBuilder.directory().toString());
-		Assertions.assertEquals(List.of("some", "args"), executedProcessBuilder.command());
+		Assertions.assertEquals(List.of("/path/to/some", "args"), executedProcessBuilder.command());
 
 		final var payload64 = environments.get("hook1").get("PAYLOAD");
 		Assertions.assertNotNull(payload64);

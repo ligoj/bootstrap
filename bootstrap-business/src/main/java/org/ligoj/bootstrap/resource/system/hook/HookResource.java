@@ -12,10 +12,12 @@ import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
 import org.ligoj.bootstrap.model.system.SystemHook;
+import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.cache.annotation.CacheRemoveAll;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,9 @@ public class HookResource {
 
 	@Autowired
 	protected SystemHookRepository repository;
+
+	@Autowired
+	protected ConfigurationResource configurationResource;
 
 	/**
 	 * Ordered columns.
@@ -85,6 +90,10 @@ public class HookResource {
 		return paginationJson.applyPagination(uriInfo, findAll, Function.identity());
 	}
 
+	static boolean isAllowedCommand(final ConfigurationResource configurationResource, final String command) {
+		return Arrays.stream(configurationResource.get("ligoj.hook.path", "^$").split(",")).anyMatch(command::matches);
+	}
+
 	/**
 	 * Create a hook.
 	 *
@@ -95,6 +104,10 @@ public class HookResource {
 	@PUT
 	@CacheRemoveAll(cacheName = "hooks")
 	public int create(final SystemHook vo) {
+		if (!isAllowedCommand(configurationResource, vo.getCommand())) {
+			throw new ForbiddenException("Hook command is not within one of allowed ${ligoj.hook.path} value");
+		}
+
 		return repository.saveAndFlush(vo).getId();
 	}
 
