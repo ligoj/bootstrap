@@ -90,6 +90,13 @@ public class HookResource {
 		return paginationJson.applyPagination(uriInfo, findAll, Function.identity());
 	}
 
+	/**
+	 * Return true when given command is allowed according to 'ligoj.hook.path' values.
+	 *
+	 * @param configurationResource The configuration resource to retrieve the value of 'ligoj.hook.path'.
+	 * @param command               The command to execute.
+	 * @return true when given command is allowed according to 'ligoj.hook.path' values.
+	 */
 	static boolean isAllowedCommand(final ConfigurationResource configurationResource, final String command) {
 		return Arrays.stream(configurationResource.get("ligoj.hook.path", "^$").split(",")).anyMatch(command::matches);
 	}
