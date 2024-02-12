@@ -72,7 +72,7 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 		}
 
 		// Increase the application properties
-		GlobalPropertyUtils.locations =ArrayUtils.addAll(GlobalPropertyUtils.locations, newLocationsArray);
+		GlobalPropertyUtils.locations = ArrayUtils.addAll(GlobalPropertyUtils.locations, newLocationsArray);
 
 		// Add the locations to the bean
 		super.setLocations(GlobalPropertyUtils.locations);
@@ -97,8 +97,7 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 	}
 
 	@Override
-	protected void doProcessProperties(ConfigurableListableBeanFactory factory,
-	                                   StringValueResolver resolver) {
+	protected void doProcessProperties(final ConfigurableListableBeanFactory factory, final StringValueResolver resolver) {
 		super.doProcessProperties(factory, v -> convertPropertyValue(resolver.resolveStringValue(v)));
 	}
 }

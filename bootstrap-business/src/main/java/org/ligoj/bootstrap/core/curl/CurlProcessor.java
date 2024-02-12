@@ -210,7 +210,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * Prepare a processor with proxy settings.
 	 *
 	 * @param proxyHost Custom proxy host for this process.
-	 * @param proxyPort Custom proxy port for this process. Default (when <code>null</code></.code>) is <code>8080</code> when proxy host is defined.
+	 * @param proxyPort Custom proxy port for this process. Default (when <code>null</code>) is <code>8080</code> when proxy host is defined.
 	 */
 	public CurlProcessor(final String proxyHost, final Integer proxyPort) {
 		this(DEFAULT_CALLBACK, DEFAULT_CONNECTION_TIMEOUT, DEFAULT_RESPONSE_TIMEOUT, false, proxyHost, proxyPort);
