@@ -3,10 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.bench;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,6 +14,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
  * Test class of {@link JpaBenchResource}.
@@ -37,7 +37,7 @@ class JpaBenchResourceTest extends AbstractBootTest {
 	@Test
 	void testPrepareData() throws IOException {
 		final var nbEntries = 10;
-		assertResult(new ObjectMapperTrim().readValue(resource.prepareData(null, nbEntries), BenchResult.class), nbEntries);
+		assertResult(new ObjectMapperTrim().readValue(resource.prepareData(String.valueOf(nbEntries), null), BenchResult.class), nbEntries);
 		testCrud(nbEntries);
 	}
 
@@ -51,7 +51,7 @@ class JpaBenchResourceTest extends AbstractBootTest {
 		try (var openStream = jarLocation.openStream()) {
 			// Proceed to the test
 			final var nbEntries = 10;
-			resource.prepareData(openStream, nbEntries);
+			resource.prepareData(String.valueOf(nbEntries), openStream);
 			testCrud(nbEntries);
 		}
 	}
@@ -63,7 +63,7 @@ class JpaBenchResourceTest extends AbstractBootTest {
 		try (var openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
-			resource.prepareData(openStream, 0);
+			resource.prepareData("0", openStream);
 			Assertions.assertNull(resource.downloadLobFile());
 		}
 	}
@@ -75,7 +75,7 @@ class JpaBenchResourceTest extends AbstractBootTest {
 		try (var openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
-			resource.prepareData(openStream, 1);
+			resource.prepareData("1", openStream);
 			final var downloadLobFile = resource.downloadLobFile();
 			final var output = Mockito.mock(OutputStream.class);
 			Mockito.doThrow(new IOException()).when(output).write(ArgumentMatchers.any(byte[].class));
@@ -91,7 +91,7 @@ class JpaBenchResourceTest extends AbstractBootTest {
 		try (var openStream = jarLocation.openStream()) {
 
 			// Proceed to the test
-			resource.prepareData(openStream, 1);
+			resource.prepareData("1", openStream);
 			final var downloadLobFile = resource.downloadLobFile();
 			final var output = new ByteArrayOutputStream();
 			downloadLobFile.write(output);
