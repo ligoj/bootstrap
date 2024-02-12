@@ -63,6 +63,8 @@ public abstract class AbstractRestTest extends AbstractTest {
 		}
 		System.setProperty("jetty.port", PORT);
 		System.setProperty("user.language", "en_en");
+		System.setProperty("user.language", "en_en");
+		System.setProperty("app.crypto.file","src/test/resources/security.key");
 		System.setProperty("org.eclipse.jetty.server.webapp.parentLoaderPriority", "true");
 	}
 

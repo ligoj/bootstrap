@@ -21,6 +21,7 @@ import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.model.test.Wine;
 import org.ligoj.bootstrap.resource.system.cache.CacheResource;
+import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -52,6 +53,9 @@ public class ExceptionMapperResource {
 
 	@Autowired
 	protected CacheResource cacheResource;
+
+	@Autowired
+	protected ConfigurationResource configurationResource;
 
 	/**
 	 * Manual validation exception with parameters.
@@ -156,6 +160,8 @@ public class ExceptionMapperResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Wine hook(@PathParam("param1") final String param1, @PathParam("param2") final String param2, Wine vo) {
 		final var hook = new SystemHook();
+		configurationResource.put("ligoj.hook.path", ".*");
+		configurationResource.get("ligoj.hook.path", "");
 		hook.setName("mock-test");
 		hook.setCommand("java org.ligoj.bootstrap.core.resource.mapper.Main");
 		hook.setMatch("{\"path\":\"throw/hook/p1/p.*\"}");
