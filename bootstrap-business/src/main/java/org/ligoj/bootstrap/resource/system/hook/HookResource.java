@@ -58,7 +58,7 @@ public class HookResource {
 	 * @return a hook from its identifier.
 	 */
 	@GET
-	@Path("{id:\\d")
+	@Path("{id:\\d}")
 	public SystemHook findById(@PathParam("id") int id) {
 		return repository.findOneExpected(id);
 	}
@@ -70,7 +70,7 @@ public class HookResource {
 	 * @return a hook from its name.
 	 */
 	@GET
-	@Path("name/{name")
+	@Path("name/{name}")
 	public SystemHook findByName(@PathParam("id") String name) {
 		return repository.findByNameExpected(name);
 	}
