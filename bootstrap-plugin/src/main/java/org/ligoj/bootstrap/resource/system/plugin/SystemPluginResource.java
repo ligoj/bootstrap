@@ -427,18 +427,15 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		final var jarArtifacts = new HashMap<String, Map<String, String>>();
 		final var packageToGroupId = Map.of("org.ligoj.bootstrap", "org.ligoj.bootstrap", "org.ligoj.app.resource", "org.ligoj.api");
 		Arrays.stream(getBeanNamesWithPath())
-				.peek(b -> log.info("Filtering JAX RS bean '{}'", b))
 				.map(context::getBean)
 				.map(Object::getClass)
 				.map(ClassUtils::getUserClass)
 				.distinct()
-				.peek(c -> log.info("Filtering JAX RS class '{}'", c))
 				.filter(c -> packageToGroupId.keySet().stream().anyMatch(b -> c.getPackageName().startsWith(b)))
-				.peek(c -> log.info("Filtering Ligoj/Bootstrap JAX RS class '{}' at {}", c, c.getProtectionDomain().getCodeSource().getLocation()))
 				.filter(c -> getClassLocation(c).endsWith(".jar") || getClassLocation(c).endsWith(".jar!/"))
 				.forEach(c -> {
 					final var version = getVersion(c);
-					log.info("Filtering dependency for javadoc '{}', version '{}'", c, version);
+					log.debug("Filtering dependency for javadoc '{}', version '{}'", c, version);
 					if (version != null) {
 						final var groupId = packageToGroupId.entrySet().stream().filter(e -> c.getPackageName().startsWith(e.getKey())).findFirst().get().getValue();
 						jarArtifacts.put(getClassLocation(c), Map.of("groupId", groupId, "version", version));
