@@ -77,27 +77,33 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	private static final String PLUGIN_IGNORE = "ligoj.plugin.ignore";
 
 	/**
-	 * Plug-ins auto install flag.
+	 * Configuration key for plug-ins auto install flag.
 	 */
 	private static final String PLUGIN_INSTALL = "ligoj.plugin.install";
 
 	/**
-	 * Plug-ins auto install flag with javadoc.
+	 * Configuration key for plug-ins auto install flag with javadoc.
 	 */
 	private static final String PLUGIN_INSTALL_JAVADOC = "ligoj.plugin.install.javadoc";
 
 	/**
-	 * Plug-ins auto update flag.
+	 * Configuration key for plug-ins auto update flag.
 	 */
 	private static final String PLUGIN_UPDATE = "ligoj.plugin.update";
 
 	/**
-	 * Plug-ins repository used for auto-update mode.
+	 * Configuration key for default plug-ins repository.
 	 */
 	private static final String PLUGIN_REPOSITORY = "ligoj.plugin.repository";
 
+	/**
+	 * Configuration key for plug-ins default Maven GroupId.
+	 */
 	private static final String PLUGIN_GROUP_ID = "ligoj.plugin.groupId";
 
+	/**
+	 * Default Maven GroupId for plugin.
+	 */
 	private static final String DEFAULT_PLUGIN_GROUP_ID = "org.ligoj.plugin";
 
 	private static final RepositoryManager EMPTY_REPOSITORY = new EmptyRepositoryManager();
@@ -379,6 +385,19 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		install(artifact, resultItem.getVersion(), repository, javadoc);
 	}
 
+	String[] getBeanNamesWithPath() {
+		return context.getBeanNamesForAnnotation(Path.class);
+	}
+
+	String getClassLocation(Class<?> clazz) {
+		return clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
+	}
+
+	String getVersion(Class<?> clazz) {
+		return clazz.getPackage().getImplementationVersion();
+	}
+
+
 	/**
 	 * Install or update all javadoc plugin.
 	 *
@@ -407,7 +426,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		// Add built-in jar
 		final var jarArtifacts = new HashMap<String, Map<String, String>>();
 		final var packageToGroupId = Map.of("org.ligoj.bootstrap", "org.ligoj.bootstrap", "org.ligoj.app.resource", "org.ligoj.api");
-		Arrays.stream(context.getBeanNamesForAnnotation(Path.class))
+		Arrays.stream(getBeanNamesWithPath())
 				.peek(b -> log.info("Filtering JAX RS bean '{}'", b))
 				.map(context::getBean)
 				.map(Object::getClass)
@@ -416,13 +435,13 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 				.peek(c -> log.info("Filtering JAX RS class '{}'", c))
 				.filter(c -> packageToGroupId.keySet().stream().anyMatch(b -> c.getPackageName().startsWith(b)))
 				.peek(c -> log.info("Filtering Ligoj/Bootstrap JAX RS class '{}' at {}", c, c.getProtectionDomain().getCodeSource().getLocation()))
-				.filter(c -> c.getProtectionDomain().getCodeSource().getLocation().getFile().endsWith(".jar") || c.getProtectionDomain().getCodeSource().getLocation().getFile().endsWith(".jar!/"))
+				.filter(c -> getClassLocation(c).endsWith(".jar") || getClassLocation(c).endsWith(".jar!/"))
 				.forEach(c -> {
-					final var version = c.getPackage().getImplementationVersion();
+					final var version = getVersion(c);
 					log.info("Filtering dependency for javadoc '{}', version '{}'", c, version);
 					if (version != null) {
 						final var groupId = packageToGroupId.entrySet().stream().filter(e -> c.getPackageName().startsWith(e.getKey())).findFirst().get().getValue();
-						jarArtifacts.put(c.getProtectionDomain().getCodeSource().getLocation().getFile(), Map.of("groupId", groupId, "version", version));
+						jarArtifacts.put(getClassLocation(c), Map.of("groupId", groupId, "version", version));
 					}
 				});
 
@@ -434,6 +453,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			final var artifactId = parts[parts.length - 1].split("-" + version)[0];
 			log.info("Installing javadoc based on file {}, version={}, artifact={}", jarArtifact.getKey(), version, artifactId);
 			install(null, groupId, artifactId, version, repository, false, true);
+			counter++;
 		}
 
 		response.put("updated", counter);
@@ -461,7 +481,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		return configuration.get(PLUGIN_GROUP_ID, DEFAULT_PLUGIN_GROUP_ID);
 	}
 
-	private void install(final InputStream input, final String groupId, final String artifact, final String version,
+	void install(final InputStream input, final String groupId, final String artifact, final String version,
 			final String repository, final boolean installPlugin, final boolean installJavadoc) {
 		final var classLoader = getPluginClassLoader();
 		if (installPlugin) {
@@ -474,7 +494,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 						: input;
 				// Download and copy the file, note the previous version is not removed
 				Files.copy(input2, target, StandardCopyOption.REPLACE_EXISTING);
-				log.info("Plugin {}:{} v{} has been installed, restart is required", groupId, artifact, version);
+				log.info("Plugin {}:{} v{} has been installed in {}, restart is required", groupId, artifact, version, target);
 			} catch (final Exception ioe) {
 				// Installation failed, either download, either FS error
 				log.info("Unable to install plugin {}:{} v{} from {}", groupId, artifact, version, repository, ioe);
@@ -487,7 +507,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 				final var javadocInput = getRepositoryManager(repository).getArtifactInputStream(groupId, artifact, version, "javadoc");
 				final var javadocTarget = classLoader.getPluginDirectory().resolve(artifact + "-" + version + "-javadoc.jar");
 				Files.copy(javadocInput, javadocTarget, StandardCopyOption.REPLACE_EXISTING);
-				log.info("Javadoc {}:{} v{} has been installed, restart is required", groupId, artifact, version);
+				log.info("Javadoc {}:{} v{} has been installed in {}, restart is required", groupId, artifact, version, javadocTarget);
 			} catch (IOException ioe) {
 				log.warn("Unable to install Javadoc {}:{} v{} from {}, non-blocking error", groupId, artifact, version, repository, ioe);
 			}

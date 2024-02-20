@@ -47,12 +47,23 @@ public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFea
 		setDescription("REST API services of application. Includes the core services and the features of actually loaded plugins");
 		setVersion(version);
 		setSwaggerUiConfig(new SwaggerUiConfig().url("openapi.json").queryConfigEnabled(false));
+		addJavadoc();
+	}
+
+	void addJavadoc() throws IOException {
+
+		// Check the available class loader for javadoc contribution
+		final var classloader = getPluginClassLoader();
+		if (classloader == null) {
+			log.info("Plugin classLoader is not available, no javadoc providers discovery");
+			return;
+		}
+
 		final var versionFileToPath = new HashMap<String, Path>();
-		final var pluginFiles = getPluginClassLoader().getInstalledPlugins(versionFileToPath, true);
+		final var pluginFiles = classloader.getInstalledPlugins(versionFileToPath, true);
 		final var javadocUrls = new ArrayList<URL>();
-		for (final var plugin : pluginFiles.entrySet()) {
-			final var javadocPath = versionFileToPath.get(plugin.getValue());
-			log.info("Adding javadoc path={}, url={}", javadocPath, javadocPath.toUri().toURL());
+		for (final var path : pluginFiles.values()) {
+			final var javadocPath = versionFileToPath.get(path);
 			javadocUrls.add(javadocPath.toUri().toURL());
 		}
 

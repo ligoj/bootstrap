@@ -31,6 +31,7 @@ import org.ligoj.bootstrap.resource.system.session.ApplicationSettings;
 import org.ligoj.bootstrap.resource.system.session.SessionSettings;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.restart.RestartEndpoint;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -43,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -64,12 +66,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	private static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
-	/**
-	 * File used to be created when a plug-in is downloaded from this test class
-	 */
-	private static final File TEMP_FILE = Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER,
-			PluginsClassLoader.PLUGINS_DIR, "plugin-iam-node-test.jar").toFile();
-
 	private SystemPluginResource resource;
 
 	@Autowired
@@ -89,7 +85,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@BeforeEach
 	void prepareData() throws IOException {
-		FileUtils.deleteQuietly(TEMP_FILE);
 		persistEntities("csv-test", SystemConfiguration.class);
 		clearAllCache();
 		resource = mockCentral("search.json");
@@ -402,7 +397,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		repository.saveAndFlush(pluginId);
 
 		final var plugins = filter(resource.findAll("central"));
-		Assertions.assertEquals(3, plugins.size()); // "foo", "bar", "Sample"
+		Assertions.assertEquals(5, plugins.size()); // "foo", "bar", "Sample", "Tool1", "Tool2"
 
 		// External plug-in service
 		final var plugin2 = plugins.get(2);
@@ -476,7 +471,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			repository.saveAndFlush(plugin);
 
 			final var plugins = filter(resource.findAll("central"));
-			Assertions.assertEquals(2, plugins.size());
+			Assertions.assertEquals(4, plugins.size());
 
 			// Plug-in from the API
 			final var plugin0 = plugins.getFirst();
@@ -512,7 +507,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		repository.saveAndFlush(orphanPlugin);
 
 		final var plugins = filter(resource.findAll("central"));
-		Assertions.assertEquals(2, plugins.size());
+		Assertions.assertEquals(4, plugins.size());
 
 		// Plug-in in the classpath
 		final var plugin0 = plugins.getFirst();
@@ -545,14 +540,14 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			Assertions.assertEquals("FEATURE", repository.findByExpected("key", "service:sample").getType());
 			Assertions.assertNotNull(repository.findByExpected("key", "service:sample").getVersion());
 
-			final var service2 = new SampleTool1();
-			resource.configurePluginInstall(service2);
+			final var service3 = new SampleTool3();
+			resource.configurePluginInstall(service3);
 
 			// Uninstall the plug-in from the plug-in registry
-			repository.deleteAllBy("key", "service:sample:tool1");
+			repository.deleteAllBy("key", "service:sample:tool3");
 
 			// reinstall
-			resource.configurePluginInstall(service2);
+			resource.configurePluginInstall(service3);
 		} finally {
 			destroySingleton("mockPluginListener");
 		}
@@ -569,14 +564,14 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 			Assertions.assertEquals("FEATURE", repository.findByExpected("key", "service:sample").getType());
 			Assertions.assertNotNull(repository.findByExpected("key", "service:sample").getVersion());
 
-			final var service2 = new SampleTool1();
-			resource.configurePluginInstall(service2);
+			final var service3 = new SampleTool3();
+			resource.configurePluginInstall(service3);
 
 			// Uninstall the plug-in from the plug-in registry
-			repository.deleteAllBy("key", "service:sample:tool1");
+			repository.deleteAllBy("key", "service:sample:tool3");
 
 			// reinstall
-			resource.configurePluginEntities(service2, Collections.singletonList(SystemBench.class));
+			resource.configurePluginEntities(service3, Collections.singletonList(SystemBench.class));
 		} finally {
 			destroySingleton("mockPluginListener");
 		}
@@ -821,20 +816,49 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	void installCentralOnline() throws IOException {
 		configuration.delete("plugins.repository-manager.central.artifact.url");
 		configuration.delete("plugins.repository-manager.central.search.url");
-		newPluginResourceInstall().install("plugin-iam-node", "central", false);
-		Assertions.assertTrue(TEMP_FILE.exists());
+		final var localJar = toFile("plugin-iam-node-1.2.1.jar");
+		localJar.delete();
+		newPluginResourceInstall("plugin-iam-node-1.2.1.jar").install("plugin-iam-node", "central", false);
+		Assertions.assertTrue(localJar.exists());
+		localJar.delete();
 	}
 
 	@Test
 	void upload() throws IOException {
 		final var input = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
-		newPluginResourceInstall().upload(input, "plugin-sample", "1.2.9");
-		Assertions.assertTrue(TEMP_FILE.exists());
-		Assertions.assertEquals("test", FileUtils.readFileToString(TEMP_FILE, StandardCharsets.UTF_8));
+		final var localJar = toFile("plugin-sample-1.2.9.jar");
+		localJar.delete();
+		newPluginResourceInstall("plugin-sample-1.2.9.jar").upload(input, "plugin-sample", "1.2.9");
+		Assertions.assertTrue(localJar.exists());
+		Assertions.assertEquals("test", FileUtils.readFileToString(localJar, StandardCharsets.UTF_8));
+		localJar.delete();
+	}
+
+	private File toFile(final String name) {
+		return Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER,
+				PluginsClassLoader.PLUGINS_DIR, name).toFile();
 	}
 
 	@Test
 	void installCentral() throws IOException {
+		configureCentralJar();
+		httpServer.stubFor(get(urlEqualTo("/maven2/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1-javadoc.jar"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toByteArray(
+						new ClassPathResource("mock-server/maven-repo/plugin-sample-0.0.1.jar").getInputStream()))));
+		httpServer.start();
+		final var localJar = toFile("plugin-sample-0.0.1.jar");
+		final var localJavadocJar = toFile("plugin-sample-0.0.1-javadoc.jar");
+		localJar.delete();
+		localJavadocJar.delete();
+
+		newPluginResourceInstall().install("plugin-sample", "central", true);
+		Assertions.assertTrue(localJar.exists());
+		Assertions.assertTrue(localJavadocJar.exists());
+		localJar.delete();
+		localJavadocJar.delete();
+	}
+
+	private void configureCentralJar() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/maven2/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toByteArray(
 						new ClassPathResource("mock-server/maven-repo/plugin-sample-0.0.1.jar").getInputStream()))));
@@ -843,18 +867,32 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 						.withBody(IOUtils.toString(
 								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
 								StandardCharsets.UTF_8))));
-		httpServer.start();
+	}
 
-		newPluginResourceInstall().install("plugin-sample", "central", false);
-		Assertions.assertTrue(TEMP_FILE.exists());
+	@Test
+	void installCentralJavadocFailed() throws IOException {
+		configureCentralJar();
+		httpServer.start();
+		final var localJar = toFile("plugin-sample-0.0.1.jar");
+		final var localJavadocJar = toFile("plugin-sample-0.0.1-javadoc.jar");
+		localJar.delete();
+		localJavadocJar.delete();
+		newPluginResourceInstall().install("plugin-sample", "central", true);
+		Assertions.assertTrue(localJar.exists());
+		Assertions.assertFalse(localJavadocJar.exists());
+		localJar.delete();
+		localJavadocJar.delete();
 	}
 
 	@Test
 	void installNexusOnline() throws IOException {
 		configuration.delete("plugins.repository-manager.nexus.artifact.url");
 		configuration.delete("plugins.repository-manager.nexus.search.url");
-		newPluginResourceInstall().install("plugin-iam-node", "nexus", false);
-		Assertions.assertTrue(TEMP_FILE.exists());
+		final var localJar = toFile("plugin-iam-node-1.2.1.jar");
+		localJar.delete();
+		newPluginResourceInstall("plugin-iam-node-1.2.1.jar").install("plugin-iam-node", "nexus", false);
+		Assertions.assertTrue(localJar.exists());
+		localJar.delete();
 	}
 
 	@Test
@@ -873,8 +911,71 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 								StandardCharsets.UTF_8))));
 		httpServer.start();
 
+		final var localJar = toFile("plugin-sample-0.0.1.jar");
+		localJar.delete();
 		newPluginResourceInstall().install("plugin-sample", "nexus", false);
-		Assertions.assertTrue(TEMP_FILE.exists());
+		Assertions.assertTrue(localJar.exists());
+		localJar.delete();
+	}
+
+	@Test
+	void installJavadoc() throws IOException {
+		final var installed = new AtomicBoolean();
+		final var resource = new SystemPluginResource() {
+			@Override
+			String[] getBeanNamesWithPath() {
+				return super.getBeanNamesWithPath();
+			}
+
+			@Override
+			String getVersion(Class<?> clazz) {
+				if (SampleTool1.class.equals(clazz)) {
+					return "0.0.1";
+				}
+				if (SampleTool2.class.equals(clazz)) {
+					return null;
+				}
+				return clazz.getPackage().getImplementationVersion();
+			}
+
+			@Override
+			String getClassLocation(Class<?> clazz) {
+				if (SampleTool1.class.equals(clazz)) {
+					return "path/to/plugin-sample1-0.0.1.jar";
+				}
+				if (SampleTool2.class.equals(clazz)) {
+					return "path/to/plugin-sample2-0.0.1.jar!/";
+				}
+				return clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
+			}
+
+			@Override
+			public List<PluginVo> findAll(final String repository) {
+				final var pluginNoLocation = new PluginVo();
+				pluginNoLocation.setId("feature:plugin-sample-no-location");
+				final var pluginDev = new PluginVo();
+				pluginDev.setId("feature:plugin-sample-in-dev");
+				pluginDev.setLocation("foo/classes");
+				final var pluginIgnored = new PluginVo();
+				pluginIgnored.setId("feature:iam:empty");
+				final var pluginOk = new PluginVo();
+				pluginOk.setId("feature:plugin-sample");
+				pluginOk.setLocation("mock-server/nexus-repo/plugin-sample-0.0.1.jar");
+				final var systemPlugin = new SystemPlugin();
+				systemPlugin.setArtifact("plugin-sample");
+				systemPlugin.setVersion("0.0.1");
+				pluginOk.setPlugin(systemPlugin);
+				return List.of(pluginNoLocation, pluginDev, pluginIgnored, pluginOk);
+			}
+
+			void install(final InputStream input, final String groupId, final String artifact, final String version,
+					final String repository, final boolean installPlugin, final boolean installJavadoc) {
+				installed.set(true);
+			}
+		};
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
+		resource.installJavadoc("nexus");
+		Assertions.assertTrue(installed.get());
 	}
 
 	@Test
@@ -899,14 +1000,15 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		}
 	}
 
-	private SystemPluginResource newPluginResourceInstall() {
+	private SystemPluginResource newPluginResourceInstall(final String fixedFileName) {
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
 		final var directory = Mockito.mock(Path.class);
 		Mockito.when(pluginsClassLoader.getHomeDirectory()).thenReturn(Paths.get(USER_HOME_DIRECTORY));
 		Mockito.when(directory.resolve(ArgumentMatchers.anyString()))
-				.thenReturn(Paths
+				.then((Answer<Path>) invocation -> Paths
 						.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR)
-						.resolve("plugin-iam-node-test.jar"));
+						.resolve(fixedFileName == null ? invocation.getArgument(0) : fixedFileName));
+
 		Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(directory);
 		final var pluginResource = new SystemPluginResource() {
 			@Override
@@ -917,6 +1019,10 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		};
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(pluginResource);
 		return pluginResource;
+	}
+
+	private SystemPluginResource newPluginResourceInstall() {
+		return newPluginResourceInstall(null);
 	}
 
 	private void doPluginResourceDelete(final String artifact) throws IOException {
@@ -949,11 +1055,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		}
 	}
 
-	@AfterEach
-	void cleanArtifacts() {
-		FileUtils.deleteQuietly(TEMP_FILE);
-	}
-
 	/**
 	 * Remove a non existing plugin : no error
 	 */
@@ -968,11 +1069,13 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 */
 	@Test
 	void removeWidest() throws IOException {
-		Assertions.assertFalse(TEMP_FILE.exists());
-		FileUtils.touch(TEMP_FILE);
-		Assertions.assertTrue(TEMP_FILE.exists());
+		final var localJar = toFile("plugin-iam-node-0.0.1.jar");
+		localJar.delete();
+		Assertions.assertFalse(localJar.exists());
+		FileUtils.touch(localJar);
+		Assertions.assertTrue(localJar.exists());
 		doPluginResourceDelete("plugin-iam");
-		Assertions.assertFalse(TEMP_FILE.exists());
+		Assertions.assertFalse(localJar.exists());
 	}
 
 	/**
@@ -980,11 +1083,13 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 */
 	@Test
 	void removeExact() throws IOException {
-		Assertions.assertFalse(TEMP_FILE.exists());
-		FileUtils.touch(TEMP_FILE);
-		Assertions.assertTrue(TEMP_FILE.exists());
+		final var localJar = toFile("plugin-iam-0.0.1.jar");
+		localJar.delete();
+		Assertions.assertFalse(localJar.exists());
+		FileUtils.touch(localJar);
+		Assertions.assertTrue(localJar.exists());
 		doPluginResourceDelete("plugin-iam");
-		Assertions.assertFalse(TEMP_FILE.exists());
+		Assertions.assertFalse(localJar.exists());
 	}
 
 	/**
@@ -992,11 +1097,21 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	 */
 	@Test
 	void removeExactVersion() throws IOException {
-		Assertions.assertFalse(TEMP_FILE.exists());
-		FileUtils.touch(TEMP_FILE);
-		Assertions.assertTrue(TEMP_FILE.exists());
-		doPluginResourceDelete("plugin-iam-node", "test");
-		Assertions.assertFalse(TEMP_FILE.exists());
+		final var localJar = toFile("plugin-iam-node-1.0.0.jar");
+		final var localJar2 = toFile("plugin-iam-node-1.0.1.jar");
+		localJar.delete();
+		localJar2.delete();
+		Assertions.assertFalse(localJar.exists());
+		Assertions.assertFalse(localJar2.exists());
+		FileUtils.touch(localJar);
+		FileUtils.touch(localJar2);
+		Assertions.assertTrue(localJar.exists());
+		Assertions.assertTrue(localJar2.exists());
+		doPluginResourceDelete("plugin-iam-node", "1.0.0");
+		Assertions.assertFalse(localJar.exists());
+		Assertions.assertTrue(localJar2.exists());
+		localJar.delete();
+		localJar2.delete();
 	}
 
 	@Test
