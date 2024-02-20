@@ -87,7 +87,7 @@ class CentralRepositoryManagerTest extends org.ligoj.bootstrap.AbstractServerTes
 			final var versions = resource.getLastPluginVersions();
 			Assertions.assertEquals(versions.keySet(), resource.getLastPluginVersions().keySet());
 			resource.invalidateLastPluginVersions();
-			try (InputStream stream = resource.getArtifactInputStream("plugin-ui", "1.0.0")) {
+			try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-ui", "1.0.0", null)) {
 				Assertions.assertEquals("OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
 			}
 		} finally {

@@ -3,6 +3,13 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -13,22 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Class Loader which load jars in {@value #PLUGINS_DIR} directory inside the home directory.
@@ -68,7 +61,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Pattern used to extract the version from a JAR plug-in file name.
 	 */
-	private static final Pattern VERSION_PATTERN = Pattern
+	public static final Pattern VERSION_PATTERN = Pattern
 			.compile("(-(\\d[\\da-zA-Z]*(\\.[\\da-zA-Z]+){1,3}(-SNAPSHOT)?))\\.jar$");
 
 	/**
@@ -132,7 +125,7 @@ public class PluginsClassLoader extends URLClassLoader {
 		final var versionFileToPath = new HashMap<String, Path>();
 
 		// Ordered last version (to be enabled) plug-ins.
-		final var enabledPlugins = getInstalledPlugins(versionFileToPath);
+		final var enabledPlugins = getInstalledPlugins(versionFileToPath, false);
 		final var buffer = new StringBuilder();
 
 		// Add the filtered plug-in files to the class-path and deploy them
@@ -168,18 +161,19 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *
 	 * @param versionFileToPath The mapping filled by this method. Key : The filename without extension and with
 	 *                          extended comparable version. Value : The resolved Path.
+	 * @param javadocFiler When true, only javadoc jar are analyzed, otherwise they are excluded.
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
 	 *         artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
 	 *         version.
 	 * @throws IOException When file list failed.
 	 */
-	private Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath) throws IOException {
-		final Map<String, String> versionFiles = new TreeMap<>();
+	public Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath, final boolean javadocFiler) throws IOException {
+		final var versionFiles = new TreeMap<String, String>();
 		try (var list = Files.list(this.pluginDirectory)) {
-			list.filter(p -> p.toString().endsWith(".jar"))
+			list.filter(p -> javadocFiler ? p.toString().endsWith("-javadoc.jar") : (p.toString().endsWith(".jar") &&  !p.toString().endsWith("-javadoc.jar")))
 					.forEach(path -> addVersionFile(versionFileToPath, versionFiles, path));
 		}
-		final Map<String, String> enabledPlugins = new TreeMap<>(Comparator.reverseOrder());
+		final var enabledPlugins = new TreeMap<String, String>(Comparator.reverseOrder());
 
 		// Remove old plug-in from the list
 		versionFiles.keySet().stream().sorted(Comparator.reverseOrder())
@@ -196,7 +190,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @throws IOException When file list failed.
 	 */
 	public Map<String, String> getInstalledPlugins() throws IOException {
-		return getInstalledPlugins(new HashMap<>());
+		return getInstalledPlugins(new HashMap<>(), false);
 	}
 
 	/**
@@ -305,7 +299,6 @@ public class PluginsClassLoader extends URLClassLoader {
 			// This plug-in has a version, extend the version for the next natural string ordering
 			noVersionFile = file.substring(0, matcher.start());
 			fileWithExtVersion = noVersionFile + "-" + toExtendedVersion(matcher.group(1));
-
 		} else {
 			// No version, the file will be kept with the lowest level version number
 			noVersionFile = FilenameUtils.removeExtension(file);

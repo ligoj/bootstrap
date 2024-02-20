@@ -23,7 +23,7 @@ public class EmptyRepositoryManager implements RepositoryManager {
 	}
 
 	@Override
-	public InputStream getArtifactInputStream(String artifact, String version) {
+	public InputStream getArtifactInputStream(String groupId, String artifact, String version, String classifier) {
 		return null;
 	}
 

@@ -38,6 +38,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ClassUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,6 +82,11 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	private static final String PLUGIN_INSTALL = "ligoj.plugin.install";
 
 	/**
+	 * Plug-ins auto install flag with javadoc.
+	 */
+	private static final String PLUGIN_INSTALL_JAVADOC = "ligoj.plugin.install.javadoc";
+
+	/**
 	 * Plug-ins auto update flag.
 	 */
 	private static final String PLUGIN_UPDATE = "ligoj.plugin.update";
@@ -89,6 +95,10 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * Plug-ins repository used for auto-update mode.
 	 */
 	private static final String PLUGIN_REPOSITORY = "ligoj.plugin.repository";
+
+	private static final String PLUGIN_GROUP_ID = "ligoj.plugin.groupId";
+
+	private static final String DEFAULT_PLUGIN_GROUP_ID = "org.ligoj.plugin";
 
 	private static final RepositoryManager EMPTY_REPOSITORY = new EmptyRepositoryManager();
 
@@ -130,7 +140,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	public List<PluginVo> findAll(@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository)
 			throws IOException {
 		// Get the available plug-ins
-		Map<String, Artifact> lastVersion = new HashMap<>();
+		Map<String, Artifact> lastVersion = Collections.emptyMap();
 		try {
 			lastVersion = getLastPluginVersions(repository);
 		} catch (IOException ioe) {
@@ -344,7 +354,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	public void upload(@Multipart(value = "plugin-file") final InputStream input,
 			@Multipart(value = "plugin-id") final String pluginId,
 			@Multipart(value = "plugin-version") final String version) {
-		install(input, pluginId, version, "(local)");
+		install(input, getPluginGroupId(), pluginId, version, "(local)", true, false);
 	}
 
 	/**
@@ -352,19 +362,82 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 *
 	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
 	 * @param repository The repository identifier to query.
+	 * @param javadoc    When true, the Javadoc is also installed and will contribute to OpenAPI documentation.
 	 * @throws IOException When install failed.
 	 */
 	@POST
 	@Path("{artifact:[\\w-]+}")
 	public void install(@PathParam("artifact") final String artifact,
-			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) throws IOException {
+			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository,
+			@QueryParam("javadoc") @DefaultValue("true") final boolean javadoc) throws IOException {
 		final var resultItem = getLastPluginVersions(repository).get(artifact);
 		if (resultItem == null) {
 			// Plug-in not found, or not the last version
 			throw new ValidationJsonException("artifact",
 					String.format("No latest version on repository %s", repository));
 		}
-		install(artifact, resultItem.getVersion(), repository);
+		install(artifact, resultItem.getVersion(), repository, javadoc);
+	}
+
+	/**
+	 * Install or update all javadoc plugin.
+	 *
+	 * @param repository The repository identifier to query.
+	 * @throws IOException When install failed.
+	 */
+	@POST
+	@Path("javadoc/install")
+	public Map<String, Object> installJavadoc(@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) throws IOException {
+		final var ignoredFeatures = Set.of("feature:iam:empty", "feature:welcome:data-rbac");
+
+		final var plugins = findAll(repository);
+		final var response = new HashMap<String, Object>();
+		var counter = 0;
+		for (final var plugin : plugins) {
+			log.info("Filtering plugin for javadoc '{}': {}", plugin.getId(), plugin);
+			if (plugin.getLocation() != null && plugin.getLocation().endsWith(".jar") && !ignoredFeatures.contains(plugin.getId())) {
+				// Packaged jar and not ignored feature
+				install(null, getPluginGroupId(), plugin.getPlugin().getArtifact(), plugin.getPlugin().getVersion(), repository, false, true);
+			} else {
+				log.info("Ignored plugin '{}'", plugin.getId());
+			}
+			counter++;
+		}
+
+		// Add built-in jar
+		final var jarArtifacts = new HashMap<String, Map<String, String>>();
+		final var packageToGroupId = Map.of("org.ligoj.bootstrap", "org.ligoj.bootstrap", "org.ligoj.app.resource", "org.ligoj.api");
+		Arrays.stream(context.getBeanNamesForAnnotation(Path.class))
+				.peek(b -> log.info("Filtering JAX RS bean '{}'", b))
+				.map(context::getBean)
+				.map(Object::getClass)
+				.map(ClassUtils::getUserClass)
+				.distinct()
+				.peek(c -> log.info("Filtering JAX RS class '{}'", c))
+				.filter(c -> packageToGroupId.keySet().stream().anyMatch(b -> c.getPackageName().startsWith(b)))
+				.peek(c -> log.info("Filtering Ligoj/Bootstrap JAX RS class '{}' at {}", c, c.getProtectionDomain().getCodeSource().getLocation()))
+				.filter(c -> c.getProtectionDomain().getCodeSource().getLocation().getFile().endsWith(".jar") || c.getProtectionDomain().getCodeSource().getLocation().getFile().endsWith(".jar!/"))
+				.forEach(c -> {
+					final var version = c.getPackage().getImplementationVersion();
+					log.info("Filtering dependency for javadoc '{}', version '{}'", c, version);
+					if (version != null) {
+						final var groupId = packageToGroupId.entrySet().stream().filter(e -> c.getPackageName().startsWith(e.getKey())).findFirst().get().getValue();
+						jarArtifacts.put(c.getProtectionDomain().getCodeSource().getLocation().getFile(), Map.of("groupId", groupId, "version", version));
+					}
+				});
+
+		for (final var jarArtifact : jarArtifacts.entrySet()) {
+			final var artifact = jarArtifact.getValue();
+			final var version = artifact.get("version");
+			final var parts = StringUtils.split(StringUtils.splitByWholeSeparator(jarArtifact.getKey(), ".jar")[0], "/\\");
+			final var groupId = artifact.get("groupId");
+			final var artifactId = parts[parts.length - 1].split("-" + version)[0];
+			log.info("Installing javadoc based on file {}, version={}, artifact={}", jarArtifact.getKey(), version, artifactId);
+			install(null, groupId, artifactId, version, repository, false, true);
+		}
+
+		response.put("updated", counter);
+		return response;
 	}
 
 	/**
@@ -373,32 +446,51 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 *
 	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
 	 * @param version    The version to install.
+	 * @param javadoc    When true, the Javadoc is also installed and will contribute to OpenAPI documentation.
 	 * @param repository The repository identifier to query.
 	 */
 	@POST
 	@Path("{artifact:[\\w-]+}/{version:[\\w\\.-]+}")
 	public void install(@PathParam("artifact") final String artifact, @PathParam("version") final String version,
-			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository) {
-		install(null, artifact, version, repository);
+			@QueryParam("repository") @DefaultValue(REPO_CENTRAL) final String repository,
+			@QueryParam("javadoc") @DefaultValue("true") final boolean javadoc) {
+		install(null, getPluginGroupId(), artifact, version, repository, true, javadoc);
 	}
 
-	private void install(final InputStream input, final String artifact, final String version,
-			final String repository) {
+	private String getPluginGroupId() {
+		return configuration.get(PLUGIN_GROUP_ID, DEFAULT_PLUGIN_GROUP_ID);
+	}
+
+	private void install(final InputStream input, final String groupId, final String artifact, final String version,
+			final String repository, final boolean installPlugin, final boolean installJavadoc) {
 		final var classLoader = getPluginClassLoader();
-		final var target = classLoader.getPluginDirectory().resolve(artifact + "-" + version + ".jar");
-		log.info("Download plug-in {} v{} from {}", artifact, version, repository);
-		try {
-			// Get the right input
-			final var input2 = input == null
-					? getRepositoryManager(repository).getArtifactInputStream(artifact, version)
-					: input;
-			// Download and copy the file, note the previous version is not removed
-			Files.copy(input2, target, StandardCopyOption.REPLACE_EXISTING);
-			log.info("Plugin {} v{} has been installed, restart is required", artifact, version);
-		} catch (final Exception ioe) {
-			// Installation failed, either download, either FS error
-			log.info("Unable to install plugin {} v{} from {}", artifact, version, repository, ioe);
-			throw new ValidationJsonException("artifact", "cannot-be-installed", "id", artifact);
+		if (installPlugin) {
+			final var target = classLoader.getPluginDirectory().resolve(artifact + "-" + version + ".jar");
+			log.info("Download plug-in {}:{} v{} from {}", groupId, artifact, version, repository);
+			try {
+				// Get the right input
+				final var input2 = input == null
+						? getRepositoryManager(repository).getArtifactInputStream(groupId, artifact, version, null)
+						: input;
+				// Download and copy the file, note the previous version is not removed
+				Files.copy(input2, target, StandardCopyOption.REPLACE_EXISTING);
+				log.info("Plugin {}:{} v{} has been installed, restart is required", groupId, artifact, version);
+			} catch (final Exception ioe) {
+				// Installation failed, either download, either FS error
+				log.info("Unable to install plugin {}:{} v{} from {}", groupId, artifact, version, repository, ioe);
+				throw new ValidationJsonException("artifact", "cannot-be-installed", "id", artifact);
+			}
+		}
+		if (installJavadoc && input == null) {
+			log.info("Download Javadoc {}:{} v{} from {}", groupId, artifact, version, repository);
+			try {
+				final var javadocInput = getRepositoryManager(repository).getArtifactInputStream(groupId, artifact, version, "javadoc");
+				final var javadocTarget = classLoader.getPluginDirectory().resolve(artifact + "-" + version + "-javadoc.jar");
+				Files.copy(javadocInput, javadocTarget, StandardCopyOption.REPLACE_EXISTING);
+				log.info("Javadoc {}:{} v{} has been installed, restart is required", groupId, artifact, version);
+			} catch (IOException ioe) {
+				log.warn("Unable to install Javadoc {}:{} v{} from {}, non-blocking error", groupId, artifact, version, repository, ioe);
+			}
 		}
 	}
 
@@ -501,11 +593,12 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 */
 	public int autoInstall(final Set<String> plugins) throws IOException {
 		final var currentPlugins = getPluginClassLoader().getInstalledPlugins();
+		final var withJavaDoc = BooleanUtils.toBoolean(configuration.get(PLUGIN_INSTALL_JAVADOC, "true"));
 		final var repositoryName = configuration.get(PLUGIN_REPOSITORY, REPO_CENTRAL);
 		var counter = 0;
 		for (final var artifact : getLastPluginVersions(repositoryName).values().stream().map(Artifact::getArtifact)
 				.filter(plugins::contains).filter(Predicate.not(currentPlugins::containsKey)).toList()) {
-			install(artifact, repositoryName);
+			install(artifact, repositoryName, withJavaDoc);
 			counter++;
 		}
 		return counter;
@@ -526,7 +619,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
 						.compareTo(StringUtils.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
 				.toList()) {
-			install(artifact.getArtifact(), repositoryName);
+			install(artifact.getArtifact(), repositoryName, true);
 			counter++;
 		}
 		return counter;
@@ -707,14 +800,11 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * @param <T>         The entity type.
 	 */
 	protected <T> void persistAsNeeded(final Class<T> entityClass, T entity) {
-		if (entity instanceof AbstractBusinessEntity<?> be) {
-			persistAsNeeded(entityClass, be);
-		} else if (entity instanceof INamableBean<?> nb) {
-			persistAsNeeded(entityClass, entity, "name", nb.getName());
-		} else if (entity instanceof SystemUser su) {
-			persistAsNeeded(entityClass, entity, "login", su.getLogin());
-		} else {
-			em.persist(entity);
+		switch (entity) {
+			case AbstractBusinessEntity<?> be -> persistAsNeeded(entityClass, be);
+			case INamableBean<?> nb -> persistAsNeeded(entityClass, entity, "name", nb.getName());
+			case SystemUser su -> persistAsNeeded(entityClass, entity, "login", su.getLogin());
+			case null, default -> em.persist(entity);
 		}
 	}
 

@@ -107,29 +107,37 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	/**
 	 * Return the plug-ins download URL.
 	 *
+	 * @param groupId    The Maven groupID path.
 	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
 	 * @param version    The version to install.
 	 * @param defaultUrl The default artifact base URL.
+	 * @param classifier The jar classifier. May be null or empty.
 	 * @return The plug-ins download URL. Ends with "/".
 	 */
-	protected String getArtifactUrl(String artifact, String version, final String defaultUrl) {
-		return StringUtils.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/") + artifact + "/" + version + "/"
-				+ artifact + "-" + version + ".jar";
+	protected String getArtifactUrl(String groupId, String artifact, String version, final String defaultUrl, final String classifier) {
+		return StringUtils.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/")
+				+ groupId.replace('.', '/') + "/"
+				+ artifact + "/" + version + "/"
+				+ artifact + "-" + version
+				+ (StringUtils.isBlank(classifier) ? "" : StringUtils.prependIfMissing(classifier, "-"))
+				+ ".jar";
 	}
 
 	/**
 	 * Return the input stream from the remote URL.
 	 *
+	 * @param groupId    The Maven groupId.
 	 * @param artifact   The Maven artifact identifier and also corresponding to the plug-in simple name.
 	 * @param version    The version to install.
 	 * @param defaultUrl The default artifact base URL.
+	 * @param classifier The jar classifier. May be null or empty.
 	 * @return The opened {@link InputStream} of the artifact to download.
 	 * @throws IOException When download failed.
 	 * @see #getArtifactBaseUrl(String)
 	 */
-	public InputStream getArtifactInputStream(String artifact, String version, final String defaultUrl)
+	public InputStream getArtifactInputStream(String groupId, String artifact, String version, final String defaultUrl, final String classifier)
 			throws IOException {
-		final var url = getArtifactUrl(artifact, version, defaultUrl);
+		final var url = getArtifactUrl(groupId, artifact, version, defaultUrl, classifier);
 		log.info("Resolved remote URL is {}", url);
 		final var urlObj = URI.create(url).toURL();
 		final var proxyHost = getArtifactProxyHost();

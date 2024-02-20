@@ -45,8 +45,8 @@ public class NexusRepositoryManager extends AbstractRemoteRepositoryManager {
 	}
 
 	@Override
-	public InputStream getArtifactInputStream(String artifact, String version) throws IOException {
-		return getArtifactInputStream(artifact, version, DEFAULT_ARTIFACT_URL + getGroupId(DEFAULT_GROUP_ID).replace('.', '/'));
+	public InputStream getArtifactInputStream(String groupId, String artifact, String version, String classifier) throws IOException {
+		return getArtifactInputStream(groupId, artifact, version, DEFAULT_ARTIFACT_URL, classifier);
 	}
 
 	@Override

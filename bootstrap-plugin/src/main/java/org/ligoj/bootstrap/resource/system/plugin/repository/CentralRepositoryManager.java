@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 
-	private static final String DEFAULT_ARTIFACT_URL = "https://repo.maven.apache.org/maven2/org/ligoj/plugin/";
+	private static final String DEFAULT_ARTIFACT_URL = "https://repo.maven.apache.org/maven2/";
 	private static final String DEFAULT_GROUP_ID = "org.ligoj.plugin";
 
 	// See https://central.sonatype.org/search/rest-api-guide/
@@ -47,8 +47,8 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 	}
 
 	@Override
-	public InputStream getArtifactInputStream(String artifact, String version) throws IOException {
-		return getArtifactInputStream(artifact, version, DEFAULT_ARTIFACT_URL);
+	public InputStream getArtifactInputStream(String groupId, String artifact, String version, final String classifier) throws IOException {
+		return getArtifactInputStream(groupId, artifact, version, DEFAULT_ARTIFACT_URL, classifier);
 	}
 
 	@Override
