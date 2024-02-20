@@ -67,7 +67,7 @@
         <aspectj.version>1.9.21</aspectj.version>
         <awaitility.version>4.2.0</awaitility.version>
         <awaitility-proxy.version>3.1.6</awaitility-proxy.version>
-        <byte-buddy.version>1.14.11</byte-buddy.version>
+        <byte-buddy.version>1.14.12</byte-buddy.version>
         <cache.version>1.1.1</cache.version>
         <c3p0.version>0.9.5.5</c3p0.version>
         <checker-qual.version>3.42.0</checker-qual.version>
@@ -115,11 +115,11 @@
         <slf4j.version>2.0.12</slf4j.version>
         <soap-api.version>3.0.1</soap-api.version>
         <spotbugs-annotations>4.8.3</spotbugs-annotations>
-        <spring.version>6.1.3</spring.version>
+        <spring.version>6.1.4</spring.version>
         <spring-boot.version>3.2.2</spring-boot.version>
         <spring-cloud-context.version>4.1.1</spring-cloud-context.version>
         <spring-data.version>3.2.2</spring-data.version>
-        <spring-security.version>6.2.1</spring-security.version>
+        <spring-security.version>6.2.2</spring-security.version>
         <spring-security-rsa>1.1.1</spring-security-rsa>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
