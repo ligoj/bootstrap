@@ -3,6 +3,9 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
+import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.annotations.Provider;
 import org.apache.cxf.jaxrs.model.doc.JavaDocProvider;
@@ -16,6 +19,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * OpenAPI feature customized for application.
@@ -47,6 +52,9 @@ public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFea
 		setDescription("REST API services of application. Includes the core services and the features of actually loaded plugins");
 		setVersion(version);
 		setSwaggerUiConfig(new SwaggerUiConfig().url("openapi.json").queryConfigEnabled(false));
+		setSecurityDefinitions(Map.of(
+				"api_key", new SecurityScheme().description("API Key").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("api-key"),
+				"api_user", new SecurityScheme().description("API User").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("api-user")));
 		addJavadoc();
 	}
 
@@ -69,7 +77,15 @@ public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFea
 
 		// Add resolved Javadoc URLs
 		log.info("Adding javadoc providers of {} locations", javadocUrls.size());
-		final var customizer = new OpenApiCustomizer();
+		final var customizer = new OpenApiCustomizer() {
+			@Override
+			public OpenAPIConfiguration customize(final OpenAPIConfiguration configuration) {
+				super.customize(configuration);
+				configuration.getOpenAPI().setServers(List.of(new Server().url("./").description("REST API Server")));
+				return configuration;
+			}
+		};
+		customizer.setDynamicBasePath(false);
 		customizer.setJavadocProvider(new JavaDocProvider(javadocUrls.toArray(new URL[0])));
 		setCustomizer(customizer);
 	}
