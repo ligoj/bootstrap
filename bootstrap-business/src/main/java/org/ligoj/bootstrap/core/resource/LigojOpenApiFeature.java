@@ -47,14 +47,15 @@ public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFea
 		setLicense("MIT");
 		setLicenseUrl("https://github.com/ligoj/ligoj/blob/master/LICENSE");
 		setTitle("Ligoj API application");
-		setContactName("The Ligoj team");
+		setContactName("GitHub Ligoj");
 		setContactUrl("https://github.com/ligoj");
 		setDescription("REST API services of application. Includes the core services and the features of actually loaded plugins");
 		setVersion(version);
 		setSwaggerUiConfig(new SwaggerUiConfig().url("openapi.json").queryConfigEnabled(false));
 		setSecurityDefinitions(Map.of(
-				"api_key", new SecurityScheme().description("API Key").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("api-key"),
-				"api_user", new SecurityScheme().description("API User").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("api-user")));
+				"api_key", new SecurityScheme().description("API Key").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("x-api-key"),
+				"api_user", new SecurityScheme().description("Principal username").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("x-api-user"),
+				"api_via_user", new SecurityScheme().description("Authenticated username when a run-as operation is needed").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("x-api-via-user")));
 		addJavadoc();
 	}
 
