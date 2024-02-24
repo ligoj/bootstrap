@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.resource.system.plugin.javadoc;
 
 import io.swagger.v3.oas.integration.api.OpenAPIConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -21,6 +22,7 @@ import org.ligoj.bootstrap.model.system.SystemPlugin;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 
@@ -52,6 +54,25 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		return StringUtils.EMPTY.contentEquals(normalizedPath) ? "/" : normalizedPath.toString();
 	}
 
+	private void fillSummaryAndDescription(final String fullDoc, final Operation operation) {
+		fillSummaryAndDescription(fullDoc, operation::setSummary, operation::setDescription);
+	}
+
+	protected void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription) {
+		if (fullDoc != null) {
+			// Split the documentation into 'summary' and 'description'
+			final var eos = fullDoc.indexOf('.');
+			if (eos == -1 || eos == fullDoc.length() - 1) {
+				setSummary.accept(removeUselessChars(fullDoc));
+			} else {
+				setSummary.accept(fullDoc.substring(0, eos));
+				if (setDescription != null) {
+					setDescription.accept(removeUselessChars(fullDoc.substring(eos + 1)));
+				}
+			}
+		}
+	}
+
 	@Override
 	public void customize(final OpenAPI oas) {
 		final var operations = new HashMap<String, ClassResourceInfo>();
@@ -62,12 +83,13 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 			methods.put(Pair.of(ori.getHttpMethod(), normalizedPath), ori);
 		}));
 
-		// Reorder the OpenAPI path by natural language
-		if (oas.getPaths().getExtensions() != null) {
-//			return;
+		// Check Javadoc completeness is necessary
+		if (oas.getExtensions() != null) {
+			return;
 		}
+		// Reorder the OpenAPI path by natural language
 		final var sortedPaths = new Paths();
-		sortedPaths.setExtensions(Map.of("sort", new PathItem()));
+		oas.setExtensions(Map.of("sort", new PathItem()));
 		oas.getPaths().entrySet().stream().sorted(Comparator.comparing(path -> path.getKey().replace('{', '_'))).forEach(entry -> sortedPaths.addPathItem(entry.getKey(), entry.getValue()));
 		oas.setPaths(sortedPaths);
 
@@ -77,6 +99,9 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		final var tags = new HashMap<String, String>();
 		oas.getPaths().forEach((pathKey, pathItem) -> {
 			var cri = operations.get(pathKey);
+			if (cri == null) {
+				return;
+			}
 			var artifact = packageToPlugin.computeIfAbsent(cri.getResourceClass().getPackageName(), p -> plugins.stream().filter(plugin1 -> p.startsWith(plugin1.getBasePackage())).min(Comparator.comparing(SystemPlugin::getBasePackage)).orElse(new SystemPlugin())).getArtifact();
 			if (artifact == null) {
 				artifact = StringUtils.split(pathKey, '/')[0];
@@ -88,19 +113,8 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				var key = Pair.of(method.name(), pathKey);
 				if (methods.containsKey(key)) {
 					var ori = methods.get(key);
-					tags.computeIfAbsent(tagOperation, t->javadocProvider.getClassDoc(cri));
-					if (StringUtils.isBlank(operation.getSummary())) {
-						final var fullDoc = javadocProvider.getMethodDoc(ori);
-						if (fullDoc != null) {
-							final var eos = fullDoc.indexOf('.');
-							if (eos == -1 || eos == fullDoc.length() - 1) {
-								operation.setSummary(removeUselessChars(fullDoc));
-							} else {
-								operation.setSummary(fullDoc.substring(0, eos));
-								operation.setDescription(removeUselessChars(fullDoc.substring(eos + 1)));
-							}
-						}
-					}
+					tags.computeIfAbsent(tagOperation, t -> javadocProvider.getClassDoc(cri));
+					fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 
 					if (operation.getParameters() == null) {
 						var parameters = new ArrayList<Parameter>();
@@ -118,7 +132,11 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				}
 			});
 		});
-		oas.setTags(tags.keySet().stream().sorted().map(t -> new Tag().name(t).description(tags.get(t))).toList());
+		oas.setTags(tags.keySet().stream().sorted().map(t -> {
+			var tag = new Tag().name(t);
+			fillSummaryAndDescription(tags.get(t), tag::description, null);
+			return tag;
+		}).toList());
 	}
 
 	/**
