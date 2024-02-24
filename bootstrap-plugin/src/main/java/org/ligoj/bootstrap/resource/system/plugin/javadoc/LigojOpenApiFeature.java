@@ -7,7 +7,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.annotations.Provider;
-import org.apache.cxf.jaxrs.swagger.ui.SwaggerUiConfig;
 import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +53,6 @@ public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFea
 		setContactUrl("https://github.com/ligoj");
 		setDescription("REST API services of application. Includes the core services and the features of actually loaded plugins");
 		setVersion(version);
-		setSwaggerUiConfig(new SwaggerUiConfig().url("openapi.json").queryConfigEnabled(false).docExpansion("none"));
 		setSecurityDefinitions(Map.of("api_key", new SecurityScheme().description("API Key").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("x-api-key"), "api_user", new SecurityScheme().description("Principal username").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("x-api-user"), "api_via_user", new SecurityScheme().description("Authenticated username when a run-as operation is needed").in(SecurityScheme.In.HEADER).type(SecurityScheme.Type.APIKEY).name("x-api-via-user")));
 	}
 
