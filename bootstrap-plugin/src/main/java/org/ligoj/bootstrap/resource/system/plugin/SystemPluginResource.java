@@ -578,7 +578,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			} else {
 				// Update the artifactId. May have not changed
 				plugin.setArtifact(toArtifactId(s));
-				if (!plugin.getVersion().equals(getVersion(s))) {
+				if (!plugin.getVersion().equals(getVersion(s)) || !s.getClass().getPackageName().equals(plugin.getBasePackage())) {
 					// The version is different, consider it as an update
 					updateFeatures.put(s.getKey(), s);
 				}
@@ -695,6 +695,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		final var newVersion = getVersion(plugin);
 		log.info("Updating the plugin {} v{} -> v{}", plugin.getKey(), entity.getVersion(), newVersion);
 		entity.setVersion(newVersion);
+		entity.setBasePackage(plugin.getClass().getPackageName());
 	}
 
 	/**
@@ -716,6 +717,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			entity.setArtifact(toArtifactId(plugin));
 			entity.setKey(plugin.getKey());
 			entity.setVersion(newVersion);
+			entity.setBasePackage(plugin.getClass().getPackageName());
 			entity.setType("FEATURE");
 			context.getBeansOfType(PluginListener.class).values().forEach(l -> l.configure(plugin, entity));
 			repository.saveAndFlush(entity);

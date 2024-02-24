@@ -48,6 +48,11 @@ public class SystemPlugin extends AbstractAudited<Integer> implements Serializab
 	private String artifact;
 
 	/**
+	 * The Java base package of this plugin.
+	 */
+	private String basePackage;
+
+	/**
 	 * The plug-in type.
 	 */
 	@NotNull

@@ -1,10 +1,9 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.bootstrap.core.resource;
+package org.ligoj.bootstrap.resource.system.plugin.javadoc;
 
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -15,9 +14,9 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * Test class of {@link org.ligoj.bootstrap.core.resource.LigojOpenApiFeature}
+ * Test class of {@link LigojOpenApiFeature}
  */
-class LigojOpenApiFeatureTest extends AbstractBootTest {
+class LigojOpenApiFeatureTest {
 
 	private static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
