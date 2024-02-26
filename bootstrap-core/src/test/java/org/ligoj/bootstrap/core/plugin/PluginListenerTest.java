@@ -52,11 +52,12 @@ class PluginListenerTest {
 		plugin.setArtifact("A");
 		plugin.setType("T");
 		plugin.setVersion("V");
+		plugin.setBasePackage("P");
 		pluginVo.setPlugin(plugin);
 		pluginVo.setVendor("V");
 		Assertions.assertEquals("{\"id\":\"I\",\"name\":\"N\",\"plugin\":{\"id\":null,"
 				+ "\"createdBy\":null,\"createdDate\":null,\"lastModifiedBy\":null,\"lastModifiedDate\":null,"
-				+ "\"creationContext\":null,\"version\":\"V\",\"key\":\"K\",\"artifact\":\"A\",\"type\":\"T\"},"
+				+ "\"creationContext\":null,\"version\":\"V\",\"key\":\"K\",\"artifact\":\"A\",\"basePackage\":\"P\",\"type\":\"T\"},"
 				+ "\"vendor\":\"V\",\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false}",
 				new ObjectMapper().writeValueAsString(pluginVo));
 	}

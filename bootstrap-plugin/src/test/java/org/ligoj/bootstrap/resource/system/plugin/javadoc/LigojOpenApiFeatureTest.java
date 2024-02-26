@@ -43,7 +43,7 @@ class LigojOpenApiFeatureTest {
 			protected PluginsClassLoader getPluginClassLoader() {
 				return classloader;
 			}
-		};
+		}.addJavadoc();
 		Mockito.verify(classloader, Mockito.atLeastOnce()).getInstalledPlugins(ArgumentMatchers.any(), ArgumentMatchers.eq(true));
 	}
 
