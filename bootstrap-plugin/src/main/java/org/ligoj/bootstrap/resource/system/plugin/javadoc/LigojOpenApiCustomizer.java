@@ -24,14 +24,23 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * OpenAPI customizer with JavaDoc contribution.
+ */
 public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 
 	private final SystemPluginRepository repository;
 
+	/**
+	 * Construction from JavaDoc URLs and plugin registry.
+	 *
+	 * @param javadocUrls Source JavaDoc URLs.
+	 * @param repository  Plugin registry.
+	 */
 	public LigojOpenApiCustomizer(List<URL> javadocUrls, SystemPluginRepository repository) {
 		this.repository = repository;
 		setDynamicBasePath(false);
-		setJavadocProvider(new DocumentationProvider(new URLClassLoader(javadocUrls.toArray(new URL[0]))));
+		setJavadocProvider(new JavadocDocumentationProvider(new URLClassLoader(javadocUrls.toArray(new URL[0]))));
 	}
 
 	@Override
@@ -58,7 +67,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		fillSummaryAndDescription(fullDoc, operation::setSummary, operation::setDescription);
 	}
 
-	protected void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription) {
+	private void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription) {
 		if (fullDoc != null) {
 			// Split the documentation into 'summary' and 'description'
 			final var eos = fullDoc.indexOf('.');

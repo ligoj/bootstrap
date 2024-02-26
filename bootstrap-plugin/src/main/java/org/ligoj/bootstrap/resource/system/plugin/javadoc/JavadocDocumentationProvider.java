@@ -7,6 +7,7 @@ import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
+import org.apache.cxf.jaxrs.model.doc.DocumentationProvider;
 
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -16,15 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Extract JavaDoc from provider jar URLs.
  */
-public class DocumentationProvider implements org.apache.cxf.jaxrs.model.doc.DocumentationProvider {
-	String operLink = "<section class=\"detail\" id=\"";
-	String operInfoTag = "<div class=\"block\">";
+public class JavadocDocumentationProvider implements DocumentationProvider {
+	private static final String MARKUP_OPERATION = "<section class=\"detail\" id=\"";
+	private static final String MARKUP_BLOCK = "<div class=\"block\">";
 
 	private final ConcurrentHashMap<String, ClassDocs> docs = new ConcurrentHashMap<>();
 
 	private final URLClassLoader javaDocLoader;
 
-	DocumentationProvider(URLClassLoader javaDocLoader) {
+	JavadocDocumentationProvider(URLClassLoader javaDocLoader) {
 		this.javaDocLoader = javaDocLoader;
 	}
 
@@ -127,17 +128,17 @@ public class DocumentationProvider implements org.apache.cxf.jaxrs.model.doc.Doc
 	}
 
 	private MethodDocs addParamDoc(String operDoc) {
-		var operInfo = getJavaDocText(operDoc, operInfoTag, operLink, 0, "</div>");
+		var operInfo = getJavaDocText(operDoc, MARKUP_BLOCK, MARKUP_OPERATION, 0, "</div>");
 		if (StringUtils.isEmpty(operInfo)) {
 			return new MethodDocs(operInfo, Collections.emptyList(), null);
 		}
 
 		String responseInfo = null;
 		var paramDocs = new LinkedList<String>();
-		var returnsIndex = operDoc.indexOf("Returns:", operLink.length());
-		var nextOpIndex = operDoc.indexOf(operLink);
+		var returnsIndex = operDoc.indexOf("Returns:", MARKUP_OPERATION.length());
+		var nextOpIndex = operDoc.indexOf(MARKUP_OPERATION);
 		if (returnsIndex != -1 && (nextOpIndex > returnsIndex || nextOpIndex == -1)) {
-			responseInfo = getJavaDocText(operDoc, "<dd>", operLink, returnsIndex + 8, "<");
+			responseInfo = getJavaDocText(operDoc, "<dd>", MARKUP_OPERATION, returnsIndex + 8, "<");
 		}
 		var paramIndex = operDoc.indexOf("Parameters:");
 		if (paramIndex != -1 && (nextOpIndex == -1 || paramIndex < nextOpIndex)) {
@@ -173,7 +174,7 @@ public class DocumentationProvider implements org.apache.cxf.jaxrs.model.doc.Doc
 		}
 		var mDocs = classDoc.getMethodDocs(method);
 		if (mDocs == null) {
-			var operMarker = operLink + method.getName() + "(";
+			var operMarker = MARKUP_OPERATION + method.getName() + "(";
 			var operMarkerIndex = classDoc.getClassDoc().indexOf(operMarker);
 			while (operMarkerIndex != -1) {
 				var startOfOpSigIndex = operMarkerIndex + operMarker.length();

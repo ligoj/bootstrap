@@ -70,6 +70,7 @@ public class FileResource {
 	 * @param content    Target file content.
 	 * @param path       Target file path.
 	 * @param executable Make the file executable when 'true'.
+	 * @throws IOException When file cannot be written.
 	 */
 	@PUT
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -90,6 +91,7 @@ public class FileResource {
 	 * Delete a file.
 	 *
 	 * @param path the file name to delete.
+	 * @throws IOException When file cannot be deleted.
 	 */
 	@DELETE
 	public void delete(@QueryParam("path") final String path) throws IOException {

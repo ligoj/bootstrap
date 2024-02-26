@@ -24,10 +24,22 @@ class ClassDocs {
 
 	private final Map<Method, MethodDocs> methodDocs = new ConcurrentHashMap<>();
 
+	/**
+	 * Return method documentation block.
+	 *
+	 * @param method The requested Java {@link Method}.
+	 * @return Method documentation block.
+	 */
 	public MethodDocs getMethodDocs(final Method method) {
 		return methodDocs.get(method);
 	}
 
+	/**
+	 * Associate documentation block to given {@link Method}.
+	 *
+	 * @param method The related Java method.
+	 * @param doc    The documentation to associated.
+	 */
 	public void addMethodDocs(final Method method, final MethodDocs doc) {
 		methodDocs.putIfAbsent(method, doc);
 	}

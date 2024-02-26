@@ -403,6 +403,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * Install or update all javadoc plugin.
 	 *
 	 * @param repository The repository identifier to query.
+	 * @return A map containing statistics.
 	 * @throws IOException When install failed.
 	 */
 	@POST
@@ -833,9 +834,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			case AbstractStringKeyEntity se -> persistAsNeeded(entityClass, se);
 			case INamableBean<?> nb -> persistAsNeeded(entityClass, entity, "name", nb.getName());
 			case SystemUser su -> persistAsNeeded(entityClass, entity, "login", su.getLogin());
-			case null, default -> {
-				em.persist(entity);
-			}
+			case null, default -> em.persist(entity);
 		}
 	}
 

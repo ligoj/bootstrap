@@ -52,11 +52,11 @@ class FileResourceTest extends AbstractBootTest {
 	@Test
 	void uploadNotAllowed() throws IOException {
 		configurationResource.put("ligoj.file.path", "echo");
-		final var upload = new File(".tmp/orm-upload.xml");
+		final var upload = new File(".tmp/orm-upload.xml").getAbsolutePath();
 		final var input = new ClassPathResource("META-INF/orm.xml").getInputStream();
-		Assertions.assertThrows(ForbiddenException.class, ()->resource.upload(input, upload.getAbsolutePath(), "False"));
-		Assertions.assertThrows(ForbiddenException.class, ()->resource.download(upload.getAbsolutePath()));
-		Assertions.assertThrows(ForbiddenException.class, ()->resource.delete(upload.getAbsolutePath()));
+		Assertions.assertThrows(ForbiddenException.class, ()->resource.upload(input, upload, "False"));
+		Assertions.assertThrows(ForbiddenException.class, ()->resource.download(upload));
+		Assertions.assertThrows(ForbiddenException.class, ()->resource.delete(upload));
 	}
 
 }
