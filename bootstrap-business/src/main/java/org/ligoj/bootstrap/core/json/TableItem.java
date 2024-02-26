@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple wrapper item for test.
- * 
- * @param <K>
- *            Wrapped data type
+ *
+ * @param <K> Wrapped data type
  */
 @Getter
 @Setter
@@ -37,5 +37,10 @@ public class TableItem<K> {
 	 * data
 	 */
 	private List<K> data;
+
+	/**
+	 * Optional extensions.
+	 */
+	private Map<String, ?> extensions;
 
 }
