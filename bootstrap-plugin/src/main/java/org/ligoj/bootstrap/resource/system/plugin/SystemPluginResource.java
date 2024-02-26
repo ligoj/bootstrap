@@ -15,6 +15,7 @@ import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
+import org.ligoj.bootstrap.core.model.AbstractStringKeyEntity;
 import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 import org.ligoj.bootstrap.core.plugin.PluginListener;
 import org.ligoj.bootstrap.core.plugin.PluginVo;
@@ -696,6 +697,14 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		log.info("Updating the plugin {} v{} -> v{}", plugin.getKey(), entity.getVersion(), newVersion);
 		entity.setVersion(newVersion);
 		entity.setBasePackage(plugin.getClass().getPackageName());
+
+		// Configure the plug-in entities even for already install plugins
+		try {
+			configurePluginEntities(plugin, plugin.getInstalledEntities());
+		} catch (final Exception e) { // NOSONAR - Catch all to notice every time the failure
+			// Something happened
+			log.error("Post-configuration of installed plugin {} v{} failed but is not a blocker since in the update flow: {}", plugin.getKey(), newVersion, e.getMessage());
+		}
 	}
 
 	/**
@@ -821,13 +830,16 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	protected <T> void persistAsNeeded(final Class<T> entityClass, T entity) {
 		switch (entity) {
 			case AbstractBusinessEntity<?> be -> persistAsNeeded(entityClass, be);
+			case AbstractStringKeyEntity se -> persistAsNeeded(entityClass, se);
 			case INamableBean<?> nb -> persistAsNeeded(entityClass, entity, "name", nb.getName());
 			case SystemUser su -> persistAsNeeded(entityClass, entity, "login", su.getLogin());
-			case null, default -> em.persist(entity);
+			case null, default -> {
+				em.persist(entity);
+			}
 		}
 	}
 
-	private <T> void persistAsNeeded(final Class<T> entityClass, AbstractBusinessEntity<?> entity) {
+	private <T> void persistAsNeeded(final Class<T> entityClass, Persistable<?> entity) {
 		// Check for duplicate before the insert
 		if (em.find(entityClass, entity.getId()) == null) {
 			em.persist(entity);
