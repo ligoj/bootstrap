@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavadocDocumentationProvider implements DocumentationProvider {
 	private static final String MARKUP_OPERATION = "<section class=\"detail\" id=\"";
 	private static final String MARKUP_BLOCK = "<div class=\"block\">";
+	private static final String MARKUP_BLOCK_END = "</div>";
 
 	private final ConcurrentHashMap<String, ClassDocs> docs = new ConcurrentHashMap<>();
 
@@ -117,8 +118,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 				var classMarker = qualifier + " " + annotatedClass.getSimpleName();
 				int index = doc.indexOf(classMarker);
 				if (index != -1) {
-					var classInfoTag = "<div class=\"block\">";
-					var classInfo = getJavaDocText(doc, classInfoTag, "Method Summary", index + classMarker.length(), "<");
+					var classInfo = getJavaDocText(doc, MARKUP_BLOCK, "Method Summary", index + classMarker.length(), MARKUP_BLOCK_END);
 					classDocs = new ClassDocs(doc, classInfo);
 					docs.putIfAbsent(resource, classDocs);
 				}
@@ -128,7 +128,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	}
 
 	private MethodDocs addParamDoc(String operDoc) {
-		var operInfo = getJavaDocText(operDoc, MARKUP_BLOCK, MARKUP_OPERATION, 0, "</div>");
+		var operInfo = getJavaDocText(operDoc, MARKUP_BLOCK, MARKUP_OPERATION, 0, MARKUP_BLOCK_END);
 		if (StringUtils.isEmpty(operInfo)) {
 			return new MethodDocs(operInfo, Collections.emptyList(), null);
 		}
@@ -138,28 +138,17 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		var returnsIndex = operDoc.indexOf("Returns:", MARKUP_OPERATION.length());
 		var nextOpIndex = operDoc.indexOf(MARKUP_OPERATION);
 		if (returnsIndex != -1 && (nextOpIndex > returnsIndex || nextOpIndex == -1)) {
-			responseInfo = getJavaDocText(operDoc, "<dd>", MARKUP_OPERATION, returnsIndex + 8, "<");
+			responseInfo = getJavaDocText(operDoc, "<dd>", MARKUP_OPERATION, returnsIndex + 8, "</dd>");
 		}
 		var paramIndex = operDoc.indexOf("Parameters:");
 		if (paramIndex != -1 && (nextOpIndex == -1 || paramIndex < nextOpIndex)) {
 			var paramString = returnsIndex == -1 ? operDoc.substring(paramIndex) : operDoc.substring(paramIndex, returnsIndex);
-			var codeTag = "<code>";
-			var codeIndex = paramString.indexOf(codeTag);
-			while (codeIndex != -1) {
-				var next = paramString.indexOf('<', codeIndex + 7);
-				if (next == -1) {
-					next = paramString.length();
-				}
-				var param = paramString.substring(codeIndex + 7, next).trim();
-				if (param.startsWith("-")) {
-					param = param.substring(1).trim();
-				}
-				paramDocs.add(param);
-				if (next == paramString.length()) {
-					break;
-				}
-				codeIndex = next + 1;
-				codeIndex = paramString.indexOf(codeTag, codeIndex);
+			var codeIndex = 0;
+			var parameterInfo = getJavaDocText(paramString, "<dd>", "<dt>", codeIndex, "</dd>");
+			while (parameterInfo != null) {
+				paramDocs.add(parameterInfo.split("- ")[1]);
+				codeIndex += paramString.length();
+				parameterInfo = getJavaDocText(paramString, "<dd>", "<dt>", codeIndex, "</dd>");
 			}
 
 		}

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
@@ -124,19 +125,9 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 					var ori = methods.get(key);
 					tags.computeIfAbsent(tagOperation, t -> javadocProvider.getClassDoc(cri));
 					fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
-
-					if (operation.getParameters() == null) {
-						var parameters = new ArrayList<Parameter>();
-						addParameters(parameters);
-						operation.setParameters(parameters);
+					for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
+						operation.getParameters().get(i).setDescription(extractJavadoc(operation, ori, i));
 					}
-
-					for (var i = 0; i < operation.getParameters().size(); i++) {
-						if (StringUtils.isBlank(operation.getParameters().get(i).getDescription())) {
-							operation.getParameters().get(i).setDescription(extractJavadoc(operation, ori, i));
-						}
-					}
-					addParameters(operation.getParameters());
 					customizeResponses(operation, ori);
 				}
 			});
