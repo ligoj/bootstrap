@@ -390,11 +390,11 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		return context.getBeanNamesForAnnotation(Path.class);
 	}
 
-	String getClassLocation(Class<?> clazz) {
+	String getClassLocation(final Class<?> clazz) {
 		return clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
 	}
 
-	String getVersion(Class<?> clazz) {
+	String getVersion(final Class<?> clazz) {
 		return clazz.getPackage().getImplementationVersion();
 	}
 
@@ -580,7 +580,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			} else {
 				// Update the artifactId. May have not changed
 				plugin.setArtifact(toArtifactId(s));
-				if (!plugin.getVersion().equals(getVersion(s)) || !s.getClass().getPackageName().equals(plugin.getBasePackage())) {
+				if (isAnUpdate(plugin, s)) {
 					// The version is different, consider it as an update
 					updateFeatures.put(s.getKey(), s);
 				}
@@ -601,6 +601,18 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 
 		// And remove the old plug-in no more installed
 		repository.deleteAll(removedPlugins.stream().map(Persistable::getId).toList());
+	}
+
+	/**
+	 * Return true if the feature is a state requiring an update.
+	 *
+	 * @param plugin        The previous state of the plugin.
+	 * @param featurePlugin The loaded plugin class.
+	 * @return true if the feature is a state requiring an update.
+	 */
+	boolean isAnUpdate(SystemPlugin plugin, FeaturePlugin featurePlugin) {
+		return !plugin.getVersion().equals(getVersion(featurePlugin))
+				|| !featurePlugin.getClass().getPackageName().equals(plugin.getBasePackage());
 	}
 
 	/**

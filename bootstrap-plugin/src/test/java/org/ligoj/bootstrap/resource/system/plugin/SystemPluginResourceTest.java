@@ -858,6 +858,17 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		localJavadocJar.delete();
 	}
 
+	@Test
+	void installNothing() {
+		final var localJar = toFile("plugin-sample-0.0.1.jar");
+		final var localJavadocJar = toFile("plugin-sample-0.0.1-javadoc.jar");
+		localJar.delete();
+		localJavadocJar.delete();
+		newPluginResourceInstall().install(null, "groupId", "plugin-sample", "1.0.03","central",false, true);
+		Assertions.assertFalse(localJar.exists());
+		Assertions.assertFalse(localJavadocJar.exists());
+	}
+
 	private void configureCentralJar() throws IOException {
 		httpServer.stubFor(get(urlEqualTo("/maven2/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toByteArray(
@@ -929,6 +940,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 			@Override
 			String getVersion(Class<?> clazz) {
+				super.getVersion(clazz);
 				if (SampleTool1.class.equals(clazz)) {
 					return "0.0.1";
 				}
@@ -940,6 +952,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 			@Override
 			String getClassLocation(Class<?> clazz) {
+				super.getClassLocation(clazz);
 				if (SampleTool1.class.equals(clazz)) {
 					return "path/to/plugin-sample1-0.0.1.jar";
 				}
@@ -1136,6 +1149,31 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 								StandardCharsets.UTF_8))));
 		httpServer.start();
 		return resource.search(query, "central");
+	}
+
+	@Test
+	void isAnUpdate() {
+		final var plugin = new SystemPlugin();
+		final var feature = new SampleTool1();
+		plugin.setVersion("1.0");
+		plugin.setBasePackage("org.ligoj.bootstrap.resource.system.plugin");
+		var resource = new SystemPluginResource() {
+			@Override
+			protected String getVersion(final FeaturePlugin plugin) {
+				return "1.0";
+			}
+		};
+		Assertions.assertFalse(resource.isAnUpdate(plugin, feature));
+
+		plugin.setVersion("1.1");
+		Assertions.assertTrue(resource.isAnUpdate(plugin, feature));
+
+		plugin.setVersion("1.0");
+		plugin.setBasePackage("org.ligoj.bootstrap.resource.system.other");
+		Assertions.assertTrue(resource.isAnUpdate(plugin, feature));
+
+		plugin.setVersion("1.1");
+		Assertions.assertTrue(resource.isAnUpdate(plugin, feature));
 	}
 
 	@Test
