@@ -5,7 +5,9 @@ package org.ligoj.bootstrap.model.system;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.core.model.AbstractStringKeyEntity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -28,6 +30,8 @@ class BeanTest {
 		testPojo(SystemUser.class).toString();
 		testPojo(SystemHook.class).toString();
 		testPojo(HookMatch.class).toString();
+		Assertions.assertTrue(new AbstractStringKeyEntity(){}.isNew());
+
 	}
 
 	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {
