@@ -38,6 +38,7 @@ class PersistableTest {
 		Assertions.assertTrue(entity.isNew());
 		entity.setId("assigned");
 		Assertions.assertFalse(entity.isNew());
+		Assertions.assertEquals("AbstractStringKeyEntity(id=assigned)", entity.toString());
 	}
 
 	@Test

@@ -15,8 +15,7 @@ import java.util.Map;
 /**
  * Base  class for Javadoc related test classes
  */
-public class AbstractJavaDocTest {
-
+public abstract class AbstractJavaDocTest {
 
 	private static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 

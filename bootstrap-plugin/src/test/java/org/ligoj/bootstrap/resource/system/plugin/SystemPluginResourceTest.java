@@ -971,6 +971,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 				pluginDev.setLocation("foo/classes");
 				final var pluginIgnored = new PluginVo();
 				pluginIgnored.setId("feature:iam:empty");
+				pluginIgnored.setLocation("mock-server/nexus-repo/plugin-empty-0.0.1.jar");
 				final var pluginOk = new PluginVo();
 				pluginOk.setId("feature:plugin-sample");
 				pluginOk.setLocation("mock-server/nexus-repo/plugin-sample-0.0.1.jar");
