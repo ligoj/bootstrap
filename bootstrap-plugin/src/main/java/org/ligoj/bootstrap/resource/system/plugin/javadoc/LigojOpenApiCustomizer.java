@@ -83,6 +83,37 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		}
 	}
 
+	/**
+	 * Return the closest artifact from the given path.
+	 */
+	private String getArtifact(List<SystemPlugin> plugins, HashMap<String, SystemPlugin> packageToPlugin, ClassResourceInfo cri, String pathKey) {
+		var artifact = packageToPlugin.computeIfAbsent(cri.getResourceClass().getPackageName(), p -> plugins.stream()
+				.filter(plugin1 -> p.startsWith(plugin1.getBasePackage()))
+				.min(Comparator.comparing(SystemPlugin::getBasePackage))
+				.orElse(DEFAULT_PLUGIN)).getArtifact();
+		if (artifact == null) {
+			artifact = StringUtils.split(pathKey, '/')[0];
+		}
+		return artifact;
+	}
+
+	private void completeOperation(HashMap<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation) {
+		tags.computeIfAbsent(tagOperation, t -> javadocProvider.getClassDoc(cri));
+		fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
+		for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
+			operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i)));
+		}
+		if (operation.getRequestBody() != null) {
+			for (var i = 0; i < ori.getParameters().size(); i++) {
+				final var parameter = ori.getParameters().get(i);
+				if (parameter.getType() == ParameterType.REQUEST_BODY) {
+					operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i)));
+				}
+			}
+		}
+		customizeResponses(operation, ori);
+	}
+
 	@Override
 	public void customize(final OpenAPI oas) {
 		final var operations = new HashMap<String, ClassResourceInfo>();
@@ -112,35 +143,13 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 			if (cri == null) {
 				return;
 			}
-			var artifact = packageToPlugin.computeIfAbsent(cri.getResourceClass().getPackageName(), p -> plugins.stream()
-					.filter(plugin1 -> p.startsWith(plugin1.getBasePackage()))
-					.min(Comparator.comparing(SystemPlugin::getBasePackage))
-					.orElse(DEFAULT_PLUGIN)).getArtifact();
-			if (artifact == null) {
-				artifact = StringUtils.split(pathKey, '/')[0];
-			}
-
-			final var tagOperation = artifact;
+			final var tagOperation = getArtifact(plugins, packageToPlugin, cri, pathKey);
 			pathItem.readOperationsMap().forEach((method, operation) -> {
 				operation.setTags(Collections.singletonList(tagOperation));
 				var key = Pair.of(method.name(), pathKey);
-				if (methods.containsKey(key)) {
-					final var ori = methods.get(key);
-					tags.computeIfAbsent(tagOperation, t -> javadocProvider.getClassDoc(cri));
-					fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
-					for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
-						operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i)));
-					}
-					if (operation.getRequestBody() != null) {
-						for (var i = 0; i < ori.getParameters().size(); i++) {
-							final var parameter = ori.getParameters().get(i);
-							if (parameter.getType() == ParameterType.REQUEST_BODY) {
-								operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i)));
-							}
-						}
-					}
-
-					customizeResponses(operation, ori);
+				final var ori = methods.get(key);
+				if (ori != null) {
+					completeOperation(tags, tagOperation, cri,ori, operation );
 				}
 			});
 		});

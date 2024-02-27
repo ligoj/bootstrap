@@ -73,6 +73,60 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 
 	@Test
+	void getMethodDocFromString() {
+		var mDoc =  provider.getMethodDoc("""
+				<section class="method-details" id="method-detail">
+				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
+				<div class="block">Method doc. Details.</div>
+				<dl class="notes">
+				<dt>Parameters:</dt>
+				<dd><code>param1</code> - Param1 doc.</dd>
+				<dd><code>user</code> - User doc. Details.</dd>
+				<dt>Returns:</dt>
+				<dd>Return doc</dd>
+				</dl>
+				</section>
+				""");
+		Assertions.assertEquals("Method doc. Details",mDoc.getMethodInfo());
+		Assertions.assertEquals("Param1 doc",mDoc.getParamInfo().getFirst());
+		Assertions.assertEquals("Return doc",mDoc.getReturnInfo());
+	}
+
+
+	@Test
+	void getMethodDocFromStringNoReturn() {
+		var mDoc =  provider.getMethodDoc("""
+				<section class="method-details" id="method-detail">
+				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
+				<div class="block">Method doc. Details.</div>
+				<dl class="notes">
+				<dt>Parameters:</dt>
+				<dd><code>param1</code> - Param1 doc.</dd>
+				<dd><code>user</code> - User doc. Details.</dd>
+				</dl>
+				</section>
+				""");
+		Assertions.assertEquals("Method doc. Details",mDoc.getMethodInfo());
+		Assertions.assertEquals("Param1 doc",mDoc.getParamInfo().getFirst());
+		Assertions.assertNull(mDoc.getReturnInfo());
+	}
+
+
+	@Test
+	void getMethodDocFromStringNoParams() {
+		var mDoc =  provider.getMethodDoc("""
+				<section class="method-details" id="method-detail">
+				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
+				<div class="block">Method doc. Details.</div>
+				<dl class="notes">
+				</dl>
+				</section>
+				""");
+		Assertions.assertEquals("Method doc. Details",mDoc.getMethodInfo());
+		Assertions.assertTrue(mDoc.getParamInfo().isEmpty());
+		Assertions.assertNull(mDoc.getReturnInfo());
+	}
+	@Test
 	void getMethodNoDoc() {
 		final var cri1 = new ClassResourceInfo(String.class);
 		final var ori1 = new OperationResourceInfo(MethodUtils.getMatchingMethod(String.class, "toString"), cri1);
@@ -81,7 +135,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocError() {
-		Assertions.assertNull(provider.getMethodDoc(null));
+		Assertions.assertNull(provider.getMethodDoc((OperationResourceInfo) null));
 	}
 
 

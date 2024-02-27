@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class JavadocDocumentationProvider implements DocumentationProvider {
 	private static final String MARKUP_OPERATION = "<section class=\"detail\" id=\"";
+	private static final String MARKUP_OPERATION_END = "</section>";
 	private static final String MARKUP_PARAMETER = "<dt>Parameters:</dt>";
 	private static final String MARKUP_RETURN = "<dt>Returns:</dt>";
 	private static final String MARKUP_HEADER_START = "<dt>";
@@ -131,8 +132,8 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		return classDocs;
 	}
 
-	private MethodDocs addParamDoc(String operDoc) {
-		var operInfo = getJavaDocText(operDoc, MARKUP_BLOCK, MARKUP_OPERATION, 0, MARKUP_BLOCK_END);
+	MethodDocs getMethodDoc(String operDoc) {
+		var operInfo = getJavaDocText(operDoc, MARKUP_BLOCK, MARKUP_OPERATION_END, 0, MARKUP_BLOCK_END);
 		String responseInfo = null;
 		var paramDocs = new LinkedList<String>();
 		var returnsIndex = operDoc.indexOf(MARKUP_RETURN);
@@ -149,7 +150,6 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 				codeIndex += parameterInfo.length();
 				parameterInfo = getJavaDocText(paramString, MARKUP_OPERATION_PARAM, MARKUP_HEADER_START, codeIndex, MARKUP_OPERATION_PARAM_END);
 			}
-
 		}
 		return new MethodDocs(operInfo, paramDocs, responseInfo);
 	}
@@ -164,7 +164,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		var mDocs = classDoc.getMethodDocs(method);
 		if (mDocs == null) {
 			var operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION + signatureNoClass, "<__>", 0, "</section>");
-			mDocs = addParamDoc(operDoc);
+			mDocs = getMethodDoc(operDoc);
 			classDoc.addMethodDocs(method, mDocs);
 		}
 

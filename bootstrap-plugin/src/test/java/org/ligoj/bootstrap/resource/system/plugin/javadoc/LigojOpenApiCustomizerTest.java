@@ -11,6 +11,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.jaxrs.model.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
@@ -20,6 +21,7 @@ import org.ligoj.bootstrap.resource.system.plugin.SampleTool2;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,8 +30,9 @@ import java.util.List;
  */
 class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 
-	@Test
-	void customize() throws IOException {
+	private LigojOpenApiCustomizer customizer;
+	@BeforeEach
+	void configure() throws IOException {
 		final var javadocUrls = newJavadocUrls();
 		final var repository = Mockito.mock(SystemPluginRepository.class);
 		final var plugin1 = new SystemPlugin();
@@ -42,10 +45,12 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		plugin3.setBasePackage("foo.bar");
 		plugin3.setArtifact("tool3");
 		Mockito.doReturn(List.of(plugin1, plugin2, plugin3)).when(repository).findAll();
-
+		customizer = new LigojOpenApiCustomizer(javadocUrls, repository);
+	}
+	@Test
+	void customize() {
 		final var configuration = new SwaggerConfiguration();
 		configuration.setOpenAPI(new OpenAPI());
-		final var customizer = new LigojOpenApiCustomizer(javadocUrls, repository);
 		customizer.customize(configuration);
 		final var cri1 = new ClassResourceInfo(SampleTool1.class);
 		cri1.setMethodDispatcher(new MethodDispatcher());
@@ -55,6 +60,11 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		final var parameter2 = new Parameter(ParameterType.REQUEST_BODY, 1,"user");
 		final var ori = new OperationResourceInfo(method, cri1, new URITemplate("/{param1:regEx}"), "POST", "application/json", "application/json", List.of(parameter1, parameter2), true);
 		cri1.getMethodDispatcher().bind(ori, method);
+		final var oriNotExists = new OperationResourceInfo(method, cri1, new URITemplate("/not-exists"), "PATCH", null, null, Collections.emptyList(), true);
+		final var methodNotExist = Mockito.mock(Method.class);
+		Mockito.doReturn("not-exists").when(methodNotExist).getName();
+		cri1.getMethodDispatcher().bind(oriNotExists, methodNotExist);
+
 		final var cri2 = new ClassResourceInfo(SampleTool2.class);
 		cri2.setMethodDispatcher(new MethodDispatcher());
 		cri2.setURITemplate(new URITemplate("mock/sample2"));
@@ -83,12 +93,14 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		oasOperation.setRequestBody(new RequestBody());
 		pathItem1.operation(PathItem.HttpMethod.POST, oasOperation);
 		sortedPaths.put("/mock/sample1/{param1}", pathItem1);
+		sortedPaths.put("/mock/sample1/not-exists", pathItem1);
 
 		final var pathItem2 = new PathItem();
 		final var oasOperation2 = new Operation();
 		pathItem2.operation(PathItem.HttpMethod.GET, oasOperation2);
 		sortedPaths.put("/mock/sample2", pathItem2);
 		sortedPaths.put("/mock/sample3", new PathItem());
+		sortedPaths.put("/foo/bar", new PathItem());
 		oas.setPaths(sortedPaths);
 
 		customizer.customize(oas);
@@ -100,6 +112,13 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		Assertions.assertEquals("Details", oasOperation.getDescription());
 		Assertions.assertEquals("User doc. Details", oasOperation.getRequestBody().getDescription());
 		Assertions.assertEquals("Param1 doc", oasParameter.getDescription());
+	}
+
+	@Test
+	void normalize() {
+		Assertions.assertEquals("/root/path/{foo}/{bar}", customizer.getNormalizedPath("/root", "/path/{foo:some}/{bar:other}"));
+		Assertions.assertEquals("/", customizer.getNormalizedPath("", ""));
+		Assertions.assertEquals("/", customizer.getNormalizedPath("", "//"));
 	}
 
 }
