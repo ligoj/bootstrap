@@ -19,11 +19,9 @@ import lombok.ToString;
 
 /**
  * Class for audited objects.
- * 
- * @param <K>
- *            the type of the identifier
- * @param <U>
- *            the type of the author
+ *
+ * @param <K> the type of the identifier
+ * @param <U> the type of the author
  */
 @Getter
 @Setter
@@ -64,11 +62,9 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 
 	/**
 	 * Define the modifiable state of a valued object.
-	 * 
-	 * @param <T>
-	 *            Bean type.
-	 * @param from
-	 *            The source object to copy to current one.
+	 *
+	 * @param <T>  Bean type.
+	 * @param from The source object to copy to current one.
 	 */
 	public <T extends Auditable<U, K, Date>> void copyAuditData(final T from) {
 		copyAuditData(from, Function.identity());
@@ -76,15 +72,11 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 
 	/**
 	 * Define the modifiable state of a valued object.
-	 * 
-	 * @param from
-	 *            The source object to copy to current one.
-	 * @param userConverter
-	 *            the user converter.
-	 * @param <S>
-	 *            Bean type of source parameter.
-	 * @param <T>
-	 *            User type of source parameter.
+	 *
+	 * @param from          The source object to copy to current one.
+	 * @param userConverter the user converter.
+	 * @param <S>           Bean type of source parameter.
+	 * @param <T>           User type of source parameter.
 	 */
 	public <T, S extends Auditable<T, K, Date>> void copyAuditData(final S from,
 			final Function<T, ? extends U> userConverter) {
@@ -94,27 +86,20 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 			this.lastModifiedDate = from.getLastModifiedDate();
 			this.createdBy = userConverter.apply(from.getCreatedBy());
 			this.lastModifiedBy = userConverter.apply(from.getLastModifiedBy());
-			this.creationContext =from.getCreationContext();
+			this.creationContext = from.getCreationContext();
 		}
 	}
 
 	/**
 	 * Copy auditable data .
-	 * 
-	 * @param <T>
-	 *            Bean source type.
-	 * @param <U>
-	 *            Bean target type.
-	 * @param <S>
-	 *            "Source" type.
-	 * @param <D>
-	 *            "Destination" type.
-	 * @param <L>
-	 *            Date type.
-	 * @param from
-	 *            The source object.
-	 * @param to
-	 *            The target object.
+	 *
+	 * @param <T>  Bean source type.
+	 * @param <U>  Bean target type.
+	 * @param <S>  "Source" type.
+	 * @param <D>  "Destination" type.
+	 * @param <L>  Date type.
+	 * @param from The source object.
+	 * @param to   The target object.
 	 */
 	public static <L, U extends Serializable, T extends Serializable, S extends Auditable<U, T, L>, D extends Auditable<U, T, L>> void copyAuditData(
 			final S from, final D to) {

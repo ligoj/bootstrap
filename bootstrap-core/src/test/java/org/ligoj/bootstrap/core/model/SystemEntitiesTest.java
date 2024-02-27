@@ -31,6 +31,8 @@ class SystemEntitiesTest {
 		testEntity(SystemApiToken.class);
 		testEntity(SystemHook.class);
 		testEntity(HookMatch.class);
+		testEntity(SystemPlugin.class);
+		testEntity(SystemBench.class);
 	}
 
 	@Test

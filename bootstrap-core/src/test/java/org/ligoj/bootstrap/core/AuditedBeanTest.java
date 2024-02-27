@@ -3,13 +3,13 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.util.Date;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.model.AbstractAudited;
 import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 import org.ligoj.bootstrap.core.model.Auditable;
+
+import java.util.Date;
 
 /**
  * {@link AuditedBean}, {@link AbstractAudited},
@@ -84,6 +84,7 @@ class AuditedBeanTest {
 		audited.copyAuditData(from);
 		Assertions.assertNull(audited.getCreatedDate());
 		Assertions.assertNull(audited.getLastModifiedDate());
+		Assertions.assertNull(audited.getCreationContext());
 	}
 
 	/**
@@ -103,6 +104,7 @@ class AuditedBeanTest {
 		audited.setLastModifiedBy("one");
 		audited.setCreatedDate(new Date(0));
 		audited.setLastModifiedDate(new Date(1));
+		audited.setCreationContext("new");
 		return audited;
 	}
 
@@ -114,6 +116,7 @@ class AuditedBeanTest {
 		from.setLastModifiedBy("one");
 		from.setCreatedDate(new Date(0));
 		from.setLastModifiedDate(new Date(1));
+		from.setCreationContext("new");
 		return from;
 	}
 
@@ -129,5 +132,6 @@ class AuditedBeanTest {
 		Assertions.assertEquals("one", audited.getLastModifiedBy());
 		Assertions.assertEquals(new Date(0), audited.getCreatedDate());
 		Assertions.assertEquals(new Date(1), audited.getLastModifiedDate());
+		Assertions.assertEquals("new", audited.getCreationContext());
 	}
 }
