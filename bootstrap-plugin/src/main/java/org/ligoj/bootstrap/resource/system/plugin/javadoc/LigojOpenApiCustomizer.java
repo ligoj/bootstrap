@@ -8,7 +8,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
+import org.apache.cxf.jaxrs.model.ParameterType;
 import org.apache.cxf.jaxrs.openapi.OpenApiCustomizer;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
@@ -29,6 +29,11 @@ import java.util.function.Consumer;
  * OpenAPI customizer with JavaDoc contribution.
  */
 public class LigojOpenApiCustomizer extends OpenApiCustomizer {
+
+	/**
+	 * Empty plugin for default management.
+	 */
+	private static final SystemPlugin DEFAULT_PLUGIN = new SystemPlugin();
 
 	private final SystemPluginRepository repository;
 
@@ -71,14 +76,9 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	private void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription) {
 		if (fullDoc != null) {
 			// Split the documentation into 'summary' and 'description'
-			final var eos = fullDoc.indexOf('.');
-			if (eos == -1 || eos == fullDoc.length() - 1) {
-				setSummary.accept(removeUselessChars(fullDoc));
-			} else {
-				setSummary.accept(fullDoc.substring(0, eos));
-				if (setDescription != null) {
-					setDescription.accept(removeUselessChars(fullDoc.substring(eos + 1)));
-				}
+			setSummary.accept(JavadocDocumentationProvider.normalize(StringUtils.substringBefore(fullDoc, ".")));
+			if (setDescription != null) {
+				setDescription.accept(JavadocDocumentationProvider.normalize(StringUtils.substringAfter(fullDoc, ".")));
 			}
 		}
 	}
@@ -112,7 +112,10 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 			if (cri == null) {
 				return;
 			}
-			var artifact = packageToPlugin.computeIfAbsent(cri.getResourceClass().getPackageName(), p -> plugins.stream().filter(plugin1 -> p.startsWith(plugin1.getBasePackage())).min(Comparator.comparing(SystemPlugin::getBasePackage)).orElse(new SystemPlugin())).getArtifact();
+			var artifact = packageToPlugin.computeIfAbsent(cri.getResourceClass().getPackageName(), p -> plugins.stream()
+					.filter(plugin1 -> p.startsWith(plugin1.getBasePackage()))
+					.min(Comparator.comparing(SystemPlugin::getBasePackage))
+					.orElse(DEFAULT_PLUGIN)).getArtifact();
 			if (artifact == null) {
 				artifact = StringUtils.split(pathKey, '/')[0];
 			}
@@ -122,27 +125,29 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				operation.setTags(Collections.singletonList(tagOperation));
 				var key = Pair.of(method.name(), pathKey);
 				if (methods.containsKey(key)) {
-					var ori = methods.get(key);
+					final var ori = methods.get(key);
 					tags.computeIfAbsent(tagOperation, t -> javadocProvider.getClassDoc(cri));
 					fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 					for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
-						operation.getParameters().get(i).setDescription(extractJavadoc(operation, ori, i));
+						operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i)));
 					}
+					if (operation.getRequestBody() != null) {
+						for (var i = 0; i < ori.getParameters().size(); i++) {
+							final var parameter = ori.getParameters().get(i);
+							if (parameter.getType() == ParameterType.REQUEST_BODY) {
+								operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i)));
+							}
+						}
+					}
+
 					customizeResponses(operation, ori);
 				}
 			});
 		});
 		oas.setTags(tags.keySet().stream().sorted().map(t -> {
-			var tag = new Tag().name(t);
+			final var tag = new Tag().name(t);
 			fillSummaryAndDescription(tags.get(t), tag::description, null);
 			return tag;
 		}).toList());
-	}
-
-	/**
-	 * Remove useless chars from documentation lines.
-	 */
-	private String removeUselessChars(String doc) {
-		return StringUtils.removeEnd(doc, ".");
 	}
 }
