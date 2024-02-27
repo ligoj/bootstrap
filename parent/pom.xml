@@ -99,8 +99,8 @@
         <jetty.version>12.0.6</jetty.version>
         <jodd-bean.version>5.1.6</jodd-bean.version>
         <jsoup.version>1.17.2</jsoup.version>
-        <log4j.version>2.22.1</log4j.version>
-        <log4j-api.version>2.22.1</log4j-api.version>
+        <log4j.version>2.23.0</log4j.version>
+        <log4j-api.version>2.23.0</log4j-api.version>
         <lombok.version>1.18.30</lombok.version>
         <mail.version>2.1.2</mail.version>
         <maven-artifact.version>3.9.5</maven-artifact.version>
