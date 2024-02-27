@@ -121,7 +121,7 @@
         <spring-data.version>3.2.2</spring-data.version>
         <spring-security.version>6.2.2</spring-security.version>
         <spring-security-rsa>1.1.1</spring-security-rsa>
-        <swagger-ui.version>5.10.3</swagger-ui.version>
+        <swagger-ui.version>5.11.8</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.20</swagger-jaxrs2-jakarta.version>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
