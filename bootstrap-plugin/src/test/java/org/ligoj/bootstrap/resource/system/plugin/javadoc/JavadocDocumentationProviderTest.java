@@ -74,7 +74,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocFromString() {
-		var mDoc =  provider.getMethodDoc("""
+		var mDoc =  provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.</div>
@@ -92,10 +92,9 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 		Assertions.assertEquals("Return doc",mDoc.getReturnInfo());
 	}
 
-
 	@Test
 	void getMethodDocFromStringNoReturn() {
-		var mDoc =  provider.getMethodDoc("""
+		var mDoc =  provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.</div>
@@ -111,10 +110,9 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 		Assertions.assertNull(mDoc.getReturnInfo());
 	}
 
-
 	@Test
 	void getMethodDocFromStringNoParams() {
-		var mDoc =  provider.getMethodDoc("""
+		var mDoc =  provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.</div>
@@ -126,6 +124,31 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 		Assertions.assertTrue(mDoc.getParamInfo().isEmpty());
 		Assertions.assertNull(mDoc.getReturnInfo());
 	}
+
+	@Test
+	void getMethodDocFromStringUndefined() {
+		var mDoc =  provider.parseMethodDoc("""
+				<section class="method-details" id="method-detail">
+				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
+				</section>
+				""");
+		Assertions.assertNull(mDoc.getMethodInfo());
+	}
+
+
+	@Test
+	void getMethodDocFromStringInvalidMarkup() {
+		var mDoc =  provider.parseMethodDoc("""
+				<section class="method-details" id="method-detail">
+				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
+				<div class="block">Method doc. Details.
+				<dl class="notes">
+				</dl>
+				</section>
+				""");
+		Assertions.assertNull(mDoc.getMethodInfo());
+	}
+
 	@Test
 	void getMethodNoDoc() {
 		final var cri1 = new ClassResourceInfo(String.class);
@@ -135,7 +158,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocError() {
-		Assertions.assertNull(provider.getMethodDoc((OperationResourceInfo) null));
+		Assertions.assertNull(provider.getMethodDoc(null));
 	}
 
 
