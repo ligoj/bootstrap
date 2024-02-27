@@ -31,7 +31,6 @@ import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +45,7 @@ public class HookProcessRunnable implements Runnable {
 
 	private final String now;
 	private final ObjectMapper objectMapper;
-	private final Map<Pattern, List<SystemHook>> hooks;
+	private final List<SystemHook> hooks;
 	private final ContainerRequestContext requestContext;
 	private final ContainerResponseContext responseContext;
 	private final Exchange exchange;
@@ -135,8 +134,6 @@ public class HookProcessRunnable implements Runnable {
 
 	private void process() {
 		final var path = requestContext.getUriInfo().getPath();
-		hooks.entrySet().stream()
-				.filter(e -> e.getKey().matcher(path).matches())
-				.forEach(e -> e.getValue().forEach(h -> process(path, h, System.out)));
+		hooks.forEach(h -> process(path, h, System.out));
 	}
 }

@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.model.system;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -72,6 +73,7 @@ public class SystemHook extends AbstractNamedAuditedEntity<Integer> {
 	 * Converted JSON object of <code>match</code> JSON string.
 	 */
 	@Transient
+	@JsonIgnore
 	private transient HookMatch matchObject;
 
 

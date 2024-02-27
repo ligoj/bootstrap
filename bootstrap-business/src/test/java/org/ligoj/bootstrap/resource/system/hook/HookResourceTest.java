@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.ws.rs.ForbiddenException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,7 +68,7 @@ class HookResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	void create() {
+	void create() throws JsonProcessingException {
 		final var hook = newHook();
 		configurationResource.put("ligoj.hook.path", "^ls$");
 		resource.create(hook);

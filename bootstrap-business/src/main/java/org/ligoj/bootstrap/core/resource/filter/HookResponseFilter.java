@@ -8,6 +8,7 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.cxf.jaxrs.impl.AbstractPropertiesImpl;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
@@ -86,9 +87,14 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 	@Override
 	public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
 		if (responseContext.getStatus() >= 200 && responseContext.getStatus() < 300) {
-			final var hooks = self.findAll();
+			final var hooksByPath = self.findAll();
 			final var path = requestContext.getUriInfo().getPath();
-			if (hooks.entrySet().stream().anyMatch(e -> e.getKey().matcher(path).matches())) {
+			final var hooks = hooksByPath.entrySet().stream()
+					.filter(e -> e.getKey().matcher(path).matches())
+					.flatMap(e -> e.getValue().stream()
+							.filter(h -> h.getMatchObject().getMethod() == null
+									|| StringUtils.equalsIgnoreCase(h.getMatchObject().getMethod(), requestContext.getMethod()))).toList();
+			if (!hooks.isEmpty()) {
 				final var now = DateFormatUtils.formatUTC(new Date(), DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.getPattern());
 				execute(new HookProcessRunnable(now, objectMapper, hooks, requestContext, responseContext,
 						((AbstractPropertiesImpl) requestContext).getMessage().getExchange(),

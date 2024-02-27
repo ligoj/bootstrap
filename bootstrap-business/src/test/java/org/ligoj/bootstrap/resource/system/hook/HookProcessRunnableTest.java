@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
  * HookProcessRunnable resource test, includes {@link HookProcessRunnable}
@@ -101,7 +100,7 @@ class HookProcessRunnableTest {
 		hookTimeout.setWorkingDirectory("working/directory");
 		hookTimeout.setTimeout(1);
 
-		final var hooks = Map.of(Pattern.compile(".*"), List.of(hook1, hookNPE, hookTimeout));
+		final var hooks = List.of(hook1, hookNPE, hookTimeout);
 
 		final var runnable = new HookProcessRunnable("NOW", new ObjectMapper(), hooks, requestContext, responseContext,
 				exchange, principal, configuration) {

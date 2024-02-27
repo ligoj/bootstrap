@@ -3,14 +3,17 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
+import org.ligoj.bootstrap.model.system.HookMatch;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * {@link SystemHook} resource.
@@ -31,6 +35,9 @@ import java.util.function.Function;
 @Transactional
 @Produces(MediaType.APPLICATION_JSON)
 public class HookResource {
+
+	@Autowired
+	private ObjectMapperTrim objectMapper;
 
 	@Autowired
 	private PaginationJson paginationJson;
@@ -110,11 +117,13 @@ public class HookResource {
 	@POST
 	@PUT
 	@CacheRemoveAll(cacheName = "hooks")
-	public int create(final SystemHook vo) {
+	public int create(final SystemHook vo) throws JsonProcessingException {
 		if (!isAllowedCommand(configurationResource, vo.getCommand())) {
 			throw new ForbiddenException("Hook command is not within one of allowed ${ligoj.hook.path} value");
 		}
 
+		// Validate the path
+		Pattern.compile(objectMapper.readValue(vo.getMatch(), HookMatch.class).getPath());
 		return repository.saveAndFlush(vo).getId();
 	}
 

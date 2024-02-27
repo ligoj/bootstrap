@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
+import org.ligoj.bootstrap.model.system.HookMatch;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.mockito.Mockito;
@@ -65,7 +66,7 @@ class HookResponseFilterTest extends AbstractBootTest {
 	void findAll() {
 		final var hook = new SystemHook();
 		hook.setName("hook1");
-		hook.setMatch("{\"path\":\"foo/bar.+\"}");
+		hook.setMatch("{\"path\":\"foo/bar.+\", \"method\":\"GET\"}");
 		hook.setWorkingDirectory("./home");
 		hook.setCommand("any");
 		repository.saveAndFlush(hook);
@@ -100,7 +101,7 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Assertions.assertEquals("hook1", entry.getValue().getFirst().getName());
 		Assertions.assertEquals("hook2", entry.getValue().getLast().getName());
 		Assertions.assertEquals("any", entry.getValue().getFirst().getCommand());
-		Assertions.assertEquals("{\"path\":\"foo/bar.+\"}", entry.getValue().getFirst().getMatch());
+		Assertions.assertEquals("{\"path\":\"foo/bar.+\", \"method\":\"GET\"}", entry.getValue().getFirst().getMatch());
 		Assertions.assertEquals("./home", entry.getValue().getFirst().getWorkingDirectory());
 	}
 
@@ -143,19 +144,34 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Assertions.assertFalse(executed.get());
 	}
 
+
 	@Test
 	void filterMatchUser() {
-		filterMatch(null);
+		filterMatch(null, "GET");
+		Assertions.assertTrue(executed.get());
+	}
+
+	@Test
+	void filterNoMatchMethod() {
+		filterMatch(null, "DELETE");
+		Assertions.assertFalse(executed.get());
+	}
+
+	@Test
+	void filterMatchNoMethod() {
+		filterMatch(null, null);
+		Assertions.assertTrue(executed.get());
 	}
 
 	@Test
 	void filterMatchNoUser() {
 		final var principal = Mockito.mock(Principal.class);
 		Mockito.when(principal.getName()).thenReturn("junit");
-		filterMatch(principal);
+		filterMatch(principal, "GET");
+		Assertions.assertTrue(executed.get());
 	}
 
-	private void filterMatch(Principal principal) {
+	private void filterMatch(Principal principal, String hookMethod) {
 		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
 		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		final var uriInfo = Mockito.mock(UriInfo.class);
@@ -166,12 +182,22 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Mockito.when(responseContext.getStatus()).thenReturn(200);
 		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
 		Mockito.when(requestContext.getMessage()).thenReturn(message);
+		Mockito.when(requestContext.getMethod()).thenReturn("GET");
 		Mockito.when(requestContext.getSecurityContext()).thenReturn(securityContext);
 		Mockito.when(securityContext.getUserPrincipal()).thenReturn(principal);
 		Mockito.when(message.getExchange()).thenReturn(exchange);
 		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar1");
+
+		final var hook = new SystemHook();
+		hook.setName("hook1");
+		hook.setMatchObject(new HookMatch());
+		hook.getMatchObject().setPath("foo/bar.+");
+		hook.getMatchObject().setMethod(hookMethod);
+		hook.setWorkingDirectory("./home");
+		hook.setCommand("any");
+		hooks.add(hook);
+
 		filterMock.filter(requestContext, responseContext);
-		Assertions.assertTrue(executed.get());
 	}
 
 }

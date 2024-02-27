@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-
 /**
  * Hook descriptor.
  */
@@ -17,5 +16,13 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class HookMatch implements Serializable {
+	/**
+	 * Watched path expression.
+	 */
 	private String path;
+
+	/**
+	 * Watched method. Can be <code>null</code> for all methods. Upper case.
+	 */
+	private String method;
 }
