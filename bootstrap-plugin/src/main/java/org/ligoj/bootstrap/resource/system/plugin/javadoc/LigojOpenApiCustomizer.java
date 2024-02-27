@@ -135,7 +135,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		oas.setPaths(sortedPaths);
 
 		// Complete doc and tags
-		final var plugins = repository.findAll();
+		final var plugins = repository.findAll().stream().filter(p -> p.getBasePackage() == null).toList();
 		final var packageToPlugin = new HashMap<String, SystemPlugin>();
 		final var tags = new HashMap<String, String>();
 		oas.getPaths().forEach((pathKey, pathItem) -> {
@@ -149,7 +149,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				var key = Pair.of(method.name(), pathKey);
 				final var ori = methods.get(key);
 				if (ori != null) {
-					completeOperation(tags, tagOperation, cri,ori, operation );
+					completeOperation(tags, tagOperation, cri, ori, operation);
 				}
 			});
 		});

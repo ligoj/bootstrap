@@ -44,7 +44,9 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		final var plugin3 = new SystemPlugin();
 		plugin3.setBasePackage("foo.bar");
 		plugin3.setArtifact("tool3");
-		Mockito.doReturn(List.of(plugin1, plugin2, plugin3)).when(repository).findAll();
+		final var pluginNoPackage = new SystemPlugin();
+		pluginNoPackage.setArtifact("toolNoPackage");
+		Mockito.doReturn(List.of(plugin1, plugin2, plugin3, pluginNoPackage)).when(repository).findAll();
 		customizer = new LigojOpenApiCustomizer(javadocUrls, repository);
 	}
 	@Test
