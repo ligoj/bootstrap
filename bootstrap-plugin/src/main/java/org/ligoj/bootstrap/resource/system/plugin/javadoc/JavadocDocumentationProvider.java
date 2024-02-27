@@ -19,8 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavadocDocumentationProvider implements DocumentationProvider {
 	private static final String MARKUP_OPERATION = "<section class=\"detail\" id=\"";
 	private static final String MARKUP_PARAMETER = "<dt>Parameters:</dt>";
+	private static final String MARKUP_RETURN = "<dt>Returns:</dt>";
+	private static final String MARKUP_HEADER_START = "<dt>";
 	private static final String MARKUP_BLOCK = "<div class=\"block\">";
 	private static final String MARKUP_BLOCK_END = "</div>";
+	private static final String MARKUP_OPERATION_PARAM = "<dd>";
+	private static final String MARKUP_OPERATION_PARAM_END = "</dd>";
 
 	private final ConcurrentHashMap<String, ClassDocs> docs = new ConcurrentHashMap<>();
 
@@ -131,19 +135,19 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		var operInfo = getJavaDocText(operDoc, MARKUP_BLOCK, MARKUP_OPERATION, 0, MARKUP_BLOCK_END);
 		String responseInfo = null;
 		var paramDocs = new LinkedList<String>();
-		var returnsIndex = operDoc.indexOf("<dt>Returns:</dt>");
+		var returnsIndex = operDoc.indexOf(MARKUP_RETURN);
 		if (returnsIndex != -1) {
-			responseInfo = getJavaDocText(operDoc, "<dd>", "<__>", returnsIndex + 8, "</dd>");
+			responseInfo = getJavaDocText(operDoc, MARKUP_OPERATION_PARAM, "<__>", returnsIndex + 8, MARKUP_OPERATION_PARAM_END);
 		}
 		var paramIndex = operDoc.indexOf(MARKUP_PARAMETER);
 		if (paramIndex != -1) {
 			var paramString = operDoc.substring(paramIndex + MARKUP_PARAMETER.length(), Math.max(returnsIndex, operDoc.length()));
 			var codeIndex = 0;
-			var parameterInfo = getJavaDocText(paramString, "<dd>", "<dt>", codeIndex, "</dd>");
+			var parameterInfo = getJavaDocText(paramString, MARKUP_OPERATION_PARAM, MARKUP_HEADER_START, codeIndex, MARKUP_OPERATION_PARAM_END);
 			while (parameterInfo != null) {
 				paramDocs.add(parameterInfo.split("- ")[1].trim());
 				codeIndex += parameterInfo.length();
-				parameterInfo = getJavaDocText(paramString, "<dd>", "<dt>", codeIndex, "</dd>");
+				parameterInfo = getJavaDocText(paramString, MARKUP_OPERATION_PARAM, MARKUP_HEADER_START, codeIndex, MARKUP_OPERATION_PARAM_END);
 			}
 
 		}
@@ -168,14 +172,14 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	}
 
 	protected static String normalize(String doc) {
-		return StringUtils.capitalize(StringUtils.trim(removeUselessChars(StringUtils.trim(doc))));
+		return StringUtils.capitalize(removeUselessChars(StringUtils.trim(doc)));
 	}
 
 	/**
 	 * Remove useless chars from documentation lines.
 	 */
 	protected static String removeUselessChars(String doc) {
-		return StringUtils.removeEnd(doc, ".");
+		return StringUtils.trim(StringUtils.removeEnd( StringUtils.trim(doc), "."));
 	}
 
 	private String getJavaDocText(String doc, String tag, String notAfterTag, int index, String subNext) {

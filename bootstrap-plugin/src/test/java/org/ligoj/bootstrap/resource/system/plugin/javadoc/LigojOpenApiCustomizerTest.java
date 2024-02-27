@@ -12,7 +12,6 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.jaxrs.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -21,31 +20,17 @@ import org.ligoj.bootstrap.resource.system.plugin.SampleTool2;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Test class of {@link LigojOpenApiCustomizer}
  */
-class LigojOpenApiCustomizerTest extends org.ligoj.bootstrap.AbstractServerTest {
-
-	private static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
+class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 
 	@Test
 	void customize() throws IOException {
-		final var jarPath = Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR).resolve("plugin-javadoc.jar");
-		final var pluginFiles = Map.of("plugin-javadoc", jarPath.toString());
-		final var versionFileToPath = Map.of(jarPath.toString(), jarPath);
-		final var javadocUrls = new ArrayList<URL>();
-		for (final var path : pluginFiles.values()) {
-			final var javadocPath = versionFileToPath.get(path);
-			javadocUrls.add(javadocPath.toUri().toURL());
-		}
-
+		final var javadocUrls = newJavadocUrls();
 		final var repository = Mockito.mock(SystemPluginRepository.class);
 		final var plugin1 = new SystemPlugin();
 		plugin1.setBasePackage(SampleTool2.class.getPackageName());

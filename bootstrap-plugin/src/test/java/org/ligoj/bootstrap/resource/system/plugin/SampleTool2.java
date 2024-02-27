@@ -4,16 +4,13 @@
 package org.ligoj.bootstrap.resource.system.plugin;
 
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 import org.springframework.stereotype.Component;
 
 /**
  * Sample tool for test.
  */
-@Path("mock/sample2")
 @Component
-public class SampleTool2 implements FeaturePlugin {
+public class SampleTool2 extends SampleTool1 {
 
 	@Override
 	public String getKey() {
