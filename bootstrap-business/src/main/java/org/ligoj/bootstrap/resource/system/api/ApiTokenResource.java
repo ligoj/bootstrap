@@ -139,6 +139,7 @@ public class ApiTokenResource {
 	@GET
 	@Path("{name:[\\w.-]+}")
 	@OnNullReturn404
+	@Produces(MediaType.TEXT_PLAIN)
 	public String getToken(@PathParam("name") final String name) {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
 		if (entity == null) {
@@ -304,6 +305,7 @@ public class ApiTokenResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{name:[\\w.-]+}")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String update(@PathParam("name") final String name) throws GeneralSecurityException {
 		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
 		if (entity == null) {
