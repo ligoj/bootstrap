@@ -91,7 +91,6 @@ class HookProcessRunnableTest {
 		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
 
-
 		final var hookNPE = new SystemHook();
 		hookNPE.setName("hookNPE");
 		hookNPE.setCommand("/path/to/some args");

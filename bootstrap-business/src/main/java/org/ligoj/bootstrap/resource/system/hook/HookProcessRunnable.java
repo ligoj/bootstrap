@@ -4,6 +4,9 @@
 package org.ligoj.bootstrap.resource.system.hook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.SecurityContext;
@@ -18,15 +21,14 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.cxf.message.Exchange;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -66,6 +68,23 @@ public class HookProcessRunnable implements Runnable {
 		return new ProcessBuilder(ArrayUtils.addAll(hook.getCommand().split(" "))).directory(new File(hook.getWorkingDirectory()));
 	}
 
+	/**
+	 * Ignored class from payload.
+	 */
+	private static final Class<?>[] IGNORED_CLASSES = {UriInfo.class, SecurityContext.class, ServletConfig.class,
+			ServletRequest.class, ServletResponse.class, InputStream.class, ApplicationContext.class};
+
+	/**
+	 * Convert complex or Servlet like technical object to their class name only.
+	 */
+	private Object convertForPayload(Object parameter) {
+		if (Arrays.stream(IGNORED_CLASSES).anyMatch(c -> parameter != null && c.isAssignableFrom(parameter.getClass()))) {
+			// This parameter is dropped
+			return "<" + parameter.getClass().getSimpleName() + ">";
+		}
+		return parameter;
+	}
+
 	void process(final String path, final SystemHook h, final OutputStream out) {
 		log.info("[Hook {} -> {}] Triggered", path, h.getName());
 		if (!HookResource.isAllowedCommand(configuration, h.getCommand())) {
@@ -78,7 +97,7 @@ public class HookProcessRunnable implements Runnable {
 		try {
 			// Create Map object
 			@SuppressWarnings("unchecked") final var params = exchange.getInMessage().getContent(List.class).stream()
-					.filter(p -> !(p instanceof UriInfo || p instanceof SecurityContext)).toList();
+					.map(this::convertForPayload).toList();
 			final var timeout = ObjectUtils.defaultIfNull(h.getTimeout(), 0) > 0 ? h.getTimeout() : configuration.get("LIGOJ_HOOK_TIMEOUT", DEFAULT_TIMEOUT);
 			final var payload = new HashMap<>(Map.of(
 					"now", now,
@@ -95,7 +114,8 @@ public class HookProcessRunnable implements Runnable {
 					"params", params
 			));
 			payload.put("user", Optional.ofNullable(principal).map(Principal::getName).orElse(null));
-			payload.put("result", responseContext.getEntity());
+			payload.put("result", convertForPayload(responseContext.getEntity()));
+
 			final var payloadJson = objectMapper.writeValueAsString(payload);
 			final var payload64 = BASE64_CODEC.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
 			final var pb = newBuilder(h);
