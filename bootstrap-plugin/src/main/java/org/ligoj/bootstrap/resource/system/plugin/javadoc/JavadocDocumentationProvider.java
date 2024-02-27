@@ -160,7 +160,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		if (classDoc == null) {
 			return null;
 		}
-		var signatureNoClass = org.apache.commons.lang3.StringUtils.substringAfter(method.toString(), ori.getClassResourceInfo().getResourceClass().getName()).substring(1);
+		var signatureNoClass = StringUtils.substringBefore(StringUtils.substringAfter(method.toString(), ori.getClassResourceInfo().getResourceClass().getName()).substring(1)," ");
 		var mDocs = classDoc.getMethodDocs(method);
 		if (mDocs == null) {
 			var operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
@@ -171,8 +171,16 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		return mDocs;
 	}
 
-	protected static String normalize(String doc) {
-		return StringUtils.capitalize(removeUselessChars(StringUtils.trim(doc)));
+	protected static String normalize(String doc, boolean removeHtml) {
+		 var niceDoc =  StringUtils.capitalize(removeUselessChars(StringUtils.trim(doc)));
+		if (niceDoc!=null) {
+			if (removeHtml) {
+				niceDoc = niceDoc.replaceAll("<[^>]*>", "");
+			} else {
+				niceDoc = niceDoc.replaceAll("<a href=[^>]*>((?!</a>).*)</a>", "$1");
+			}
+		}
+		return niceDoc;
 	}
 
 	/**
@@ -189,7 +197,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 			if (notAfterIndex == -1 || notAfterIndex > tagIndex) {
 				var nextIndex = doc.indexOf(subNext, tagIndex + tag.length());
 				if (nextIndex != -1) {
-					return normalize(doc.substring(tagIndex + tag.length(), nextIndex));
+					return normalize(doc.substring(tagIndex + tag.length(), nextIndex), false);
 				}
 			}
 		}

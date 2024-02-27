@@ -70,15 +70,15 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	}
 
 	private void fillSummaryAndDescription(final String fullDoc, final Operation operation) {
-		fillSummaryAndDescription(fullDoc, operation::setSummary, operation::setDescription);
+		fillSummaryAndDescription(fullDoc, operation::setSummary, operation::setDescription,true);
 	}
 
-	private void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription) {
+	private void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription, boolean removeHtml) {
 		if (fullDoc != null) {
 			// Split the documentation into 'summary' and 'description'
-			setSummary.accept(JavadocDocumentationProvider.normalize(StringUtils.substringBefore(fullDoc, ".")));
+			setSummary.accept(JavadocDocumentationProvider.normalize(StringUtils.substringBefore(fullDoc, "."),removeHtml));
 			if (setDescription != null) {
-				setDescription.accept(JavadocDocumentationProvider.normalize(StringUtils.substringAfter(fullDoc, ".")));
+				setDescription.accept(JavadocDocumentationProvider.normalize(StringUtils.substringAfter(fullDoc, "."),false));
 			}
 		}
 	}
@@ -98,16 +98,16 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	}
 
 	private void completeOperation(HashMap<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation) {
-		tags.computeIfAbsent(tagOperation, t -> javadocProvider.getClassDoc(cri));
+		tags.computeIfAbsent(tagOperation, t -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri),false));
 		fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 		for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
-			operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i)));
+			operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i), false));
 		}
 		if (operation.getRequestBody() != null) {
 			for (var i = 0; i < ori.getParameters().size(); i++) {
 				final var parameter = ori.getParameters().get(i);
 				if (parameter.getType() == ParameterType.REQUEST_BODY) {
-					operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i)));
+					operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i), false));
 				}
 			}
 		}
@@ -155,7 +155,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		});
 		oas.setTags(tags.keySet().stream().sorted().map(t -> {
 			final var tag = new Tag().name(t);
-			fillSummaryAndDescription(tags.get(t), tag::description, null);
+			fillSummaryAndDescription(tags.get(t), tag::description, null, false);
 			return tag;
 		}).toList());
 	}
