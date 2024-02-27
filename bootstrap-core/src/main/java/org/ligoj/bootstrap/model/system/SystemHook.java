@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
-import org.ligoj.bootstrap.core.model.AbstractNamedEntity;
+import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
 @Entity
 @Table(name = "S_HOOK")
 @JsonIgnoreProperties
-public class SystemHook extends AbstractNamedEntity<Integer> {
+public class SystemHook extends AbstractNamedAuditedEntity<Integer> {
 
 	/**
 	 * Current directory for execution
