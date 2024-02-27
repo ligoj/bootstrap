@@ -25,6 +25,7 @@ import java.util.Map;
  */
 @Provider(value = Provider.Type.Feature, scope = Provider.Scope.Server)
 @Slf4j
+@Component
 public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFeature {
 	/**
 	 * Return the current plug-in class loader.
