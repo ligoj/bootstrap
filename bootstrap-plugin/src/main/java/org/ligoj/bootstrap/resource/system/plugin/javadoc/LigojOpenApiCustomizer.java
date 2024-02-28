@@ -126,6 +126,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 
 		// Check Javadoc completeness is necessary
 		if (oas.getExtensions() != null) {
+			// Cached
 			return;
 		}
 		// Reorder the OpenAPI path by natural language
