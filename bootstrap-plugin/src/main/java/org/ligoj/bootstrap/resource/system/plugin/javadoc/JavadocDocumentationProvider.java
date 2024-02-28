@@ -17,7 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Extract JavaDoc from provider jar URLs.
  */
 public class JavadocDocumentationProvider implements DocumentationProvider {
-	private static final String MARKUP_OPERATION = "<section class=\"detail\" id=\"";
+	private static final String MARKUP_OPERATION1 = "<section class=\"detail\" id=\"";
+	private static final String MARKUP_OPERATION2 = "<h3 id=\"";
 	private static final String MARKUP_OPERATION_END = "</section>";
 	private static final String MARKUP_PARAMETER = "<dt>Parameters:</dt>";
 	private static final String MARKUP_RETURN = "<dt>Returns:</dt>";
@@ -115,6 +116,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		var resource = annotatedClass.getName().replace(".", "/") + ".html";
 		var classDocs = docs.get(resource);
 		if (classDocs == null) {
+			// Not yet cached
 			var loader = javaDocLoader != null ? javaDocLoader : annotatedClass.getClassLoader();
 			var resourceStream = loader.getResourceAsStream(resource);
 			if (resourceStream != null) {
@@ -160,10 +162,14 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		if (classDoc == null) {
 			return null;
 		}
-		var signatureNoClass = StringUtils.substringBefore(StringUtils.substringAfter(method.toString(), ori.getClassResourceInfo().getResourceClass().getName()).substring(1)," ");
+		var signatureNoClass = StringUtils.substringBefore(StringUtils.substringAfter(method.toString(), method.getDeclaringClass().getName()).substring(1)," ");
 		var mDocs = classDoc.getMethodDocs(method);
 		if (mDocs == null) {
-			var operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
+			// Not yet cached
+			var operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION1 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
+			if (operDoc==null) {
+				operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION2 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
+			}
 			mDocs = parseMethodDoc(operDoc);
 			classDoc.addMethodDocs(method, mDocs);
 		}
