@@ -207,11 +207,13 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void normalize() {
-		Assertions.assertEquals("Test", JavadocDocumentationProvider.normalize("Test"));
-		Assertions.assertEquals("Test sample", JavadocDocumentationProvider.normalize("   test sample . "));
-		Assertions.assertEquals("", JavadocDocumentationProvider.normalize(" "));
-		Assertions.assertNull(JavadocDocumentationProvider.normalize(null));
-		Assertions.assertEquals("", JavadocDocumentationProvider.normalize("."));
+		Assertions.assertEquals("Test", JavadocDocumentationProvider.normalize("Test", false));
+		Assertions.assertEquals("Test sample", JavadocDocumentationProvider.normalize("   test sample . ", false));
+		Assertions.assertEquals("", JavadocDocumentationProvider.normalize(" ", false));
+		Assertions.assertNull(JavadocDocumentationProvider.normalize(null, false));
+		Assertions.assertEquals("", JavadocDocumentationProvider.normalize(".", false));
+		Assertions.assertEquals("Pre <code>Hello</code> World post", JavadocDocumentationProvider.normalize("pre <a href=\"..\"><code>Hello</code> World</a> post", false));
+		Assertions.assertEquals("Pre Hello World post", JavadocDocumentationProvider.normalize("pre <a href=\"..\"><code>Hello</code> World</a> post", true));
 	}
 
 	@Test
