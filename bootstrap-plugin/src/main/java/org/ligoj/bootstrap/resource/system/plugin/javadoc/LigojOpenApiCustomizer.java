@@ -135,7 +135,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		oas.setPaths(sortedPaths);
 
 		// Complete doc and tags
-		final var plugins = repository.findAll().stream().filter(p -> p.getBasePackage() == null).toList();
+		final var plugins = repository.findAll().stream().filter(p -> p.getBasePackage() != null).toList();
 		final var packageToPlugin = new HashMap<String, SystemPlugin>();
 		final var tags = new HashMap<String, String>();
 		oas.getPaths().forEach((pathKey, pathItem) -> {
