@@ -47,7 +47,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 	}
 
 	/**
-	 * Default constructor overriding the default annotation introspector.
+	 * Default constructor overriding the default annotation introspect.
 	 */
 	@SuppressWarnings({"this-escape", "deprecation"})
 	public ObjectMapperTrim() {

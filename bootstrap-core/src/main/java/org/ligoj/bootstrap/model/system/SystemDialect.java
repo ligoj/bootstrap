@@ -35,13 +35,13 @@ public class SystemDialect extends AbstractPersistable<Integer> {
 	@Column(name = "DIA_BOOL")
 	private Boolean dialBool;
 
-	@Column(name = "DIA_SHOR")
+	@Column(name = "DIA_SHORT")
 	private Short dialShort;
 
 	@Column(name = "DIA_LONG")
 	private Long dialLong;
 
-	@Column(name = "DIA_DOUB")
+	@Column(name = "DIA_DOUBLE")
 	private double dialDouble;
 
 	@Column(name = "DIA_DATE")

@@ -224,7 +224,7 @@ class SessionResourceTest extends AbstractBootTest {
 		assignment.setUser(user);
 		em.persist(assignment);
 
-		addSystemAuthorization(null, role, "^myurl2", AuthorizationType.UI);
+		addSystemAuthorization(null, role, "^my_url2", AuthorizationType.UI);
 
 		// Invalidate cache of previous test
 		cacheResource.invalidate("authorizations");
@@ -238,7 +238,7 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(2, settings.getRoles().size());
 		Assertions.assertNotNull(settings.getUiAuthorizations());
 		Assertions.assertEquals(1, settings.getUiAuthorizations().size());
-		Assertions.assertEquals("^myurl2", settings.getUiAuthorizations().iterator().next());
+		Assertions.assertEquals("^my_url2", settings.getUiAuthorizations().iterator().next());
 	}
 
 	private void addSystemAuthorization(final String method, SystemRole role, final String pattern,
