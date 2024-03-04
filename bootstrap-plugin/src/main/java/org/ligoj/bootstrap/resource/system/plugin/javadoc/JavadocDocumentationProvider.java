@@ -118,8 +118,11 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		return result;
 	}
 
-	private ClassDocs getClassDocInternal(Class<?> cls) throws Exception {
+	private ClassDocs getClassDocInternal(Class<?> cls) throws IOException {
 		final var annotatedClass = getPathAnnotatedClass(cls);
+		if (annotatedClass == null) {
+			return null;
+		}
 		final var resource = annotatedClass.getName().replace(".", "/") + ".html";
 		var classDocs = docs.get(resource);
 		if (classDocs == null) {
