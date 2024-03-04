@@ -17,6 +17,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -48,6 +49,10 @@ class PluginsClassLoaderTest {
 				Assertions.assertEquals("wMxLd+H9uVdM4fRKRhOQpA==", classLoader.getDigestVersion());
 				Assertions.assertEquals("wMxLd+H9uVdM4fRKRhOQpA==", System.getProperty("project.version.digest"));
 				Assertions.assertEquals("foo\n", System.getProperty("project.bootstrap.private"));
+
+				final var pluginsJavadoc = classLoader.getInstalledPlugins(new HashMap<>(), true);
+				Assertions.assertEquals(1, pluginsJavadoc.size());
+				Assertions.assertEquals("plugin-javadoc-0", pluginsJavadoc.get("plugin-javadoc"));
 
 			}
 		} finally {
