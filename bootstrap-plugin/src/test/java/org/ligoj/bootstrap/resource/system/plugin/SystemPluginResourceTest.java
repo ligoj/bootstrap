@@ -609,6 +609,16 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
+	void configurePluginUpdateFail() {
+		final var service1 = Mockito.mock(SampleService.class);
+		Mockito.doThrow(new RuntimeException()).when(service1).getInstalledEntities();
+		final var plugin = new SystemPlugin();
+
+		// No error expected
+		resource.configurePluginUpdate(service1, plugin);
+	}
+
+	@Test
 	void getVersion() {
 		// Version is resolved from the date
 		Assertions.assertTrue(resource.getVersion(new SampleService()).startsWith("20"));
@@ -828,9 +838,15 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		final var input = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
 		final var localJar = toFile("plugin-sample-1.2.9.jar");
 		localJar.delete();
-		newPluginResourceInstall("plugin-sample-1.2.9.jar").upload(input, "plugin-sample", "1.2.9");
+		final var resource = newPluginResourceInstall("plugin-sample-1.2.9.jar");
+		resource.upload(input, "plugin-sample", "1.2.9");
 		Assertions.assertTrue(localJar.exists());
 		Assertions.assertEquals("test", FileUtils.readFileToString(localJar, StandardCharsets.UTF_8));
+
+		// Ignored installation from input for Javadoc
+		resource.install(input, "any", "any", "any", "(local)", false, true);
+
+		// Cleanup
 		localJar.delete();
 	}
 
@@ -1228,12 +1244,13 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
-	void persistAsBusinessEntity() {
+	void persistAsNeededBusinessEntity() {
 		final var user = new SampleBusinessEntity();
 		user.setId("foo");
 		resource.persistAsNeeded(SampleBusinessEntity.class, user);
 		final var user1 = em.find(SampleBusinessEntity.class, "foo");
 		Assertions.assertNotNull(user1);
+		Assertions.assertSame(user1, em.find(SampleBusinessEntity.class, "foo"));
 
 		final var user2 = new SampleBusinessEntity();
 		user2.setId("foo");
@@ -1241,6 +1258,10 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 		// user2 has not been persisted, duplicate has been prevented
 		Assertions.assertSame(user1, em.find(SampleBusinessEntity.class, "foo"));
+
+		final var user3 = new SampleStringEntity();
+		user3.setId("foo");
+		resource.persistAsNeeded(SampleStringEntity.class, user3);
 	}
 
 	@Test

@@ -113,6 +113,7 @@ public class HookResource {
 	 *
 	 * @param vo the object to create.
 	 * @return the entity's identifier.
+	 * @throws  JsonProcessingException When <code>math</code> parameter is not a valid JSON.
 	 */
 	@POST
 	@PUT

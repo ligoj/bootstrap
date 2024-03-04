@@ -19,13 +19,14 @@ import java.lang.reflect.Type;
  * Test class of Dialect customizer test classes.
  */
 abstract class AbstractDialectTest{
+	protected BasicTypeRegistry basicTypeRegistry;
 
 	@SuppressWarnings("unchecked")
 	protected FunctionContributions newFunctionContributions() {
 		final var functionContributions = Mockito.mock(FunctionContributions.class);
 		final var functionRegistry = new SqmFunctionRegistry();
 		final var typeConfiguration = Mockito.mock(TypeConfiguration.class);
-		final var basicTypeRegistry = Mockito.mock(BasicTypeRegistry.class);
+		basicTypeRegistry = Mockito.mock(BasicTypeRegistry.class);
 		final var jdbcTypeIndicators = Mockito.mock(JdbcTypeIndicators.class);
 
 		Mockito.doReturn(typeConfiguration).when(functionContributions).getTypeConfiguration();

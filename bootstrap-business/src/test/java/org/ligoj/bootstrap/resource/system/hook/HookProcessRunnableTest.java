@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ class HookProcessRunnableTest {
 		final var principal = Mockito.mock(Principal.class);
 		final var uriInfo = Mockito.mock(UriInfo.class);
 		final var inMessage = Mockito.mock(Message.class);
-		final var inList = List.of("in1", "in2", uriInfo, Mockito.mock(SecurityContext.class));
+		final var inList = Arrays.asList("in1", "in2", uriInfo, Mockito.mock(SecurityContext.class), null);
 		final var local = new ThreadLocal<Map<String, ProcessBuilder>>();
 		local.set(new ConcurrentHashMap<>());
 		final var environments = new ConcurrentHashMap<String, Map<String, String>>();

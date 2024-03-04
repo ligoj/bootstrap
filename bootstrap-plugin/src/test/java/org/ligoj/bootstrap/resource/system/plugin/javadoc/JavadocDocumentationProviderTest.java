@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.javadoc;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.MethodDispatcher;
@@ -15,9 +16,11 @@ import org.ligoj.bootstrap.resource.system.plugin.SampleTool1;
 import org.ligoj.bootstrap.resource.system.plugin.SampleTool2;
 import org.ligoj.bootstrap.resource.system.plugin.SampleTool4;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Test class of {@link JavadocDocumentationProvider}.
@@ -74,7 +77,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocFromString() {
-		var mDoc =  provider.parseMethodDoc("""
+		var mDoc = provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.</div>
@@ -87,14 +90,14 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 				</dl>
 				</section>
 				""");
-		Assertions.assertEquals("Method doc. Details",mDoc.getMethodInfo());
-		Assertions.assertEquals("Param1 doc",mDoc.getParamInfo().getFirst());
-		Assertions.assertEquals("Return doc",mDoc.getReturnInfo());
+		Assertions.assertEquals("Method doc. Details", mDoc.getMethodInfo());
+		Assertions.assertEquals("Param1 doc", mDoc.getParamInfo().getFirst());
+		Assertions.assertEquals("Return doc", mDoc.getReturnInfo());
 	}
 
 	@Test
 	void getMethodDocFromStringNoReturn() {
-		var mDoc =  provider.parseMethodDoc("""
+		var mDoc = provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.</div>
@@ -105,14 +108,14 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 				</dl>
 				</section>
 				""");
-		Assertions.assertEquals("Method doc. Details",mDoc.getMethodInfo());
-		Assertions.assertEquals("Param1 doc",mDoc.getParamInfo().getFirst());
+		Assertions.assertEquals("Method doc. Details", mDoc.getMethodInfo());
+		Assertions.assertEquals("Param1 doc", mDoc.getParamInfo().getFirst());
 		Assertions.assertNull(mDoc.getReturnInfo());
 	}
 
 	@Test
 	void getMethodDocFromStringNoParams() {
-		var mDoc =  provider.parseMethodDoc("""
+		var mDoc = provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.</div>
@@ -120,14 +123,14 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 				</dl>
 				</section>
 				""");
-		Assertions.assertEquals("Method doc. Details",mDoc.getMethodInfo());
+		Assertions.assertEquals("Method doc. Details", mDoc.getMethodInfo());
 		Assertions.assertTrue(mDoc.getParamInfo().isEmpty());
 		Assertions.assertNull(mDoc.getReturnInfo());
 	}
 
 	@Test
 	void getMethodDocFromStringUndefined() {
-		var mDoc =  provider.parseMethodDoc("""
+		var mDoc = provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				</section>
@@ -138,7 +141,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocFromStringInvalidMarkup() {
-		var mDoc =  provider.parseMethodDoc("""
+		var mDoc = provider.parseMethodDoc("""
 				<section class="method-details" id="method-detail">
 				<section class="detail" id="test1(java.lang.String,org.ligoj.bootstrap.model.system.SystemUser)">
 				<div class="block">Method doc. Details.
@@ -225,4 +228,14 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 		Assertions.assertEquals("", JavadocDocumentationProvider.removeUselessChars("."));
 	}
 
+	@Test
+	void adClassDocNoFoundMarker() throws IOException {
+		Assertions.assertNull(provider.adClassDoc(String.class, new ByteArrayInputStream("".getBytes()), String.class.getName()));
+	}
+
+	@Test
+	void adClassDoc() throws IOException {
+		Assertions.assertEquals("CONTENT1", provider.adClassDoc(String.class, IOUtils.toInputStream(String.class.getName() + "<div class=\"block\">CONTENT1</div>Method Summary<div></div>", StandardCharsets.UTF_8), String.class.getName()).getClassInfo());
+		Assertions.assertEquals("CONTENT2", provider.adClassDoc(String.class, IOUtils.toInputStream(String.class.getName() + "<div class=\"block\">CONTENT2</div>", StandardCharsets.UTF_8), String.class.getName()).getClassInfo());
+	}
 }

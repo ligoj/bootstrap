@@ -7,14 +7,11 @@ import org.hibernate.boot.model.FunctionContributions;
 import org.hibernate.dialect.DatabaseVersion;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
-import org.hibernate.type.StandardBasicTypes;
-
-import static org.hibernate.query.sqm.produce.function.FunctionParameterType.NUMERIC;
 
 /**
  * "MySql" dialect with enforced UTF-8 encoding.
  */
-abstract class AbstractMySQLInnoDBUtDialect extends MySQLDialect {
+abstract class AbstractMySQLInnoDBUtDialect extends MySQLDialect implements RegistrableDialect {
 
 	protected AbstractMySQLInnoDBUtDialect(DatabaseVersion version) {
 		super(version);
@@ -35,14 +32,6 @@ abstract class AbstractMySQLInnoDBUtDialect extends MySQLDialect {
 	@Override
 	public void initializeFunctionRegistry(FunctionContributions functionContributions) {
 		super.initializeFunctionRegistry(functionContributions);
-		var functionRegistry = functionContributions.getFunctionRegistry();
-		var typeConfiguration = functionContributions.getTypeConfiguration();
-		var basicTypeRegistry = typeConfiguration.getBasicTypeRegistry();
-		var doubleType = basicTypeRegistry.resolve(StandardBasicTypes.DOUBLE);
-		functionRegistry.namedDescriptorBuilder("ceil")
-				.setExactArgumentCount(1)
-				.setParameterTypes(NUMERIC)
-				.setInvariantType(doubleType)
-				.register();
+		registerFunctions(functionContributions);
 	}
 }

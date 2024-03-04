@@ -9,8 +9,12 @@ import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.jaxrs.model.doc.DocumentationProvider;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -96,42 +100,49 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		return null;
 	}
 
+	/**
+	 * Return the first class annotated Path within the given class hierarchy.
+	 */
 	private Class<?> getPathAnnotatedClass(Class<?> cls) {
+		Class<?> result = null;
 		if (cls.getAnnotation(jakarta.ws.rs.Path.class) != null) {
-			return cls;
-		}
-		if (cls.getSuperclass() != null && cls.getSuperclass().getAnnotation(jakarta.ws.rs.Path.class) != null) {
-			return cls.getSuperclass();
-		}
-		for (var i : cls.getInterfaces()) {
-			if (i.getAnnotation(jakarta.ws.rs.Path.class) != null) {
-				return i;
+			result = cls;
+		} else {
+			if (cls.getSuperclass() != null) {
+				result = getPathAnnotatedClass(cls.getSuperclass());
+			}
+			if (result == null) {
+				result = Arrays.stream(cls.getInterfaces()).map(this::getPathAnnotatedClass).filter(Objects::nonNull).findFirst().orElse(null);
 			}
 		}
-		return cls;
+		return result;
 	}
 
 	private ClassDocs getClassDocInternal(Class<?> cls) throws Exception {
-		var annotatedClass = getPathAnnotatedClass(cls);
-		var resource = annotatedClass.getName().replace(".", "/") + ".html";
+		final var annotatedClass = getPathAnnotatedClass(cls);
+		final var resource = annotatedClass.getName().replace(".", "/") + ".html";
 		var classDocs = docs.get(resource);
 		if (classDocs == null) {
 			// Not yet cached
-			var loader = javaDocLoader != null ? javaDocLoader : annotatedClass.getClassLoader();
-			var resourceStream = loader.getResourceAsStream(resource);
+			var resourceStream = javaDocLoader.getResourceAsStream(resource);
 			if (resourceStream != null) {
-				var doc = IOUtils.readStringFromStream(resourceStream);
-				var qualifier = annotatedClass.isInterface() ? "Interface" : "Class";
-				var classMarker = qualifier + " " + annotatedClass.getSimpleName();
-				int index = doc.indexOf(classMarker);
-				if (index != -1) {
-					var classInfo = getJavaDocText(doc, MARKUP_BLOCK, "Method Summary", index + classMarker.length(), MARKUP_BLOCK_END);
-					classDocs = new ClassDocs(doc, classInfo);
-					docs.putIfAbsent(resource, classDocs);
-				}
+				classDocs = adClassDoc(annotatedClass, resourceStream, resource);
 			}
 		}
 		return classDocs;
+	}
+
+	ClassDocs adClassDoc(Class<?> cls, InputStream htmlStream, String resource) throws IOException {
+		final var doc = IOUtils.readStringFromStream(htmlStream);
+		final var classMarker = cls.getSimpleName();
+		int index = doc.indexOf(classMarker);
+		ClassDocs result = null;
+		if (index != -1) {
+			var classInfo = getJavaDocText(doc, MARKUP_BLOCK, "Method Summary", index + classMarker.length(), MARKUP_BLOCK_END);
+			result = new ClassDocs(doc, classInfo);
+			docs.putIfAbsent(resource, result);
+		}
+		return result;
 	}
 
 	MethodDocs parseMethodDoc(String operDoc) {
@@ -162,12 +173,12 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		if (classDoc == null) {
 			return null;
 		}
-		var signatureNoClass = StringUtils.substringBefore(StringUtils.substringAfter(method.toString(), method.getDeclaringClass().getName()).substring(1)," ");
+		var signatureNoClass = StringUtils.substringBefore(StringUtils.substringAfter(method.toString(), method.getDeclaringClass().getName()).substring(1), " ");
 		var mDocs = classDoc.getMethodDocs(method);
 		if (mDocs == null) {
 			// Not yet cached
 			var operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION1 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
-			if (operDoc==null) {
+			if (operDoc == null) {
 				operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION2 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
 			}
 			mDocs = parseMethodDoc(operDoc);
@@ -178,8 +189,8 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	}
 
 	protected static String normalize(String doc, boolean removeHtml) {
-		 var niceDoc =  StringUtils.capitalize(removeUselessChars(StringUtils.trim(doc)));
-		if (niceDoc!=null) {
+		var niceDoc = StringUtils.capitalize(removeUselessChars(StringUtils.trim(doc)));
+		if (niceDoc != null) {
 			if (removeHtml) {
 				niceDoc = niceDoc.replaceAll("<[^>]*>", "");
 			} else {
@@ -193,7 +204,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	 * Remove useless chars from documentation lines.
 	 */
 	protected static String removeUselessChars(String doc) {
-		return StringUtils.trim(StringUtils.removeEnd( StringUtils.trim(doc), "."));
+		return StringUtils.trim(StringUtils.removeEnd(StringUtils.trim(doc), "."));
 	}
 
 	private String getJavaDocText(String doc, String tag, String notAfterTag, int index, String subNext) {

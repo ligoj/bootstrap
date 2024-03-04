@@ -92,7 +92,8 @@ public class ApiTokenResource {
 	private String tokenCrypt;
 
 	/**
-	 * Secret key of DES algorithm used to generate the SSO token.
+	 * Secret key of DES algorithm used to generate the SSO token. This not really a secret and could be public.
+	 * This only an additional layer to hash the randomly generated token.
 	 */
 	@Value("${api.token.secret:K%ë£/L@_§z3-Àçñ?}")
 	private String tokenSecret;
