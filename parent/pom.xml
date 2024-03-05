@@ -13,7 +13,7 @@
 
     <groupId>org.ligoj.bootstrap</groupId>
     <artifactId>parent</artifactId>
-    <version>3.1.16-SNAPSHOT</version>
+    <version>3.1.16</version>
     <packaging>pom</packaging>
     <name>Ligoj - Bootstrap - Parent</name>
     <description>Ligoj Bootstrap Parent</description>
@@ -155,7 +155,7 @@
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-core</artifactId>
-                <version>3.1.16-SNAPSHOT</version>
+                <version>3.1.16</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.gentyref</groupId>
@@ -738,13 +738,13 @@
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-business</artifactId>
-                <version>3.1.16-SNAPSHOT</version>
+                <version>3.1.16</version>
             </dependency>
 
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-business-test</artifactId>
-                <version>3.1.16-SNAPSHOT</version>
+                <version>3.1.16</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
@@ -937,7 +937,7 @@
                 <dependency>
                     <groupId>org.ligoj.bootstrap</groupId>
                     <artifactId>bootstrap-launcher</artifactId>
-                    <version>3.1.16-SNAPSHOT</version>
+                    <version>3.1.16</version>
                 </dependency>
             </dependencies>
         </profile>
