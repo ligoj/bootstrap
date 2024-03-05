@@ -34,10 +34,6 @@
         <system>GitHub Issues</system>
         <url>https://github.com/ligoj/bootstrap/issues</url>
     </issueManagement>
-    <ciManagement>
-        <system>Travis</system>
-        <url>https://travis-ci.com/ligoj/bootstrap</url>
-    </ciManagement>
     <properties>
         <!-- Sonar configuration -->
         <sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
