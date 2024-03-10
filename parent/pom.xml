@@ -57,7 +57,7 @@
         <annotation-api.version>2.1.1</annotation-api.version>
         <ant.version>1.10.14</ant.version>
         <activation.version>2.0.1</activation.version>
-        <activation-api.version>2.1.2</activation-api.version>
+        <activation-api.version>2.1.3</activation-api.version>
         <apacheds.version>1.5.5</apacheds.version>
         <asm.version>9.6</asm.version>
         <aspectj.version>1.9.21.1</aspectj.version>
