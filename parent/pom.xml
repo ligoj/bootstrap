@@ -89,6 +89,7 @@
         <hsqldb.version>2.7.2</hsqldb.version>
         <jackson.version>2.16.2</jackson.version>
         <jackson.databind.version>2.16.2</jackson.databind.version>
+        <jakarta.xml.ws-api.version>4.0.1</jakarta.xml.ws-api.version>
         <jasypt.version>1.9.3</jasypt.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
         <jaxb.version>4.0.5</jaxb.version>
@@ -291,7 +292,7 @@
             <dependency>
                 <groupId>jakarta.xml.ws</groupId>
                 <artifactId>jakarta.xml.ws-api</artifactId>
-                <version>${jaxb-api.version}</version>
+                <version>${jakarta.xml.ws-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
