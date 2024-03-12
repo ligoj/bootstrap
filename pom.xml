@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.1.18</version>
+		<version>3.1.19-SNAPSHOT</version>
 		<relativePath>parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>root</artifactId>
-	<version>3.1.18</version><!-- required by 'version' plugin -->
+	<version>3.1.19-SNAPSHOT</version><!-- required by 'version' plugin -->
 	<packaging>pom</packaging>
 	<name>Ligoj - Bootstrap</name>
 	<description>Ligoj Bootstrap JAX-RS architecture template</description>
