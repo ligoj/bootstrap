@@ -93,6 +93,15 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 
 	@Override
 	public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
+		try {
+			filterUnSafe(requestContext, responseContext);
+		} catch (final Exception e) {
+			// Log only errors without interrupting the main flow
+			log.warn("Hook filtering failed. Partially or no triggered hooks", e);
+		}
+	}
+
+	void filterUnSafe(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
 		if (responseContext.getStatus() >= 200 && responseContext.getStatus() < 300) {
 			final var hooksByPath = self.findAll();
 			final var path = requestContext.getUriInfo().getPath();
@@ -110,5 +119,4 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 			}
 		}
 	}
-
 }

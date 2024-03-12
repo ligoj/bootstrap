@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.resource.filter;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
@@ -169,6 +170,24 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Mockito.when(principal.getName()).thenReturn("junit");
 		filterMatch(principal, "GET");
 		Assertions.assertTrue(executed.get());
+	}
+
+
+	@Test
+	void filterError() {
+		var flag = new AtomicBoolean();
+		 var  filterMockError = new HookResponseFilter() {
+
+			@Override
+			void filterUnSafe(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
+				flag.set(true);
+				throw new RuntimeException();
+			}
+		};
+		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
+		final var responseContext = Mockito.mock(ContainerResponseContext.class);
+		filterMockError.filter(requestContext, responseContext);
+		Assertions.assertTrue(flag.get());
 	}
 
 	private void filterMatch(Principal principal, String hookMethod) {
