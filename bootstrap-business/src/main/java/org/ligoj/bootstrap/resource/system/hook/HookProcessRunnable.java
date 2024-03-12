@@ -45,7 +45,7 @@ public class HookProcessRunnable implements Runnable {
 
 	private final String now;
 	private final ObjectMapper objectMapper;
-	private final List<SystemHook> hooks;
+	private final List<?extends SystemHook> hooks;
 	private final ContainerRequestContext requestContext;
 	private final ContainerResponseContext responseContext;
 	private final Exchange exchange;

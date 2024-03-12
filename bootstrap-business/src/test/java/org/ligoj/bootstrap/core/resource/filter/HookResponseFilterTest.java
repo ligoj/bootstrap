@@ -43,7 +43,7 @@ class HookResponseFilterTest extends AbstractBootTest {
 	private SystemHookRepository repository;
 
 	private final AtomicBoolean executed = new AtomicBoolean(false);
-	private final List<SystemHook> hooks = new ArrayList<>();
+	private final List<SystemHookParse> hooks = new ArrayList<>();
 	private final HookResponseFilter filterMock = new HookResponseFilter() {
 		@Override
 		void execute(final HookProcessRunnable runnable) {
@@ -51,7 +51,7 @@ class HookResponseFilterTest extends AbstractBootTest {
 		}
 
 		@Override
-		public Map<Pattern, List<SystemHook>> findAll() {
+		public Map<Pattern, List<SystemHookParse>> findAll() {
 			return Map.of(Pattern.compile("foo/bar.+"), hooks);
 		}
 	};
@@ -188,7 +188,7 @@ class HookResponseFilterTest extends AbstractBootTest {
 		Mockito.when(message.getExchange()).thenReturn(exchange);
 		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar1");
 
-		final var hook = new SystemHook();
+		final var hook = new SystemHookParse();
 		hook.setName("hook1");
 		hook.setMatchObject(new HookMatch());
 		hook.getMatchObject().setPath("foo/bar.+");

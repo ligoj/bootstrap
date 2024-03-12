@@ -11,11 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.cxf.jaxrs.impl.AbstractPropertiesImpl;
+import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
 import org.ligoj.bootstrap.model.system.HookMatch;
-import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,17 +60,24 @@ public class HookResponseFilter extends AbstractMapper implements ContainerRespo
 	 * @return cached hooks grouped by matching patterns.
 	 */
 	@CacheResult(cacheName = "hooks")
-	public Map<Pattern, List<SystemHook>> findAll() {
-		final var patterns = repository.findAll().stream().peek(
+	public Map<Pattern, List<SystemHookParse>> findAll() {
+		final var patterns = repository.findAll().stream().map(
 						h -> {
-							h.setMatchObject(null);
+							final var hp = new SystemHookParse();
 							try {
-								h.setMatchObject(objectMapper.readValue(h.getMatch(), HookMatch.class));
+								hp.setMatchObject(objectMapper.readValue(h.getMatch(), HookMatch.class));
+								NamedBean.copy(h, hp);
+								hp.setCommand(h.getCommand());
+								hp.setMatch(h.getMatch());
+								hp.setWorkingDirectory(h.getWorkingDirectory());
+								hp.setTimeout(h.getTimeout());
+								hp.setInject(h.getInject());
 							} catch (final IOException ioe) {
 								// Ignore
 							}
+							return hp;
 						}
-				).filter(h -> h.getMatchObject() != null)
+				).filter(hp -> hp.getMatchObject() != null)
 				.filter(h -> {
 					try {
 						Pattern.compile(h.getMatchObject().getPath());

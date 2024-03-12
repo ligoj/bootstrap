@@ -33,7 +33,6 @@ class HookResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("hook1", first.getName());
 		Assertions.assertEquals("ls", first.getCommand());
 		Assertions.assertEquals("{\"path\":\"foo/bar\"}", first.getMatch());
-		Assertions.assertNull(first.getMatchObject());
 	}
 
 	@Test
