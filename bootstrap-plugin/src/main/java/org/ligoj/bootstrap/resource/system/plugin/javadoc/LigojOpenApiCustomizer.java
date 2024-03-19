@@ -156,7 +156,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 					if (pSchema instanceof ArraySchema) {
 						completeSchemaDoc(((ArraySchema) pSchema).getItems(), javaClass, genericType, completedSchemas, schemas);
 					} else if (pSchema instanceof StringSchema)  {
-						((StringSchema) pSchema).setDescription();
+						((StringSchema) pSchema).setDescription("");
 					}
 				});
 			}
