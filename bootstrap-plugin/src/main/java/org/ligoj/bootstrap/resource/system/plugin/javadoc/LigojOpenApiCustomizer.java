@@ -8,6 +8,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,9 +20,11 @@ import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.jaxrs.model.ParameterType;
 import org.apache.cxf.jaxrs.openapi.OpenApiCustomizer;
+import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
 
+import java.lang.reflect.ParameterizedType;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -70,15 +75,15 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	}
 
 	private void fillSummaryAndDescription(final String fullDoc, final Operation operation) {
-		fillSummaryAndDescription(fullDoc, operation::setSummary, operation::setDescription,true);
+		fillSummaryAndDescription(fullDoc, operation::setSummary, operation::setDescription, true);
 	}
 
 	private void fillSummaryAndDescription(final String fullDoc, final Consumer<String> setSummary, final Consumer<String> setDescription, boolean removeHtml) {
 		if (fullDoc != null) {
 			// Split the documentation into 'summary' and 'description'
-			setSummary.accept(JavadocDocumentationProvider.normalize(StringUtils.substringBefore(fullDoc, "."),removeHtml));
+			setSummary.accept(JavadocDocumentationProvider.normalize(StringUtils.substringBefore(fullDoc, "."), removeHtml));
 			if (setDescription != null) {
-				setDescription.accept(JavadocDocumentationProvider.normalize(StringUtils.substringAfter(fullDoc, "."),false));
+				setDescription.accept(JavadocDocumentationProvider.normalize(StringUtils.substringAfter(fullDoc, "."), false));
 			}
 		}
 	}
@@ -97,8 +102,8 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		return artifact;
 	}
 
-	private void completeOperation(HashMap<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation) {
-		tags.computeIfAbsent(tagOperation, t -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri),false));
+	private void completeOperation(HashMap<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+		tags.computeIfAbsent(tagOperation, t -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri), false));
 		fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 		for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
 			operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i), false));
@@ -108,10 +113,54 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				final var parameter = ori.getParameters().get(i);
 				if (parameter.getType() == ParameterType.REQUEST_BODY) {
 					operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i), false));
+					parameter.getJavaType();
 				}
 			}
 		}
-		customizeResponses(operation, ori);
+		final var returnType = ori.getMethodToInvoke().getReturnType();
+		Class gerericReturnType = null;
+		if (ori.getMethodToInvoke().getGenericReturnType() instanceof ParameterizedType) {
+			final var genericReturnTypeG = ori.getMethodToInvoke().getGenericReturnType();
+			if (genericReturnTypeG instanceof ParameterizedType
+					&& ((ParameterizedType) genericReturnTypeG).getActualTypeArguments().length > 0
+					&& ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0] instanceof Class) {
+				gerericReturnType = (Class) ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0];
+			}
+		}
+		final var returnSchemaGenericType = gerericReturnType;
+		operation.getResponses().forEach((n, r) -> {
+			r.getContent().forEach((m, c) -> {
+				completeSchemaDoc(c.getSchema(), returnType, returnSchemaGenericType, completedSchemas, schemas);
+			});
+		});
+	}
+
+	private void completeSchemaDoc(Schema schema, Class javaClass, Class genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+		if (schema == null) {
+			return;
+		}
+		completeSchemaDoc(schema.get$ref(), javaClass, genericType, completedSchemas, schemas); // #/components/schemas/NodeVo
+	}
+
+	private void completeSchemaDoc(String ref, Class javaClass, Class genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+		if (ref != null && completedSchemas.add(ref)) {
+			var parts = ref.split("/");
+			var name = parts[parts.length - 1];
+			var schema = schemas.get(name);
+			if (schema != null) {
+				// Complete doc of this type
+				var rCri = new ClassResourceInfo(javaClass);
+				schema.setDescription(javadocProvider.getClassDoc(new ClassResourceInfo(TableItem.class)));
+				schema.setDescription(javadocProvider.getClassDoc(rCri));
+				schema.getProperties().forEach((p, pSchema) -> {
+					if (pSchema instanceof ArraySchema) {
+						completeSchemaDoc(((ArraySchema) pSchema).getItems(), javaClass, genericType, completedSchemas, schemas);
+					} else if (pSchema instanceof StringSchema)  {
+						((StringSchema) pSchema).setDescription();
+					}
+				});
+			}
+		}
 	}
 
 	@Override
@@ -127,7 +176,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		// Check Javadoc completeness is necessary
 		if (oas.getExtensions() != null) {
 			// Cached
-			return;
+//			return;
 		}
 		// Reorder the OpenAPI path by natural language
 		final var sortedPaths = new Paths();
@@ -139,6 +188,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		final var plugins = repository.findAll().stream().filter(p -> p.getBasePackage() != null).toList();
 		final var packageToPlugin = new HashMap<String, SystemPlugin>();
 		final var tags = new HashMap<String, String>();
+		final Set<String> completedSchemas = new HashSet<>();
 		oas.getPaths().forEach((pathKey, pathItem) -> {
 			var cri = operations.get(pathKey);
 			if (cri == null) {
@@ -150,7 +200,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				var key = Pair.of(method.name(), pathKey);
 				final var ori = methods.get(key);
 				if (ori != null) {
-					completeOperation(tags, tagOperation, cri, ori, operation);
+					completeOperation(tags, tagOperation, cri, ori, operation, completedSchemas, oas.getComponents().getSchemas());
 				}
 			});
 		});
