@@ -11,6 +11,7 @@ import org.apache.cxf.jaxrs.model.doc.DocumentationProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -41,9 +42,19 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	}
 
 	@Override
-	public String getClassDoc(ClassResourceInfo cri) {
+	public String getClassDoc(final ClassResourceInfo cri) {
+		return getClassDoc(cri.getServiceClass());
+	}
+
+	/**
+	 * Return class documentation from a class.
+	 *
+	 * @param clazz The class to load.
+	 * @return class documentation or null.
+	 */
+	String getClassDoc(final Class<?> clazz) {
 		try {
-			var doc = getClassDocInternal(cri.getServiceClass());
+			var doc = getClassDocInternal(clazz);
 			if (doc == null) {
 				return null;
 			}
@@ -56,44 +67,42 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 
 	@Override
 	public String getMethodDoc(OperationResourceInfo ori) {
-		try {
-			var doc = getOperationDocInternal(ori);
-			if (doc == null) {
-				return null;
-			}
-			return doc.getMethodInfo();
-		} catch (Exception ex) {
-			// ignore
+		return getMethodDoc(getApiMethod(ori));
+	}
+
+	String getMethodDoc(Method method) {
+		var doc = getMethodDocs(method);
+		if (doc == null) {
+			return null;
 		}
-		return null;
+		return doc.getMethodInfo();
 	}
 
 	@Override
 	public String getMethodResponseDoc(OperationResourceInfo ori) {
-		try {
-			var doc = getOperationDocInternal(ori);
-			if (doc == null) {
-				return null;
-			}
-			return doc.getReturnInfo();
-		} catch (Exception ex) {
-			// ignore
+		var doc = getMethodDocs(getApiMethod(ori));
+		if (doc == null) {
+			return null;
 		}
-		return null;
+		return doc.getReturnInfo();
 	}
 
 	@Override
 	public String getMethodParameterDoc(OperationResourceInfo ori, int paramIndex) {
-		try {
-			var doc = getOperationDocInternal(ori);
-			if (doc == null) {
-				return null;
-			}
-			var params = doc.getParamInfo();
-			if (paramIndex < params.size()) {
-				return params.get(paramIndex);
-			}
+		var doc = getMethodDocs(getApiMethod(ori));
+		if (doc == null) {
 			return null;
+		}
+		var params = doc.getParamInfo();
+		if (paramIndex < params.size()) {
+			return params.get(paramIndex);
+		}
+		return null;
+	}
+
+	private MethodDocs getMethodDocs(Method method) {
+		try {
+			return getOperationDocInternal(method);
 		} catch (Exception ex) {
 			// ignore
 		}
@@ -118,10 +127,13 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		return result;
 	}
 
-	private ClassDocs getClassDocInternal(Class<?> cls) throws IOException {
-		final var annotatedClass = getPathAnnotatedClass(cls);
+	ClassDocs getClassDocInternal(Class<?> cls) throws IOException {
+		var annotatedClass = getPathAnnotatedClass(cls);
 		if (annotatedClass == null) {
-			return null;
+			if (!cls.getName().startsWith("org.ligoj.")) {
+				return null;
+			}
+			annotatedClass = cls;
 		}
 		final var resource = annotatedClass.getName().replace(".", "/") + ".html";
 		var classDocs = docs.get(resource);
@@ -170,9 +182,12 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		return new MethodDocs(operInfo, paramDocs, responseInfo);
 	}
 
-	private MethodDocs getOperationDocInternal(OperationResourceInfo ori) throws Exception {
-		var method = ori.getAnnotatedMethod() == null ? ori.getMethodToInvoke() : ori.getAnnotatedMethod();
-		var classDoc = getClassDocInternal(method.getDeclaringClass());
+	private Method getApiMethod(OperationResourceInfo ori) {
+		return ori.getAnnotatedMethod() == null ? ori.getMethodToInvoke() : ori.getAnnotatedMethod();
+	}
+
+	private MethodDocs getOperationDocInternal(Method method) throws Exception {
+		final var classDoc = getClassDocInternal(method.getDeclaringClass());
 		if (classDoc == null) {
 			return null;
 		}

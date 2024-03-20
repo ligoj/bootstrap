@@ -64,7 +64,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getClassDocError() {
-		Assertions.assertNull(provider.getClassDoc(null));
+		Assertions.assertNull(provider.getClassDoc((ClassResourceInfo)null));
 	}
 
 	@Test
@@ -161,7 +161,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocError() {
-		Assertions.assertNull(provider.getMethodDoc(null));
+		Assertions.assertNull(provider.getMethodDoc((OperationResourceInfo)null));
 	}
 
 

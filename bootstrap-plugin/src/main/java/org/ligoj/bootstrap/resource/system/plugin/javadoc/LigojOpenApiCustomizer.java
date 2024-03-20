@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.servers.Server;
@@ -20,10 +21,11 @@ import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.jaxrs.model.ParameterType;
 import org.apache.cxf.jaxrs.openapi.OpenApiCustomizer;
-import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.ParameterizedType;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -118,13 +120,13 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 			}
 		}
 		final var returnType = ori.getMethodToInvoke().getReturnType();
-		Class gerericReturnType = null;
+		Class<?> gerericReturnType = null;
 		if (ori.getMethodToInvoke().getGenericReturnType() instanceof ParameterizedType) {
 			final var genericReturnTypeG = ori.getMethodToInvoke().getGenericReturnType();
 			if (genericReturnTypeG instanceof ParameterizedType
 					&& ((ParameterizedType) genericReturnTypeG).getActualTypeArguments().length > 0
 					&& ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0] instanceof Class) {
-				gerericReturnType = (Class) ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0];
+				gerericReturnType = (Class<?>) ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0];
 			}
 		}
 		final var returnSchemaGenericType = gerericReturnType;
@@ -135,32 +137,52 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		});
 	}
 
-	private void completeSchemaDoc(Schema schema, Class javaClass, Class genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	private void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
 		if (schema == null) {
 			return;
 		}
 		completeSchemaDoc(schema.get$ref(), javaClass, genericType, completedSchemas, schemas); // #/components/schemas/NodeVo
 	}
 
-	private void completeSchemaDoc(String ref, Class javaClass, Class genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
-		if (ref != null && completedSchemas.add(ref)) {
+	private void completeSchemaDoc(String ref, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+		if (ref != null && javaClass != null && javaClass.getName().startsWith("org.ligoj.") && completedSchemas.add(ref)) {
 			var parts = ref.split("/");
 			var name = parts[parts.length - 1];
 			var schema = schemas.get(name);
 			if (schema != null) {
 				// Complete doc of this type
-				var rCri = new ClassResourceInfo(javaClass);
-				schema.setDescription(javadocProvider.getClassDoc(new ClassResourceInfo(TableItem.class)));
-				schema.setDescription(javadocProvider.getClassDoc(rCri));
-				schema.getProperties().forEach((p, pSchema) -> {
+				schema.setDescription(((JavadocDocumentationProvider) javadocProvider).getClassDoc(javaClass));
+				//noinspection unchecked
+				schema.getProperties().forEach((p, rawSchema) -> {
+					final var pSchema = (Schema<?>) rawSchema;
 					if (pSchema instanceof ArraySchema) {
-						completeSchemaDoc(((ArraySchema) pSchema).getItems(), javaClass, genericType, completedSchemas, schemas);
-					} else if (pSchema instanceof StringSchema)  {
-						((StringSchema) pSchema).setDescription("");
+						completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
+					} else if (pSchema instanceof StringSchema || pSchema instanceof IntegerSchema) {
+						pSchema.setDescription(getGetterDoc(pSchema.getName(), javaClass, genericType));
 					}
 				});
 			}
 		}
+	}
+
+	String getGetterDoc(final String name, final Class<?> javaClass, final Class<?> genericType) {
+		try {
+			for (final PropertyDescriptor pd : Introspector.getBeanInfo(javaClass).getPropertyDescriptors()) {
+				if (pd.getReadMethod() != null && name.equals(pd.getName())) {
+					return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
+				}
+			}
+			if (genericType != null) {
+				for (final PropertyDescriptor pd : Introspector.getBeanInfo(genericType).getPropertyDescriptors()) {
+					if (pd.getReadMethod() != null && name.equals(pd.getName())) {
+						return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
+					}
+				}
+			}
+		} catch (final Exception e) {
+			// Ignore
+		}
+		return null;
 	}
 
 	@Override
@@ -176,7 +198,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		// Check Javadoc completeness is necessary
 		if (oas.getExtensions() != null) {
 			// Cached
-//			return;
+			return;
 		}
 		// Reorder the OpenAPI path by natural language
 		final var sortedPaths = new Paths();
@@ -209,5 +231,6 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 			fillSummaryAndDescription(tags.get(t), tag::description, null, false);
 			return tag;
 		}).toList());
+		oas.getComponents().setSchemas(new TreeMap<>(oas.getComponents().getSchemas()));
 	}
 }
