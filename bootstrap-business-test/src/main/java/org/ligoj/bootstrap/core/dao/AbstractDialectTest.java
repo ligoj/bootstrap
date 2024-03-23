@@ -18,7 +18,7 @@ import java.lang.reflect.Type;
 /**
  * Test class of Dialect customizer test classes.
  */
-abstract class AbstractDialectTest{
+abstract class AbstractDialectTest {
 	protected BasicTypeRegistry basicTypeRegistry;
 
 	@SuppressWarnings("unchecked")
