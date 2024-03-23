@@ -4,10 +4,14 @@
 package org.ligoj.bootstrap.resource.system.plugin.javadoc;
 
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.*;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.jaxrs.model.*;
 import org.junit.jupiter.api.Assertions;
@@ -24,13 +28,15 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Test class of {@link LigojOpenApiCustomizer}
  */
-class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
+class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 
 	private LigojOpenApiCustomizer customizer;
+
 	@BeforeEach
 	void configure() throws IOException {
 		final var javadocUrls = newJavadocUrls();
@@ -49,6 +55,7 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		Mockito.doReturn(List.of(plugin1, plugin2, plugin3, pluginNoPackage)).when(repository).findAll();
 		customizer = new LigojOpenApiCustomizer(javadocUrls, repository);
 	}
+
 	@Test
 	void customize() {
 		final var configuration = new SwaggerConfiguration();
@@ -58,8 +65,10 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		cri1.setMethodDispatcher(new MethodDispatcher());
 		cri1.setURITemplate(new URITemplate("mock/sample1"));
 		final var method = MethodUtils.getMatchingMethod(SampleTool1.class, "test1", String.class, SystemUser.class);
-		final var parameter1 = new Parameter(ParameterType.QUERY, 0,"param1");
-		final var parameter2 = new Parameter(ParameterType.REQUEST_BODY, 1,"user");
+		final var parameter1 = new Parameter(ParameterType.QUERY, 0, "param1");
+		parameter1.setJavaType(String.class);
+		final var parameter2 = new Parameter(ParameterType.REQUEST_BODY, 1, "user");
+		parameter2.setJavaType(SystemUser.class);
 		final var ori = new OperationResourceInfo(method, cri1, new URITemplate("/{param1:regEx}"), "POST", "application/json", "application/json", List.of(parameter1, parameter2), true);
 		cri1.getMethodDispatcher().bind(ori, method);
 		final var oriNotExists = new OperationResourceInfo(method, cri1, new URITemplate("/not-exists"), "PATCH", null, null, Collections.emptyList(), true);
@@ -87,18 +96,45 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		final var cris = List.of(cri1, cri2, cri3, cri4);
 		customizer.setClassResourceInfos(cris);
 		final var oas = new OpenAPI();
+
+		// Build schemas
+		var stringSchema = new StringSchema();
+		var lastConnectionSchema = new StringSchema();
+		var loginSchema = new StringSchema();
+		var systemRoleAssignmentArraySchema = new ArraySchema();
+		var systemRoleAssignmentSchema = new Schema<>().$ref("#/components/schemas/SystemRoleAssignment");
+		systemRoleAssignmentArraySchema.setItems(systemRoleAssignmentSchema);
+		var systemUserSchema = new Schema<>().$ref("#/components/schemas/SystemUser").properties(Map.of("login", loginSchema, "lastConnection", lastConnectionSchema, "roles", systemRoleAssignmentArraySchema));
+		var namedBeanSchema = new Schema<>().$ref("#/components/schemas/NamedBeanString").properties(Map.of("name", stringSchema));
+		oas.setComponents(new Components());
+		oas.getComponents().setSchemas(Map.of("SystemUser", systemUserSchema, "NamedBeanString", namedBeanSchema));
+
+		// Operation1
 		final var sortedPaths = new io.swagger.v3.oas.models.Paths();
+
 		final var pathItem1 = new PathItem();
 		final var oasOperation = new Operation();
-		final var oasParameter = new io.swagger.v3.oas.models.parameters.Parameter().name("param1");
-		oasOperation.setParameters(List.of(oasParameter));
-		oasOperation.setRequestBody(new RequestBody());
 		pathItem1.operation(PathItem.HttpMethod.POST, oasOperation);
+
+		final var oasStringParameter = new io.swagger.v3.oas.models.parameters.Parameter().name("param1");
+		oasOperation.setResponses(new ApiResponses());
+		oasOperation.setParameters(List.of(oasStringParameter));
+		oasOperation.setRequestBody(new RequestBody().$ref("#/components/schemas/SystemUser"));
+		oasOperation.setResponses(new ApiResponses());
+		var response = new ApiResponse();
+		oasOperation.getResponses().put("default", response);
+		var content = new Content();
+		response.setContent(content);
+		var media = new MediaType();
+		content.put("application/json", media);
+		media.setSchema(namedBeanSchema);
 		sortedPaths.put("/mock/sample1/{param1}", pathItem1);
 		sortedPaths.put("/mock/sample1/not-exists", pathItem1);
 
+		// Operation2
 		final var pathItem2 = new PathItem();
 		final var oasOperation2 = new Operation();
+		oasOperation2.setResponses(new ApiResponses());
 		pathItem2.operation(PathItem.HttpMethod.GET, oasOperation2);
 		sortedPaths.put("/mock/sample2", pathItem2);
 		sortedPaths.put("/mock/sample3", new PathItem());
@@ -113,7 +149,14 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		Assertions.assertEquals("Method doc", oasOperation.getSummary());
 		Assertions.assertEquals("Details", oasOperation.getDescription());
 		Assertions.assertEquals("User doc. Details", oasOperation.getRequestBody().getDescription());
-		Assertions.assertEquals("Param1 doc", oasParameter.getDescription());
+		Assertions.assertEquals("Param1 doc", oasStringParameter.getDescription());
+
+		// Schema doc
+		Assertions.assertEquals("A named bean", namedBeanSchema.getDescription());
+		Assertions.assertEquals("Corporate user", systemUserSchema.getDescription());
+		Assertions.assertEquals("Corporate user login", ((Schema<?>)systemUserSchema.getProperties().get("login")).getDescription());
+		Assertions.assertEquals("Last known connection", ((Schema<?>)systemUserSchema.getProperties().get("lastConnection")).getDescription());
+
 	}
 
 	@Test
@@ -123,4 +166,13 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest{
 		Assertions.assertEquals("/", customizer.getNormalizedPath("", "//"));
 	}
 
+	@Test
+	void getGetterDoc() {
+		Assertions.assertNull(customizer.getGetterDoc(null,String.class, String.class));
+		Assertions.assertNull(customizer.getGetterDoc("any",String.class, String.class));
+		Assertions.assertNull(customizer.getGetterDoc("any",SystemUser.class, SystemUser.class));
+		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login",SystemUser.class, SystemUser.class));
+		Assertions.assertEquals("Corporate user login",customizer.getGetterDoc("login",String.class, SystemUser.class));
+		Assertions.assertEquals("Last known connection", customizer.getGetterDoc("lastConnection",SystemUser.class, SystemUser.class));
+	}
 }

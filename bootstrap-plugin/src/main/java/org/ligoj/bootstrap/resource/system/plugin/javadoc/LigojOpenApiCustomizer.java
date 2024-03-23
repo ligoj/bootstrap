@@ -9,9 +9,7 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,8 +23,8 @@ import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
 
 import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -104,7 +102,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		return artifact;
 	}
 
-	private void completeOperation(HashMap<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	private void completeOperation(Map<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
 		tags.computeIfAbsent(tagOperation, t -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri), false));
 		fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 		for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
@@ -115,26 +113,25 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				final var parameter = ori.getParameters().get(i);
 				if (parameter.getType() == ParameterType.REQUEST_BODY) {
 					operation.getRequestBody().setDescription(JavadocDocumentationProvider.normalize(javadocProvider.getMethodParameterDoc(ori, i), false));
-					parameter.getJavaType();
+					completeSchemaDoc(operation.getRequestBody().get$ref(),
+							parameter.getJavaType(),
+							getGenericType(ori.getMethodToInvoke().getGenericParameterTypes()[i]), completedSchemas, schemas);
 				}
 			}
 		}
-		final var returnType = ori.getMethodToInvoke().getReturnType();
-		Class<?> gerericReturnType = null;
-		if (ori.getMethodToInvoke().getGenericReturnType() instanceof ParameterizedType) {
-			final var genericReturnTypeG = ori.getMethodToInvoke().getGenericReturnType();
-			if (genericReturnTypeG instanceof ParameterizedType
-					&& ((ParameterizedType) genericReturnTypeG).getActualTypeArguments().length > 0
-					&& ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0] instanceof Class) {
-				gerericReturnType = (Class<?>) ((ParameterizedType) genericReturnTypeG).getActualTypeArguments()[0];
-			}
+		operation.getResponses().forEach((n, r) -> r.getContent().forEach((m, c) -> completeSchemaDoc(c.getSchema(),
+				ori.getMethodToInvoke().getReturnType(),
+				getGenericType(ori.getMethodToInvoke().getGenericReturnType()), completedSchemas, schemas)
+		));
+	}
+
+	Class<?> getGenericType(final Type generic) {
+		if (generic instanceof ParameterizedType
+				&& ((ParameterizedType) generic).getActualTypeArguments().length > 0
+				&& ((ParameterizedType) generic).getActualTypeArguments()[0] instanceof Class) {
+			return (Class<?>) ((ParameterizedType) generic).getActualTypeArguments()[0];
 		}
-		final var returnSchemaGenericType = gerericReturnType;
-		operation.getResponses().forEach((n, r) -> {
-			r.getContent().forEach((m, c) -> {
-				completeSchemaDoc(c.getSchema(), returnType, returnSchemaGenericType, completedSchemas, schemas);
-			});
-		});
+		return null;
 	}
 
 	private void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
@@ -157,23 +154,31 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 					final var pSchema = (Schema<?>) rawSchema;
 					if (pSchema instanceof ArraySchema) {
 						completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
-					} else if (pSchema instanceof StringSchema || pSchema instanceof IntegerSchema) {
-						pSchema.setDescription(getGetterDoc(pSchema.getName(), javaClass, genericType));
+					} else {
+						pSchema.setDescription(getGetterDoc((String) p, javaClass, genericType));
 					}
 				});
 			}
 		}
 	}
 
+	/**
+	 * Return the documentation of getter method of given attribute.
+	 *
+	 * @param name        Attribute name.
+	 * @param javaClass   Bean class
+	 * @param genericType Alternate bean class resolved from generic type.
+	 * @return The documentation of getter method of given attribute.
+	 */
 	String getGetterDoc(final String name, final Class<?> javaClass, final Class<?> genericType) {
 		try {
-			for (final PropertyDescriptor pd : Introspector.getBeanInfo(javaClass).getPropertyDescriptors()) {
+			for (final var pd : Introspector.getBeanInfo(javaClass).getPropertyDescriptors()) {
 				if (pd.getReadMethod() != null && name.equals(pd.getName())) {
 					return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
 				}
 			}
 			if (genericType != null) {
-				for (final PropertyDescriptor pd : Introspector.getBeanInfo(genericType).getPropertyDescriptors()) {
+				for (final var pd : Introspector.getBeanInfo(genericType).getPropertyDescriptors()) {
 					if (pd.getReadMethod() != null && name.equals(pd.getName())) {
 						return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
 					}

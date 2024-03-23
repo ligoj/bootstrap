@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.resource.system.plugin;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
+import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.stereotype.Component;
@@ -30,8 +31,8 @@ public class SampleTool1 implements FeaturePlugin {
 	 * @return Return doc
 	 */
 	@POST
-	public String test1(@QueryParam("param1") String param1, SystemUser user) {
-		return "Hello";
+	public NamedBean<String> test1(@QueryParam("param1") String param1, SystemUser user) {
+		return new NamedBean<>();
 	}
 
 	/**

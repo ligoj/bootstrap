@@ -183,6 +183,9 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	}
 
 	private Method getApiMethod(OperationResourceInfo ori) {
+		if (ori == null) {
+			return null;
+		}
 		return ori.getAnnotatedMethod() == null ? ori.getMethodToInvoke() : ori.getAnnotatedMethod();
 	}
 

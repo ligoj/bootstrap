@@ -18,6 +18,7 @@ import org.ligoj.bootstrap.resource.system.plugin.SampleTool4;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -64,7 +65,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getClassDocError() {
-		Assertions.assertNull(provider.getClassDoc((ClassResourceInfo)null));
+		Assertions.assertNull(provider.getClassDoc((Class<?>)null));
 	}
 
 	@Test
@@ -161,7 +162,7 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 
 	@Test
 	void getMethodDocError() {
-		Assertions.assertNull(provider.getMethodDoc((OperationResourceInfo)null));
+		Assertions.assertNull(provider.getMethodDoc((Method)null));
 	}
 
 
