@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * OpenAPI customizer with JavaDoc contribution.
@@ -127,6 +128,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 
 	/**
 	 * Return the first generic type's argument if any.
+	 *
 	 * @param generic The type to inspect.
 	 * @return The first generic type's argument if any.
 	 */
@@ -142,7 +144,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	/**
 	 * Complete the given schema's documentation
 	 */
-	 void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
 		if (schema == null) {
 			return;
 		}
@@ -179,17 +181,14 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	 * @return The documentation of getter method of given attribute.
 	 */
 	String getGetterDoc(final String name, final Class<?> javaClass, final Class<?> genericType) {
+		return Stream.of(javaClass, genericType).filter(Objects::nonNull).map(t -> getGetterDoc(name, t)).filter(Objects::nonNull).findFirst().orElse(null);
+	}
+
+	private String getGetterDoc(final String name, final Class<?> javaClass) {
 		try {
 			for (final var pd : Introspector.getBeanInfo(javaClass).getPropertyDescriptors()) {
 				if (pd.getReadMethod() != null && name.equals(pd.getName())) {
 					return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
-				}
-			}
-			if (genericType != null) {
-				for (final var pd : Introspector.getBeanInfo(genericType).getPropertyDescriptors()) {
-					if (pd.getReadMethod() != null && name.equals(pd.getName())) {
-						return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
-					}
 				}
 			}
 		} catch (final Exception e) {
