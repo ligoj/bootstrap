@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.dao.system.SystemPluginRepository;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
+import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.plugin.SampleTool1;
 import org.ligoj.bootstrap.resource.system.plugin.SampleTool2;
@@ -28,9 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Test class of {@link LigojOpenApiCustomizer}
@@ -106,8 +105,8 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 		var systemRoleAssignmentArraySchema = new ArraySchema();
 		var systemRoleAssignmentSchema = new Schema<>().$ref("#/components/schemas/SystemRoleAssignment");
 		systemRoleAssignmentArraySchema.setItems(systemRoleAssignmentSchema);
-		var systemUserSchema = new Schema<>().$ref("#/components/schemas/SystemUser").properties(Map.of("login", loginSchema, "lastConnection", lastConnectionSchema, "roles", systemRoleAssignmentArraySchema));
-		var namedBeanSchema = new Schema<>().$ref("#/components/schemas/NamedBeanString").properties(Map.of("name", stringSchema));
+		@SuppressWarnings("unchecked") var systemUserSchema = new Schema<>().$ref("#/components/schemas/SystemUser").properties(Map.of("login", loginSchema, "lastConnection", lastConnectionSchema, "roles", systemRoleAssignmentArraySchema));
+		@SuppressWarnings("unchecked") var namedBeanSchema = new Schema<>().$ref("#/components/schemas/NamedBeanString").properties(Map.of("name", stringSchema));
 		oas.setComponents(new Components());
 		oas.getComponents().setSchemas(Map.of("SystemUser", systemUserSchema, "NamedBeanString", namedBeanSchema));
 
@@ -193,4 +192,53 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 		Mockito.when(parameterizedTypesClass.getActualTypeArguments()).thenReturn(new Type[]{String.class});
 		Assertions.assertEquals(String.class, customizer.getGenericType(parameterizedTypesClass));
 	}
+
+
+	@Test
+	void completeSchemaDoc() {
+		// No schema
+		var completedSchemas = new HashSet<String>();
+		customizer.completeSchemaDoc(null, null, null, completedSchemas, null);
+		Assertions.assertEquals(0, completedSchemas.size());
+
+		// No $ref
+		var schema = new Schema<>();
+		customizer.completeSchemaDoc(schema, null, null, completedSchemas, null);
+		Assertions.assertEquals(0, completedSchemas.size());
+
+		// No class
+		schema.$ref("#/components/schemas/SystemRole");
+		customizer.completeSchemaDoc(schema, null, null, completedSchemas, null);
+		Assertions.assertEquals(0, completedSchemas.size());
+
+		// Non ligoj package
+		customizer.completeSchemaDoc(schema, String.class, null, completedSchemas, null);
+		Assertions.assertEquals(0, completedSchemas.size());
+
+		// Undefined schema
+		@SuppressWarnings("rawtypes") var schemas = new HashMap<String, Schema>();
+		customizer.completeSchemaDoc(schema, SystemRole.class, SystemUser.class, completedSchemas, schemas);
+		Assertions.assertEquals(1, completedSchemas.size());
+		Assertions.assertEquals(0, schemas.size());
+		Assertions.assertTrue(completedSchemas.contains("#/components/schemas/SystemRole"));
+
+		// Nominal behavior
+		schema.$ref("#/components/schemas/SystemUser");
+		var lastConnectionSchema = new StringSchema();
+		var loginSchema = new StringSchema();
+		var systemRoleAssignmentArraySchema = new ArraySchema();
+		var systemRoleAssignmentSchema = new Schema<>().$ref("#/components/schemas/SystemRoleAssignment");
+		systemRoleAssignmentArraySchema.setItems(systemRoleAssignmentSchema);
+		@SuppressWarnings("unchecked") var systemUserSchema = new Schema<>().$ref("#/components/schemas/SystemUser").properties(Map.of("login", loginSchema, "lastConnection", lastConnectionSchema, "roles", systemRoleAssignmentArraySchema));
+
+		schemas.put("SystemUser",systemUserSchema);
+		customizer.completeSchemaDoc(schema, SystemUser.class, SystemUser.class, completedSchemas, schemas);
+		Assertions.assertEquals(3, completedSchemas.size());
+		Assertions.assertTrue(completedSchemas.contains("#/components/schemas/SystemUser"));
+		Assertions.assertTrue(completedSchemas.contains("#/components/schemas/SystemRoleAssignment"));
+		customizer.completeSchemaDoc(schema, SystemUser.class, SystemUser.class, completedSchemas, schemas);
+		Assertions.assertEquals(3, completedSchemas.size());
+
+	}
+
 }

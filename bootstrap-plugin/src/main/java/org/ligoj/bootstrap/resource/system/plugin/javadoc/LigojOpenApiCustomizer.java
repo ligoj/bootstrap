@@ -125,6 +125,11 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		));
 	}
 
+	/**
+	 * Return the first generic type's argument if any.
+	 * @param generic The type to inspect.
+	 * @return The first generic type's argument if any.
+	 */
 	Class<?> getGenericType(final Type generic) {
 		if (generic instanceof ParameterizedType
 				&& ((ParameterizedType) generic).getActualTypeArguments().length > 0
@@ -134,7 +139,10 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		return null;
 	}
 
-	private void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	/**
+	 * Complete the given schema's documentation
+	 */
+	 void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
 		if (schema == null) {
 			return;
 		}
