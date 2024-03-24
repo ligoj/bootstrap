@@ -26,7 +26,6 @@ import org.ligoj.bootstrap.resource.system.plugin.SampleTool1;
 import org.ligoj.bootstrap.resource.system.plugin.SampleTool2;
 import org.mockito.Mockito;
 
-import java.beans.Introspector;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -171,14 +170,12 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 
 	@Test
 	void getGetterDoc() {
-		Assertions.assertNull(customizer.getGetterDoc("callback", CurlProcessor.class, CurlProcessor.class));
-
-
 		Assertions.assertNull(customizer.getGetterDoc(null, String.class, String.class));
-		Assertions.assertNull(customizer.getGetterDoc("any", String.class, String.class));
-		Assertions.assertNull(customizer.getGetterDoc("coder", String.class, String.class));
-		Assertions.assertNull(customizer.getGetterDoc("any", SystemUser.class, SystemUser.class));
-		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login", SystemUser.class, SystemUser.class));
+		Assertions.assertNull(customizer.getGetterDoc("any", String.class, null));
+		Assertions.assertNull(customizer.getGetterDoc("coder", String.class, null));
+		Assertions.assertNull(customizer.getGetterDoc("any", SystemUser.class, null));
+		Assertions.assertNull(customizer.getGetterDoc("callback", CurlProcessor.class, null));
+		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login", SystemUser.class, null));
 		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login", String.class, SystemUser.class));
 		Assertions.assertEquals("Last known connection", customizer.getGetterDoc("lastConnection", SystemUser.class, SystemUser.class));
 		Assertions.assertEquals("Last known connection", customizer.getGetterDoc("lastConnection", SystemUser.class, SystemUser.class));
