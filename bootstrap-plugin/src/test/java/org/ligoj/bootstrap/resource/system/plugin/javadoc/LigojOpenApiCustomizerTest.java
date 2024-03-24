@@ -26,6 +26,8 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -154,8 +156,8 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 		// Schema doc
 		Assertions.assertEquals("A named bean", namedBeanSchema.getDescription());
 		Assertions.assertEquals("Corporate user", systemUserSchema.getDescription());
-		Assertions.assertEquals("Corporate user login", ((Schema<?>)systemUserSchema.getProperties().get("login")).getDescription());
-		Assertions.assertEquals("Last known connection", ((Schema<?>)systemUserSchema.getProperties().get("lastConnection")).getDescription());
+		Assertions.assertEquals("Corporate user login", ((Schema<?>) systemUserSchema.getProperties().get("login")).getDescription());
+		Assertions.assertEquals("Last known connection", ((Schema<?>) systemUserSchema.getProperties().get("lastConnection")).getDescription());
 
 	}
 
@@ -168,11 +170,27 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 
 	@Test
 	void getGetterDoc() {
-		Assertions.assertNull(customizer.getGetterDoc(null,String.class, String.class));
-		Assertions.assertNull(customizer.getGetterDoc("any",String.class, String.class));
-		Assertions.assertNull(customizer.getGetterDoc("any",SystemUser.class, SystemUser.class));
-		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login",SystemUser.class, SystemUser.class));
-		Assertions.assertEquals("Corporate user login",customizer.getGetterDoc("login",String.class, SystemUser.class));
-		Assertions.assertEquals("Last known connection", customizer.getGetterDoc("lastConnection",SystemUser.class, SystemUser.class));
+		Assertions.assertNull(customizer.getGetterDoc(null, String.class, String.class));
+		Assertions.assertNull(customizer.getGetterDoc("any", String.class, String.class));
+		Assertions.assertNull(customizer.getGetterDoc("any", SystemUser.class, SystemUser.class));
+		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login", SystemUser.class, SystemUser.class));
+		Assertions.assertEquals("Corporate user login", customizer.getGetterDoc("login", String.class, SystemUser.class));
+		Assertions.assertEquals("Last known connection", customizer.getGetterDoc("lastConnection", SystemUser.class, SystemUser.class));
+	}
+
+	@Test
+	void getGenericType() {
+		Assertions.assertNull(customizer.getGenericType(null));
+		Assertions.assertNull(customizer.getGenericType(Mockito.mock(Type.class)));
+		var parameterizedTypeEmpty = Mockito.mock(ParameterizedType.class);
+		Mockito.when(parameterizedTypeEmpty.getActualTypeArguments()).thenReturn(new Type[]{});
+		Assertions.assertNull(customizer.getGenericType(parameterizedTypeEmpty));
+		var parameterizedTypes = Mockito.mock(ParameterizedType.class);
+		Mockito.when(parameterizedTypes.getActualTypeArguments()).thenReturn(new Type[]{Mockito.mock(Type.class)});
+		Assertions.assertNull(customizer.getGenericType(parameterizedTypes));
+
+		var parameterizedTypesClass = Mockito.mock(ParameterizedType.class);
+		Mockito.when(parameterizedTypesClass.getActualTypeArguments()).thenReturn(new Type[]{String.class});
+		Assertions.assertEquals(String.class, customizer.getGenericType(parameterizedTypesClass));
 	}
 }
