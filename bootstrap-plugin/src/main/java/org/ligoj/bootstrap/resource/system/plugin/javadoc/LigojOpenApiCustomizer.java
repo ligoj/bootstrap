@@ -133,10 +133,10 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	 * @return The first generic type's argument if any.
 	 */
 	Class<?> getGenericType(final Type generic) {
-		if (generic instanceof ParameterizedType
-				&& ((ParameterizedType) generic).getActualTypeArguments().length > 0
-				&& ((ParameterizedType) generic).getActualTypeArguments()[0] instanceof Class) {
-			return (Class<?>) ((ParameterizedType) generic).getActualTypeArguments()[0];
+		if (generic instanceof ParameterizedType param
+				&& param.getActualTypeArguments().length > 0
+				&& param.getActualTypeArguments()[0] instanceof Class) {
+			return (Class<?>) param.getActualTypeArguments()[0];
 		}
 		return null;
 	}
