@@ -46,7 +46,7 @@
         <gitRepositoryName>bootstrap</gitRepositoryName>
 
         <!-- BOM overrides -->
-        <plugin.jacoco>0.8.11</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+        <plugin.jacoco>0.8.12</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
         <plugin.failsafe>3.2.5</plugin.failsafe>
         <plugin.surefire>3.2.5</plugin.surefire> <!-- http://maven.apache.org/surefire/summary.html -->
         <plugin.surefire.report>3.2.5</plugin.surefire.report> <!--http://maven.apache.org/surefire/maven-surefire-report-plugin/summary.html -->
