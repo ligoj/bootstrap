@@ -113,7 +113,7 @@
         <spotbugs-annotations>4.8.3</spotbugs-annotations>
         <spring.version>6.1.5</spring.version>
         <spring-boot.version>3.2.4</spring-boot.version>
-        <spring-cloud-context.version>4.1.1</spring-cloud-context.version>
+        <spring-cloud-context.version>4.1.2</spring-cloud-context.version>
         <spring-data.version>3.2.2</spring-data.version>
         <spring-security.version>6.2.3</spring-security.version>
         <swagger-ui.version>5.13.0</swagger-ui.version>
