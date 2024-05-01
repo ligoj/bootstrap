@@ -899,7 +899,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	 */
 	@Test
 	void testFindAllWithFetchAndJoin() {
-		final List<UIRule> rulesGroup = new ArrayList<>();
+		final var rulesGroup = new ArrayList<UIRule>();
 		final var dialect = em.find(SystemDialect.class, lastKnownEntity);
 		dialect.setLink(dialect);
 		var user = new SystemUser();

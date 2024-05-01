@@ -12,12 +12,13 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.metamodel.mapping.EntityMappingType;
 import org.hibernate.metamodel.model.domain.internal.BasicSqmPathSource;
 import org.hibernate.query.criteria.JpaPath;
 import org.hibernate.query.sqm.tree.domain.SqmPath;
 import org.hibernate.query.sqm.tree.from.SqmJoin;
 import org.hibernate.spi.NavigablePath;
-import org.hibernate.type.AssociationType;
+import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -58,7 +59,7 @@ public abstract class AbstractSpecification {
 
 		// Fail-safe identifier access for non-singular target path
 		if (currentPath instanceof SqmJoin<?, ?>) {
-			final var idName = ((IdentifiableType<?>) ((Attribute<?,?>) currentPath.getModel()).getDeclaringType()).getId(Object.class).getName();
+			final var idName = ((IdentifiableType<?>) ((Attribute<?, ?>) currentPath.getModel()).getDeclaringType()).getId(Object.class).getName();
 			currentPath = getNextPath(idName, (From<?, ?>) currentPath);
 		}
 		return (Path<T>) currentPath;
@@ -98,6 +99,12 @@ public abstract class AbstractSpecification {
 				return fixAlias((Selection<T>) join, aliasCounter);
 			}
 		}
+		// Search within current fetch
+		for (final var fetch : from.getFetches()) {
+			if (fetch.getAttribute().getName().equals(attribute)) {
+				return fixAlias((Selection<T>) fetch, aliasCounter);
+			}
+		}
 		return null;
 	}
 
@@ -130,26 +137,40 @@ public abstract class AbstractSpecification {
 			reversePath.addFirst(parent);
 			parent = parent.getParent();
 		} while (parent != null);
-		var model = metaModel.getEntityDescriptor(reversePath.getFirst().getLocalName()).getEntityMetamodel();
+		var model = metaModel.getEntityDescriptor(reversePath.getFirst().getLocalName()).getEntityMappingType();
 		for (int i = 1; i < reversePath.size() - 1; i++) {
 			final var join = reversePath.get(i).getLocalName();
-			final var type = model.getPropertyTypes()[model.getPropertyIndex(join)];
-			final String typeName;
-			if (type.isCollectionType()) {
-				typeName = ((AssociationType) type).getAssociatedEntityName(sf);
-				i++; // Skip next bag join
-			} else {
-				typeName =type.getName();
+			boolean found = false;
+			for (int j = 0; j < model.getNumberOfAttributeMappings(); j++) {
+				final var mapping = model.getAttributeMapping(j);
+				if (join.equals(mapping.getFetchableName())) {
+					if (mapping.isPluralAttributeMapping()) {
+						model = mapping.asPluralAttributeMapping().getCollectionDescriptor().getOwnerEntityPersister();
+						i++; // Skip next bag join
+					} else {
+						model = (EntityMappingType) mapping.getMappedType();
+					}
+					found = true;
+					break;
+				}
 			}
-			model = metaModel.getEntityDescriptor(typeName).getEntityMetamodel();
+			if (!found) {
+				throw new ValidationJsonException("Invalid ORM path, cannot find '" + join + " in " + model);
+			}
 		}
 
 		final var field = path.getLocalName();
-		final Class<?> expressionType;
-		if (model.getIdentifierProperty().getName().equals(field)) {
-			expressionType = model.getIdentifierProperty().getType().getReturnedClass();
+		Class<?> expressionType = null;
+		if (model.getIdentifierMapping().getAttributeName().equals(field)) {
+			expressionType = model.getIdentifierMapping().getMappedType().getMappedJavaType().getJavaTypeClass();
 		} else {
-			expressionType = model.getPropertyTypes()[model.getPropertyIndex(field)].getReturnedClass();
+			for (int j = 0; j < model.getNumberOfAttributeMappings(); j++) {
+				final var mapping = model.getAttributeMapping(j);
+				if (field.equals(mapping.getFetchableName())) {
+					expressionType = mapping.getMappedType().getMappedJavaType().getJavaTypeClass();
+					break;
+				}
+			}
 		}
 
 		// Bind the data to the correct type
