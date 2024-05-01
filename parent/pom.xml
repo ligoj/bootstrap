@@ -115,7 +115,7 @@
         <spring-boot.version>3.2.5</spring-boot.version>
         <spring-cloud-context.version>4.1.2</spring-cloud-context.version>
         <spring-data.version>3.2.2</spring-data.version>
-        <spring-security.version>6.2.3</spring-security.version>
+        <spring-security.version>6.2.4</spring-security.version>
         <swagger-ui.version>5.13.0</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.21</swagger-jaxrs2-jakarta.version>
         <transaction-api.version>2.0.1</transaction-api.version>
