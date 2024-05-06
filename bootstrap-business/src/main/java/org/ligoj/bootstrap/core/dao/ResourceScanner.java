@@ -87,7 +87,7 @@ public class ResourceScanner extends StandardScanner {
 		if ("jar".equals(ormUrl.getProtocol())) {
 			if (StringUtils.countMatches(ormUrl.getPath(), "!") > 1) {
 				// Cascaded JAR URL, remove only the last fragment
-				log.info("Hibernate ORM, remove nested part from {}", ormUrl);
+				log.info("Hibernate ORM, remove nested part from path {}", ormUrl);
 				ormJarUrl = URI.create(StringUtils.substringBeforeLast(urlStr, "!"));
 			} else {
 				// Extract the jar containing this file
