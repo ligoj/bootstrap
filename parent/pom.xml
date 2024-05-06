@@ -110,7 +110,7 @@
         <servlet.version>6.0.0</servlet.version>
         <slf4j.version>2.0.13</slf4j.version>
         <soap-api.version>3.0.1</soap-api.version>
-        <spotbugs-annotations>4.8.4</spotbugs-annotations>
+        <spotbugs-annotations>4.8.5</spotbugs-annotations>
         <spring.version>6.1.6</spring.version>
         <spring-boot.version>3.2.5</spring-boot.version>
         <spring-cloud-context.version>4.1.2</spring-cloud-context.version>
