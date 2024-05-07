@@ -64,7 +64,7 @@ public class ApiTokenResource {
 	/**
 	 * Az09 string generator.
 	 */
-	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).build();
+	private static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder().filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).get();
 
 	@Autowired
 	protected SystemApiTokenRepository repository;
@@ -114,7 +114,7 @@ public class ApiTokenResource {
 			// Check the API token from database
 			return repository.checkByUserAndHash(user, hash(token));
 		} catch (final GeneralSecurityException e) {
-			log.error("Unable to validate a token for user : " + user, e);
+			log.error("Unable to validate a token for user: {}", user, e);
 		}
 
 		// Credential has not been validated, the user is invalid
