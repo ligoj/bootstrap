@@ -54,7 +54,7 @@ public final class Main {
 	private void configure(final String jettyPropertiesFile) throws Exception {
 		try (final var propertiesInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(jettyPropertiesFile)) {
 			if (propertiesInput == null) {
-				log.error("Unable to find jetty properties file : " + jettyPropertiesFile);
+				log.error("Unable to find jetty properties file: {}", jettyPropertiesFile);
 			} else {
 				// Copy the properties
 				copyProperties(propertiesInput);
@@ -71,7 +71,7 @@ public final class Main {
 					final var factory = new org.eclipse.jetty.server.HttpConnectionFactory(httpConfig);
 					final var connector = new org.eclipse.jetty.server.ServerConnector(server, factory);
 					connector.setHost(System.getProperty("jetty.host", "localhost"));
-					connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8080"),10));
+					connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8080"), 10));
 					connector.setIdleTimeout(30000);
 					server.setConnectors(new Connector[]{connector});
 				}

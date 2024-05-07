@@ -20,6 +20,7 @@ public class NotFoundResponseFilterResource {
 
 	/**
 	 * Null result without any response manipulation.
+	 *
 	 * @return <code>null</code>.
 	 */
 	@GET
@@ -30,6 +31,7 @@ public class NotFoundResponseFilterResource {
 
 	/**
 	 * Null result, should give a 404.
+	 *
 	 * @return <code>null</code>.
 	 */
 	@GET
@@ -41,6 +43,7 @@ public class NotFoundResponseFilterResource {
 
 	/**
 	 * Null result, should give a 404 with a specific identifier.
+	 *
 	 * @param id Identifier
 	 * @return non null.
 	 */
@@ -48,12 +51,13 @@ public class NotFoundResponseFilterResource {
 	@Path("null404/{id}")
 	@OnNullReturn404
 	public String returnNull404(@PathParam("id") final int id) {
-		log.info("null404-id : " + id);
+		log.info("null404-id: {}", id);
 		return returnNull();
 	}
 
 	/**
 	 * Not null result, should give a 200.
+	 *
 	 * @return non <code>null</code>.
 	 */
 	@GET

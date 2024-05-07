@@ -52,7 +52,7 @@ public class JpaBenchResource {
 	) throws IOException {
 		final var start = System.currentTimeMillis();
 		final var lobData = blob == null ? new byte[0] : IOUtils.toByteArray(blob);
-		log.info("Content size :" + lobData.length);
+		log.info("Content size: {}", lobData.length);
 		final var result = jpaDao.initialize(Integer.parseInt(nb), lobData);
 		result.setDuration(System.currentTimeMillis() - start);
 		return new org.ligoj.bootstrap.core.json.ObjectMapperTrim().writeValueAsString(result);
