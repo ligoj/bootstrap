@@ -82,12 +82,12 @@ public class ImplicitNamingStrategyNiceJpaImpl
 				.filter((Object thing) -> thing instanceof Column)
 				.sorted(Comparator.comparing(Column::getName))
 				.forEach(column -> sb.append("column`").append(column.getName()).append("`"));
-		return prefix + hashedName(sb.toString());
+		return prefix + hashedName(sb.toString(), "MD5");
 	}
 
-	private static String hashedName(String name) {
+	static String hashedName(String name, String algorithm) {
 		try {
-			final MessageDigest md = MessageDigest.getInstance("MD5");
+			final MessageDigest md = MessageDigest.getInstance(algorithm);
 			md.reset();
 			md.update(name.getBytes());
 			// By converting to base 35 (full alphanumeric), we guarantee

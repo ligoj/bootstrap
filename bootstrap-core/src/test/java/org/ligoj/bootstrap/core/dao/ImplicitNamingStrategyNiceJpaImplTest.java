@@ -3,17 +3,8 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.boot.model.naming.DatabaseIdentifier;
-import org.hibernate.boot.model.naming.Identifier;
-import org.hibernate.boot.model.naming.ImplicitAnyKeyColumnNameSource;
-import org.hibernate.boot.model.naming.ImplicitForeignKeyNameSource;
-import org.hibernate.boot.model.naming.ImplicitJoinColumnNameSource;
-import org.hibernate.boot.model.naming.ImplicitJoinTableNameSource;
-import org.hibernate.boot.model.naming.ImplicitNameSource;
-import org.hibernate.boot.model.naming.ImplicitUniqueKeyNameSource;
+import org.hibernate.HibernateException;
+import org.hibernate.boot.model.naming.*;
 import org.hibernate.boot.model.relational.Database;
 import org.hibernate.boot.model.source.spi.AttributePath;
 import org.hibernate.boot.spi.InFlightMetadataCollector;
@@ -25,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test class of {@link ImplicitNamingStrategyNiceJpaImpl}
@@ -45,6 +39,14 @@ class ImplicitNamingStrategyNiceJpaImplTest {
 		Assertions.assertEquals("UK_bg6a6jkepii31sno6kq8jv1g5", identifier.getText());
 	}
 
+	@Test
+	void hashedName() {
+		Assertions.assertEquals("b092g87witldyyieg524ayqqn", ImplicitNamingStrategyNiceJpaImpl.hashedName("sample", "MD5"));
+	}
+	@Test
+	void hashedNameKo() {
+		Assertions.assertThrows(HibernateException.class, ()-> ImplicitNamingStrategyNiceJpaImpl.hashedName("any", "__"));
+	}
 	@Test
     void determineAnyKeyColumnName() {
 		final var source = Mockito.mock(ImplicitAnyKeyColumnNameSource.class);
