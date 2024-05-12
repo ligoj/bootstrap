@@ -138,10 +138,10 @@ public abstract class AbstractSpecification {
 			parent = parent.getParent();
 		} while (parent != null);
 		var model = metaModel.getEntityDescriptor(reversePath.getFirst().getLocalName()).getEntityMappingType();
-		for (int i = 1; i < reversePath.size() - 1; i++) {
+		for (var i = 1; i < reversePath.size() - 1; i++) {
 			final var join = reversePath.get(i).getLocalName();
 			boolean found = false;
-			for (int j = 0; j < model.getNumberOfAttributeMappings(); j++) {
+			for (var j = 0; j < model.getNumberOfAttributeMappings(); j++) {
 				final var mapping = model.getAttributeMapping(j);
 				if (join.equals(mapping.getFetchableName())) {
 					if (mapping.isPluralAttributeMapping()) {
@@ -164,7 +164,7 @@ public abstract class AbstractSpecification {
 		if (model.getIdentifierMapping().getAttributeName().equals(field)) {
 			expressionType = model.getIdentifierMapping().getMappedType().getMappedJavaType().getJavaTypeClass();
 		} else {
-			for (int j = 0; j < model.getNumberOfAttributeMappings(); j++) {
+			for (var j = 0; j < model.getNumberOfAttributeMappings(); j++) {
 				final var mapping = model.getAttributeMapping(j);
 				if (field.equals(mapping.getFetchableName())) {
 					expressionType = mapping.getMappedType().getMappedJavaType().getJavaTypeClass();

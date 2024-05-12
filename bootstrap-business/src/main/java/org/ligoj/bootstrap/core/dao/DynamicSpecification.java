@@ -14,10 +14,10 @@ import org.ligoj.bootstrap.core.json.jqgrid.UiFilter;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter.FilterOperator;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A specification managing multiple rules, grouping, ordering and fetching.
@@ -176,13 +176,10 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 */
 	private Predicate getPredicate(final Root<U> root, final CriteriaQuery<?> query, final CriteriaBuilder cb,
 			final UIRule rule) {
-		final Predicate predicate;
 		if (rule instanceof BasicRule r) {
-			predicate = getPredicate(root, cb, r, query);
-		} else {
-			predicate = getGroupPredicate((UiFilter) rule, root, query, cb);
+			return getPredicate(root, cb, r, query);
 		}
-		return predicate;
+		return getGroupPredicate((UiFilter) rule, root, query, cb);
 	}
 
 	/**
@@ -190,14 +187,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	 */
 	private java.util.List<Predicate> getPredicates(final UiFilter group, final Root<U> root,
 			final CriteriaQuery<?> query, final CriteriaBuilder cb) {
-		final java.util.List<Predicate> predicates = new ArrayList<>(filter.getRules().size());
-		for (final var rule : group.getRules()) {
-			final var predicate = getPredicate(root, query, cb, rule);
-			if (predicate != null) {
-				predicates.add(predicate);
-			}
-		}
-		return predicates;
+		return group.getRules().stream().map(rule -> getPredicate(root, query, cb, rule)).filter(Objects::nonNull).toList();
 	}
 
 	@Override
