@@ -79,7 +79,7 @@ public class ImplicitNamingStrategyNiceJpaImpl
 		// Ensure a consistent ordering of columns, regardless of the order they were bound.
 		// Clone the list, as sometimes a set of order-dependent Column bindings are given.
 		columns.stream()
-				.filter((Object thing) -> thing instanceof Column)
+				.filter(Column.class::isInstance)
 				.sorted(Comparator.comparing(Column::getName))
 				.forEach(column -> sb.append("column`").append(column.getName()).append("`"));
 		return prefix + hashedName(sb.toString(), "MD5");

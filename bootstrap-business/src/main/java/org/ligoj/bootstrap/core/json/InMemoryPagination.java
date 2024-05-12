@@ -42,7 +42,7 @@ public class InMemoryPagination {
 	 */
 	public <T> Page<T> newPage(final Collection<T> result, final Pageable pageable) {
 		// Check bounds
-		final var start = Math.min(Math.max(pageable.getPageNumber() * pageable.getPageSize(), 0), result.size());
+		final var start = Math.clamp((long)pageable.getPageNumber() * pageable.getPageSize(), 0, result.size());
 		final var end = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
         var index = 0;
 		final List<T> page = new ArrayList<>(end - start);
