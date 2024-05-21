@@ -70,7 +70,7 @@ public class WebjarsServlet extends HttpServlet {
 		// Regular file, use the last resource instead of the first found
 		final var resources = Thread.currentThread().getContextClassLoader().getResources(webjarsResourceURI);
 		URL webjarsResourceURL = null;
-		while (resources.hasMoreElements()) {
+		if (resources.hasMoreElements()) {
 			webjarsResourceURL = resources.nextElement();
 		}
 		if (webjarsResourceURL == null) {
