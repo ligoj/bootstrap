@@ -31,7 +31,7 @@ A Spring based REST architecture
 
 Requirements
 - Java-21
-- Maven 3.8
+- Maven 3.9
 
 # Verify new version
 
