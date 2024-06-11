@@ -12,12 +12,14 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -247,5 +249,55 @@ class PluginsClassLoaderTest {
 		Assertions.assertEquals("EXPORT",
 				FileUtils.readFileToString(new File(export, "export.txt"), StandardCharsets.UTF_8));
 		return classLoader;
+	}
+
+	@Test
+	void getResource() throws IOException, NoSuchAlgorithmException {
+		final var classLoader = new PluginsClassLoader();
+
+		// Unknown resource
+		Assertions.assertNull(classLoader.getResource("_$not_exist$_"));
+		final var resources = classLoader.getResources("_$not_exist$_");
+		Assertions.assertFalse(resources.hasMoreElements());
+		Assertions.assertThrows(NoSuchElementException.class, resources::nextElement);
+
+		// Local only resource
+		Assertions.assertNotNull(classLoader.getResource("test.properties"));
+		Assertions.assertTrue(classLoader.getResources("test.properties").hasMoreElements());
+
+		// Other CP only resource
+		Assertions.assertNotNull(classLoader.getResource("maven-buildinfo.properties"));
+		Assertions.assertTrue(classLoader.getResources("maven-buildinfo.properties").hasMoreElements());
+	}
+
+	@Test
+	void getBootstrapCodeError() throws IOException, NoSuchAlgorithmException {
+		final var classLoader = new PluginsClassLoader();
+		var url = Mockito.mock(URL.class);
+		Assertions.assertThrows(NullPointerException.class, () -> classLoader.getBootstrapCode(url));
+
+		var input = Mockito.mock(InputStream.class);
+		Mockito.doReturn(input).when(url).openStream();
+		Assertions.assertThrows(NullPointerException.class, () -> classLoader.getBootstrapCode(url));
+
+		Mockito.doThrow(new IOException()).when( input).readAllBytes();
+		Assertions.assertThrows(IOException.class, () -> classLoader.getBootstrapCode(url));
+
+		Mockito.doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();
+		Assertions.assertEquals("ok", classLoader.getBootstrapCode(url));
+
+		Mockito.doThrow(new IOException()).when(input).close();
+		Assertions.assertThrows(IOException.class, () -> classLoader.getBootstrapCode(url));
+	}
+
+	@Test
+	void getBootstrapCode() throws IOException, NoSuchAlgorithmException {
+		final var classLoader = new PluginsClassLoader();
+		var url = Mockito.mock(URL.class);
+		var input = Mockito.mock(InputStream.class);
+		Mockito.doReturn(input).when(url).openStream();
+		Mockito.doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();
+		Assertions.assertEquals("ok", classLoader.getBootstrapCode(url));
+
 	}
 }

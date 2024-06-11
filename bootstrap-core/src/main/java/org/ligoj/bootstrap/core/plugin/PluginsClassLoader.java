@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
  * Class Loader which load jars in {@value #PLUGINS_DIR} directory inside the home directory.
  */
 @Slf4j
-@Getter
 public class PluginsClassLoader extends URLClassLoader {
 
 	/**
@@ -67,11 +66,13 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * The application home directory.
 	 */
+	@Getter
 	private final Path homeDirectory;
 
 	/**
 	 * The plug-in directory, inside the home directory.
 	 */
+	@Getter
 	private final Path pluginDirectory;
 
 	@Getter
@@ -83,6 +84,8 @@ public class PluginsClassLoader extends URLClassLoader {
 	@Getter
 	protected final boolean enabled;
 
+	private final ClassLoader parent;
+
 	/**
 	 * Initialize the plug-in {@link URLClassLoader} and the related directories.
 	 *
@@ -91,6 +94,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	public PluginsClassLoader() throws IOException, NoSuchAlgorithmException {
 		super(new URL[0], Thread.currentThread().getContextClassLoader());
+		this.parent = Thread.currentThread().getContextClassLoader();
 		this.enabled = Boolean.parseBoolean(System.getProperty(ENABLED_PROPERTY, "true"));
 		this.homeDirectory = computeHome();
 		this.pluginDirectory = this.homeDirectory.resolve(PLUGINS_DIR);
@@ -112,9 +116,63 @@ public class PluginsClassLoader extends URLClassLoader {
 		this.digestVersion = completeClasspath();
 	}
 
+	@Override
+	public Enumeration<URL> getResources(String name) throws IOException {
+		Objects.requireNonNull(name);
+		@SuppressWarnings("unchecked") final var tmp = (Enumeration<URL>[]) new Enumeration<?>[2];
+		tmp[0] = findResources(name);
+		tmp[1] = parent.getResources(name);
+		return new ConcatEnumeration<>(tmp);
+	}
+
+	@Override
+	public URL getResource(String name) {
+		Objects.requireNonNull(name);
+		var url = findResource(name);
+		if (url == null) {
+			url = parent.getResource(name);
+		}
+		return url;
+	}
+
+	/**
+	 * Virtualize a list of {@link Enumeration} into a single one.
+	 */
+	final static class ConcatEnumeration<E> implements Enumeration<E> {
+		private final Enumeration<E>[] enums;
+		private int index = 0;
+
+		public ConcatEnumeration(Enumeration<E>[] enums) {
+			this.enums = enums;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			while (index < enums.length) {
+				if (enums[index].hasMoreElements()) {
+					return true;
+				}
+
+				// Next chunk
+				index++;
+			}
+
+			// End of chunks
+			return false;
+		}
+
+		@Override
+		public E nextElement() {
+			if (hasMoreElements()) {
+				return enums[index].nextElement();
+			}
+			throw new NoSuchElementException();
+		}
+	}
+
 	/**
 	 * Complete the class-path with plug-ins jars
-	 * 
+	 *
 	 * @return The version digest.
 	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
@@ -161,16 +219,16 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *
 	 * @param versionFileToPath The mapping filled by this method. Key : The filename without extension and with
 	 *                          extended comparable version. Value : The resolved Path.
-	 * @param javadocFiler When true, only javadoc jar are analyzed, otherwise they are excluded.
+	 * @param javadocFiler      When true, only javadoc jar are analyzed, otherwise they are excluded.
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
-	 *         artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
-	 *         version.
+	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
+	 * version.
 	 * @throws IOException When file list failed.
 	 */
 	public Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath, final boolean javadocFiler) throws IOException {
 		final var versionFiles = new TreeMap<String, String>();
 		try (var list = Files.list(this.pluginDirectory)) {
-			list.filter(p -> javadocFiler ? p.toString().endsWith("-javadoc.jar") : (p.toString().endsWith(".jar") &&  !p.toString().endsWith("-javadoc.jar")))
+			list.filter(p -> javadocFiler ? p.toString().endsWith("-javadoc.jar") : (p.toString().endsWith(".jar") && !p.toString().endsWith("-javadoc.jar")))
 					.forEach(path -> addVersionFile(versionFileToPath, versionFiles, path));
 		}
 		final var enabledPlugins = new TreeMap<String, String>(Comparator.reverseOrder());
@@ -185,8 +243,8 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Return the mapping of the installed plug-ins. Only the last version is returned.
 	 *
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
-	 *         artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
-	 *         version.
+	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
+	 * version.
 	 * @throws IOException When file list failed.
 	 */
 	public Map<String, String> getInstalledPlugins() throws IOException {
@@ -197,7 +255,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Return the plug-in class loader from the current class loader.
 	 *
 	 * @return the closest {@link PluginsClassLoader} instance from the current thread's {@link ClassLoader}. May be
-	 *         <code>null</code>.
+	 * <code>null</code>.
 	 */
 	public static PluginsClassLoader getInstance() {
 		return getInstance(Thread.currentThread().getContextClassLoader());
@@ -208,7 +266,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *
 	 * @param cl The {@link ClassLoader} to inspect.
 	 * @return the closest {@link PluginsClassLoader} instance from the current thread's {@link ClassLoader}. May be
-	 *         <code>null</code>.
+	 * <code>null</code>.
 	 */
 	public static PluginsClassLoader getInstance(final ClassLoader cl) {
 		if (cl == null) {
@@ -278,7 +336,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Copy a resource needed to be exported from the JAR plug-in to the home.
 	 *
 	 * @param from The source file to the destination file. Directories are not supported.
-	 * @param to The destination file.
+	 * @param to   The destination file.
 	 * @throws IOException When plug-in file cannot be copied.
 	 */
 	protected void copy(final Path from, final Path to) throws IOException {
@@ -316,12 +374,12 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *
 	 * @param version The version string to convert. May be <code>null</code>
 	 * @return The given version to be comparable with another version. Handle the 'SNAPSHOT' case considered as older
-	 *         than the one without this suffix.
+	 * than the one without this suffix.
 	 * @see PluginsClassLoader#toExtendedVersion(String)
 	 */
 	public static String toExtendedVersion(final String version) {
 		final var fileWithVersionExp = new StringBuilder();
-		final var allFragments = new String[]{ "0", "0", "0", "0" };
+		final var allFragments = new String[]{"0", "0", "0", "0"};
 		final var versionFragments = ObjectUtils.defaultIfNull(StringUtils.split(version, "-."), allFragments);
 		System.arraycopy(versionFragments, 0, allFragments, 0, versionFragments.length);
 		Arrays.stream(allFragments).map(s -> StringUtils.leftPad(StringUtils.leftPad(s, 7, '0'), 8, 'Z'))
