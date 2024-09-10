@@ -47,11 +47,11 @@
 
         <!-- BOM overrides -->
         <plugin.jacoco>0.8.12</plugin.jacoco> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
-        <plugin.failsafe>3.2.5</plugin.failsafe>
-        <plugin.surefire>3.2.5</plugin.surefire> <!-- http://maven.apache.org/surefire/summary.html -->
-        <plugin.surefire.report>3.2.5</plugin.surefire.report> <!--http://maven.apache.org/surefire/maven-surefire-report-plugin/summary.html -->
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <junit.platform.version>1.10.2</junit.platform.version>
+        <plugin.failsafe>3.5.0</plugin.failsafe>
+        <plugin.surefire>3.5.0</plugin.surefire> <!-- http://maven.apache.org/surefire/summary.html -->
+        <plugin.surefire.report>3.5.0</plugin.surefire.report> <!--http://maven.apache.org/surefire/maven-surefire-report-plugin/summary.html -->
+        <junit.jupiter.version>5.11.0</junit.jupiter.version>
+        <junit.platform.version>1.11.0</junit.platform.version>
 
         <!-- BOM -->
         <annotation-api.version>2.1.1</annotation-api.version>
@@ -780,6 +780,11 @@
                 <version>${junit.platform.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-engine</artifactId>
+                <version>${junit.platform.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
                 <version>${httpclient.version}</version>
@@ -892,6 +897,34 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${plugin.resources}</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <propertiesEncoding>UTF-8</propertiesEncoding>
+                        <nonFilteredFileExtensions>
+                            <nonFilteredFileExtension>zip</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>class</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>csv</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>jar</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>txt</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>png</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+                        </nonFilteredFileExtensions>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
