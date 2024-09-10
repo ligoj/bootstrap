@@ -21,8 +21,8 @@ import lombok.Setter;
 @Setter
 public class WineVo {
 
-	@Min(0)
-	private int id;
+	@Min(1)
+	private Integer id;
 
 	@NotEmpty
 	@UpperCase
