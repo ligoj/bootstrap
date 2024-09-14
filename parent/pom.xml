@@ -13,7 +13,7 @@
 
     <groupId>org.ligoj.bootstrap</groupId>
     <artifactId>parent</artifactId>
-    <version>3.1.21-SNAPSHOT</version>
+    <version>3.1.21</version>
     <packaging>pom</packaging>
     <name>Ligoj - Bootstrap - Parent</name>
     <description>Ligoj Bootstrap Parent</description>
@@ -65,7 +65,7 @@
         <awaitility-proxy.version>3.1.6</awaitility-proxy.version>
         <byte-buddy.version>1.15.1</byte-buddy.version>
         <cache.version>1.1.1</cache.version>
-        <c3p0.version>0.9.5.5</c3p0.version>
+        <c3p0.version>0.10.1</c3p0.version>
         <checker-qual.version>3.47.0</checker-qual.version>
         <commons-codec>1.17.1</commons-codec>
         <commons-collections4.version>4.4</commons-collections4.version>
@@ -151,7 +151,7 @@
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-core</artifactId>
-                <version>3.1.21-SNAPSHOT</version>
+                <version>3.1.21</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.gentyref</groupId>
@@ -729,13 +729,13 @@
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-business</artifactId>
-                <version>3.1.21-SNAPSHOT</version>
+                <version>3.1.21</version>
             </dependency>
 
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-business-test</artifactId>
-                <version>3.1.21-SNAPSHOT</version>
+                <version>3.1.21</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
@@ -961,7 +961,7 @@
                 <dependency>
                     <groupId>org.ligoj.bootstrap</groupId>
                     <artifactId>bootstrap-launcher</artifactId>
-                    <version>3.1.21-SNAPSHOT</version>
+                    <version>3.1.21</version>
                 </dependency>
             </dependencies>
         </profile>
