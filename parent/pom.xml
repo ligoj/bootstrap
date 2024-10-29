@@ -66,7 +66,7 @@
         <byte-buddy.version>1.15.7</byte-buddy.version>
         <cache.version>1.1.1</cache.version>
         <c3p0.version>0.10.1</c3p0.version>
-        <checker-qual.version>3.47.0</checker-qual.version>
+        <checker-qual.version>3.48.1</checker-qual.version>
         <commons-codec>1.17.1</commons-codec>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-collections.version>3.2.2</commons-collections.version>
