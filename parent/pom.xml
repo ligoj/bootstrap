@@ -112,11 +112,11 @@
         <slf4j.version>2.0.16</slf4j.version>
         <soap-api.version>3.0.2</soap-api.version>
         <spotbugs-annotations>4.8.6</spotbugs-annotations>
-        <spring.version>6.1.13</spring.version>
-        <spring-boot.version>3.3.3</spring-boot.version>
+        <spring.version>6.1.14</spring.version>
+        <spring-boot.version>3.3.5</spring-boot.version>
         <spring-cloud-context.version>4.1.4</spring-cloud-context.version>
         <spring-data.version>3.3.0</spring-data.version>
-        <spring-security.version>6.3.3</spring-security.version>
+        <spring-security.version>6.3.4</spring-security.version>
         <swagger-ui.version>5.17.14</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.23</swagger-jaxrs2-jakarta.version>
         <transaction-api.version>2.0.1</transaction-api.version>
