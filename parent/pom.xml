@@ -87,8 +87,8 @@
         <httpclient.version>5.4.1</httpclient.version>
         <httpcore.version>5.3.1</httpcore.version>
         <hsqldb.version>2.7.3</hsqldb.version>
-        <jackson.version>2.17.2</jackson.version>
-        <jackson.databind.version>2.17.2</jackson.databind.version>
+        <jackson.version>2.18.1</jackson.version>
+        <jackson.databind.version>2.18.1</jackson.databind.version>
         <jakarta.xml.ws-api.version>4.0.2</jakarta.xml.ws-api.version>
         <jasypt.version>1.9.3</jasypt.version>
         <jaxb-api.version>4.0.2</jaxb-api.version>
