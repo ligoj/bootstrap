@@ -138,7 +138,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Virtualize a list of {@link Enumeration} into a single one.
 	 */
-	final static class ConcatEnumeration<E> implements Enumeration<E> {
+	static final class ConcatEnumeration<E> implements Enumeration<E> {
 		private final Enumeration<E>[] enums;
 		private int index = 0;
 

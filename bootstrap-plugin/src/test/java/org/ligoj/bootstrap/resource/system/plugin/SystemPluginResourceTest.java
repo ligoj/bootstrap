@@ -998,6 +998,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 				return List.of(pluginNoLocation, pluginDev, pluginIgnored, pluginOk);
 			}
 
+			@Override
 			void install(final InputStream input, final String groupId, final String artifact, final String version,
 					final String repository, final boolean installPlugin, final boolean installJavadoc) {
 				installed.set(true);

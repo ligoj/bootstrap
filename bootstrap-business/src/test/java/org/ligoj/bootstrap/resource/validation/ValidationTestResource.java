@@ -40,7 +40,7 @@ public class ValidationTestResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void update(final Wine entity) {
-		// Nothing to do;
+		// Nothing to do
 	}
 
 }
