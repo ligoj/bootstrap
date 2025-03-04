@@ -16,7 +16,7 @@ Key features:
 - Advanced RS validation
 - Tuned Jackson configuration for minified payload and validation
 - Test powered with CSV data load to/from JPA entities
-- TDD ready with pre-built asserts with Mockito and Wiremock
+- TDD ready with pre-built asserts with Mockito and Wiremock, target is `100%` code coverage
 - Optional encrypted properties support and database configuration with Jasypt
 - Tuned configuration for dev, build and production
 - Spring-Data extensions for performance, minimal code and exception handling
