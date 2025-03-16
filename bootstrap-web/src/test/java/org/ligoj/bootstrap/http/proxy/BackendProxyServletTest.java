@@ -21,6 +21,8 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.DelegatingServletOutputStream;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -186,6 +188,7 @@ class BackendProxyServletTest {
 		Mockito.when(servletConfig.getInitParameter("maxConnections")).thenReturn("512");
 		Mockito.when(servletConfig.getInitParameter("cors-origin")).thenReturn("*");
 		Mockito.when(servletConfig.getInitParameter("cors-vary")).thenReturn("Origin");
+		Mockito.when(servletConfig.getInitParameter("usernameOAuth2Attribute")).thenReturn("email");
 		servlet.init(servletConfig);
 	}
 
@@ -202,6 +205,26 @@ class BackendProxyServletTest {
 		Mockito.when(principal.getName()).thenReturn("junit");
 		servlet.addProxyHeaders(request, exchange);
 		Assertions.assertEquals("junit", headers.get("SM_UNIVERSALID"));
+		Assertions.assertEquals("J_SESSIONID", headers.get("SM_SESSIONID"));
+	}
+
+	@Test
+	void addProxyHeadersOAuth2() throws ServletException {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		final var headers = new HashMap<String, Object>();
+		final var exchange = setupRequest(request, headers);
+		final var session = Mockito.mock(HttpSession.class);
+		setupRedirection("/", "/");
+
+		final var principal = Mockito.mock(OAuth2AuthenticationToken.class);
+		Mockito.when(request.getSession(false)).thenReturn(session);
+		Mockito.when(session.getId()).thenReturn("J_SESSIONID");
+		Mockito.when(request.getUserPrincipal()).thenReturn(principal);
+		final var oAuthUser = Mockito.mock(OAuth2User.class);
+		Mockito.when(principal.getPrincipal()).thenReturn(oAuthUser);
+		Mockito.when(oAuthUser.getAttribute("email")).thenReturn("j@u");
+		servlet.addProxyHeaders(request, exchange);
+		Assertions.assertEquals("j@u", headers.get("SM_UNIVERSALID"));
 		Assertions.assertEquals("J_SESSIONID", headers.get("SM_SESSIONID"));
 	}
 

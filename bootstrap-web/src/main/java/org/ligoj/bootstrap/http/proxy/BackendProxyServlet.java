@@ -19,6 +19,7 @@ import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.ee10.proxy.AsyncMiddleManServlet;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 import java.io.IOException;
 import java.net.URI;
@@ -122,6 +123,11 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 	 */
 	private String corsVary; // NOSONAR - Initialized once, from #init()
 
+	/**
+	 * Username attribute extracted from the OAuth2 principal details when available
+	 */
+	private String usernameOAuth2Attribute;
+
 	private void addHeader(final Request proxyRequest, final String name, final String value) {
 		proxyRequest.headers(headers -> headers.add(name, value));
 	}
@@ -129,8 +135,8 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 	@Override
 	protected void addProxyHeaders(final HttpServletRequest clientRequest, final Request proxyRequest) {
 		super.addProxyHeaders(clientRequest, proxyRequest);
-
-		if (clientRequest.getUserPrincipal() == null) {
+		var principal = clientRequest.getUserPrincipal();
+		if (principal == null) {
 			// Forward API user, if defined.
 			final var apiUser = getIdData(clientRequest, apiUserParameter, apiUserHeader);
 			final var apiKey = getIdData(clientRequest, apiKeyParameter, apiKeyHeader);
@@ -141,8 +147,13 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 				addHeader(proxyRequest, apiKeyHeader, apiKey);
 			}
 		} else {
+			// Custom username attribute handling
+			final var username = principal instanceof OAuth2AuthenticationToken
+					? ((OAuth2AuthenticationToken) principal).getPrincipal().getAttribute(usernameOAuth2Attribute).toString()
+					: principal.getName();
+
 			// Stateful authenticated user
-			addHeader(proxyRequest, HEADER_USER, clientRequest.getUserPrincipal().getName());
+			addHeader(proxyRequest, HEADER_USER, username);
 			addHeader(proxyRequest, "SM_SESSIONID", clientRequest.getSession(false).getId());
 		}
 
@@ -236,6 +247,8 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 
 		// Read "proxy to" end point URL from "Servlet" configuration and system
 		this.prefix = getServletContext().getContextPath() + StringUtils.trimToEmpty(config.getInitParameter("prefix"));
+
+		this.usernameOAuth2Attribute = config.getInitParameter("usernameOAuth2Attribute");
 
 		// Read API configuration
 		this.proxyTo = getRequiredInitParameter("proxyTo");
