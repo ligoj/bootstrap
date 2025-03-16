@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Test validation filter management with class {@link ValidationTestResource}.
  */
-public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
+class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 
 	private static final String RULE = "rule";
 
@@ -48,7 +48,7 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 * server creation.
 	 */
 	@BeforeAll
-	public static void startServer() {
+	static void startServer() {
 		server = new ValidationIT().startRestServer("");
 	}
 
@@ -204,7 +204,7 @@ public class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 * shutdown server
 	 */
 	@AfterAll
-	public static void tearDown() throws Exception {
+	static void tearDown() throws Exception {
 		server.stop();
 	}
 }

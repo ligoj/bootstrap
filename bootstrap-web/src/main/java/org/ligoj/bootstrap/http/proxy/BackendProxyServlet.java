@@ -148,8 +148,8 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 			}
 		} else {
 			// Custom username attribute handling
-			final var username = principal instanceof OAuth2AuthenticationToken
-					? ((OAuth2AuthenticationToken) principal).getPrincipal().getAttribute(usernameOAuth2Attribute).toString()
+			final var username = principal instanceof OAuth2AuthenticationToken oauth2authenticationtoken
+					? oauth2authenticationtoken.getPrincipal().getAttribute(usernameOAuth2Attribute).toString()
 					: principal.getName();
 
 			// Stateful authenticated user
