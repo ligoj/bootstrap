@@ -111,7 +111,7 @@
         <swagger-jaxrs2-jakarta.version>2.2.29</swagger-jaxrs2-jakarta.version>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
-        <wiremock.version>3.11.0</wiremock.version>
+        <wiremock.version>3.12.1</wiremock.version>
     </properties>
 
     <dependencyManagement>
