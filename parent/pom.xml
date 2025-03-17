@@ -72,7 +72,7 @@
         <guava.version>33.4.0-jre</guava.version>
         <gentyref.version>1.2.0</gentyref.version>
         <hazelcast.version>5.5.0</hazelcast.version>
-        <hibernate.version>6.6.7.Final</hibernate.version>
+        <hibernate.version>6.6.11.Final</hibernate.version>
         <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
         <httpclient.version>5.4.2</httpclient.version>
         <httpcore.version>5.3.3</httpcore.version>
