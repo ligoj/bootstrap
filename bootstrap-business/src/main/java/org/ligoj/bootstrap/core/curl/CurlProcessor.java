@@ -18,11 +18,11 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
-import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -108,7 +108,7 @@ public class CurlProcessor implements AutoCloseable {
 	 *
 	 * @return a trusted TLS registry.
 	 */
-	public static Registry<ConnectionSocketFactory> newSslContext() {
+	public static Registry<TlsSocketStrategy> newSslContext() {
 		return newSslContext("TLS");
 	}
 
@@ -118,15 +118,16 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param protocol The SSL protocol.
 	 * @return A new trusted SSL registry using the given protocol.
 	 */
-	protected static Registry<ConnectionSocketFactory> newSslContext(final String protocol) {
+	protected static Registry<TlsSocketStrategy> newSslContext(final String protocol) {
 		// Initialize HTTPS scheme
 		final var allCerts = new TrustManager[]{new TrustedX509TrustManager()};
 		try {
 			final var sslContext = SSLContext.getInstance(protocol);
 			sslContext.init(null, allCerts, new SecureRandom());
-			final var sslSocketFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
-			return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslSocketFactory)
-					.register("http", PlainConnectionSocketFactory.getSocketFactory()).build();
+			final var plainSocketFactory = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+
+			final var sslSocketFactory = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+			return RegistryBuilder.<TlsSocketStrategy>create().register(URIScheme.HTTPS.id, sslSocketFactory).build();
 		} catch (final GeneralSecurityException e) {
 			// Wrap the exception
 			throw new IllegalStateException("Unable to build a secured " + protocol + " registry", e);
@@ -141,7 +142,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param errorText    I18N key of the validation message.
 	 */
 	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
-		validateAndClose(url, propertyName, errorText,false, null, null);
+		validateAndClose(url, propertyName, errorText, false, null, null);
 	}
 
 	/**
@@ -150,11 +151,11 @@ public class CurlProcessor implements AutoCloseable {
 	 * @param url          The URL to check.
 	 * @param propertyName Name of the validation JSon property
 	 * @param errorText    I18N key of the validation message.
-	 * @param noVerifySsl       When <code>true</code> SSL checks are ignored.
-	 * @param proxyHost         Custom proxy host for this process.
-	 * @param proxyPort         Custom proxy port for this process. Default (when <code>null</code>) is <code>8080</code> when proxy host is defined.
+	 * @param noVerifySsl  When <code>true</code> SSL checks are ignored.
+	 * @param proxyHost    Custom proxy host for this process.
+	 * @param proxyPort    Custom proxy port for this process. Default (when <code>null</code>) is <code>8080</code> when proxy host is defined.
 	 */
-	public static void validateAndClose(final String url, final String propertyName, final String errorText,final boolean noVerifySsl, final String proxyHost, final Integer proxyPort) {
+	public static void validateAndClose(final String url, final String propertyName, final String errorText, final boolean noVerifySsl, final String proxyHost, final Integer proxyPort) {
 		try (final var curlProcessor = new CurlProcessor(DEFAULT_CALLBACK, DEFAULT_CONNECTION_TIMEOUT,
 				DEFAULT_RESPONSE_TIMEOUT, noVerifySsl, proxyHost, proxyPort)) {
 			curlProcessor.validate(url, propertyName, errorText);
@@ -233,7 +234,7 @@ public class CurlProcessor implements AutoCloseable {
 		// Initialize proxy
 		final var proxyHostResolved = StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_HOST), proxyHost);
 		if (proxyHostResolved != null) {
-			final var proxyPortResolved = ObjectUtils.defaultIfNull(proxyPort, StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_PORT),"8080")).toString();
+			final var proxyPortResolved = ObjectUtils.defaultIfNull(proxyPort, StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_PORT), "8080")).toString();
 			final var proxy = new HttpHost(proxyHostResolved, Integer.parseInt(proxyPortResolved));
 			final var httpRoutePlanner = new DefaultProxyRoutePlanner(proxy);
 			clientBuilder.setRoutePlanner(httpRoutePlanner);
@@ -242,7 +243,7 @@ public class CurlProcessor implements AutoCloseable {
 		final var verifySslResolved = Boolean.parseBoolean(StringUtils.defaultIfBlank(System.getProperty(SSL_VERIFY), String.valueOf(!noVerifySsl)));
 		if (!verifySslResolved) {
 			// Initialize connection manager to bypass some SSL checks
-			final var connectionManager = new BasicHttpClientConnectionManager(newSslContext());
+			final var connectionManager = BasicHttpClientConnectionManager.create(newSslContext());
 			clientBuilder.setConnectionManager(connectionManager);
 			clientBuilder.setDefaultRequestConfig(RequestConfig.custom()
 					.setCookieSpec(StandardCookieSpec.RELAXED)
