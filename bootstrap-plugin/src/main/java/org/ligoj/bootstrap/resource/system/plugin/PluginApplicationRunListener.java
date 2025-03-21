@@ -26,7 +26,7 @@ public class PluginApplicationRunListener implements SpringApplicationRunListene
 	 * @param application The current application.
 	 * @param args        The application arguments.
 	 */
-	@SuppressWarnings({"this-escape"})
+	@SuppressWarnings("this-escape")
 	public PluginApplicationRunListener(final SpringApplication application, final String... args) {
 		try {
 			if (PluginsClassLoader.getInstance() == null) {

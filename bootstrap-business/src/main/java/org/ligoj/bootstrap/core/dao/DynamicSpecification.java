@@ -138,8 +138,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 		final var path = mapping.getOrDefault(rule.getField(), mapping.containsKey("*") ? rule.getField() : null);
 		if (path == null) {
 			// Invalid path, coding issue or SQL injection attempt
-			log.error(String.format("Non mapped property '%s' found for entity class '%s'", rule.getField(),
-					root.getJavaType().getName()));
+			log.error("Non mapped property '{}' found for entity class '{}'", rule.getField(),  root.getJavaType().getName());
 			return null;
 		}
 		return getOrmPath(root, path);
@@ -164,8 +163,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 		final Expression<? extends Comparable<Object>> expression = getOrmPath(root, rule);
 		if (expression == null) {
 			// Non matched expression, ignore it...
-			log.info(String.format("SQL injection attack ? Unable to map request rule for property %s",
-					rule.getField()));
+			log.info("SQL injection attack ? Unable to map request rule for property {}", rule.getField());
 			return null;
 		}
 		return getPredicate(cb, rule, expression);

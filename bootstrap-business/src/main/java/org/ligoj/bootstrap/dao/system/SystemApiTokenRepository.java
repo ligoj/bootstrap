@@ -21,7 +21,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	 * @param hash The requested hashed API token.
 	 * @return <code>true</code> when there is match between user and API token.
 	 */
-	@Query(value = "SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
+	@Query("SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
 			+ "FROM SystemApiToken WHERE user=:user AND hash=:hash")
 	boolean checkByUserAndHash(String user, String hash);
 
@@ -32,7 +32,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	 * @param token The requested plain text/unsecured API token.
 	 * @return <code>true</code> when there is match between user and API token.
 	 */
-	@Query(value = "SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
+	@Query("SELECT CASE WHEN count(user) > 0 THEN true ELSE false END "
 			+ "FROM SystemApiToken WHERE user=:user AND hash ='_plain_' AND token=:token")
 	boolean checkByUserAndToken(String user, String token);
 
@@ -51,7 +51,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 	 * @param user The owner.
 	 * @return Owned API token names.
 	 */
-	@Query(value = "SELECT name FROM SystemApiToken WHERE user=?1 ORDER BY name")
+	@Query("SELECT name FROM SystemApiToken WHERE user=?1 ORDER BY name")
 	List<String> findAllByUser(String user);
 
 	/**

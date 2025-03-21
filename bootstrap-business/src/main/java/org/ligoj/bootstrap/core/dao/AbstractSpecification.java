@@ -84,7 +84,7 @@ public abstract class AbstractSpecification {
 	/**
 	 * Retrieve an existing join within the ones within the given root and that match to given attribute.
 	 *
-	 * @param from      the from source element.
+	 * @param from      the "from" source element.
 	 * @param attribute the attribute to join
 	 * @param <U>       The source type of the {@link Join}
 	 * @param <T>       The resolved entity type of the path value.

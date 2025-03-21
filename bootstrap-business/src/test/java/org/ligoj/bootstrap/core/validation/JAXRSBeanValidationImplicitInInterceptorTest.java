@@ -262,9 +262,8 @@ class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 	 */
 	@Test
 	void objectNull() {
-		final SystemUser userDto = null;
 		final var method = fromName("object");
-		final List<Object> beans = Collections.singletonList(userDto);
+		final List<Object> beans = Collections.singletonList(null);
 		final var cve = Assertions.assertThrows(ConstraintViolationException.class,
 				() -> validationInInterceptor.handleValidation(MESSAGE, INSTANCE, method, beans));
 

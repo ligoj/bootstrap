@@ -18,7 +18,6 @@ import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +86,7 @@ class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertNotNull(errors);
 			Assertions.assertEquals(1, errors.size());
 			Assertions.assertNotNull(errors.get("entity"));
-			Assertions.assertEquals(1, ((Collection<?>) errors.get("entity")).size());
+			Assertions.assertEquals(1, errors.get("entity").size());
 			Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("entity")).getFirst()).size());
 			Assertions.assertEquals("NotNull", ((Map<?, ?>) ((List<?>) errors.get("entity")).getFirst()).get(RULE));
 			return null;

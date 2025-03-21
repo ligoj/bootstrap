@@ -358,9 +358,9 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	@PUT
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("upload")
-	public void upload(@Multipart(value = "plugin-file") final InputStream input,
-			@Multipart(value = "plugin-id") final String pluginId,
-			@Multipart(value = "plugin-version") final String version) {
+	public void upload(@Multipart("plugin-file") final InputStream input,
+			@Multipart("plugin-id") final String pluginId,
+			@Multipart("plugin-version") final String version) {
 		install(input, getPluginGroupId(), pluginId, version, "(local)", true, false);
 	}
 

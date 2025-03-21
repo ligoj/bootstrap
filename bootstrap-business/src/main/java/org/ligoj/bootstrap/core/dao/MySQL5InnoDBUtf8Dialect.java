@@ -13,7 +13,7 @@ public class MySQL5InnoDBUtf8Dialect extends AbstractMySQLInnoDBUtDialect {
 	/**
 	 * Default constructor with additional registered keywords.
 	 */
-	@SuppressWarnings({"this-escape"})
+	@SuppressWarnings("this-escape")
 	public MySQL5InnoDBUtf8Dialect() {
 		super(DatabaseVersion.make(5));
 	}

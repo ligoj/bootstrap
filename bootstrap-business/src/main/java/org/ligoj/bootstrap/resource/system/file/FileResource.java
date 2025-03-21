@@ -74,7 +74,7 @@ public class FileResource {
 	 */
 	@PUT
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void upload(@Multipart(value = "content") final InputStream content, @Multipart(value = "path") final String path, @Multipart(value = "executable") final String executable) throws IOException {
+	public void upload(@Multipart("content") final InputStream content, @Multipart("path") final String path, @Multipart("executable") final String executable) throws IOException {
 		checkPath(path);
 
 		// Write the content

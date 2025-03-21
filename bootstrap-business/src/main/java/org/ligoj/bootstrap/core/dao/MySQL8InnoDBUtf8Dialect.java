@@ -13,7 +13,7 @@ public class MySQL8InnoDBUtf8Dialect extends AbstractMySQLInnoDBUtDialect {
 	/**
 	 * Default constructor with additional registered keywords.
 	 */
-	@SuppressWarnings({"this-escape"})
+	@SuppressWarnings("this-escape")
 	public MySQL8InnoDBUtf8Dialect() {
 		super( DatabaseVersion.make( 8 ) );
 		registerKeyword("CUME_DIST");

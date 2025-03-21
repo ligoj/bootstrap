@@ -9,8 +9,8 @@ import org.junit.platform.suite.api.*;
  * Unit tests
  */
 @Suite
-@SelectPackages({"org.ligoj.bootstrap"})
-@IncludeClassNamePatterns({"^.*Test.*$"})
-@ExcludeClassNamePatterns({"^(Abstract.*|.*IT)$"})
+@SelectPackages("org.ligoj.bootstrap")
+@IncludeClassNamePatterns("^.*Test.*$")
+@ExcludeClassNamePatterns("^(Abstract.*|.*IT)$")
 public class UTSuite {
 }

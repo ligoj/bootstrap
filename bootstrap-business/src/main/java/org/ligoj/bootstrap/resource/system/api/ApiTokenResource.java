@@ -39,7 +39,7 @@ import java.util.List;
  * <li>In the database, are stored user (owner), logical name of the key, hashed key (SHA-512+), encrypted key.</li>
  * <li>Cipher key column is used to display the plain token value for the user. One by one.</li>
  * <li>Hashed key column is used to match the key, as we would do it for password.</li>
- * <li>The salt used for hashed value is only user name. SHA-512+ strength and the key length (&gt;128) reduce slightly
+ * <li>The salt used for hashed value is only username. SHA-512+ strength and the key length (&gt;128) reduce slightly
  * the issues.</li>
  * <li>Secret key used for ciphering is based on SHA-1 of the key plus key's name, plus user's login, plus a secret key,
  * the whole with 30+ iterations. So SHA-1 is not used there to hash a password, but to build a secret key.</li>

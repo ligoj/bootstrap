@@ -26,7 +26,7 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@Table(name = "S_ROLE", uniqueConstraints = @UniqueConstraint(columnNames = { "name" }))
+@Table(name = "S_ROLE", uniqueConstraints = @UniqueConstraint(columnNames = "name" ))
 @ToString(of = "name")
 public class SystemRole extends AbstractAudited<Integer> implements GrantedAuthority, INamableBean<Integer> {
 

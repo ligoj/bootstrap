@@ -27,7 +27,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @MappedSuperclass
-@JsonIgnoreProperties(value = "new")
+@JsonIgnoreProperties("new")
 @EqualsAndHashCode(of = "id")
 @ToString(of = "id")
 public abstract class AbstractBusinessEntity<K extends Serializable> implements Persistable<K> {

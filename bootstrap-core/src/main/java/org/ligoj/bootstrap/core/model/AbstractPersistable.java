@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @param <K>
  *            The primary key's type
  */
-@JsonIgnoreProperties(value = "new")
+@JsonIgnoreProperties("new")
 public abstract class AbstractPersistable<K extends Serializable> extends org.springframework.data.jpa.domain.AbstractPersistable<K> {
 
 	@Override

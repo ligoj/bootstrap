@@ -44,7 +44,7 @@ public class LigojOpenApiFeature extends org.apache.cxf.jaxrs.openapi.OpenApiFea
 	 *
 	 * @param version The current application version.
 	 */
-	@SuppressWarnings({"this-escape"})
+	@SuppressWarnings("this-escape")
 	public LigojOpenApiFeature(@Value("${project.version}") final String version) {
 		setLicense("MIT");
 		setLicenseUrl("https://github.com/ligoj/ligoj/blob/master/LICENSE");

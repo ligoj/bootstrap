@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Check spring utilities.
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/spring/application-context-test.xml" })
+@ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml" )
 class SpringUtilsTest {
 
 	@BeforeAll

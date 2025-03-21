@@ -309,7 +309,7 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	}
 
 	/**
-	 * Return a enumeration literal from a salt.
+	 * Return an enumeration literal from a salt.
 	 *
 	 * @param salt
 	 *            Any string used as salt.

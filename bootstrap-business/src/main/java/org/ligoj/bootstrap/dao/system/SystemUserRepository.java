@@ -19,7 +19,7 @@ public interface SystemUserRepository extends RestRepository<SystemUser, String>
 	 *            user login.
 	 * @return {@link SystemUser} with roles.
 	 */
-	@Query(value = "SELECT user, r FROM SystemUser user LEFT JOIN user.roles ra LEFT JOIN ra.role r WHERE user.login = ?1")
+	@Query("SELECT user, r FROM SystemUser user LEFT JOIN user.roles ra LEFT JOIN ra.role r WHERE user.login = ?1")
 	Object[][] findByLoginFetchRoles(String login);
 
 	/**
