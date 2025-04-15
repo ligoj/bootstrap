@@ -352,7 +352,7 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 	 * @param request The original request.
 	 * @return <code>true</code> for API request.
 	 */
-	public static boolean isApiRequest(final HttpServletRequest request) {
+	protected static boolean isApiRequest(final HttpServletRequest request) {
 		return "XMLHttpRequest".equalsIgnoreCase(StringUtils.trimToEmpty(request.getHeader("X-Requested-With")))
 				|| !StringUtils.trimToEmpty(request.getHeader("User-Agent")).contains("Mozilla");
 	}
