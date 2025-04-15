@@ -24,7 +24,7 @@ class RedirectAuthenticationEntryPointTest {
 	private RedirectAuthenticationEntryPoint entryPoint;
 
 	@BeforeEach
-    void setup() {
+	void setup() {
 		entryPoint = new RedirectAuthenticationEntryPoint("http://h");
 		final Set<String> redirectUrls = new HashSet<>();
 		redirectUrls.add("/index.html");
@@ -32,7 +32,7 @@ class RedirectAuthenticationEntryPointTest {
 	}
 
 	@Test
-    void testNoRedirect() throws IOException, ServletException {
+	void redirectByContentNoForce() throws IOException, ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getServletPath()).thenReturn("/something-else");
 		final var strategy = Mockito.mock(RedirectStrategy.class);
@@ -42,7 +42,18 @@ class RedirectAuthenticationEntryPointTest {
 	}
 
 	@Test
-    void testRedirect() throws IOException, ServletException {
+	void redirectByContentForceHtml() throws IOException, ServletException {
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getServletPath()).thenReturn("/page.html");
+		// /messages.js
+		final var strategy = Mockito.mock(RedirectStrategy.class);
+		entryPoint.setRedirectStrategy(strategy);
+		entryPoint.commence(request, null, null);
+		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "");
+	}
+
+	@Test
+	void standardRedirect() throws IOException, ServletException {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getServletPath()).thenReturn("/index.html");
 		final var response = Mockito.mock(HttpServletResponse.class);

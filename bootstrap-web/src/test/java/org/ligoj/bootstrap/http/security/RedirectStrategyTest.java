@@ -22,13 +22,59 @@ import java.util.List;
  */
 class RedirectStrategyTest {
 
-	@Test
-    void sendRedirect() throws IOException {
+
+	void sendRedirect(boolean success, String path, String url) throws IOException {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
+		Mockito.when(request.getPathInfo()).thenReturn(path);
+		final var redirectStrategy = new RestRedirectStrategy();
+		redirectStrategy.setSuccess(success);
+		redirectStrategy.setStatus(1);
+		redirectStrategy.sendRedirect(request, response, url);
+	}
+
+	@Test
+	void sendRedirect() throws IOException {
+		sendRedirect(true, "any", "");
+	}
+
+	@Test
+	void sendRedirectNotSuccessMessagesJS() throws IOException {
+		sendRedirect(false, "/messages.js", "");
+	}
+
+	@Test
+	void sendRedirectNotSuccessJS() throws IOException {
+		sendRedirect(false, "/some.js", "");
+	}
+
+	@Test
+	void sendRedirectNotSuccessForce() throws IOException {
+		sendRedirect(false, "/some.js", null);
+	}
+
+	@Test
+	void sendRedirectNotSuccessJPG() throws IOException {
+		sendRedirect(false, "/some.jpg", "");
+	}
+
+	@Test
+	void sendRedirectNotSuccessHTML() throws IOException {
+		sendRedirect(false, "/some.html", "");
+	}
+
+	@Test
+	void sendRedirectNoCookie() throws IOException {
+		final var response = Mockito.mock(HttpServletResponse.class);
+		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(new ByteArrayOutputStream()));
+		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
+		final var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(request.getContextPath()).thenReturn("");
+		Mockito.when(request.getPathInfo()).thenReturn("");
+		initSpringSecurityContext(Mockito.mock(Authentication.class));
 		final var redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(true);
 		redirectStrategy.setStatus(1);
@@ -36,39 +82,13 @@ class RedirectStrategyTest {
 	}
 
 	@Test
-    void sendRedirectNotSuccess() throws IOException {
+	void sendRedirectCookies() throws IOException {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(new ByteArrayOutputStream()));
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
-		final var redirectStrategy = new RestRedirectStrategy();
-		redirectStrategy.setSuccess(false);
-		redirectStrategy.setStatus(1);
-		redirectStrategy.sendRedirect(request, response, "");
-	}
-
-	@Test
-    void sendRedirectNoCookie() throws IOException {
-		final var response = Mockito.mock(HttpServletResponse.class);
-		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(new ByteArrayOutputStream()));
-		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getContextPath()).thenReturn("");
-		initSpringSecurityContext( Mockito.mock(Authentication.class));
-		final var redirectStrategy = new RestRedirectStrategy();
-		redirectStrategy.setSuccess(true);
-		redirectStrategy.setStatus(1);
-		redirectStrategy.sendRedirect(request, response, "");
-	}
-
-	@Test
-    void sendRedirectCookies() throws IOException {
-		final var response = Mockito.mock(HttpServletResponse.class);
-		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(new ByteArrayOutputStream()));
-		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getContextPath()).thenReturn("");
+		Mockito.when(request.getPathInfo()).thenReturn("");
 		initSpringSecurityContext(
 				new CookieUsernamePasswordAuthenticationToken("user", "N/A", null, List.of("key=value; path=/")));
 		final var redirectStrategy = new RestRedirectStrategy();
@@ -80,9 +100,8 @@ class RedirectStrategyTest {
 
 	/**
 	 * Initialize {@link SecurityContextHolder} for given user.
-	 * 
-	 * @param authentication
-	 *            The optional current authentication.
+	 *
+	 * @param authentication The optional current authentication.
 	 */
 	private void initSpringSecurityContext(final Authentication authentication) {
 		SecurityContextHolder.clearContext();

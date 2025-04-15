@@ -33,8 +33,13 @@ public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntr
 	private Set<String> redirectUrls;
 
 	/**
+	 * Force redirect URL
+	 */
+	private boolean forceRedirectUrl = false;
+
+	/**
 	 * Build the redirect to a specific entry point.
-	 * 
+	 *
 	 * @param loginFormUrl URL where the login page can be found. Should either be relative to the web-app context path
 	 *                     (include a leading {@code /}) or an absolute URL.
 	 */
@@ -55,7 +60,7 @@ public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntr
 			super.commence(request, response, authException);
 		} else {
 			// Redirect for this request
-			redirectStrategy.sendRedirect(request, response, "");
+			redirectStrategy.sendRedirect(request, response, forceRedirectUrl ? null : "");
 		}
 	}
 }
