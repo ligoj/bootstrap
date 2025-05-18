@@ -11,7 +11,7 @@ import org.springframework.security.web.access.expression.WebSecurityExpressionR
 import java.util.function.Supplier;
 
 /**
- * Extended expression to but used in method and authentication voter.
+ * Extended expression to be used in method and authentication voters.
  */
 public class ExtendedWebSecurityExpressionRoot extends WebSecurityExpressionRoot {
 
@@ -40,7 +40,7 @@ public class ExtendedWebSecurityExpressionRoot extends WebSecurityExpressionRoot
 	}
 
 	/**
-	 * Validate the current request a defined parameter.
+     * Validate that the current request has a defined parameter.
 	 *
 	 * @param parameter
 	 *            the expected non-blank parameter.
@@ -51,7 +51,7 @@ public class ExtendedWebSecurityExpressionRoot extends WebSecurityExpressionRoot
 	}
 
 	/**
-	 * Validate the current request a defined header.
+     * Validate that the current request has a defined header.
 	 *
 	 * @param header
 	 *            the expected non-blank header.
