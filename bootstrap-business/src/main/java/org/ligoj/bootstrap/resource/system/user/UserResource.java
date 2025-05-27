@@ -103,11 +103,14 @@ public class UserResource {
 			userVo.setLogin(user.getLogin());
 			userVo.setRoles(new ArrayList<>());
 			final var roles = user.getRoles();
+			final var uniqueRoles = new HashSet<String>();
 			for (final var role : roles) {
-				final var systemRoleVo = new SystemRoleVo();
-				systemRoleVo.setId(role.getRole().getId());
-				systemRoleVo.setName(role.getRole().getName());
-				userVo.getRoles().add(systemRoleVo);
+				if (uniqueRoles.add(role.getRole().getName())) {
+					final var systemRoleVo = new SystemRoleVo();
+					systemRoleVo.setId(role.getRole().getId());
+					systemRoleVo.setName(role.getRole().getName());
+					userVo.getRoles().add(systemRoleVo);
+				}
 			}
 			return userVo;
 		}
@@ -169,7 +172,7 @@ public class UserResource {
 
 		// create the user
 		user = repository.save(user);
-		
+
 		// update role assignment
 		createRoleAssignment(userVo.getRoles(), user);
 

@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.security;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -102,7 +103,7 @@ public class RoleResource {
 	public TableItem<SystemRoleVo> findAllFetchAuth() {
 		final var result = new TableItem<SystemRoleVo>();
 		// get all roles
-		final Map<Integer, SystemRoleVo> results = new TreeMap<>();
+		final var results = new TreeMap<Integer, SystemRoleVo>();
 		fetchRoles(results);
 
 		// fetch authorizations
@@ -133,12 +134,15 @@ public class RoleResource {
 	 */
 	private void fetchAuthorizations(final Map<Integer, SystemRoleVo> results) {
 		final var auths = authorizationRepository.findAll();
+		final var roleAuthDistinct = new HashSet<>();
 		for (final var auth : auths) {
-			final var authVo = new AuthorizationEditionVo();
-			results.get(auth.getRole().getId()).getAuthorizations().add(authVo);
-			authVo.setId(auth.getId());
-			authVo.setPattern(auth.getPattern());
-			authVo.setType(auth.getType());
+			if (roleAuthDistinct.add(auth.getRole().getId() +auth.getPattern()+auth.getType())){
+				final var authVo = new AuthorizationEditionVo();
+				results.get(auth.getRole().getId()).getAuthorizations().add(authVo);
+				authVo.setId(auth.getId());
+				authVo.setPattern(auth.getPattern());
+				authVo.setType(auth.getType());
+			}
 		}
 	}
 

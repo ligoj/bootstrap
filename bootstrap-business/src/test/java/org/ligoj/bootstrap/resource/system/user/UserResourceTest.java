@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
+import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -33,6 +34,9 @@ class UserResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemRoleRepository roleRepository;
+
+	@Autowired
+	private SystemUserRepository userRepository;
 
 	private int defaultRoleId;
 
@@ -74,6 +78,13 @@ class UserResourceTest extends AbstractBootTest {
 
 	@Test
 	void findAllWithRoles() {
+
+		// Add duplicated role
+		final var assignment  =new SystemRoleAssignment();
+		assignment.setRole(roleRepository.findByName(DEFAULT_ROLE));
+		assignment.setUser(userRepository.findOne(DEFAULT_USER));
+		em.persist(assignment);
+
 		final var uriInfo = newUriInfo();
 		final var users = resource.findAllWithRoles(uriInfo);
 		Assertions.assertEquals(1, users.getData().size());

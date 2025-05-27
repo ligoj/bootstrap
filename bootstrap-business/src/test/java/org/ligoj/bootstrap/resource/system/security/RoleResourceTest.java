@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
+import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.model.system.SystemRole;
@@ -35,6 +36,9 @@ class RoleResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemUserRepository userRepository;
+
+	@Autowired
+	private SystemRoleRepository roleRepository;
 
 	private String roleTestName;
 
@@ -68,9 +72,21 @@ class RoleResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	void findAllFetchAuth() {
+
+		// Add duplicated authorization
+		final var auth  =new SystemAuthorization();
+		auth.setRole(roleRepository.findByName("Developer"));
+		auth.setPattern("^tech-dev");
+		auth.setType(AuthorizationType.UI);
+		em.persist(auth);
+
 		final var result = resource.findAllFetchAuth();
 		Assertions.assertEquals(5, result.getData().size());
 		Assertions.assertEquals(2, result.getData().getFirst().getAuthorizations().size());
+
+		final var role = result.getData().get(4);
+		Assertions.assertEquals("Developer", role.getName());
+		Assertions.assertEquals(4, role.getAuthorizations().size()); // No duplicated authorizations
 	}
 
 	/**
