@@ -103,7 +103,7 @@
         <soap-api.version>3.0.2</soap-api.version>
         <spotbugs-annotations>4.9.3</spotbugs-annotations>
         <spring.version>6.2.4</spring.version>
-        <spring-boot.version>3.4.3</spring-boot.version>
+        <spring-boot.version>3.5.0</spring-boot.version>
         <spring-cloud-context.version>4.2.0</spring-cloud-context.version>
         <spring-data.version>3.3.8</spring-data.version>
         <spring-security.version>6.5.0</spring-security.version>
