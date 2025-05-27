@@ -55,6 +55,12 @@ public class SessionSettings {
 	private List<String> roles;
 
 	/**
+	 * Roles granted by external plugins
+	 */
+	@Setter
+	private List<String> pluginRoles;
+
+	/**
 	 * User details.
 	 */
 	@Value("#{T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()}")

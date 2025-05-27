@@ -3,8 +3,6 @@
  */
 package org.ligoj.bootstrap.core.security;
 
-import java.util.Date;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +12,18 @@ import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.resource.system.session.ISessionSettingsProvider;
+import org.ligoj.bootstrap.resource.system.session.SessionSettings;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * {@link RbacUserDetailsService} test class.
@@ -72,7 +80,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 	 */
 	@Test
 	void testWellKnownUserYesterday() {
-        var user = em.find(SystemUser.class, DEFAULT_USER);
+		var user = em.find(SystemUser.class, DEFAULT_USER);
 		user.setLastConnection(new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 2));
 		em.persist(user);
 		em.flush();
@@ -92,7 +100,21 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 	 */
 	@Test
 	void testWellKnownUserNow() {
-        var user = em.find(SystemUser.class, DEFAULT_USER);
+		var service = new RbacUserDetailsService();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(service);
+		final var settings = new SessionSettings();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
+		var applicationContext = Mockito.mock(ApplicationContext.class);
+		service.applicationContext = applicationContext;
+		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
+		var provider = Mockito.mock(ISessionSettingsProvider.class);
+		Mockito.when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
+				.thenReturn(Collections.singletonMap("provider", provider));
+
+		final List<GrantedAuthority> roles = List.of(new SimpleGrantedAuthority("PLUGIN_ROLE"));
+		Mockito.when(provider.getGrantedAuthorities(DEFAULT_USER)).thenReturn(roles);
+
+		var user = em.find(SystemUser.class, DEFAULT_USER);
 		user.setLastConnection(new Date(new Date().getTime() - DateUtils.MILLIS_PER_SECOND));
 		final var expectedTime = user.getLastConnection().getTime();
 		em.persist(user);
@@ -112,13 +134,14 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		roleAssignment2.setUser(user);
 		em.persist(roleAssignment2);
 
-		final var userDetails = userDetailsService.loadUserByUsername(DEFAULT_USER);
+		final var userDetails = service.loadUserByUsername(DEFAULT_USER);
 		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
 		Assertions.assertEquals(expectedTime, user.getLastConnection().getTime());
-		Assertions.assertEquals(2, userDetails.getAuthorities().size());
+		Assertions.assertEquals(3, userDetails.getAuthorities().size());
 		final var iterator = userDetails.getAuthorities().iterator();
+		Assertions.assertEquals("PLUGIN_ROLE", iterator.next().getAuthority());
 		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, iterator.next().getAuthority());
 		Assertions.assertEquals(DEFAULT_ROLE, iterator.next().getAuthority());
 

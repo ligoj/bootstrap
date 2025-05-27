@@ -15,7 +15,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
+import org.ligoj.bootstrap.resource.system.session.ISessionSettingsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -34,6 +36,9 @@ public class RbacUserDetailsService implements UserDetailsService {
 	 */
 	@Autowired
 	private SystemUserRepository userRepository;
+
+	@Autowired
+	protected ApplicationContext applicationContext;
 
 	@Override
 	@CacheResult(cacheName = "user-details")
@@ -61,16 +66,18 @@ public class RbacUserDetailsService implements UserDetailsService {
 
 		// Also add the default role as needed
 		authorities.add(new SimpleGrantedAuthority(SystemRole.DEFAULT_ROLE));
+
+		// Ask providers to complete the session details
+		applicationContext.getBeansOfType(ISessionSettingsProvider.class).values().forEach(p -> authorities.addAll(p.getGrantedAuthorities(username)));
+
 		return new User(username, "N/A", authorities);
 	}
 
 	/**
 	 * Extract fetched elements from a multi-select.
-	 * 
-	 * @param results
-	 *            the ResultSet of multi-select.
-	 * @param index
-	 *            data index to extract.
+	 *
+	 * @param results the ResultSet of multi-select.
+	 * @param index   data index to extract.
 	 * @return the collected role names.
 	 */
 	private Set<GrantedAuthority> toSimpleRoles(final Object[][] results, final int index) {
