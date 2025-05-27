@@ -64,7 +64,7 @@
         <commons-io.version>2.18.0</commons-io.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <commons-text.version>1.13.0</commons-text.version>
-        <cxf.version>4.1.1</cxf.version>
+        <cxf.version>4.1.2</cxf.version>
         <dom4j.version>2.1.4</dom4j.version>
         <el.version>5.0.0-M1</el.version>
         <el-api.version>5.0.1</el-api.version>
