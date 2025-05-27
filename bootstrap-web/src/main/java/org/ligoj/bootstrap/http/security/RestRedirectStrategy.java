@@ -43,9 +43,9 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		}
 
 		final var extension = FilenameUtils.getExtension(request.getPathInfo());
-		final var mime = EXTENSION_TO_MIME.get(extension);
+		final var mime = extension == null ? null : EXTENSION_TO_MIME.get(extension);
 		// Write the JSON data containing the redirection and the status
-		final var redirect = url == null ? response.encodeRedirectURL(request.getContextPath()) : "local";
+		final var redirect = response.encodeRedirectURL(request.getContextPath()) + (url == null ? "" : url);
 		response.setStatus(mime == null ? status : HttpServletResponse.SC_OK);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 		response.setContentType(mime == null ? "application/json" : mime);
@@ -53,13 +53,17 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Expires", "0");
-		if (request.getPathInfo().endsWith("/messages.js")) {
+		if (request.getPathInfo() != null && request.getPathInfo().endsWith("/messages.js")) {
 			IOUtils.write("define({root: {}})", response.getOutputStream(), StandardCharsets.UTF_8);
-		} else if (mime == null) {
+		} else if ("text/javascript".equals(mime)) {
+			IOUtils.write(String.format("errorManager?.handleRedirect('%s');", redirect), response.getOutputStream(), StandardCharsets.UTF_8);
+		} else if ("text/html".equals(mime)) {
+			IOUtils.write("<div></div>", response.getOutputStream(), StandardCharsets.UTF_8);
+		} else if ("text/css".equals(mime)) {
+			IOUtils.write("", response.getOutputStream(), StandardCharsets.UTF_8);
+		} else {
 			IOUtils.write(String.format("{\"success\":%b,\"redirect\":\"%s\"}", success, redirect), response.getOutputStream(),
 					StandardCharsets.UTF_8);
-		} else if (mime.equals("text/javascript")) {
-			IOUtils.write(String.format("errorManager?.handleRedirect('%s');", redirect), response.getOutputStream(), StandardCharsets.UTF_8);
 		}
 	}
 
