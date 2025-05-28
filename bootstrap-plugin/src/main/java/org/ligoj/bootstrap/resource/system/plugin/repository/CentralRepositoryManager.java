@@ -29,8 +29,6 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 
 	// See https://central.sonatype.org/search/rest-api-guide/
 	private static final String DEFAULT_SEARCH_URL = "https://search.maven.org/solrsearch/select?wt=json&rows=100&q=g:";
-	private static final String DEFAULT_SEARCH_URL_V2 = "https://central.sonatype.com/api/internal/browse/components";
-
 
 	@Override
 	public String getId() {
@@ -43,7 +41,7 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 			var page = 0;
 			final var groupId = getGroupId(DEFAULT_GROUP_ID);
 			final var curlRequest = new CurlRequest(HttpMethod.POST, getSearchUrl(DEFAULT_SEARCH_URL),
-					"{\"page\":"+page+",\"size\":20,\"searchTerm\":\"\",\"sortField\":\"publishedDate\",\"sortDirection\":\"desc\",\"filter\":[\"namespace:"
+					"{\"page\":" + page + ",\"size\":20,\"searchTerm\":\"\",\"sortField\":\"publishedDate\",\"sortDirection\":\"desc\",\"filter\":[\"namespace:"
 							+ groupId + "\"]}",
 					"content-type:application/json");
 			curlRequest.setSaveResponse(true);
