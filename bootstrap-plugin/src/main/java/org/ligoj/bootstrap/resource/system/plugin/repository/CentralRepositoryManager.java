@@ -4,7 +4,9 @@
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.HttpMethod;
 import org.ligoj.bootstrap.core.curl.CurlProcessor;
+import org.ligoj.bootstrap.core.curl.CurlRequest;
 import org.springframework.stereotype.Component;
 
 import javax.cache.annotation.CacheRemoveAll;
@@ -27,10 +29,31 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 
 	// See https://central.sonatype.org/search/rest-api-guide/
 	private static final String DEFAULT_SEARCH_URL = "https://search.maven.org/solrsearch/select?wt=json&rows=100&q=g:";
+	private static final String DEFAULT_SEARCH_URL_V2 = "https://central.sonatype.com/api/internal/browse/components";
+
 
 	@Override
 	public String getId() {
 		return "central";
+	}
+
+	@CacheResult(cacheName = "plugins-last-version-central-v2")
+	public Map<String, Artifact> getLastPluginVersionsV2() throws IOException {
+		try (var processor = new CurlProcessor(getSearchProxyHost(), getSearchProxyPort())) {
+			var page = 0;
+			final var groupId = getGroupId(DEFAULT_GROUP_ID);
+			final var curlRequest = new CurlRequest(HttpMethod.POST, getSearchUrl(DEFAULT_SEARCH_URL),
+					"{\"page\":"+page+",\"size\":20,\"searchTerm\":\"\",\"sortField\":\"publishedDate\",\"sortDirection\":\"desc\",\"filter\":[\"namespace:"
+							+ groupId + "\"]}",
+					"content-type:application/json");
+			curlRequest.setSaveResponse(true);
+			processor.process(curlRequest);
+			final var searchResult = Objects.toString(curlRequest.getResponse(), "{\"components\": [], \"pageCount\":0}");
+			// Extract artifacts
+			final var jsonMapper = new ObjectMapper();
+			return Arrays.stream(jsonMapper.treeToValue(jsonMapper.readTree(searchResult).at("/components"), CentralSearchResultV2[].class))
+					.collect(Collectors.toMap(CentralSearchResultV2::getArtifact, ArtifactVo::new));
+		}
 	}
 
 	@Override
