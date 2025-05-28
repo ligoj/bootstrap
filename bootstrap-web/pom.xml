@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.ligoj.bootstrap</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.26</version>
+        <version>3.1.27-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <artifactId>bootstrap-web</artifactId>
@@ -154,7 +154,7 @@
         <dependency>
             <groupId>org.ligoj.bootstrap</groupId>
             <artifactId>bootstrap-web-test</artifactId>
-            <version>3.1.26</version>
+            <version>3.1.27-SNAPSHOT</version>
             <type>pom</type>
             <scope>test</scope>
         </dependency>
