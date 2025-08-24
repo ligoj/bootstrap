@@ -220,7 +220,7 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 		Assertions.assertEquals(0, completedSchemas.size());
 
 		// Undefined schema
-		@SuppressWarnings("rawtypes") var schemas = new HashMap<String, Schema>();
+		final var schemas = new HashMap<String, Schema<?>>();
 		customizer.completeSchemaDoc(schema, SystemRole.class, SystemUser.class, completedSchemas, schemas);
 		Assertions.assertEquals(1, completedSchemas.size());
 		Assertions.assertEquals(0, schemas.size());

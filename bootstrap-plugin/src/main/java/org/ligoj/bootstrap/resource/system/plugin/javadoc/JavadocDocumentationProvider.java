@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.plugin.javadoc;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
@@ -225,7 +226,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	 * Remove useless chars from documentation lines.
 	 */
 	protected static String removeUselessChars(String doc) {
-		return StringUtils.trim(StringUtils.removeEnd(StringUtils.trim(doc), "."));
+		return StringUtils.trim(Strings.CS.removeEnd(StringUtils.trim(doc), "."));
 	}
 
 	private String getJavaDocText(String doc, String tag, String notAfterTag, int index, String subNext) {

@@ -21,6 +21,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +60,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		final var user = em.find(SystemUser.class, "none");
 		Assertions.assertNotNull(user.getLastConnection());
 		Assertions.assertTrue(
-				Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -72,7 +75,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		final var user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
 		Assertions.assertTrue(
-				Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -81,7 +84,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 	@Test
 	void testWellKnownUserYesterday() {
 		var user = em.find(SystemUser.class, DEFAULT_USER);
-		user.setLastConnection(new Date(new Date().getTime() - DateUtils.MILLIS_PER_DAY * 2));
+		user.setLastConnection(Instant.now().minus(2, ChronoUnit.DAYS));
 		em.persist(user);
 		em.flush();
 		em.clear();
@@ -92,7 +95,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
 		Assertions.assertTrue(
-				Math.abs(new Date().getTime() - user.getLastConnection().getTime()) < DateUtils.MILLIS_PER_MINUTE);
+				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -115,8 +118,8 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Mockito.when(provider.getGrantedAuthorities(DEFAULT_USER)).thenReturn(roles);
 
 		var user = em.find(SystemUser.class, DEFAULT_USER);
-		user.setLastConnection(new Date(new Date().getTime() - DateUtils.MILLIS_PER_SECOND));
-		final var expectedTime = user.getLastConnection().getTime();
+		user.setLastConnection(Instant.now().minusSeconds(1));
+		final var expectedTime = user.getLastConnection();
 		em.persist(user);
 
 		final var role = new SystemRole();
@@ -138,7 +141,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertEquals(expectedTime, user.getLastConnection().getTime());
+		Assertions.assertEquals(expectedTime, user.getLastConnection());
 		Assertions.assertEquals(3, userDetails.getAuthorities().size());
 		final var iterator = userDetails.getAuthorities().iterator();
 		Assertions.assertEquals("PLUGIN_ROLE", iterator.next().getAuthority());

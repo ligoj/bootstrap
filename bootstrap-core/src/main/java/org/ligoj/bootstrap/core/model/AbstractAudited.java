@@ -17,6 +17,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -29,7 +30,7 @@ import java.util.Date;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class AbstractAudited<K extends Serializable> extends AbstractPersistable<K> implements Auditable<String, K, Date> {
+public abstract class AbstractAudited<K extends Serializable> extends AbstractPersistable<K> implements Auditable<String, K, Instant> {
 
 	/**
 	 * Created author will never be updated
@@ -42,20 +43,18 @@ public abstract class AbstractAudited<K extends Serializable> extends AbstractPe
 	/**
 	 * Created date will never be updated
 	 */
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable = false)
 	@JsonProperty(access = Access.READ_ONLY)
 	@CreatedDate
-	private Date createdDate;
+	private Instant createdDate;
 
 	@JsonProperty(access = Access.READ_ONLY)
 	@LastModifiedBy
 	private String lastModifiedBy;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@JsonProperty(access = Access.READ_ONLY)
 	@LastModifiedDate
-	private Date lastModifiedDate;
+	private Instant lastModifiedDate;
 
 	/**
 	 * A free form text at creation time only.

@@ -75,7 +75,7 @@ public class PaginationJson {
 		final var request = new UiPageRequest();
 		request.setUiFilter(buildFilter(parameters.getFirst("filters")));
 		request.setUiSort(buildSort(getOrmColumn(ormMapping, getSortColumn(parameters)), getSortDirection(parameters)));
-		request.setPage(ObjectUtils.defaultIfNull(getPage(parameters), 1));
+		request.setPage(ObjectUtils.getIfNull(getPage(parameters), 1));
 		request.setPageSize(getPageLength(parameters));
 		return request;
 	}
@@ -199,7 +199,7 @@ public class PaginationJson {
 	 */
 	private String getSortDirection(final MultivaluedMap<String, String> parameters) {
 		return Optional.ofNullable(parameters.getFirst("sord"))
-				.orElse(ObjectUtils.defaultIfNull(parameters.getFirst(DataTableAttributes.SORT_DIRECTION), "ASC"));
+				.orElse(ObjectUtils.getIfNull(parameters.getFirst(DataTableAttributes.SORT_DIRECTION), "ASC"));
 	}
 
 	/**

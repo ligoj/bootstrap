@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
@@ -105,7 +106,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 * start with '/'.
 	 */
 	private String getFullRequest(final HttpServletRequest httpRequest) {
-		return StringUtils.removeStart(
+		return Strings.CS.removeStart(
 				httpRequest.getRequestURI().substring(this.getServletContext().getContextPath().length()), "/");
 	}
 

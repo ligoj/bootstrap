@@ -3,25 +3,17 @@
  */
 package org.ligoj.bootstrap.model.system;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.validation.constraints.NotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.Set;
 
 /**
  * Corporate user.
@@ -59,8 +51,7 @@ public class SystemUser implements Serializable {
 	/**
 	 * Last known connection.
 	 */
-	@Temporal(TemporalType.DATE)
-	private Date lastConnection;
+	private Instant lastConnection;
 
 	/**
 	 * Associated roles

@@ -234,7 +234,7 @@ public class CurlProcessor implements AutoCloseable {
 		// Initialize proxy
 		final var proxyHostResolved = StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_HOST), proxyHost);
 		if (proxyHostResolved != null) {
-			final var proxyPortResolved = ObjectUtils.defaultIfNull(proxyPort, StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_PORT), "8080")).toString();
+			final var proxyPortResolved = ObjectUtils.getIfNull(proxyPort, StringUtils.defaultIfBlank(System.getProperty(HTTPS_PROXY_PORT), "8080")).toString();
 			final var proxy = new HttpHost(proxyHostResolved, Integer.parseInt(proxyPortResolved));
 			final var httpRoutePlanner = new DefaultProxyRoutePlanner(proxy);
 			clientBuilder.setRoutePlanner(httpRoutePlanner);
@@ -335,7 +335,7 @@ public class CurlProcessor implements AutoCloseable {
 			request.setStatus(response.getCode());
 
 			// Ask for the callback a flow control
-			return ObjectUtils.defaultIfNull(request.getCallback(), callback).onResponse(request, response);
+			return ObjectUtils.getIfNull(request.getCallback(), callback).onResponse(request, response);
 		});
 	}
 

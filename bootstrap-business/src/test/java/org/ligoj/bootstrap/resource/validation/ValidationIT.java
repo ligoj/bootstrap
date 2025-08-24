@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.validation;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -18,9 +19,9 @@ import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SequencedCollection;
 
 /**
  * Test validation filter management with class {@link ValidationTestResource}.
@@ -78,8 +79,9 @@ class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getCode());
 			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			Assertions.assertNotNull(content);
-			@SuppressWarnings("all") final var result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
-					.readValue(content, HashMap.class);
+			final var result = new ObjectMapperTrim().readValue(content, new TypeReference<
+					Map<String, Map<String, List<Map<String, Object>>>>>() {
+			});
 
 			Assertions.assertFalse(result.isEmpty());
 			final var errors = result.get("errors");
@@ -87,8 +89,8 @@ class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertEquals(1, errors.size());
 			Assertions.assertNotNull(errors.get("entity"));
 			Assertions.assertEquals(1, errors.get("entity").size());
-			Assertions.assertEquals(1, ((Map<?, ?>) ((List<?>) errors.get("entity")).getFirst()).size());
-			Assertions.assertEquals("NotNull", ((Map<?, ?>) ((List<?>) errors.get("entity")).getFirst()).get(RULE));
+			Assertions.assertEquals(1, ((Map<?, ?>) ((SequencedCollection<?>) errors.get("entity")).getFirst()).size());
+			Assertions.assertEquals("NotNull", ((Map<?, ?>) ((SequencedCollection<?>) errors.get("entity")).getFirst()).get(RULE));
 			return null;
 		});
 	}
@@ -132,8 +134,9 @@ class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 			Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getCode());
 			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 			Assertions.assertNotNull(content);
-			@SuppressWarnings("all") final var result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
-					.readValue(content, HashMap.class);
+			final var result = new ObjectMapperTrim()
+					.readValue(content, new TypeReference<Map<String, Map<String, List<Map<String, Object>>>>>() {
+					});
 			Assertions.assertFalse(result.isEmpty());
 			final var errors = result.get("errors");
 			Assertions.assertNotNull(errors);
@@ -180,8 +183,9 @@ class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 		Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getCode());
 		final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 		Assertions.assertNotNull(content);
-		@SuppressWarnings("all") final Map<String, Map<String, List<Map<String, Object>>>> result = (Map<String, Map<String, List<Map<String, Object>>>>) new ObjectMapperTrim()
-				.readValue(content, HashMap.class);
+		final var result = new ObjectMapperTrim().readValue(content, new com.fasterxml.jackson.core.type.TypeReference<
+				Map<String, Map<String, List<Map<String, Object>>>>>() {
+		});
 
 		Assertions.assertFalse(result.isEmpty());
 		final var errors = result.get("errors");

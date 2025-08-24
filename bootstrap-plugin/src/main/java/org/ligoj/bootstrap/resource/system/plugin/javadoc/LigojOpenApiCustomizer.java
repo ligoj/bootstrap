@@ -103,7 +103,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		return artifact;
 	}
 
-	private void completeOperation(Map<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	private void completeOperation(Map<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation, Set<String> completedSchemas, Map<String, Schema<?>> schemas) {
 		tags.computeIfAbsent(tagOperation, t -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri), false));
 		fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 		for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
@@ -144,30 +144,32 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	/**
 	 * Complete the given schema's documentation
 	 */
-	void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	void completeSchemaDoc(Schema<?> schema, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, Map<String, Schema<?>> schemas) {
 		if (schema == null) {
 			return;
 		}
 		completeSchemaDoc(schema.get$ref(), javaClass, genericType, completedSchemas, schemas); // #/components/schemas/NodeVo
 	}
 
-	private void completeSchemaDoc(String ref, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, @SuppressWarnings("rawtypes") Map<String, Schema> schemas) {
+	private void completeSchemaDoc(String ref, Class<?> javaClass, Class<?> genericType, Set<String> completedSchemas, Map<String, Schema<?>> schemas) {
 		if (ref != null && javaClass != null && javaClass.getName().startsWith("org.ligoj.") && completedSchemas.add(ref)) {
 			var parts = ref.split("/");
 			var name = parts[parts.length - 1];
-			var schema = schemas.get(name);
+			final var schema = schemas.get(name);
 			if (schema != null) {
 				// Complete doc of this type
 				schema.setDescription(((JavadocDocumentationProvider) javadocProvider).getClassDoc(javaClass));
-				//noinspection unchecked
-				schema.getProperties().forEach((p, rawSchema) -> {
-					final var pSchema = (Schema<?>) rawSchema;
-					if (pSchema instanceof ArraySchema) {
-						completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
-					} else {
-						pSchema.setDescription(getGetterDoc((String) p, javaClass, genericType));
-					}
-				});
+				final var properties = schema.getProperties();
+				if (properties != null) {
+					properties.forEach((p, rawSchema) -> {
+						final var pSchema = (Schema<?>) rawSchema;
+						if (pSchema instanceof ArraySchema) {
+							completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
+						} else {
+							pSchema.setDescription(getGetterDoc(p, javaClass, genericType));
+						}
+					});
+				}
 			}
 		}
 	}
@@ -234,7 +236,9 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				var key = Pair.of(method.name(), pathKey);
 				final var ori = methods.get(key);
 				if (ori != null) {
-					completeOperation(tags, tagOperation, cri, ori, operation, completedSchemas, oas.getComponents().getSchemas());
+					@SuppressWarnings("unchecked")
+					final var schemas = (Map<String, Schema<?>>) (Map<?, ?>) oas.getComponents().getSchemas();
+					completeOperation(tags, tagOperation, cri, ori, operation, completedSchemas, schemas);
 				}
 			});
 		});

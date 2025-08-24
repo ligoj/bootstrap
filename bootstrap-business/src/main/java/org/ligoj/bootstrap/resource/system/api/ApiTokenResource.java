@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.RandomStringGenerator;
 import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
@@ -107,7 +107,7 @@ public class ApiTokenResource {
 	 */
 	public boolean check(final String user, final String token) {
 		try {
-			if (StringUtils.startsWith(token, PREFIX_TOKEN)) {
+			if (Strings.CS.startsWith(token, PREFIX_TOKEN)) {
 				// Unsecured token, only null hash can match
 				return repository.checkByUserAndToken(user, token);
 			}

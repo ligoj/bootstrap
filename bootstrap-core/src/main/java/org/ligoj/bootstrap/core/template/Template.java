@@ -3,16 +3,16 @@
  */
 package org.ligoj.bootstrap.core.template;
 
+import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
-import lombok.AllArgsConstructor;
 
 /**
  * A simple template able to manage loop, raw data, and computed data.
@@ -183,7 +183,7 @@ public class Template<T> {
 			return null;
 		}
 		final var tag = getNextTag(start, end, nextTag);
-		final var tagClean = StringUtils.removeEnd(tag, "/");
+		final var tagClean = Strings.CS.removeEnd(tag, "/");
 		if (StringUtils.trimToEmpty(tagClean).isEmpty()) {
 			// Empty tag
 			throw new IllegalStateException("Empty tag {{}} found at position " + start);

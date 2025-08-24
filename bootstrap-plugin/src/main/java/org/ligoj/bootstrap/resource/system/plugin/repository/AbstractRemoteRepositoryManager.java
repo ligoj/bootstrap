@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.resource.system.plugin.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -115,11 +116,11 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	 * @return The plug-ins download URL. Ends with "/".
 	 */
 	protected String getArtifactUrl(String groupId, String artifact, String version, final String defaultUrl, final String classifier) {
-		return StringUtils.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/")
+		return Strings.CS.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/")
 				+ groupId.replace('.', '/') + "/"
 				+ artifact + "/" + version + "/"
 				+ artifact + "-" + version
-				+ (StringUtils.isBlank(classifier) ? "" : StringUtils.prependIfMissing(classifier, "-"))
+				+ (StringUtils.isBlank(classifier) ? "" : Strings.CS.prependIfMissing(classifier, "-"))
 				+ ".jar";
 	}
 

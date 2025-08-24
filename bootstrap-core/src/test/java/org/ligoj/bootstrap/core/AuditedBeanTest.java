@@ -9,7 +9,7 @@ import org.ligoj.bootstrap.core.model.AbstractAudited;
 import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 import org.ligoj.bootstrap.core.model.Auditable;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * {@link AuditedBean}, {@link AbstractAudited},
@@ -56,7 +56,7 @@ class AuditedBeanTest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	void testCopyAuditDataFromNull() {
-		final Auditable<String, ?, Date> to = newAuditable();
+		final Auditable<String, ?, Instant> to = newAuditable();
 		AuditedBean.copyAuditData(null, (Auditable) to);
 		assertData(to);
 	}
@@ -77,7 +77,7 @@ class AuditedBeanTest {
 	 */
 	@Test
 	void testGetDateNull() {
-		final Auditable<String, Integer, Date> from = new AbstractAudited<>() {
+		final Auditable<String, Integer, Instant> from = new AbstractAudited<>() {
 			// Nothing
 		};
 		final var audited = new AuditedBean<String, Integer>();
@@ -102,36 +102,36 @@ class AuditedBeanTest {
 		final var audited = new AuditedBean<String, Integer>();
 		audited.setCreatedBy("any");
 		audited.setLastModifiedBy("one");
-		audited.setCreatedDate(new Date(0));
-		audited.setLastModifiedDate(new Date(1));
+		audited.setCreatedDate(Instant.ofEpochMilli(0));
+		audited.setLastModifiedDate(Instant.ofEpochMilli(1));
 		audited.setCreationContext("new");
 		return audited;
 	}
 
-	private Auditable<String, Integer, Date> newAuditable() {
-		final Auditable<String, Integer, Date> from = new AbstractAudited<>() {
+	private Auditable<String, Integer, Instant> newAuditable() {
+		final Auditable<String, Integer, Instant> from = new AbstractAudited<>() {
 			// Nothing
 		};
 		from.setCreatedBy("any");
 		from.setLastModifiedBy("one");
-		from.setCreatedDate(new Date(0));
-		from.setLastModifiedDate(new Date(1));
+		from.setCreatedDate(Instant.ofEpochMilli(0));
+		from.setLastModifiedDate(Instant.ofEpochMilli(1));
 		from.setCreationContext("new");
 		return from;
 	}
 
-	private void assertData(final Auditable<String, ?, Date> to) {
+	private void assertData(final Auditable<String, ?, Instant> to) {
 		Assertions.assertEquals("any", to.getCreatedBy());
 		Assertions.assertEquals("one", to.getLastModifiedBy());
-		Assertions.assertEquals(new Date(0), to.getCreatedDate());
-		Assertions.assertEquals(new Date(1), to.getLastModifiedDate());
+		Assertions.assertEquals(Instant.ofEpochMilli(0), to.getCreatedDate());
+		Assertions.assertEquals(Instant.ofEpochMilli(1), to.getLastModifiedDate());
 	}
 
 	private void assertData(final AuditedBean<String, Integer> audited) {
 		Assertions.assertEquals("any", audited.getCreatedBy());
 		Assertions.assertEquals("one", audited.getLastModifiedBy());
-		Assertions.assertEquals(new Date(0), audited.getCreatedDate());
-		Assertions.assertEquals(new Date(1), audited.getLastModifiedDate());
+		Assertions.assertEquals(Instant.ofEpochMilli(0), audited.getCreatedDate());
+		Assertions.assertEquals(Instant.ofEpochMilli(1), audited.getLastModifiedDate());
 		Assertions.assertEquals("new", audited.getCreationContext());
 	}
 }

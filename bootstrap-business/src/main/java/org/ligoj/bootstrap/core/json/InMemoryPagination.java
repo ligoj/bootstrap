@@ -3,15 +3,8 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import jakarta.ws.rs.core.UriInfo;
-
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +12,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * In memory pagination.
@@ -95,7 +94,7 @@ public class InMemoryPagination {
 	 */
 	public TableItem<String> getFilteredStringList(final UriInfo uriInfo, final Stream<String> items) {
 		return applyPagination(uriInfo,
-				items.filter(input -> StringUtils.containsIgnoreCase(input, DataTableAttributes.getSearch(uriInfo)))
+				items.filter(input -> Strings.CI.contains(input, DataTableAttributes.getSearch(uriInfo)))
 						.toList(),
 				Function.identity());
 	}

@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.json;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -56,6 +57,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 		module.addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
 		module.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
 		module.addSerializer(Date.class, DateSerializer.INSTANCE);
+		module.addSerializer(Instant.class, InstantSerializer.INSTANCE);
 		module.addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
 		module.addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
 		module.addSerializer(Enum.class, new LowerCasingEnumSerializer());

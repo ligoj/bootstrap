@@ -53,6 +53,6 @@ public class ApiTokenAuthenticationFilter extends RequestHeaderAuthenticationFil
 	 */
 	@Override
 	protected Object getPreAuthenticatedCredentials(final HttpServletRequest request) {
-		return ObjectUtils.defaultIfNull(super.getPreAuthenticatedCredentials(request), "N/A");
+		return ObjectUtils.getIfNull(super.getPreAuthenticatedCredentials(request), "N/A");
 	}
 }

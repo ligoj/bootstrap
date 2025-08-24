@@ -117,7 +117,7 @@ class HookProcessRunnableTest {
 				try {
 					Mockito.when(processBuilder.start()).thenReturn(process);
 					Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream("process_response".getBytes(StandardCharsets.UTF_8)));
-					final var timeout = ObjectUtils.defaultIfNull(hook.getTimeout(), 30);
+					final var timeout = ObjectUtils.getIfNull(hook.getTimeout(), 30);
 					Mockito.doReturn(timeout != 1).when(process).waitFor(timeout, TimeUnit.SECONDS);
 					Mockito.doReturn(1).when(process).exitValue();
 				} catch (final Exception e) {

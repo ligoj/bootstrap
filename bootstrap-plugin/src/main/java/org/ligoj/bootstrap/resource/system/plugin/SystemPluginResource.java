@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.NamedBean;
@@ -230,7 +231,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 				.collect(Collectors.joining(".")).replace(".SNAPSHOT", "-SNAPSHOT")
 				.replaceFirst("([^-])SNAPSHOT", "$1-SNAPSHOT");
 		if (trim.endsWith(".0") && StringUtils.countMatches(trim, '.') > 2) {
-			trim = StringUtils.removeEnd(trim, ".0");
+			trim = Strings.CS.removeEnd(trim, ".0");
 		}
 		return trim;
 	}
@@ -248,7 +249,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		// Plug-in implementation is available
 		final var vo = extension.map(PluginListener::toVo).orElse(PluginVo::new).get();
 		vo.setId(p.getKey());
-		vo.setName(StringUtils.removeStart(feature.getName(), "Ligoj - Plugin "));
+		vo.setName(Strings.CS.removeStart(feature.getName(), "Ligoj - Plugin "));
 		vo.setLocation(getPluginLocation(feature).getPath());
 		vo.setVendor(feature.getVendor());
 		vo.setPlugin(p);
@@ -648,7 +649,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 		for (final var artifact : getLastPluginVersions(repositoryName).values().stream()
 				.filter(a -> plugins.containsKey(a.getArtifact()))
 				.filter(a -> PluginsClassLoader.toExtendedVersion(a.getVersion())
-						.compareTo(StringUtils.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
+						.compareTo(Strings.CS.removeStart(plugins.get(a.getArtifact()), a.getArtifact() + "-")) > 0)
 				.toList()) {
 			install(artifact.getArtifact(), repositoryName, true);
 			counter++;

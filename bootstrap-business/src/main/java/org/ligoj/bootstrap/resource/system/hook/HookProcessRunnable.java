@@ -97,7 +97,7 @@ public class HookProcessRunnable implements Runnable {
 			// Create Map object
 			@SuppressWarnings("unchecked") final var params = exchange.getInMessage().getContent(List.class).stream()
 					.map(this::convertForPayload).toList();
-			final var timeout = ObjectUtils.defaultIfNull(h.getTimeout(), 0) > 0 ? h.getTimeout() : configuration.get("LIGOJ_HOOK_TIMEOUT", DEFAULT_TIMEOUT);
+			final var timeout = ObjectUtils.getIfNull(h.getTimeout(), 0) > 0 ? h.getTimeout() : configuration.get("LIGOJ_HOOK_TIMEOUT", DEFAULT_TIMEOUT);
 			final var payload = new HashMap<>(Map.of(
 					"now", now,
 					"name", h.getName(),

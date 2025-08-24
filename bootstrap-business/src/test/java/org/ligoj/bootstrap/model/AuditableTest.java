@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.model;
 
+import java.time.Instant;
 import java.util.Date;
 
 import org.junit.jupiter.api.Assertions;
@@ -110,8 +111,8 @@ class AuditableTest extends AbstractBootTest {
 		final var object = new SystemBench();
 		object.setCreatedBy(DEFAULT_USER);
 		object.setLastModifiedBy(DEFAULT_ROLE);
-		object.setCreatedDate(new Date());
-		object.setLastModifiedDate(new Date());
+		object.setCreatedDate(Instant.now());
+		object.setLastModifiedDate(Instant.now());
 		object.setCreationContext("SOME");
 		auditedVo.copyAuditData(object);
 		Assertions.assertEquals(DEFAULT_USER, auditedVo.getCreatedBy());
@@ -151,8 +152,8 @@ class AuditableTest extends AbstractBootTest {
 		final var from = new SystemBench();
 		from.setCreatedBy(DEFAULT_USER);
 		from.setLastModifiedBy(DEFAULT_ROLE);
-		from.setCreatedDate(new Date());
-		from.setLastModifiedDate(new Date());
+		from.setCreatedDate(Instant.now());
+		from.setLastModifiedDate(Instant.now());
 		from.setCreationContext("SOME");
 		final var to = new SystemBench();
 		AuditedBean.copyAuditData(from, to);

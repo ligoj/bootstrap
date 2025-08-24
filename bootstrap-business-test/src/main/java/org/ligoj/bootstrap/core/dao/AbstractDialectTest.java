@@ -8,7 +8,6 @@ import org.hibernate.query.sqm.function.SqmFunctionRegistry;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.BasicTypeReference;
 import org.hibernate.type.BasicTypeRegistry;
-import org.hibernate.type.SqlTypes;
 import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 import org.hibernate.type.spi.TypeConfiguration;
 import org.mockito.ArgumentMatchers;

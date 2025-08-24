@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.dao;
 
 import de.svenjacobs.loremipsum.LoremIpsum;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.ws.rs.core.UriInfo;
 import org.hibernate.query.criteria.JpaPath;
@@ -654,7 +655,7 @@ class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.getUiFilter().setRules(rules);
 		final var mapping = newBaseMapping();
 		final Map<String, CustomSpecification> specifications = new HashMap<>();
-		specifications.put("myCustom", (root, query, cb, rule) -> {
+		specifications.put("myCustom", (root, _, cb, rule) -> {
 			Assertions.assertEquals(ruleCT.getData(), rule.getData());
 			return cb.equal(root.get("dialChar"), rule.getData());
 		});
@@ -865,7 +866,8 @@ class PaginationDaoTest extends AbstractBootTest {
 	 */
 	@Test
 	void findAllJoinInvalidOrmPath() {
-		final var expression = Mockito.mock(JpaPath.class);
+		@SuppressWarnings("unchecked")
+		final var expression = (JpaPath<Expression<String>>) Mockito.mock(JpaPath.class);
 		final var pathRoot = Mockito.mock(NavigablePath.class);
 		final var pathParent = Mockito.mock(NavigablePath.class);
 		final var path = Mockito.mock(NavigablePath.class);
@@ -874,7 +876,6 @@ class PaginationDaoTest extends AbstractBootTest {
 		Mockito.doReturn(pathRoot).when(pathParent).getParent();
 		Mockito.doReturn("org.ligoj.bootstrap.model.system.SystemDialect").when(pathRoot).getLocalName();
 		Mockito.doReturn("invalid").when(pathParent).getLocalName();
-		//noinspection unchecked
 		Assertions.assertThrows(ValidationJsonException.class,()->AbstractSpecification.toRawData(em, null, expression));
 	}
 

@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -34,13 +35,13 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	 * Creation date.
 	 */
 	@JsonProperty(access = Access.READ_ONLY)
-	private Date createdDate;
+	private Instant createdDate;
 
 	/**
 	 * Last update date.
 	 */
 	@JsonProperty(access = Access.READ_ONLY)
-	private Date lastModifiedDate;
+	private Instant lastModifiedDate;
 
 	/**
 	 * The author of this data.
@@ -66,7 +67,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	 * @param <T>  Bean type.
 	 * @param from The source object to copy to current one.
 	 */
-	public <T extends Auditable<U, K, Date>> void copyAuditData(final T from) {
+	public <T extends Auditable<U, K, Instant>> void copyAuditData(final T from) {
 		copyAuditData(from, Function.identity());
 	}
 
@@ -78,7 +79,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	 * @param <S>           Bean type of source parameter.
 	 * @param <T>           User type of source parameter.
 	 */
-	public <T, S extends Auditable<T, K, Date>> void copyAuditData(final S from,
+	public <T, S extends Auditable<T, K, Instant>> void copyAuditData(final S from,
 			final Function<T, ? extends U> userConverter) {
 		if (from != null) {
 			// Copy audit dates

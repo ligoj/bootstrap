@@ -3,19 +3,17 @@
  */
 package org.ligoj.bootstrap.http.proxy;
 
-import java.io.IOException;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import lombok.Setter;
+import java.io.IOException;
 
 /**
  * Filter able to mask the HTML extension from the URL, and forward to the master HTML file as necessary.
@@ -49,7 +47,7 @@ public class HtmlProxyFilter extends OncePerRequestFilter {
 	 */
 	private String getBaseName(final ServletRequest request) {
 		final var servletPath = ((HttpServletRequest) request).getServletPath();
-		final var base = StringUtils.removeStart(servletPath, "/");
+		final var base = Strings.CS.removeStart(servletPath, "/");
 		return getBaseName(base.isEmpty() ? "index.html" : base);
 	}
 

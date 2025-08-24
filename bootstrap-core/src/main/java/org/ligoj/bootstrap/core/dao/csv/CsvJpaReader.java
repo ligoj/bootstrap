@@ -18,6 +18,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.ligoj.bootstrap.core.csv.AbstractCsvReader;
 
@@ -86,7 +87,7 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 		}
 		if (foreignEntity == null) {
 			throw new IllegalArgumentException("Missing foreign key " + field.getDeclaringClass().getSimpleName() + "#"
-					+ name + "." + StringUtils.removeEnd(fkName, "!") + " = " + rawValue);
+					+ name + "." + Strings.CS.removeEnd(fkName, "!") + " = " + rawValue);
 		}
 		return foreignEntity;
 	}

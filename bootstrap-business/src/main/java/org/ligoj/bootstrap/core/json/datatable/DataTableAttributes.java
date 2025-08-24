@@ -63,7 +63,7 @@ public final class DataTableAttributes {
 	 *         <code>null</code>.
 	 */
 	public static String getSearch(final UriInfo uriInfo) {
-		return StringUtils.trimToEmpty(ObjectUtils.defaultIfNull(uriInfo.getQueryParameters().getFirst("q"),
+		return StringUtils.trimToEmpty(ObjectUtils.getIfNull(uriInfo.getQueryParameters().getFirst("q"),
 				uriInfo.getQueryParameters().getFirst(SEARCH)));
 	}
 

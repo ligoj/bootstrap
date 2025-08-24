@@ -3,15 +3,6 @@
  */
 package org.ligoj.bootstrap.core.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
-
-import org.apache.commons.lang3.time.DateUtils;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -24,6 +15,15 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheResult;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User details service backed in database. All authenticated users get the role {@link SystemRole#DEFAULT_ROLE}
@@ -58,8 +58,8 @@ public class RbacUserDetailsService implements UserDetailsService {
 		}
 
 		// Update last connection information only as needed for performance, delta is one minute
-		final var now = org.ligoj.bootstrap.core.DateUtils.newCalendar().getTime();
-		if (user.getLastConnection() == null || now.getTime() - user.getLastConnection().getTime() > DateUtils.MILLIS_PER_DAY) {
+		final var now = Instant.now();
+		if (user.getLastConnection() == null || ChronoUnit.DAYS.between(user.getLastConnection(), now) >= 1) {
 			user.setLastConnection(now);
 			userRepository.saveAndFlush(user);
 		}

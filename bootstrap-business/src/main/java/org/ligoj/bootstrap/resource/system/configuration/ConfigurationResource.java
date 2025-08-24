@@ -9,6 +9,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.ligoj.bootstrap.core.AuditedBean;
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
@@ -67,7 +68,7 @@ public class ConfigurationResource {
 	 * @return the configuration integer value or the default value.
 	 */
 	public String get(final String key, final String defaultValue) {
-		return ObjectUtils.defaultIfNull(self.get(key), defaultValue);
+		return ObjectUtils.getIfNull(self.get(key), defaultValue);
 	}
 
 	/**
@@ -132,7 +133,7 @@ public class ConfigurationResource {
 			if (result.containsKey(c.getName())) {
 				final var vo = result.get(c.getName());
 				vo.setPersisted(true);
-				vo.setOverridden(!StringUtils.equals(vo.getValue(), c.getValue()));
+				vo.setOverridden(!Strings.CS.equals(vo.getValue(), c.getValue()));
 			} else {
 				final var vo = new ConfigurationVo();
 				AuditedBean.copyAuditData(c, vo);

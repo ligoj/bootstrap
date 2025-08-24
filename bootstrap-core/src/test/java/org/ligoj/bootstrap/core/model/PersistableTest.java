@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.core.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Test persistable entity.
@@ -15,20 +15,20 @@ class PersistableTest {
 
 	@Test
 	void testAudit() {
-		final var now = new Date();
+		final var now =  Instant.now();
 		final var entity = new PersistableEntity();
 		entity.setCreatedBy("name1");
 		entity.setLastModifiedBy("name2");
 		entity.setCreatedDate(now);
-		entity.setLastModifiedDate(new Date(now.getTime() + 1000));
+		entity.setLastModifiedDate(Instant.ofEpochMilli(now.toEpochMilli()+ 1000));
 		Assertions.assertTrue(entity.isNew());
 
 		entity.setId(0);
 		Assertions.assertFalse(entity.isNew());
 		Assertions.assertEquals("name1", entity.getCreatedBy());
 		Assertions.assertEquals("name2", entity.getLastModifiedBy());
-		Assertions.assertEquals(now.getTime(), entity.getCreatedDate().getTime());
-		Assertions.assertEquals(now.getTime() + 1000, entity.getLastModifiedDate().getTime());
+		Assertions.assertEquals(now.toEpochMilli(), entity.getCreatedDate().toEpochMilli());
+		Assertions.assertEquals(now.toEpochMilli() + 1000, entity.getLastModifiedDate().toEpochMilli());
 	}
 
 	@Test
