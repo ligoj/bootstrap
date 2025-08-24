@@ -105,7 +105,7 @@
         <spring.version>6.2.10</spring.version>
         <spring-boot.version>3.5.5</spring-boot.version>
         <spring-cloud-context.version>4.3.0</spring-cloud-context.version>
-        <spring-data.version>3.3.8</spring-data.version>
+        <spring-data.version>3.5.3</spring-data.version>
         <spring-security.version>6.5.3</spring-security.version>
         <swagger-ui.version>5.27.1</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.36</swagger-jaxrs2-jakarta.version>
@@ -433,6 +433,12 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring-data.version}</version>
             </dependency>
 
             <!-- Spring Security -->
