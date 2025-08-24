@@ -8,6 +8,7 @@ import org.hibernate.query.sqm.function.SqmFunctionRegistry;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.BasicTypeReference;
 import org.hibernate.type.BasicTypeRegistry;
+import org.hibernate.type.SqlTypes;
 import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 import org.hibernate.type.spi.TypeConfiguration;
 import org.mockito.ArgumentMatchers;
@@ -37,6 +38,8 @@ abstract class AbstractDialectTest {
 		Mockito.doReturn(basicType).when(typeConfiguration).standardBasicTypeForJavaType( ArgumentMatchers.any(Type.class));
 		Mockito.doReturn(basicType).when(typeConfiguration).standardBasicTypeForJavaType( ArgumentMatchers.any(Class.class));
 		Mockito.doReturn(basicType).when(basicTypeRegistry).resolve(ArgumentMatchers.any(BasicTypeReference.class));
+		Mockito.doReturn(basicType).when(basicTypeRegistry).resolve(ArgumentMatchers.any(Class.class), ArgumentMatchers.any(Integer.class ));
+		Mockito.doReturn(basicType).when(basicTypeRegistry).getRegisteredType(ArgumentMatchers.any(Class.class ));
 		return functionContributions;
 	}
 }

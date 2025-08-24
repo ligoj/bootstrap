@@ -5,7 +5,7 @@ package org.ligoj.bootstrap.core.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.boot.archive.scan.internal.StandardScanner;
+import org.hibernate.archive.scan.internal.StandardScanner;
 import org.hibernate.boot.archive.scan.spi.ScanEnvironment;
 import org.hibernate.boot.archive.scan.spi.ScanOptions;
 import org.hibernate.boot.archive.scan.spi.ScanParameters;
