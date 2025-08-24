@@ -11,7 +11,6 @@ import org.ligoj.bootstrap.model.system.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
-import java.util.Date;
 
 /**
  * Test all system entities. (not really test)
