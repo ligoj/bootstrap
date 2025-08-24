@@ -104,7 +104,7 @@
         <spotbugs-annotations>4.9.3</spotbugs-annotations>
         <spring.version>6.2.7</spring.version>
         <spring-boot.version>3.5.5</spring-boot.version>
-        <spring-cloud-context.version>4.2.1</spring-cloud-context.version>
+        <spring-cloud-context.version>4.3.0</spring-cloud-context.version>
         <spring-data.version>3.3.8</spring-data.version>
         <spring-security.version>6.5.3</spring-security.version>
         <swagger-ui.version>5.27.1</swagger-ui.version>
