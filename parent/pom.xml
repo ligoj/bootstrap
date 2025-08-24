@@ -74,7 +74,7 @@
         <hazelcast.version>5.5.0</hazelcast.version>
         <hibernate.version>6.6.16.Final</hibernate.version>
         <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
-        <httpclient.version>5.4.2</httpclient.version>
+        <httpclient.version>5.5</httpclient.version>
         <httpcore.version>5.3.4</httpcore.version>
         <hsqldb.version>2.7.4</hsqldb.version>
         <jackson.version>2.19.2</jackson.version>
