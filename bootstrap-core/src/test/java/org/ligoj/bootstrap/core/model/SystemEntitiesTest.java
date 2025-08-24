@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -83,10 +84,9 @@ class SystemEntitiesTest {
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		final var entity = clazz.getDeclaredConstructor().newInstance();
 		if (entity instanceof Auditable) {
-			@SuppressWarnings("unchecked")
-			final var auditable = (Auditable<?, ?, Date>) entity;
-			auditable.setLastModifiedDate(new Date());
-			auditable.setCreatedDate(new Date());
+			@SuppressWarnings("unchecked") final var auditable = (Auditable<T, ?, Instant>) entity;
+			auditable.setLastModifiedDate(Instant.now());
+			auditable.setCreatedDate(Instant.now());
 		}
 		final var clone = entity.getClass().getDeclaredConstructor().newInstance();
 		BeanCopy.fromBean(entity).toBean(clone);

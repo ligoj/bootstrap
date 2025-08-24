@@ -168,7 +168,7 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 	}
 
 	private String getIdData(final HttpServletRequest req, final String parameter, final String header) {
-		return ObjectUtils.defaultIfNull(StringUtils.trimToNull(req.getParameter(parameter)),
+		return ObjectUtils.getIfNull(StringUtils.trimToNull(req.getParameter(parameter)),
 				StringUtils.trimToNull(req.getHeader(header)));
 	}
 
@@ -331,8 +331,8 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 		final var apiMatcher = pattern.matcher(query);
 		if (apiMatcher.find()) {
 			// API Token is defined as a query parameter, we can remove it
-			return ObjectUtils.defaultIfNull(apiMatcher.group(2), "")
-					+ ObjectUtils.defaultIfNull(apiMatcher.group(4), "");
+			return ObjectUtils.getIfNull(apiMatcher.group(2), "")
+					+ ObjectUtils.getIfNull(apiMatcher.group(4), "");
 		}
 		return query;
 	}
@@ -364,7 +364,7 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 	 * @return the nearest managed status.
 	 */
 	protected int getManagedPlainPageError(final int status) {
-		return ObjectUtils.defaultIfNull(MANAGED_PLAIN_ERROR.get(status), 0);
+		return ObjectUtils.getIfNull(MANAGED_PLAIN_ERROR.get(status), 0);
 	}
 
 	/**

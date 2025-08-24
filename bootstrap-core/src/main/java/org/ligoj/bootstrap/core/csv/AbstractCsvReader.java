@@ -27,6 +27,7 @@ import jakarta.persistence.GeneratedValue;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.ligoj.bootstrap.core.DateUtils;
@@ -163,6 +164,8 @@ public abstract class AbstractCsvReader<T> {
 		TypeConverterManager.get().register(LocalDate.class,
 				value -> Instant.ofEpochMilli(dateJConverter.convert(value).getTime())
 						.atZone(DateUtils.getApplicationTimeZone().toZoneId()).toLocalDate());
+		TypeConverterManager.get().register(Instant.class,
+				value -> dateJConverter.convert(value).toInstant());
 	}
 
 	/**
@@ -256,7 +259,7 @@ public abstract class AbstractCsvReader<T> {
 	 * @throws ReflectiveOperationException When bean cannot be built with reflection.
 	 */
 	protected void setProperty(final T bean, final String property, final String rawValue,
-	                           final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
+			final TriConsumer<T, String, String> setter) throws ReflectiveOperationException {
 		if (setter == null) {
 			final var keyIndex = property.indexOf('.');
 			if (keyIndex == -1) {
@@ -354,7 +357,7 @@ public abstract class AbstractCsvReader<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <E extends Enum<E>> void setSimpleRawProperty(final T bean, final String property,
-	                                                        final String rawValue) {
+			final String rawValue) {
 		final var field = getField(clazz, property);
 
 		// Update the property
@@ -373,7 +376,7 @@ public abstract class AbstractCsvReader<T> {
 			} else if (Number.class
 					.isAssignableFrom(org.apache.commons.lang3.ClassUtils.primitiveToWrapper(field.getType()))) {
 				// Simple numeric property
-				beanUtilsBean.setProperty(bean, property, StringUtils.replace(rawValue, " ", "").replace(',', '.'));
+				beanUtilsBean.setProperty(bean, property, Strings.CS.replace(rawValue, " ", "").replace(',', '.'));
 			} else {
 				// Simple property
 				beanUtilsBean.setProperty(bean, property, rawValue);
@@ -383,7 +386,7 @@ public abstract class AbstractCsvReader<T> {
 
 	@SuppressWarnings("unchecked")
 	private <E extends Enum<E>> Collection<Object> newCollection(final String rawValue, final Field field,
-	                                                             final Collection<Object> result) {
+			final Collection<Object> result) {
 		final var generic = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 		for (final var item : rawValue.split(",")) {
 			if (generic.isEnum()) {

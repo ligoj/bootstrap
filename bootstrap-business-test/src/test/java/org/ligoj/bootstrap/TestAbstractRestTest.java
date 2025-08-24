@@ -32,7 +32,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		httpclient = Mockito.mock(CloseableHttpClient.class);
 		final var response = Mockito.mock(CloseableHttpResponse.class);
 		Mockito.when(response.getCode()).thenReturn(HttpStatus.SC_OK);
-		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenAnswer(
+		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.<HttpClientResponseHandler<CloseableHttpResponse>>any())).thenAnswer(
 				invocation -> ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response)
 		);
 		final var entity = Mockito.mock(HttpEntity.class);
@@ -51,7 +51,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		httpclient = Mockito.mock(CloseableHttpClient.class);
 		final var response = Mockito.mock(CloseableHttpResponse.class);
 		Mockito.when(response.getCode()).thenReturn(HttpStatus.SC_GATEWAY_TIMEOUT);
-		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenAnswer(
+		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.<HttpClientResponseHandler<CloseableHttpResponse>>any())).thenAnswer(
 				invocation -> ((HttpClientResponseHandler<CloseableHttpResponse>) invocation.getArgument(1)).handleResponse(response)
 		);
 		final var entity = Mockito.mock(HttpEntity.class);
@@ -66,7 +66,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 	void testStartRestServerKo2() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
-		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenThrow(new IOException());
+		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.<HttpClientResponseHandler<CloseableHttpResponse>>any())).thenThrow(new IOException());
 		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
 	}
 
@@ -74,7 +74,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 	void testStartRestServerKo3() throws IOException {
 		retries = 0;
 		httpclient = Mockito.mock(CloseableHttpClient.class);
-		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.any(HttpClientResponseHandler.class))).thenThrow(new HttpHostConnectException(""));
+		Mockito.when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.<HttpClientResponseHandler<CloseableHttpResponse>>any())).thenThrow(new HttpHostConnectException(""));
 		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
 	}
 

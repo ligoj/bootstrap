@@ -18,6 +18,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 
 import java.io.Serializable;
@@ -260,8 +261,8 @@ public class ValidationJsonException extends RuntimeException {
 			}
 		}
 		error.put("rule",
-				ClassUtils.getShortClassName(StringUtils.removeEnd(
-						StringUtils.removeEnd(StringUtils.removeStart(violation.getMessageTemplate(), "{"), "}"),
+				ClassUtils.getShortClassName(Strings.CS.removeEnd(
+						Strings.CS.removeEnd(Strings.CS.removeStart(violation.getMessageTemplate(), "{"), "}"),
 						".message")));
 		return error;
 	}
