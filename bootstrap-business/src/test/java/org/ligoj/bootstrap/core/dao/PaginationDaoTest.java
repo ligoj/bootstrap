@@ -66,7 +66,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all without pagination from {@link UriInfo}.
+	 * Find all without pagination from {@link UriInfo}.
 	 */
 	@Test
 	void findAllUriInfo() {
@@ -80,7 +80,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all without pagination.
+	 * Find all without pagination.
 	 */
 	@Test
 	void findAll() {
@@ -95,7 +95,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all (no rule).
+	 * Find all without rules.
 	 */
 	@Test
 	void findAll2() {
@@ -410,7 +410,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all, plenty of integer rules and 2 depth grouping : 'eq', 'lt', 'gt', 'ne'.
+	 * Default find all, plenty of integer rules and 2 levels depth grouping : 'eq', 'lt', 'gt', 'ne'.
 	 */
 	@Test
 	void findAllWithRules2() {
@@ -544,7 +544,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Find all based on auto incremented value comparison.
+	 * Find all based on an auto incremented value comparison.
 	 */
 	@Test
 	void findAllWithAutoIncrementCompare() {
@@ -680,7 +680,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all with custom specification.
+	 * Find all with custom specification.
 	 */
 	@Test
 	void findAllWithCustomSpecInvalid() {
@@ -700,7 +700,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all with enumeration filter.
+	 * Find all with enumeration filter.
 	 */
 	@Test
 	void findAllWithEnumeration() {
@@ -726,7 +726,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all with enumeration filter.
+	 * Find all with enumeration filter.
 	 */
 	@Test
 	void findAllWithGenericType() {
@@ -760,7 +760,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all with enumeration filter.
+	 * Find all with lower case filter.
 	 */
 	@Test
 	void findAllWithEnumerationLowerCase() {
@@ -782,7 +782,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all with enumeration filter.
+	 * Find all with enumeration filter.
 	 */
 	@Test
 	void findAllWithEnumerationOrdinal() {
@@ -862,7 +862,7 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Find with invalid path.
+	 * Find with an invalid path.
 	 */
 	@Test
 	void findAllJoinInvalidOrmPath() {

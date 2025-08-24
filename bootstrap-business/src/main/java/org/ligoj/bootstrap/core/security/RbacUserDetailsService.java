@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * User details service backed in database. All authenticated users get the role {@link SystemRole#DEFAULT_ROLE}
+ * User details service backed in the database. All authenticated users get the role {@link SystemRole#DEFAULT_ROLE}
  */
 @Component
 public class RbacUserDetailsService implements UserDetailsService {

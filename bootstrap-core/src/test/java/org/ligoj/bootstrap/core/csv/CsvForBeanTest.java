@@ -3,15 +3,7 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-
 import jakarta.persistence.CascadeType;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,6 +13,13 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Check all CSV to/from simple beans of {@link CsvForBean} utility.
@@ -33,7 +32,7 @@ class CsvForBeanTest {
 	static void init() {
 		System.setProperty("app.crypto.file", "src/test/resources/security.key");
 
-		// Fix UTC time zone for this test, since date are compared
+		// Fix the UTC time zone for this test, since the dates are compared
 		DateUtils.setApplicationTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
@@ -230,12 +229,12 @@ class CsvForBeanTest {
 				"createdDate\n2016/05/04\n2016/05/04 12:54:32\n2016/05/04 12:54\n04/05/2016\n04/05/2016 12:54\n04/05/2016 12:54:32"));
 		Assertions.assertEquals(6, items.size());
 		System.setProperty("user.timezone", "UTC");
-		Assertions.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(0).getCreatedDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(1).getCreatedDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(2).getCreatedDate().toString());
-		Assertions.assertEquals("Wed May 04 00:00:00 UTC 2016", items.get(3).getCreatedDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:00 UTC 2016", items.get(4).getCreatedDate().toString());
-		Assertions.assertEquals("Wed May 04 12:54:32 UTC 2016", items.get(5).getCreatedDate().toString());
+		Assertions.assertEquals("2016-05-04T00:00:00Z", items.get(0).getCreatedDate().toString());
+		Assertions.assertEquals("2016-05-04T12:54:32Z", items.get(1).getCreatedDate().toString());
+		Assertions.assertEquals("2016-05-04T12:54:00Z", items.get(2).getCreatedDate().toString());
+		Assertions.assertEquals("2016-05-04T00:00:00Z", items.get(3).getCreatedDate().toString());
+		Assertions.assertEquals("2016-05-04T12:54:00Z", items.get(4).getCreatedDate().toString());
+		Assertions.assertEquals("2016-05-04T12:54:32Z", items.get(5).getCreatedDate().toString());
 	}
 
 	@Test
@@ -290,7 +289,7 @@ class CsvForBeanTest {
 				() -> csvForBean.toBean(DummyEntity3.class, reader),
 				"Unable to build an object of type : class org.ligoj.bootstrap.core.csv.DummyEntity3");
 		Assertions.assertTrue(e.getCause().getMessage().contains(
-				"Can not set java.util.Date field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection"));
+				"Can not set java.time.LocalDateTime field org.ligoj.bootstrap.core.csv.DummyEntity3.lastConnection"));
 	}
 
 	/**
