@@ -655,7 +655,7 @@ class PaginationDaoTest extends AbstractBootTest {
 		uiPageRequest.getUiFilter().setRules(rules);
 		final var mapping = newBaseMapping();
 		final Map<String, CustomSpecification> specifications = new HashMap<>();
-		specifications.put("myCustom", (root, _, cb, rule) -> {
+		specifications.put("myCustom", (root, query, cb, rule) -> {
 			Assertions.assertEquals(ruleCT.getData(), rule.getData());
 			return cb.equal(root.get("dialChar"), rule.getData());
 		});
