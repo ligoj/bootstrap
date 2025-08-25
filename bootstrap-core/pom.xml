@@ -5,12 +5,14 @@
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.1.28</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>bootstrap-core</artifactId>
 	<packaging>jar</packaging>
+    <name>Ligoj - Bootstrap - Core</name>
+    <description>Common utilities and application bootstrap</description>
 
 	<dependencies>
 		<dependency>

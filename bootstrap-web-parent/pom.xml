@@ -5,12 +5,14 @@
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.1.28</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>bootstrap-web-parent</artifactId>
 	<packaging>pom</packaging>
+    <name>Ligoj - Bootstrap - Web Parent BOM</name>
+    <description>BOM module for Web-based applications</description>
 
 	<properties>
 		<jetty.properties>${project.build.outputDirectory}/META-INF/jetty/jetty-dev.properties</jetty.properties>
@@ -29,14 +31,14 @@
 		<dependency>
 			<groupId>org.ligoj.bootstrap</groupId>
 			<artifactId>bootstrap-web</artifactId>
-			<version>3.1.28</version>
+			<version>3.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ligoj.bootstrap</groupId>
 			<artifactId>bootstrap-web-test</artifactId>
 			<type>pom</type>
 			<scope>test</scope>
-			<version>3.1.28</version>
+			<version>3.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents.core5</groupId>

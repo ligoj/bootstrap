@@ -3,12 +3,15 @@
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.1.28</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>bootstrap-business-test</artifactId>
 	<packaging>jar</packaging>
+    <name>Ligoj - Bootstrap - API Test</name>
+    <description>Common utilities and application test bootstrap</description>
+
 	<dependencies>
 		<!-- JSR-907 -->
 		<dependency>
@@ -53,7 +56,7 @@
 		<dependency>
 			<groupId>org.ligoj.bootstrap</groupId>
 			<artifactId>bootstrap-launcher</artifactId>
-			<version>3.1.28</version>
+			<version>3.2.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Mock & Test -->

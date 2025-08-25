@@ -4,11 +4,13 @@
     <parent>
         <groupId>org.ligoj.bootstrap</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.28</version>
+        <version>3.2.0-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <artifactId>bootstrap-launcher</artifactId>
     <packaging>jar</packaging>
+    <name>Ligoj - Bootstrap - Launcher</name>
+    <description>Application launcher from IDE</description>
 
     <dependencies>
         <dependency>
