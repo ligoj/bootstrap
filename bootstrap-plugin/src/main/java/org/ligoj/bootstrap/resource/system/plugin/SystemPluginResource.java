@@ -591,14 +591,14 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			}
 		});
 
-		// First install the data of new plug-ins
+		// First, install the data of new plug-ins
 		updateFeatures.values().forEach(s -> configurePluginUpdate(s, plugins.get(s.getKey())));
 		newFeatures.values().forEach(this::configurePluginInstall);
 
 		// Then install/update the plug-in
 		update(updateFeatures, plugins);
 		installInternal(newFeatures);
-		log.info("Plugins are now configured");
+		log.info("Plugins are now configured, v{}", configuration.get("info.app.version"));
 
 		// And remove the old plug-in no more installed
 		repository.deleteAll(removedPlugins.stream().map(Persistable::getId).toList());
