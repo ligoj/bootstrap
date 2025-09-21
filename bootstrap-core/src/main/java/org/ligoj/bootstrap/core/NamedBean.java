@@ -17,7 +17,7 @@ import lombok.ToString;
 
 /**
  * A named bean
- * 
+ *
  * @param <K> the type of the identifier
  */
 @Getter
@@ -43,13 +43,17 @@ public class NamedBean<K extends Serializable> implements INamableBean<K> {
 
 	/**
 	 * Copy a bean to another one.
-	 * 
+	 *
 	 * @param <T>  Bean type.
 	 * @param from the source bean.
 	 * @param to   the target bean.
 	 */
 	public static <T extends Serializable> void copy(final INamableBean<T> from, final INamableBean<T> to) {
-		to.setId(from.getId());
+		if (from.getId() instanceof Integer && (Integer) from.getId() == 0) {
+			to.setId(null);
+		} else {
+			to.setId(from.getId());
+		}
 		to.setName(from.getName());
 	}
 
