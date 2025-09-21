@@ -76,7 +76,7 @@ public class ValidationJsonException extends RuntimeException {
 	}
 
 	/**
-	 * Constructor from mapping exception : invalid type conversion.
+	 * Constructor from mapping exception: invalid type conversion.
 	 *
 	 * @param mappingException validation exception containing errors.
 	 */
