@@ -81,7 +81,7 @@
         <jackson.databind.version>2.20.0</jackson.databind.version>
         <jakarta.xml.ws-api.version>4.0.2</jakarta.xml.ws-api.version>
         <jasypt.version>1.9.3</jasypt.version>
-        <jaxb-api.version>4.0.2</jaxb-api.version>
+        <jaxb-api.version>4.0.4</jaxb-api.version>
         <jaxb.version>4.0.5</jaxb.version>
         <jetty.version>12.0.25</jetty.version>
         <jodd-bean.version>5.1.6</jodd-bean.version>
