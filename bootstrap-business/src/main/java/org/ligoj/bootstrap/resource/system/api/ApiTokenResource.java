@@ -142,7 +142,19 @@ public class ApiTokenResource {
 	@OnNullReturn404
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getToken(@PathParam("name") final String name) {
-		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
+		return getToken(name, securityHelper.getLogin());
+	}
+
+	/**
+	 * Return raw token value corresponding to the requested name and owned by current user.
+	 * Internal use only, never exposed to API.
+	 *
+	 * @param name  The token's name.
+	 * @param login The user's name.
+	 * @return raw token value corresponding to the requested name and owned by current user.
+	 */
+	public String getToken(final String name, final String login) {
+		final var entity = repository.findByUserAndName(login, name);
 		if (entity == null) {
 			return null;
 		}
@@ -271,10 +283,23 @@ public class ApiTokenResource {
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	public NamedBean<String> create(final String user, final String name) throws GeneralSecurityException {
+		return create(user, name, newToken());
+	}
+
+	/**
+	 * Create a new token for given user.
+	 *
+	 * @param name       New token name.
+	 * @param user       The target user.
+	 * @param tokenValue The forced token value.
+	 * @return the generated token as a bean where the identifier is the token value.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	public NamedBean<String> create(final String user, final String name, final String tokenValue) throws GeneralSecurityException {
 		final var entity = new SystemApiToken();
 		entity.setName(name);
 		entity.setUser(user);
-		final var token = newToken(entity);
+		final var token = newToken(entity, tokenValue);
 		repository.saveAndFlush(entity);
 		return new NamedBean<>(token, name);
 	}
@@ -282,8 +307,7 @@ public class ApiTokenResource {
 	/**
 	 * Update the token with a new one.
 	 */
-	private String newToken(final SystemApiToken entity) throws GeneralSecurityException {
-		final var token = newToken();
+	private String newToken(final SystemApiToken entity, String token) throws GeneralSecurityException {
 		entity.setHash(hash(token));
 		entity.setToken(encrypt(token, newSecretKey(entity.getUser(), entity.getName())));
 		return token;
@@ -308,14 +332,39 @@ public class ApiTokenResource {
 	@Path("{name:[\\w.-]+}")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String update(@PathParam("name") final String name) throws GeneralSecurityException {
-		final var entity = repository.findByUserAndName(securityHelper.getLogin(), name);
+		return update(securityHelper.getLogin(), name);
+	}
+
+	/**
+	 * Update a named token with a provided one.
+	 *
+	 * @param user User owner of the target token.
+	 * @param name Token to update.
+	 * @return the new generated token.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	public String update(final String user, final String name) throws GeneralSecurityException {
+		return update(user, name, newToken());
+	}
+
+	/**
+	 * Update a named token with a provided one.
+	 *
+	 * @param user       User owner of the target token.
+	 * @param name       Token to update.
+	 * @param tokenValue Token value to set.
+	 * @return the new generated token.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	public String update(final String user, final String name, final String tokenValue) throws GeneralSecurityException {
+		final var entity = repository.findByUserAndName(user, name);
 		if (entity == null) {
 			// No token with given name
 			throw new EntityNotFoundException();
 		}
 
 		// Token has been found, update it
-		final var token = newToken(entity);
+		final var token = newToken(entity, tokenValue);
 		repository.saveAndFlush(entity);
 		return token;
 	}

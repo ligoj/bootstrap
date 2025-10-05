@@ -15,8 +15,8 @@ import org.ligoj.bootstrap.core.dao.PaginationDao;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
+import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
-import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
@@ -54,6 +54,9 @@ public class UserResource {
 
 	@Autowired
 	private SystemRoleAssignmentRepository roleAssignmentRepository;
+
+	@Autowired
+	private SystemRoleRepository roleRepository;
 
 	@Autowired
 	protected CacheManager cacheManager;
@@ -175,6 +178,7 @@ public class UserResource {
 
 		// update role assignment
 		createRoleAssignment(userVo.getRoles(), user);
+		repository.save(user);
 
 		if (StringUtils.isNotBlank(userVo.getApiToken()) && !apiTokenResource.hasToken(targetUser, userVo.getApiToken())) {
 			return apiTokenResource.create(targetUser, userVo.getApiToken());
@@ -209,14 +213,16 @@ public class UserResource {
 		user.getRoles().stream().map(r -> r.getRole().getId()).forEach(newRoles::remove);
 
 		// Apply the changes
-		deletedRoles.forEach(r -> roleAssignmentRepository.deleteAllBy("user.id", user.getLogin(), new String[]{"role.id"}, r));
+		deletedRoles.forEach(r -> {
+			user.getRoles().removeIf(ra->r.equals(ra.getRole().getId()));
+			roleAssignmentRepository.deleteAllBy("user.id", user.getLogin(), new String[]{"role.id"}, r);
+		});
 		newRoles.forEach(r -> {
 			final var roleAssignment = new SystemRoleAssignment();
-			final var role = new SystemRole();
-			role.setId(r);
+			final var role = roleRepository.findOne(r);
 			roleAssignment.setRole(role);
 			roleAssignment.setUser(user);
-			roleAssignmentRepository.save(roleAssignment);
+			user.getRoles().add(roleAssignmentRepository.save(roleAssignment));
 		});
 
 		cacheManager.getCache("user-details").evict(user.getLogin());
