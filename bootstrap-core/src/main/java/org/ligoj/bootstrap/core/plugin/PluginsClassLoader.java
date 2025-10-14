@@ -222,7 +222,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @param javadocFiler      When true, only javadoc jar are analyzed, otherwise they are excluded.
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
 	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
-	 * version.
+	 * version. The return keys are alphabetically ordered with natural dependency respect.
 	 * @throws IOException When file list failed.
 	 */
 	public Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath, final boolean javadocFiler) throws IOException {
