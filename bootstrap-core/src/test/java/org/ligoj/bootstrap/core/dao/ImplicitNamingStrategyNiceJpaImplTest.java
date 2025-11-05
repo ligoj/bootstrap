@@ -29,14 +29,19 @@ class ImplicitNamingStrategyNiceJpaImplTest {
     void determineUniqueKeyName() {
 		final var source = Mockito.mock(ImplicitUniqueKeyNameSource.class);
 		mockContext(source);
-		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
+		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("null"));
 		final List<Identifier> columnsIdentifier = new ArrayList<>();
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn1"));
 		columnsIdentifier.add(DatabaseIdentifier.toIdentifier("MyCol_umn2"));
 		Mockito.when(source.getColumnNames()).thenReturn(columnsIdentifier);
-		final var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
 
+		var identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
 		Assertions.assertEquals("UK_bg6a6jkepii31sno6kq8jv1g5", identifier.getText());
+
+		Mockito.when(source.getTableName()).thenReturn(DatabaseIdentifier.toIdentifier("MyTa_ble"));
+		identifier = new ImplicitNamingStrategyNiceJpaImpl().determineUniqueKeyName(source);
+		Assertions.assertEquals("UK_bdj7f5p3skrieson5es1km8t9", identifier.getText());
+
 	}
 
 	@Test

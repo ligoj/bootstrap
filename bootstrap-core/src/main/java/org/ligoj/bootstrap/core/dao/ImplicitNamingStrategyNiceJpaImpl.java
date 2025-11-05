@@ -8,7 +8,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.boot.model.naming.*;
 import org.hibernate.boot.model.source.spi.AttributePath;
 import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Table;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -68,14 +67,14 @@ public class ImplicitNamingStrategyNiceJpaImpl
 
 	@Override
 	public Identifier determineForeignKeyName(final ImplicitForeignKeyNameSource source) {
-		return toIdentifier(generateName("FK_", new Table(null, source.getTableName().getText()),
+		return toIdentifier(generateName("FK_", source.getTableName().getText(),
 				toColumns(source.getColumnNames())), source.getBuildingContext());
 	}
 
-	private static String generateName(String prefix, Table table, List<Column> columns) {
+	private static String generateName(String prefix, String table, List<Column> columns) {
 		// Use a concatenation that guarantees uniqueness, even if identical names
 		// exist between all table and column identifiers.
-		final StringBuilder sb = new StringBuilder("table`" + table.getName() + "`");
+		final StringBuilder sb = new StringBuilder("table`" + table + "`");
 		// Ensure a consistent ordering of columns, regardless of the order they were bound.
 		// Clone the list, as sometimes a set of order-dependent Column bindings are given.
 		columns.stream()
@@ -111,7 +110,7 @@ public class ImplicitNamingStrategyNiceJpaImpl
 
 	@Override
 	public Identifier determineUniqueKeyName(final ImplicitUniqueKeyNameSource source) {
-		return toIdentifier(generateName("UK_", new Table(source.getTableName().getText()),
+		return toIdentifier(generateName("UK_", source.getTableName().getText(),
 				toColumns(source.getColumnNames())), source.getBuildingContext());
 	}
 }
