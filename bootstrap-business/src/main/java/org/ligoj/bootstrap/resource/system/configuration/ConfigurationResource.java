@@ -174,8 +174,8 @@ public class ConfigurationResource {
 	@POST
 	@PUT
 	@Path("{name}")
-	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank final String value) {
+	@CacheRemove(cacheName = "configuration")
+	public void put(@CacheKey @PathParam("name") final String name, @NotBlank final String value) {
 		put(name, value, false);
 	}
 
@@ -190,8 +190,8 @@ public class ConfigurationResource {
 	@POST
 	@PUT
 	@Path("{name}/{system}")
-	@CachePut(cacheName = "configuration")
-	public void put(@CacheKey @PathParam("name") final String name, @CacheValue @NotBlank final String value,
+	@CacheRemove(cacheName = "configuration")
+	public void put(@CacheKey @PathParam("name") final String name, @NotBlank final String value,
 			@PathParam("system") final boolean system) {
 		put(name, value, system, false);
 	}

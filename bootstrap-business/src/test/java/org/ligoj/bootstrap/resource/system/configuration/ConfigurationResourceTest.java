@@ -334,7 +334,10 @@ class ConfigurationResourceTest extends AbstractBootTest {
 		resource.put("test-key00", "value-db-env", true);
 		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
 
+		// Rewrite in database without system scope
 		resource.put("test-key00", "value-db-jpa", false);
+
+		// The system value is still untouched
 		Assertions.assertEquals("value-db-env", resource.get("test-key00"));
 
 		// System property still exists and overrides the database value
