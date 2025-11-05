@@ -9,11 +9,10 @@
 	default-autowire="byName">
 
 	<bean id="cacheManager"
-		class="org.springframework.cache.jcache.JCacheCacheManager"
-		p:cache-manager-ref="hazelcast" />
+        class="org.springframework.cache.jcache.JCacheCacheManager"
+        p:cache-manager-ref="hazelcast" />
 	<bean id="hazelcast"
-		class="org.ligoj.bootstrap.resource.system.cache.MergedHazelCastManagerFactoryBean"
-		p:location="${cache.location:classpath:META-INF/hazelcast-local.xml}" />
-	<cache:annotation-driven
-		proxy-target-class="true" />
+        class="org.ligoj.bootstrap.resource.system.cache.MergedHazelCastManagerFactoryBean"
+        p:location="${cache.location:classpath:META-INF/hazelcast-local.xml}" />
+	<cache:annotation-driven proxy-target-class="true" />
 </beans>
