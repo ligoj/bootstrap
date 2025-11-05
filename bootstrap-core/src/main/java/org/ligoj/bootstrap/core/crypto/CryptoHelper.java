@@ -9,11 +9,14 @@ import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.Setter;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 
 /**
  * Utility managing {@link StringEncryptor}
  */
 @Setter
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public final class CryptoHelper {
 
 	@Autowired

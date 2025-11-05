@@ -9,13 +9,16 @@ import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import lombok.Setter;
-import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -29,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Factory of cache with modular {@link CacheConfig} creation delegate to
  * {@link CacheManagerAware} implementors.
  */
-public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {
+public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean, ApplicationContextAware {
 
 	/**
 	 * Cache manager instance.
@@ -42,11 +45,11 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	@Setter
 	private String location;
 
-	@Autowired
-	protected ApplicationContext context;
+	@Setter
+	protected ApplicationContext applicationContext;
 
 	@Autowired
-	protected ConfigurationResource configuration;
+	protected ConfigurableEnvironment env;
 
 	@Setter
 	@Value("${hazelcast.statistics.enable:false}")
@@ -59,7 +62,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 		final var provider = (com.hazelcast.cache.HazelcastCachingProvider) Caching.getCachingProvider();
 		final var manager = (HazelcastCacheManager) provider.getCacheManager(new URI("bootstrap-cache-manager"), null,
 				properties);
-		context.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this::newCacheConfig));
+		applicationContext.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this::newCacheConfig));
 		this.cacheManager = manager;
 	}
 
@@ -87,7 +90,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 		postConfigure(config);
 
 		// Last chance to override the default TTL from system configuration
-		final var ttlDuration = configuration.get("cache." + name + ".ttl", -1);
+		final var ttlDuration = NumberUtils.toInt(StringUtils.trimToNull(env.getProperty("cache." + name + ".ttl")), -1);
 		if (ttlDuration == -1) {
 			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.ETERNAL));
 		} else {
