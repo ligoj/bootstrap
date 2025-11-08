@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class HookProcessRunnable implements Runnable {
 
-	static final Base64 BASE64_CODEC = new Base64(0);
+	static final Base64 BASE64_CODEC = Base64.builder().setLineLength(0).get();
 	static final int DEFAULT_TIMEOUT = Integer.parseInt(System.getProperty("LIGOJ_HOOK_TIMEOUT", "30"), 10);
 
 	private final String now;

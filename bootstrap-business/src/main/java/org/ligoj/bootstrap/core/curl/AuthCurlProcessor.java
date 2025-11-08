@@ -17,9 +17,9 @@ import org.apache.hc.core5.http.HttpHeaders;
  */
 public class AuthCurlProcessor extends CurlProcessor {
 
+	private static final Base64 BASE64_CODEC = Base64.builder().setLineLength(0).get();
 	private final String username;
 	private final String password;
-	private static final Base64 BASE64_CODEC = new Base64(0);
 
 	/**
 	 * Full constructor holding credential and callback.
