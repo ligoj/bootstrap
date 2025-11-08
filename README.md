@@ -1,4 +1,4 @@
-## :link: Ligoj Bootstrap [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.bootstrap/root)
+## :link: Ligoj Bootstrap ![Maven Central](https://img.shields.io/maven-central/v/org.ligoj.bootstrap/root)
 REST+Front-End template with a ton of integrated component with many enterprise features : RBAC, Cache, modular modules
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.ligoj.bootstrap%3Aroot&metric=coverage)](https://sonarcloud.io/component_measures/metric/coverage/list?id=org.ligoj.bootstrap%3Aroot)
