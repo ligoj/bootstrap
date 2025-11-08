@@ -248,7 +248,8 @@ class JSonMapperTest {
 
 	@Test
 	void testWriteGenericObjectArray() throws IOException {
-		@SuppressWarnings("unchecked") final TestGenericObjectArray<Integer, String>[] lastObject = new TestGenericObjectArray[20];
+		@SuppressWarnings("unchecked")
+		final var lastObject = (TestGenericObjectArray<Integer, String>[])new TestGenericObjectArray<?,?>[20];
 		for (var i = 20; i-- > 0; ) {
 			lastObject[i] = new TestGenericObjectArray<>();
 			lastObject[i].setKey(6);
