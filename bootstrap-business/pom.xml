@@ -136,8 +136,33 @@
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>clean</phase>
+                                <configuration>
+                                    <target unless="maven.test.skip">
+                                        <echo message="To skip me, just call mvn -Dmaven.test.skip=true"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

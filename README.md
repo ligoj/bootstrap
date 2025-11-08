@@ -44,3 +44,9 @@ mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="^(.*[.-
 ```bash
 mvn dependency:tree
 ```
+
+# All features (w/o deployment)
+
+```bash
+mvn clean package -Psources,javadoc,github,sonatype,jacoco,test
+```
