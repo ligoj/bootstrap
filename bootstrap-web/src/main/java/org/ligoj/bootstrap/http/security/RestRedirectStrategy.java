@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.RedirectStrategy;
 
@@ -42,8 +43,9 @@ public class RestRedirectStrategy implements RedirectStrategy {
 			cAuth.getCookies().forEach(cookie -> response.addHeader("Set-Cookie", cookie));
 		}
 
-		final var extension = FilenameUtils.getExtension(request.getPathInfo());
-		final var mime = extension == null ? null : EXTENSION_TO_MIME.get(extension);
+		final var pathInfo = request.getPathInfo();
+		final var extension = FilenameUtils.getExtension(pathInfo);
+		final var mime = StringUtils.isEmpty(extension) ? null : EXTENSION_TO_MIME.get(extension);
 		// Write the JSON data containing the redirection and the status
 		final var redirect = response.encodeRedirectURL(request.getContextPath()) + (url == null ? "" : url);
 		response.setStatus(mime == null ? status : HttpServletResponse.SC_OK);
@@ -53,7 +55,7 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Expires", "0");
-		if (request.getPathInfo() != null && request.getPathInfo().endsWith("/messages.js")) {
+		if (StringUtils.defaultIfEmpty(pathInfo, "").endsWith("/messages.js")) {
 			IOUtils.write("define({root: {}})", response.getOutputStream(), StandardCharsets.UTF_8);
 		} else if ("text/javascript".equals(mime)) {
 			IOUtils.write(String.format("errorManager?.handleRedirect('%s');", redirect), response.getOutputStream(), StandardCharsets.UTF_8);

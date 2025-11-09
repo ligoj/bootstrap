@@ -3,21 +3,21 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-
-import jakarta.ws.rs.core.Response.Status;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.AbstractDataGeneratorTest;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.AbstractDataGeneratorTest;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Test class of {@link ObjectMapperTrim}
@@ -105,4 +105,12 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 		Assertions.assertThrows(InvalidFormatException.class,
 				() -> vanillaMapper.readValue("\"accepted\"", Status.class));
 	}
+
+
+	@Test
+	void deserializationInstant() throws IOException, ParseException {
+		var instant = DateFormat.getDateInstance(DateFormat.SHORT).parse("2025/11/09 01:02:03").toInstant();
+		Assertions.assertEquals("6554210400000",mapper.writeValueAsString(instant));
+	}
+
 }

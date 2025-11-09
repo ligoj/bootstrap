@@ -23,7 +23,7 @@ class DescribedBeanTest {
 	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
 	 */
 	@Test
-    void testCopyAudited() {
+	void testCopyAudited() {
 		final IDescribableBean<Integer> from = new DescribedAuditedBean<>();
 		from.setDescription("any");
 		from.setName("one");
@@ -37,7 +37,7 @@ class DescribedBeanTest {
 	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
 	 */
 	@Test
-    void testCopyEntity() {
+	void testCopyEntity() {
 		final IDescribableBean<Integer> from = new AbstractDescribedAuditedEntity<>() {
 
 			/**
@@ -66,22 +66,48 @@ class DescribedBeanTest {
 	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
 	 */
 	@Test
-    void testCopy() {
+	void testCopy() {
 		final IDescribableBean<Integer> from = newDescribedBean();
 		final IDescribableBean<Integer> to = new DescribedBean<>();
 		DescribedBean.copy(from, to);
 		assertData(to);
 	}
 
+	/**
+	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
+	 */
 	@Test
-    void testNamedBean() {
+	void testCopyNullId() {
+		final IDescribableBean<Integer> from = newDescribedBean();
+		final IDescribableBean<Integer> to = new DescribedBean<>();
+		from.setId(0);
+		DescribedBean.copy(from, to);
+		Assertions.assertNull(to.getId());
+	}
+
+	/**
+	 * Test {@link DescribedBean#copy(IDescribableBean, IDescribableBean)}
+	 */
+	@Test
+	void testCopyStringId() {
+		final var from = new DescribedBean<String>();
+		from.setDescription("any");
+		from.setName("one");
+		from.setId("id");
+		final IDescribableBean<String> to = new DescribedBean<>();
+		DescribedBean.copy(from, to);
+		Assertions.assertEquals("id", to.getId());
+	}
+
+	@Test
+	void testNamedBean() {
 		final var bean = new NamedBean<>(1, "VALUE");
 		Assertions.assertEquals("VALUE", bean.getName());
 		Assertions.assertEquals(1, bean.getId().intValue());
 	}
 
 	@Test
-    void testCompareTo() {
+	void testCompareTo() {
 		final Set<NamedBean<Integer>> beans = new TreeSet<>();
 		beans.add(new NamedBean<>(3, "VALUE3"));
 		beans.add(new NamedBean<>(1, "VALUE1"));
@@ -100,7 +126,7 @@ class DescribedBeanTest {
 	 * Test {@link NamedBean#copy(INamableBean, INamableBean)}
 	 */
 	@Test
-    void testCopyBusiness() {
+	void testCopyBusiness() {
 		final IDescribableBean<String> from = new AbstractDescribedBusinessEntity<>() {
 
 			/**
@@ -125,7 +151,7 @@ class DescribedBeanTest {
 	 * Test {@link DescribedBean#clone(IDescribableBean)}
 	 */
 	@Test
-    void testClone() {
+	void testClone() {
 		final IDescribableBean<Integer> from = newDescribedBean();
 		from.setDescription("any");
 		from.setName("one");
@@ -137,7 +163,7 @@ class DescribedBeanTest {
 	 * Test {@link DescribedBean#clone(IDescribableBean)}
 	 */
 	@Test
-    void testCloneEntity() {
+	void testCloneEntity() {
 		final IDescribableBean<Integer> from = new AbstractDescribedEntity<>() {
 
 			/**
@@ -159,7 +185,7 @@ class DescribedBeanTest {
 	 * Test {@link DescribedBean#clone(IDescribableBean)} with <code>null</code> input.
 	 */
 	@Test
-    void testCloneNull() {
+	void testCloneNull() {
 		Assertions.assertNull(DescribedBean.clone(null));
 	}
 

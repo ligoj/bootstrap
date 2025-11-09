@@ -58,6 +58,12 @@ class RedirectStrategyTest {
 	}
 
 	@Test
+	void sendRedirectNotSuccessCSS() throws IOException {
+		var out = sendRedirect(false, "/some.css", "");
+		Assertions.assertEquals("", out.toString());
+	}
+
+	@Test
 	void sendRedirectNotSuccessForce() throws IOException {
 		var out = sendRedirect(false, "/some.js", null);
 		Assertions.assertEquals("errorManager?.handleRedirect('');", out.toString());
