@@ -3,20 +3,11 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +16,17 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.mock.web.DelegatingServletOutputStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Test class of {@link WebjarsServlet}
@@ -68,24 +70,21 @@ class WebjarsServletTest {
 
 	@Test
 	void downloadFile() throws Exception {
+		final var webjarResource = "META-INF/resources/webjars/image.png";
 		final var request = defaultRequest();
 		final var response = Mockito.mock(HttpServletResponse.class);
 
-		final var classLoader = Mockito.mock(ClassLoader.class);
 		final var baos = new ByteArrayOutputStream();
 		final var out = new DelegatingServletOutputStream(baos);
 		Mockito.when(response.getOutputStream()).thenReturn(out);
-		final var urlsAsList = new ArrayList<URL>();
-		final var url = Thread.currentThread().getContextClassLoader()
-				.getResource("META-INF/resources/webjars/image.png");
-		urlsAsList.add(url);
-		urlsAsList.add(url);
-		final var urls = Collections.enumeration(urlsAsList);
-		Mockito.when(classLoader.getResources("META-INF/resources/webjars/image.png")).thenReturn(urls);
-		Thread.currentThread().setContextClassLoader(classLoader);
-		getServlet("false").doGet(request, response);
+		final var urls = new ArrayList<URL>();
+		final var url = Thread.currentThread().getContextClassLoader().getResource(webjarResource);
+		urls.add(url);
+		urls.add(url);
+		getServlet("false", true, urls).doGet(request, response);
 		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
 		Mockito.verify(response).setContentType("image/x-png");
+		getServlet("false", false, urls).doGet(request, response);
 		Mockito.verify(response, Mockito.never()).setStatus(ArgumentMatchers.anyInt());
 		Mockito.verify(response, Mockito.never()).sendError(ArgumentMatchers.anyInt());
 	}
@@ -138,7 +137,12 @@ class WebjarsServletTest {
 	}
 
 	private WebjarsServlet getServlet(final String disableCache) throws ServletException {
-		final var servlet = new WebjarsServlet();
+		return getServlet(disableCache, true, null);
+	}
+
+
+	private WebjarsServlet getServlet(final String disableCache, boolean fileHasMorePriority, List<URL> urls) throws ServletException {
+		final var servlet = new MyWebjarsServlet(fileHasMorePriority, urls);
 		final var servletConfig = Mockito.mock(ServletConfig.class);
 		final var servletContext = Mockito.mock(ServletContext.class);
 		Mockito.when(servletConfig.getInitParameter("disableCache")).thenReturn(disableCache);
@@ -146,5 +150,26 @@ class WebjarsServletTest {
 		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
 		servlet.init(servletConfig);
 		return servlet;
+	}
+
+	private static class MyWebjarsServlet extends WebjarsServlet {
+
+		private final boolean fileHasMorePriority;
+		private final List<URL> urls;
+
+		public MyWebjarsServlet(boolean fileHasMorePriority, List<URL> urls) {
+			this.fileHasMorePriority = fileHasMorePriority;
+			this.urls = urls;
+		}
+
+		@Override
+		protected boolean hasMorePriority(URL url) {
+			return fileHasMorePriority && super.hasMorePriority(url);
+		}
+
+		@Override
+		protected Enumeration<URL> getResources(String webjarsResourceURI) throws IOException {
+			return urls == null ? super.getResources(webjarsResourceURI) : Collections.enumeration(urls);
+		}
 	}
 }

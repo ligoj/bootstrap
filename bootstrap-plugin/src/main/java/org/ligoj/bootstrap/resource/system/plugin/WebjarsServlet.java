@@ -3,21 +3,20 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-
 import jakarta.activation.FileTypeMap;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -54,12 +53,20 @@ public class WebjarsServlet extends HttpServlet {
 		mimeTypes.put("otf", "application/x-font-opentype");
 	}
 
+	protected boolean hasMorePriority(URL url) {
+		return url.toString().startsWith("file:");
+	}
+
+	protected Enumeration<URL> getResources(String webjarsResourceURI) throws IOException {
+		return Thread.currentThread().getContextClassLoader().getResources(webjarsResourceURI);
+	}
+
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
 			throws IOException {
 		final var webjarsResourceURI = "META-INF/resources"
 				+ request.getRequestURI().replaceFirst(request.getContextPath(), "");
-		log.debug("Webjars resource requested: {}", webjarsResourceURI);
+		log.debug("Webjars requested resource: {}", webjarsResourceURI);
 
 		if (isDirectoryRequest(webjarsResourceURI)) {
 			// Directory listing is forbidden, but act as a 404 for security purpose.
@@ -68,11 +75,19 @@ public class WebjarsServlet extends HttpServlet {
 		}
 
 		// Regular file, use the last resource instead of the first found
-		final var resources = Thread.currentThread().getContextClassLoader().getResources(webjarsResourceURI);
+		final var resources = getResources(webjarsResourceURI);
 		URL webjarsResourceURL = null;
 		if (resources.hasMoreElements()) {
 			webjarsResourceURL = resources.nextElement();
 		}
+		if (resources.hasMoreElements()) {
+			var webjarsResourceFileUrl = resources.nextElement();
+			if (hasMorePriority(webjarsResourceFileUrl)) {
+				// Highest priority for local files
+				webjarsResourceURL = webjarsResourceFileUrl;
+			}
+		}
+
 		if (webjarsResourceURL == null) {
 			// File not found --> 404
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
