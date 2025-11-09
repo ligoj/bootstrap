@@ -3,20 +3,17 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.Date;
-import java.util.function.Function;
-
-import jakarta.persistence.Column;
-import org.ligoj.bootstrap.core.model.Auditable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ligoj.bootstrap.core.model.Auditable;
+
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.function.Function;
 
 /**
  * Class for audited objects.

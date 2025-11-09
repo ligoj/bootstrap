@@ -125,21 +125,6 @@ class PaginationDaoTest extends AbstractBootTest {
 	}
 
 	/**
-	 * Default find all, empty rules.
-	 */
-	@Test
-	void findAll4() {
-		final var uiPageRequest = new UiPageRequest();
-		uiPageRequest.setUiFilter(new UiFilter());
-		uiPageRequest.getUiFilter().setRules(new ArrayList<>());
-		final var findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, null, null, null);
-		Assertions.assertTrue(findAll.hasContent());
-		Assertions.assertEquals(COUNT, findAll.getTotalElements());
-		Assertions.assertEquals(10, findAll.getContent().size());
-		Assertions.assertFalse(findAll.getSort().isSorted());
-	}
-
-	/**
 	 * Default find all, empty rules, with fetch.
 	 */
 	@Test
@@ -627,16 +612,6 @@ class PaginationDaoTest extends AbstractBootTest {
 		Assertions.assertEquals(0, findAll.getTotalElements());
 		Assertions.assertEquals(0, findAll.getTotalPages());
 		Assertions.assertEquals(0, findAll.getContent().size());
-	}
-
-	/**
-	 * Default find all, empty rules with empty data.
-	 */
-	@Test
-	void findAllEmpty2() {
-		final var uiPageRequest = new UiPageRequest();
-		final var findAll = paginationDao.findAll(SystemUser.class, uiPageRequest, null, null, null);
-		assertEmpty(findAll);
 	}
 
 	/**

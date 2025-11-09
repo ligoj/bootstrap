@@ -12,6 +12,9 @@ import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
  */
 public class PostgreSQL95NoSchemaDialect extends PostgreSQLDialect implements RegistrableDialect {
 
+	/**
+	 * Default constructor with keyword registration.
+	 */
 	public PostgreSQL95NoSchemaDialect() {
 		super();
 		registerKeyword("LIMIT");

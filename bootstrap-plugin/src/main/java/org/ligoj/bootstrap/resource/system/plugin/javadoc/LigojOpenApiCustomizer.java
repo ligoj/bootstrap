@@ -161,8 +161,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				schema.setDescription(((JavadocDocumentationProvider) javadocProvider).getClassDoc(javaClass));
 				final var properties = schema.getProperties();
 				if (properties != null) {
-					properties.forEach((p, rawSchema) -> {
-						final var pSchema = (Schema<?>) rawSchema;
+					properties.forEach((p, pSchema) -> {
 						if (pSchema instanceof ArraySchema) {
 							completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
 						} else {
@@ -236,8 +235,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				var key = Pair.of(method.name(), pathKey);
 				final var ori = methods.get(key);
 				if (ori != null) {
-					@SuppressWarnings("unchecked")
-					final var schemas = (Map<String, Schema<?>>) (Map<?, ?>) oas.getComponents().getSchemas();
+					@SuppressWarnings("unchecked") final var schemas = (Map<String, Schema<?>>) (Map<?, ?>) oas.getComponents().getSchemas();
 					completeOperation(tags, tagOperation, cri, ori, operation, completedSchemas, schemas);
 				}
 			});

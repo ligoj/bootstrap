@@ -23,9 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**

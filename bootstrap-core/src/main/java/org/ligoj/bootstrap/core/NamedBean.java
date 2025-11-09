@@ -49,7 +49,7 @@ public class NamedBean<K extends Serializable> implements INamableBean<K> {
 	 * @param to   the target bean.
 	 */
 	public static <T extends Serializable> void copy(final INamableBean<T> from, final INamableBean<T> to) {
-		if (from.getId() instanceof Integer && (Integer) from.getId() == 0) {
+		if ((from.getId() instanceof Integer i) && i == 0) {
 			to.setId(null);
 		} else {
 			to.setId(from.getId());

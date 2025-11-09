@@ -115,11 +115,10 @@ class PluginsClassLoaderTest {
 	}
 
 	@Test
-	void getInstance() {
+	void getInstance() throws IOException {
 		var old = Thread.currentThread().getContextClassLoader();
-		try {
-			Thread.currentThread()
-					.setContextClassLoader(new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class)));
+		try (var cl = new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class))) {
+			Thread.currentThread().setContextClassLoader(cl);
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
 		} finally {
 			Thread.currentThread().setContextClassLoader(old);
@@ -280,7 +279,7 @@ class PluginsClassLoaderTest {
 		Mockito.doReturn(input).when(url).openStream();
 		Assertions.assertThrows(NullPointerException.class, () -> classLoader.getBootstrapCode(url));
 
-		Mockito.doThrow(new IOException()).when( input).readAllBytes();
+		Mockito.doThrow(new IOException()).when(input).readAllBytes();
 		Assertions.assertThrows(IOException.class, () -> classLoader.getBootstrapCode(url));
 
 		Mockito.doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();

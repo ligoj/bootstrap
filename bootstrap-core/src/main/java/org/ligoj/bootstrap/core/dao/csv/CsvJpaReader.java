@@ -3,24 +3,16 @@
  */
 package org.ligoj.bootstrap.core.dao.csv;
 
-import java.io.Reader;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.ligoj.bootstrap.core.csv.AbstractCsvReader;
+
+import java.io.Reader;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 /**
  * CSV reader implementation based on Camel implementation (see BindyCsvDataFormat) where some issues have been fixed.

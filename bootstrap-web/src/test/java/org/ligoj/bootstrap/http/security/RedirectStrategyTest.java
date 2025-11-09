@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.http.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -23,9 +24,10 @@ import java.util.List;
 class RedirectStrategyTest {
 
 
-	void sendRedirect(boolean success, String path, String url) throws IOException {
+	ByteArrayOutputStream sendRedirect(boolean success, String path, String url) throws IOException {
 		final var response = Mockito.mock(HttpServletResponse.class);
-		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(new ByteArrayOutputStream()));
+		final var out = new ByteArrayOutputStream();
+		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(out));
 		Mockito.when(response.encodeRedirectURL(ArgumentMatchers.anyString())).thenReturn("");
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getContextPath()).thenReturn("");
@@ -34,36 +36,43 @@ class RedirectStrategyTest {
 		redirectStrategy.setSuccess(success);
 		redirectStrategy.setStatus(1);
 		redirectStrategy.sendRedirect(request, response, url);
+		return out;
 	}
 
 	@Test
 	void sendRedirect() throws IOException {
-		sendRedirect(true, "any", "");
+		var out = sendRedirect(true, "any", "");
+		Assertions.assertEquals("{\"success\":true,\"redirect\":\"\"}", out.toString());
 	}
 
 	@Test
 	void sendRedirectNotSuccessMessagesJS() throws IOException {
-		sendRedirect(false, "/messages.js", "");
+		var out = sendRedirect(false, "/messages.js", "");
+		Assertions.assertEquals("define({root: {}})", out.toString());
 	}
 
 	@Test
 	void sendRedirectNotSuccessJS() throws IOException {
-		sendRedirect(false, "/some.js", "");
+		var out = sendRedirect(false, "/some.js", "");
+		Assertions.assertEquals("errorManager?.handleRedirect('');", out.toString());
 	}
 
 	@Test
 	void sendRedirectNotSuccessForce() throws IOException {
-		sendRedirect(false, "/some.js", null);
+		var out = sendRedirect(false, "/some.js", null);
+		Assertions.assertEquals("errorManager?.handleRedirect('');", out.toString());
 	}
 
 	@Test
 	void sendRedirectNotSuccessJPG() throws IOException {
-		sendRedirect(false, "/some.jpg", "");
+		var out = sendRedirect(false, "/some.jpg", "");
+		Assertions.assertEquals("{\"success\":false,\"redirect\":\"\"}", out.toString());
 	}
 
 	@Test
 	void sendRedirectNotSuccessHTML() throws IOException {
-		sendRedirect(false, "/some.html", "");
+		var out = sendRedirect(false, "/some.html", "");
+		Assertions.assertEquals("<div></div>", out.toString());
 	}
 
 	@Test

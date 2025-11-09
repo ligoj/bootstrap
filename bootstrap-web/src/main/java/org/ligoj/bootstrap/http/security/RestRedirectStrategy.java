@@ -22,6 +22,8 @@ import java.util.Map;
 @Setter
 public class RestRedirectStrategy implements RedirectStrategy {
 
+	private static final Map<String, String> EXTENSION_TO_MIME = Map.of("js", "text/javascript", "html", "text/html", "css", "text/css");
+
 	/**
 	 * Failure redirection mode. Default is true.
 	 */
@@ -31,8 +33,6 @@ public class RestRedirectStrategy implements RedirectStrategy {
 	 * Status to use.
 	 */
 	private int status = HttpServletResponse.SC_OK;
-
-	private Map<String, String> EXTENSION_TO_MIME = Map.of("js", "text/javascript", "html", "text/html", "css", "text/css");
 
 	@Override
 	public void sendRedirect(final HttpServletRequest request, final HttpServletResponse response, final String url) throws IOException {

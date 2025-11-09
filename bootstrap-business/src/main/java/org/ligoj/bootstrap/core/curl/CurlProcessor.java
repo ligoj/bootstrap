@@ -124,8 +124,6 @@ public class CurlProcessor implements AutoCloseable {
 		try {
 			final var sslContext = SSLContext.getInstance(protocol);
 			sslContext.init(null, allCerts, new SecureRandom());
-			final var plainSocketFactory = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
-
 			final var sslSocketFactory = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
 			return RegistryBuilder.<TlsSocketStrategy>create().register(URIScheme.HTTPS.id, sslSocketFactory).build();
 		} catch (final GeneralSecurityException e) {

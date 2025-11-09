@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 /**
  * Exception mapper test using {@link ExceptionMapperResource}
  */
-public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
+class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 
 	/**
 	 * URI
@@ -51,7 +51,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 * server creation.
 	 */
 	@BeforeAll
-	public static void startServer() {
+	static void startServer() {
 		server = new ExceptionMapperIT().startRestServer("");
 	}
 
@@ -59,7 +59,7 @@ public class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 	 * shutdown server
 	 */
 	@AfterAll
-	public static void tearDown() throws Exception {
+	static void tearDown() throws Exception {
 		if (server != null) {
 			server.stop();
 		}

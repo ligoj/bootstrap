@@ -8,6 +8,7 @@ import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
+import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -106,7 +107,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	}
 
 	@Override
-	public Class<? extends CacheManager> getObjectType() {
+	public @NotNull  Class<? extends CacheManager> getObjectType() {
 		return this.cacheManager == null ? CacheManager.class : this.cacheManager.getClass();
 	}
 
