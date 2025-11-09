@@ -159,19 +159,7 @@ public abstract class AbstractSpecification {
 			}
 		}
 
-		final var field = path.getLocalName();
-		Class<?> expressionType = null;
-		if (model.getIdentifierMapping().getAttributeName().equals(field)) {
-			expressionType = model.getIdentifierMapping().getMappedType().getMappedJavaType().getJavaTypeClass();
-		} else {
-			for (var j = 0; j < model.getNumberOfAttributeMappings(); j++) {
-				final var mapping = model.getAttributeMapping(j);
-				if (field.equals(mapping.getFetchableName())) {
-					expressionType = mapping.getMappedType().getMappedJavaType().getJavaTypeClass();
-					break;
-				}
-			}
-		}
+		final var expressionType = getExpressionType(model, path.getLocalName());
 
 		// Bind the data to the correct type
 		final Object result;
@@ -184,6 +172,22 @@ public abstract class AbstractSpecification {
 		}
 
 		return (Y) result;
+	}
+
+	protected static Class<?> getExpressionType(EntityMappingType model, String field) {
+		Class<?> expressionType = null;
+		if (model.getIdentifierMapping().getAttributeName().equals(field)) {
+			expressionType = model.getIdentifierMapping().getMappedType().getMappedJavaType().getJavaTypeClass();
+		} else {
+			for (var j = 0; j < model.getNumberOfAttributeMappings(); j++) {
+				final var mapping = model.getAttributeMapping(j);
+				if (field.equals(mapping.getFetchableName())) {
+					expressionType = mapping.getMappedType().getMappedJavaType().getJavaTypeClass();
+					break;
+				}
+			}
+		}
+		return expressionType;
 	}
 
 	/**
