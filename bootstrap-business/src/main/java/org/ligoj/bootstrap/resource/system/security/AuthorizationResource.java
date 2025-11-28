@@ -216,6 +216,13 @@ public class AuthorizationResource {
 	 */
 	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final String method,
 			final String pattern) {
-		existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>()).add(Pattern.compile(pattern));
+		var patterns = existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>());
+		// Add the pattern if it is not yet in the list as compiled Pattern
+
+		if (".*".equals(pattern)) {
+			existingAuthorizations.put(method, List.of(Pattern.compile(pattern)));
+		} else if (patterns.stream().noneMatch(p -> p.pattern().equals(".*") || p.pattern().equals(pattern))) {
+			patterns.add(Pattern.compile(pattern));
+		}
 	}
 }
