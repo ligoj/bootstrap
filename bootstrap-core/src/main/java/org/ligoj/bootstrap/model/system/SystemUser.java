@@ -32,6 +32,7 @@ public class SystemUser implements Serializable {
 	public static final String IS_ADMIN = """
 			 (EXISTS(SELECT 1 FROM SystemRoleAssignment ra INNER JOIN ra.role r WHERE ra.user.id = :user
 			         AND EXISTS(SELECT 1 FROM SystemAuthorization a WHERE a.role = r AND a.pattern = '.*'
+			                AND a.method IS NULL
 			                AND a.type = org.ligoj.bootstrap.model.system.SystemAuthorization$AuthorizationType.API)
 			 ))
 			""";
