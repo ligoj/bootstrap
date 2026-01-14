@@ -219,7 +219,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 *
 	 * @param versionFileToPath The mapping filled by this method. Key : The filename without extension and with
 	 *                          extended comparable version. Value : The resolved Path.
-	 * @param javadocFiler      When true, only javadoc jar are analyzed, otherwise they are excluded.
+	 * @param javadocFiler      When true, only Javadoc jar are analyzed, otherwise they are excluded.
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
 	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
 	 * version. The return keys are alphabetically ordered with natural dependency respect.
