@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 import javax.cache.annotation.CacheRemoveAll;
@@ -28,6 +29,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
 
+import lombok.extern.slf4j.Slf4j;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Service;
 /**
  * Authorization resource.
  */
+@Slf4j
 @Path("/system/security/authorization")
 @Service
 @Transactional
@@ -94,7 +97,17 @@ public class AuthorizationResource {
 	@Path("user/api")
 	@org.springframework.transaction.annotation.Transactional(readOnly = true)
 	public List<SystemAuthorization> findAuthorizationsApi(@Context final SecurityContext context) {
-		return repository.findAllByLogin(context.getUserPrincipal().getName(), SystemAuthorization.AuthorizationType.API);
+		return repository.findAllByLogin(context.getUserPrincipal().getName(), SystemAuthorization.AuthorizationType.API).stream().filter(
+				authorization -> {
+					// Ignore invalid patterns
+					try {
+						Pattern.compile(authorization.getPattern());
+						return true;
+					} catch (PatternSyntaxException e) {
+						return false;
+					}
+				}
+		).toList();
 	}
 
 	/**
@@ -219,10 +232,15 @@ public class AuthorizationResource {
 		var patterns = existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>());
 		// Add the pattern if it is not yet in the list as compiled Pattern
 
-		if (".*".equals(pattern)) {
-			existingAuthorizations.put(method, List.of(Pattern.compile(pattern)));
-		} else if (patterns.stream().noneMatch(p -> p.pattern().equals(".*") || p.pattern().equals(pattern))) {
-			patterns.add(Pattern.compile(pattern));
+		try {
+			final var compiled = Pattern.compile(pattern);
+			if (".*".equals(pattern)) {
+				existingAuthorizations.put(method, List.of(compiled));
+			} else if (patterns.stream().noneMatch(p -> p.pattern().equals(".*") || p.pattern().equals(pattern))) {
+				patterns.add(compiled);
+			}
+		} catch (final PatternSyntaxException pe) {
+			log.warn("Ignore invalid pattern {}", pattern, pe);
 		}
 	}
 }

@@ -134,6 +134,12 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		assignment2.setUser(user);
 		em.persist(assignment2);
 
+		final var authorizationInvalid = new SystemAuthorization();
+		authorizationInvalid.setType(AuthorizationType.API);
+		authorizationInvalid.setRole(role);
+		authorizationInvalid.setPattern("*");
+		em.persist(authorizationInvalid);
+
 		final var authorization = new SystemAuthorization();
 		authorization.setType(AuthorizationType.API);
 		authorization.setRole(role);
@@ -246,7 +252,9 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		cacheResource.invalidate("authorizations");
-		Assertions.assertThrows(PatternSyntaxException.class, () -> resource.getAuthorizations());
+		var result = resource.getAuthorizations().get(AuthorizationType.API).get("role1").get(HttpMethod.GET.name());
+		log.info("result {}", result);
+		Assertions.assertEquals(result.size(), 0);
 	}
 
 	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {
