@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * A plug-in. The plug-in behavior is massively based on naming convention. The key of the plug-in must be unique and
- * following the bellow rules :
+ * following the below rules :
  * <ul>
  * <li>Must follows this pattern <code>[a-z\d]+(:[a-z\d]+)*</code></li>
  * <li>Must be unique</li>
