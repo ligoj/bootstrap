@@ -84,4 +84,16 @@ public interface Auditable<U, K, D> extends Persistable<K> {
 	 */
 	String getCreationContext();
 
+	/**
+	 * Set the free form text metadata.
+	 * @param metadata The free form metadata.
+	 */
+	void setMetadata(String metadata);
+
+	/**
+	 * Returns A free form metadata.
+	 *
+	 * @return a free form metadata.
+	 */
+	String getMetadata();
 }

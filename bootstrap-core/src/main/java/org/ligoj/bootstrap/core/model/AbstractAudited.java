@@ -59,4 +59,10 @@ public abstract class AbstractAudited<K extends Serializable> extends AbstractPe
 	@Column(length = 1024, updatable = false)
 	private String creationContext;
 
+	/**
+	 * An optional free form meta-data
+	 */
+	@Column(length = 2048)
+	private String metadata;
+
 }

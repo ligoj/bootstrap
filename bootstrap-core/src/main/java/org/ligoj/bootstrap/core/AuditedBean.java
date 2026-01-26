@@ -59,6 +59,12 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	private String creationContext;
 
 	/**
+	 * An optional free form meta-data
+	 */
+	@Column(length = 2048)
+	private String metadata;
+
+	/**
 	 * Define the modifiable state of a valued object.
 	 *
 	 * @param <T>  Bean type.
@@ -85,6 +91,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 			this.createdBy = userConverter.apply(from.getCreatedBy());
 			this.lastModifiedBy = userConverter.apply(from.getLastModifiedBy());
 			this.creationContext = from.getCreationContext();
+			this.metadata = from.getMetadata();
 		}
 	}
 
@@ -108,6 +115,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 			to.setCreatedBy(from.getCreatedBy());
 			to.setLastModifiedBy(from.getLastModifiedBy());
 			to.setCreationContext(from.getCreationContext());
+			to.setMetadata(from.getMetadata());
 		}
 	}
 }
