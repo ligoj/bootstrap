@@ -111,7 +111,7 @@ class HookProcessRunnableTest {
 		}.process(null, hook, null);
 
 		// Verify headers updated
-		Assertions.assertEquals("FAILED", headers.getFirst("X-ligoj-hook-hook1"));
+		Assertions.assertEquals("FAILED", headers.getFirst("X-Ligoj-Hook-hook1"));
 	}
 
 	@Test
@@ -258,7 +258,7 @@ class HookProcessRunnableTest {
 		}.process(null, hook, null);
 
 		// Verify header name sanitization
-		Assertions.assertEquals("FAILED", headers.getFirst("X-ligoj-hook-hook-1"));
+		Assertions.assertEquals("FAILED", headers.getFirst("X-Ligoj-Hook-hook-1"));
 
 		// Verify payload
 		Assertions.assertNotNull(capturedPayload.get());
