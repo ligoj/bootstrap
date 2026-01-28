@@ -32,7 +32,7 @@ import java.util.List;
  * </ul>
  * <p>
  * When "delay" is 0, the hook is executed synchronously. Otherwise, it is executed asynchronously. Synchronous executions gets an
- * additional custom boolean header "x-ligoj-hook-NAME" depending on the success or not.
+ * additional custom boolean header "X-Ligoj-Hook-NAME" depending on the success or not.
  */
 @Getter
 @Setter
