@@ -75,9 +75,35 @@ class HookResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void updateById() throws JsonProcessingException {
+		final var hook = newHook();
+		em.persist(hook);
+		em.flush();
+		configurationResource.put("ligoj.hook.path", "^ls$");
+		var hook2 = newHook();
+		hook2.setId(hook.getId());
+		hook2.setName("hook2");
+		resource.update(hook2);
+		Assertions.assertEquals("hook2", resource.findAll(newUriInfo()).getData().getFirst().getName());
+	}
+
+	@Test
+	void updateByName() throws JsonProcessingException {
+		var hook = newHook();
+		em.persist(hook);
+		em.flush();
+		var hook2 = newHook();
+		hook2.setWorkingDirectory("other");
+		configurationResource.put("ligoj.hook.path", "^ls$");
+		resource.update(hook2);
+		Assertions.assertEquals("other", resource.findAll(newUriInfo()).getData().getFirst().getWorkingDirectory());
+	}
+
+	@Test
 	void delete() {
 		final var hook = newHook();
 		em.persist(hook);
+		em.flush();
 		resource.delete(hook.getId());
 		Assertions.assertTrue(resource.findAll(newUriInfo()).getData().isEmpty());
 	}

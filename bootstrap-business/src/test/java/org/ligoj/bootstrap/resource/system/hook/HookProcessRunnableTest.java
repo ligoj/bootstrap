@@ -4,12 +4,11 @@
 package org.ligoj.bootstrap.resource.system.hook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.junit.jupiter.api.Assertions;
@@ -19,15 +18,15 @@ import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * HookProcessRunnable resource test, includes {@link HookProcessRunnable}
@@ -37,34 +36,246 @@ class HookProcessRunnableTest {
 
 	@Test
 	void processNotAllowed() {
-		final var hook  = new SystemHook();
+		final var hook = new SystemHook();
+		hook.setDelay(1);
 		hook.setCommand("/path/to/any");
 		final var configuration = Mockito.mock(ConfigurationResource.class);
-		Mockito.doReturn("^/path/other/.*").when(configuration).get("ligoj.hook.path","^$");
-		final var exchange =  Mockito.mock(Exchange.class);
-		new HookProcessRunnable("NOW", new ObjectMapper(), null, null, null,
-				exchange, null, configuration).process(null,hook,null);
-		Mockito.verify(exchange,Mockito.never()).getInMessage();
+		Mockito.doReturn("^/path/other/.*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = Mockito.mock(Exchange.class);
+		new HookProcessRunnable(exchange, "GET", "path", null,
+				null,
+				"NOW",
+				new ObjectMapper(),
+				null,
+				configuration).process(null, hook, null);
+		Mockito.verify(exchange, Mockito.never()).getInMessage();
 	}
 
 	@Test
 	void processAllowed() {
-		final var hook  = new SystemHook();
+		final var hook = new SystemHook();
+		hook.setName("hook1");
+		hook.setDelay(1);
 		hook.setCommand("/path/to/foo");
 		final var configuration = Mockito.mock(ConfigurationResource.class);
-		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path","^$");
-		final var exchange =  Mockito.mock(Exchange.class);
-		new HookProcessRunnable("NOW", new ObjectMapper(), null, null, null,
-				exchange, null, configuration).process(null,hook,null);
-		Mockito.verify(exchange,Mockito.atLeastOnce()).getInMessage();
+		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = Mockito.mock(Exchange.class);
+		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = Mockito.mock(Message.class);
+		Mockito.when(exchange.getInMessage()).thenReturn(message);
+		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+
+		new HookProcessRunnable(exchange, "GET", "path", null,
+				null,
+				"NOW",
+				new ObjectMapper(),
+				hook,
+				configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				throw new RuntimeException("Simulated failure");
+			}
+		}.process(null, hook, null);
+		Mockito.verify(exchange, Mockito.atLeastOnce()).getInMessage();
+	}
+
+	@Test
+	void processSync() {
+		final var hook = new SystemHook();
+		hook.setDelay(0); // Sync
+		hook.setName("hook1");
+		hook.setCommand("/path/to/foo");
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = Mockito.mock(Exchange.class);
+		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = Mockito.mock(Message.class);
+		Mockito.when(exchange.getInMessage()).thenReturn(message);
+		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+
+		final var outMessage = Mockito.mock(Message.class);
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var headers = new MetadataMap<String, Object>();
+		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+
+		new HookProcessRunnable(exchange, "GET", "path", null,
+				null,
+				"NOW",
+				new ObjectMapper(),
+				hook,
+				configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				throw new RuntimeException("Simulated failure");
+			}
+		}.process(null, hook, null);
+
+		// Verify headers updated
+		Assertions.assertEquals("FAILED", headers.getFirst("X-ligoj-hook-hook1"));
+	}
+
+	@Test
+	void processSyncNoHeaders() {
+		final var hook = new SystemHook();
+		hook.setDelay(0); // Sync
+		hook.setName("hook1");
+		hook.setCommand("/path/to/foo");
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = Mockito.mock(Exchange.class);
+		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = Mockito.mock(Message.class);
+		Mockito.when(exchange.getInMessage()).thenReturn(message);
+		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+
+		final var outMessage = Mockito.mock(Message.class);
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(null);
+
+		new HookProcessRunnable(exchange, "GET", "path", null,
+				null,
+				"NOW",
+				new ObjectMapper(),
+				hook,
+				configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				throw new RuntimeException("Simulated failure");
+			}
+		}.process(null, hook, null);
+
+		// Verify headers updated
+		Mockito.verify(outMessage).put(Mockito.eq(Message.PROTOCOL_HEADERS), Mockito.any());
+	}
+
+	@Test
+	void processTimeout() throws Exception {
+		final var hook = new SystemHook();
+		hook.setName("hookTimeout");
+		hook.setDelay(1);
+		hook.setCommand("/path/to/foo");
+		hook.setTimeout(1);
+
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn(".*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = Mockito.mock(Exchange.class);
+		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = Mockito.mock(Message.class);
+		Mockito.when(exchange.getInMessage()).thenReturn(message);
+		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+
+		final var process = Mockito.mock(Process.class);
+		final var inputStream = Mockito.mock(InputStream.class);
+		Mockito.when(process.getInputStream()).thenReturn(inputStream);
+		Mockito.when(inputStream.transferTo(Mockito.any())).thenReturn(0L);
+		Mockito.when(process.waitFor(1, TimeUnit.SECONDS)).thenReturn(false); // Timeout
+
+		final var capturedPb = new AtomicReference<ProcessBuilder>();
+
+		new HookProcessRunnable(exchange, "GET", "path", null,
+				null,
+				"NOW",
+				new ObjectMapper(),
+				hook,
+				configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				final var pb = Mockito.mock(ProcessBuilder.class);
+				capturedPb.set(pb);
+				Mockito.when(pb.environment()).thenReturn(new HashMap<>());
+				try {
+					Mockito.when(pb.start()).thenReturn(process);
+				} catch (IOException e) {
+					// Ignore
+				}
+				return pb;
+			}
+		}.process(null, hook, new ByteArrayOutputStream());
+		
+		Assertions.assertNotNull(capturedPb.get(), "newBuilder was not called");
+		Mockito.verify(process).waitFor(1, TimeUnit.SECONDS);
+	}
+
+	@Test
+	void newBuilder() {
+		final var hook = new SystemHook();
+		hook.setCommand("cmd arg1");
+		hook.setWorkingDirectory("wd");
+		final var runnable = new HookProcessRunnable(null, null, null, null, null, null, null, null, null);
+		final var builder = runnable.newBuilder(hook);
+		Assertions.assertEquals("wd", builder.directory().getName());
+		Assertions.assertEquals(List.of("cmd", "arg1"), builder.command());
+	}
+
+	@Test
+	void processPayload() throws IOException {
+		final var hook = new SystemHook();
+		hook.setName("hook 1"); // Space in name
+		hook.setDelay(0);
+		hook.setCommand("cmd");
+
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn(".*").when(configuration).get("ligoj.hook.path", "^$");
+
+		final var exchange = Mockito.mock(Exchange.class);
+		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = Mockito.mock(Message.class);
+		Mockito.when(exchange.getInMessage()).thenReturn(message);
+		// Use String to avoid serialization issues
+		Mockito.when(message.getContent(List.class)).thenReturn(List.of("param1"));
+
+		final var outMessage = Mockito.mock(Message.class);
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var headers = new MetadataMap<String, Object>();
+		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+
+		// Use String for response
+		final var response = "response1";
+
+		final var capturedPayload = new AtomicReference<String>();
+
+		new HookProcessRunnable(exchange, "GET", "path", null, // null principal
+				response,
+				"NOW",
+				new ObjectMapper(),
+				hook,
+				configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				final var pb = Mockito.mock(ProcessBuilder.class);
+				final var env = new HashMap<String, String>();
+				Mockito.when(pb.environment()).thenReturn(env);
+				try {
+					Mockito.when(pb.start()).thenAnswer(invocation -> {
+						capturedPayload.set(env.get("PAYLOAD"));
+						throw new RuntimeException("Stop here");
+					});
+				} catch (IOException e) {
+					// Ignore
+				}
+				return pb;
+			}
+		}.process(null, hook, null);
+
+		// Verify header name sanitization
+		Assertions.assertEquals("FAILED", headers.getFirst("X-ligoj-hook-hook-1"));
+
+		// Verify payload
+		Assertions.assertNotNull(capturedPayload.get());
+		final var jsonString = new String(HookProcessRunnable.BASE64_CODEC.decode(capturedPayload.get()), StandardCharsets.UTF_8);
+		final var payload = new ObjectMapper().readTree(jsonString);
+
+		Assertions.assertTrue(payload.get("user").isNull());
+		Assertions.assertEquals("response1", payload.get("result").textValue());
+		Assertions.assertEquals("param1", payload.get("params").get(0).textValue());
 	}
 
 	@Test
 	void run() throws IOException {
-		final var requestContext = Mockito.mock(ContainerRequestContext.class);
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
+		final var response = Map.of("key1", "value1");
 		final var configuration = Mockito.mock(ConfigurationResource.class);
-		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path","^$");
+		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
+		Mockito.when(configuration.get("LIGOJ_HOOK_TIMEOUT", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
 
 		final var exchange = Mockito.mock(Exchange.class);
 		final var principal = Mockito.mock(Principal.class);
@@ -76,10 +287,7 @@ class HookProcessRunnableTest {
 		final var environments = new ConcurrentHashMap<String, Map<String, String>>();
 		Mockito.when(configuration.get("conf1", "")).thenReturn("value1");
 		Mockito.when(configuration.get("conf2", "")).thenReturn("");
-		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
 		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
-		Mockito.when(requestContext.getMethod()).thenReturn("GET");
-		Mockito.when(responseContext.getEntity()).thenReturn(Map.of("key1", "value1"));
 		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("Resource#method");
 		Mockito.when(exchange.getInMessage()).thenReturn(inMessage);
 		Mockito.when(inMessage.getContent(List.class)).thenReturn(inList);
@@ -87,24 +295,17 @@ class HookProcessRunnableTest {
 
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
+		hook1.setDelay(1);
 		hook1.setCommand("/path/to/some args");
 		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
 
-		final var hookNPE = new SystemHook();
-		hookNPE.setName("hookNPE");
-		hookNPE.setCommand("/path/to/some args");
-
-		final var hookTimeout = new SystemHook();
-		hookTimeout.setName("hookTimeout");
-		hookTimeout.setCommand("/path/to/some args");
-		hookTimeout.setWorkingDirectory("working/directory");
-		hookTimeout.setTimeout(1);
-
-		final var hooks = List.of(hook1, hookNPE, hookTimeout);
-
-		final var runnable = new HookProcessRunnable("NOW", new ObjectMapper(), hooks, requestContext, responseContext,
-				exchange, principal, configuration) {
+		final var runnable = new HookProcessRunnable(exchange, "GET", "foo/bar", principal,
+				response,
+				"NOW",
+				new ObjectMapper(),
+				hook1,
+				configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var builder = super.newBuilder(hook);

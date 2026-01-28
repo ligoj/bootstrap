@@ -44,6 +44,7 @@
 			<ref bean="cannotAcquireLockExceptionMapper" />
 			<ref bean="notImplementedExceptionMapper" />
 			<ref bean="failSafeExceptionMapper" />
+			<ref bean="asynchronousHookHandler" />
 		</jaxrs:providers>
 	</jaxrs:server>
 </beans>

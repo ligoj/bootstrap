@@ -3,220 +3,129 @@
  */
 package org.ligoj.bootstrap.core.resource.filter;
 
-import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import org.apache.cxf.jaxrs.impl.ContainerRequestContextImpl;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.ligoj.bootstrap.core.dao.AbstractBootTest;
-import org.ligoj.bootstrap.dao.system.SystemHookRepository;
-import org.ligoj.bootstrap.model.system.HookMatch;
+import org.ligoj.bootstrap.core.resource.handler.HookConfiguration;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.security.Principal;
-import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * ContainerResponseFilter resource test, includes {@link HookResponseFilter}
  */
-@ExtendWith(SpringExtension.class)
-class HookResponseFilterTest extends AbstractBootTest {
-
-	@Autowired
-	private HookResponseFilter filter;
-	@Autowired
-	private SystemHookRepository repository;
-
-	private final AtomicBoolean executed = new AtomicBoolean(false);
-	private final List<SystemHookParse> hooks = new ArrayList<>();
-	private final HookResponseFilter filterMock = new HookResponseFilter() {
-		@Override
-		void execute(final HookProcessRunnable runnable) {
-			executed.set(true);
-		}
-
-		@Override
-		public Map<Pattern, List<SystemHookParse>> findAll() {
-			return Map.of(Pattern.compile("foo/bar.+"), hooks);
-		}
-	};
-
-	@BeforeEach
-	void setup() {
-		executed.set(false);
-		hooks.clear();
-	}
+class HookResponseFilterTest {
 
 	@Test
-	void findAll() {
-		final var hook = new SystemHook();
-		hook.setName("hook1");
-		hook.setMatch("{\"path\":\"foo/bar.+\", \"method\":\"GET\"}");
-		hook.setWorkingDirectory("./home");
-		hook.setCommand("any");
-		repository.saveAndFlush(hook);
-
-		final var hook2 = new SystemHook();
-		hook2.setName("hook2");
-		hook2.setMatch("{\"path\":\"foo/bar.+\"}");
-		hook2.setWorkingDirectory("./home2");
-		hook2.setCommand("any2");
-		repository.saveAndFlush(hook2);
-
-		// This hook will not be considered
-		final var hookBadJson = new SystemHook();
-		hookBadJson.setName("hook_bad_json");
-		hookBadJson.setMatch("{_invalid_json_}");
-		hookBadJson.setWorkingDirectory("./home3");
-		hookBadJson.setCommand("any3");
-		repository.saveAndFlush(hookBadJson);
-
-		final var hookBadRegEx = new SystemHook();
-		hookBadRegEx.setName("hook_bad_reg_ex");
-		hookBadRegEx.setMatch("{\"path\":\"bad_reg_ex([{\"}");
-		hookBadRegEx.setWorkingDirectory("./home2");
-		hookBadRegEx.setCommand("any4");
-		repository.saveAndFlush(hookBadRegEx);
-
-		final var all = filter.findAll();
-		Assertions.assertEquals(1, all.size());
-		final var entry = all.entrySet().stream().findFirst().get();
-		Assertions.assertEquals("foo/bar.+", entry.getKey().pattern());
-		Assertions.assertEquals(2, entry.getValue().size());
-		Assertions.assertEquals("hook1", entry.getValue().getFirst().getName());
-		Assertions.assertEquals("hook2", entry.getValue().getLast().getName());
-		Assertions.assertEquals("any", entry.getValue().getFirst().getCommand());
-		Assertions.assertEquals("{\"path\":\"foo/bar.+\", \"method\":\"GET\"}", entry.getValue().getFirst().getMatch());
-		Assertions.assertEquals("./home", entry.getValue().getFirst().getWorkingDirectory());
-	}
-
-	@Test
-	void execute() {
-		new HookResponseFilter().execute(new HookProcessRunnable(null, null, null, null, null, null, null, null) {
-			@Override
-			public void run() {
-				executed.set(true);
-			}
-		});
-		Awaitility.waitAtMost(Duration.ofSeconds(2)).until(executed::get);
-	}
-
-	@Test
-	void filterNoMatchStatus100() {
+	void filterIgnoreStatusLow() {
+		final var filter = new HookResponseFilter();
+		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
 		final var responseContext = Mockito.mock(ContainerResponseContext.class);
 		Mockito.when(responseContext.getStatus()).thenReturn(100);
-		filterMock.filter(null, responseContext);
-		Assertions.assertFalse(executed.get());
+		filter.filter(requestContext, responseContext);
+		Mockito.verifyNoInteractions(requestContext);
 	}
 
 	@Test
-	void filterNoMatchStatus400() {
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		Mockito.when(responseContext.getStatus()).thenReturn(400);
-		filterMock.filter(null, responseContext);
-		Assertions.assertFalse(executed.get());
-	}
-
-	@Test
-	void filterNoMatch() {
+	void filterIgnoreStatusHigh() {
+		final var filter = new HookResponseFilter();
 		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
 		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		final var uriInfo = Mockito.mock(UriInfo.class);
-		Mockito.when(responseContext.getStatus()).thenReturn(200);
-		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
-		Mockito.when(uriInfo.getPath()).thenReturn("any");
-		filterMock.filter(requestContext, responseContext);
-		Assertions.assertFalse(executed.get());
+		Mockito.when(responseContext.getStatus()).thenReturn(300);
+		filter.filter(requestContext, responseContext);
+		Mockito.verifyNoInteractions(requestContext);
 	}
 
-
+	@SuppressWarnings("unchecked")
 	@Test
-	void filterMatchUser() {
-		filterMatch(null, "GET");
-		Assertions.assertTrue(executed.get());
-	}
+	void filter() {
+		final var filter = new HookResponseFilter();
+		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
+		filter.hookConfiguration = hookConfiguration;
 
-	@Test
-	void filterNoMatchMethod() {
-		filterMatch(null, "DELETE");
-		Assertions.assertFalse(executed.get());
-	}
-
-	@Test
-	void filterMatchNoMethod() {
-		filterMatch(null, null);
-		Assertions.assertTrue(executed.get());
-	}
-
-	@Test
-	void filterMatchNoUser() {
-		final var principal = Mockito.mock(Principal.class);
-		Mockito.when(principal.getName()).thenReturn("junit");
-		filterMatch(principal, "GET");
-		Assertions.assertTrue(executed.get());
-	}
-
-
-	@Test
-	void filterError() {
-		var flag = new AtomicBoolean();
-		 var  filterMockError = new HookResponseFilter() {
-
-			@Override
-			void filterUnSafe(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) {
-				flag.set(true);
-				throw new RuntimeException();
-			}
-		};
 		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
 		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		filterMockError.filter(requestContext, responseContext);
-		Assertions.assertTrue(flag.get());
-	}
-
-	private void filterMatch(Principal principal, String hookMethod) {
-		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		final var uriInfo = Mockito.mock(UriInfo.class);
 		final var message = Mockito.mock(Message.class);
 		final var exchange = Mockito.mock(Exchange.class);
 		final var securityContext = Mockito.mock(SecurityContext.class);
+		final var principal = Mockito.mock(Principal.class);
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		final var outMessage = Mockito.mock(Message.class);
 
 		Mockito.when(responseContext.getStatus()).thenReturn(200);
-		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
 		Mockito.when(requestContext.getMessage()).thenReturn(message);
-		Mockito.when(requestContext.getMethod()).thenReturn("GET");
+		Mockito.when(message.getExchange()).thenReturn(exchange);
 		Mockito.when(requestContext.getSecurityContext()).thenReturn(securityContext);
 		Mockito.when(securityContext.getUserPrincipal()).thenReturn(principal);
-		Mockito.when(message.getExchange()).thenReturn(exchange);
-		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar1");
+		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
+		Mockito.when(uriInfo.getPath()).thenReturn("path");
+		Mockito.when(requestContext.getMethod()).thenReturn("GET");
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		Mockito.when(outMessage.getContent(List.class)).thenReturn(List.of("response"));
 
-		final var hook = new SystemHookParse();
-		hook.setName("hook1");
-		hook.setMatchObject(new HookMatch());
-		hook.getMatchObject().setPath("foo/bar.+");
-		hook.getMatchObject().setMethod(hookMethod);
-		hook.setWorkingDirectory("./home");
-		hook.setCommand("any");
-		hooks.add(hook);
+		filter.filter(requestContext, responseContext);
 
-		filterMock.filter(requestContext, responseContext);
+		final var captor = ArgumentCaptor.forClass(BiConsumer.class);
+		Mockito.verify(hookConfiguration).process(Mockito.eq(exchange), Mockito.eq("GET"), Mockito.eq("path"),
+				Mockito.eq(principal), Mockito.eq("response"), Mockito.any(Predicate.class), captor.capture());
+
+		// Verify processor execution
+		final var hook = new SystemHook();
+		final var runnable = Mockito.mock(HookProcessRunnable.class);
+		captor.getValue().accept(hook, runnable);
+		Mockito.verify(runnable).run();
+		
+		// Verify predicate
+		final var predicateCaptor = ArgumentCaptor.forClass(Predicate.class);
+		Mockito.verify(hookConfiguration).process(Mockito.any(), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.any(), predicateCaptor.capture(), Mockito.any());
+		
+		final var hookSync = new SystemHook();
+		hookSync.setDelay(0);
+		Assertions.assertTrue(((Predicate<SystemHook>)predicateCaptor.getValue()).test(hookSync));
+		
+		final var hookAsync = new SystemHook();
+		hookAsync.setDelay(1);
+		Assertions.assertFalse(((Predicate<SystemHook>)predicateCaptor.getValue()).test(hookAsync));
 	}
 
+	@Test
+	void filterEmptyResponse() {
+		final var filter = new HookResponseFilter();
+		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
+		filter.hookConfiguration = hookConfiguration;
+
+		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
+		final var responseContext = Mockito.mock(ContainerResponseContext.class);
+		final var message = Mockito.mock(Message.class);
+		final var exchange = Mockito.mock(Exchange.class);
+		final var securityContext = Mockito.mock(SecurityContext.class);
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		final var outMessage = Mockito.mock(Message.class);
+
+		Mockito.when(responseContext.getStatus()).thenReturn(200);
+		Mockito.when(requestContext.getMessage()).thenReturn(message);
+		Mockito.when(message.getExchange()).thenReturn(exchange);
+		Mockito.when(requestContext.getSecurityContext()).thenReturn(securityContext);
+		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		Mockito.when(outMessage.getContent(List.class)).thenReturn(Collections.emptyList());
+
+		filter.filter(requestContext, responseContext);
+
+		Mockito.verify(hookConfiguration).process(Mockito.eq(exchange), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.isNull(), Mockito.any(), Mockito.any());
+	}
 }

@@ -4,13 +4,11 @@
 package org.ligoj.bootstrap.model.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -19,20 +17,27 @@ import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 import java.util.List;
 
 /**
- * Event based action.
- * When a successful request or event matches to <code>match</code> criteria, then the command is executed. This command received as single argument a base64 encoded JSON object payload having this structure:
+ * Event based action. When a successful request or event matches to <code>match</code> criteria, then the command is executed. This command
+ * received as single argument a base64 encoded JSON object payload having this structure:
  * <ul>
- *     <li><code>url</code> The original full URL</li>
- *     <li><code>query-</code> The query parameter</li>
- *     <li><code>user-</code> User triggering this request</li>
- *     <li><code>date-</code> Date this event occurred</li>
- *     <li><code>data-</code> Body of this request</li>
+ * <li><code>path</code> The original REST path of called API</li>
+ * <li><code>name</code> The hook name</li>
+ * <li><code>user</code> Principal triggering this request</li>
+ * <li><code>now</code> Date this event occurred</li>
+ * <li><code>method</code> Related REST API method</li>
+ * <li><code>api</code> Related REST API name</li>
+ * <li><code>inject</code> Injected secret and configuration values</li>
+ * <li><code>result</code> Body of this request</li>
+ * <li><code>timeout</code> Timeout value in seconds, staring from the `now`</li>
  * </ul>
+ * <p>
+ * When "delay" is 0, the hook is executed synchronously. Otherwise, it is executed asynchronously. Synchronous executions gets an
+ * additional custom boolean header "x-ligoj-hook-NAME" depending on the success or not.
  */
 @Getter
 @Setter
 @Entity
-@Table(name = "S_HOOK")
+@Table(name = "S_HOOK", uniqueConstraints = @UniqueConstraint(columnNames = { "name" }))
 @JsonIgnoreProperties
 public class SystemHook extends AbstractNamedAuditedEntity<Integer> {
 
@@ -66,9 +71,15 @@ public class SystemHook extends AbstractNamedAuditedEntity<Integer> {
 	private List<String> inject;
 
 	/**
-	 * Maximum integration delay. Default value is managed by `LIGOJ_HOOK_TIMEOUT` configuration.
+	 * Maximum integration delay (in seconds). Default value is managed by `LIGOJ_HOOK_TIMEOUT` configuration. Default is `10` seconds.
 	 */
 	@Positive
 	private Integer timeout;
+
+	/**
+	 * Minimum delay (in seconds) before asynchronous execution of this hook. Default value is 1. When 0, execution is synchronous.
+	 */
+	@PositiveOrZero
+	private Integer delay;
 
 }
