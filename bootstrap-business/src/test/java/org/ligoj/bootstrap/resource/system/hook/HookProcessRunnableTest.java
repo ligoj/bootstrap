@@ -293,9 +293,14 @@ class HookProcessRunnableTest {
 		Mockito.when(inMessage.getContent(List.class)).thenReturn(inList);
 		Mockito.when(principal.getName()).thenReturn("junit");
 
+		final var outMessage = Mockito.mock(Message.class);
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var headers = new MetadataMap<String, Object>();
+		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
-		hook1.setDelay(1);
+		hook1.setDelay(0);
 		hook1.setCommand("/path/to/some args");
 		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
@@ -345,5 +350,95 @@ class HookProcessRunnableTest {
 		Assertions.assertEquals("NOW", payload.get("now").textValue());
 		Assertions.assertEquals("Resource#method", payload.get("api").textValue());
 		Assertions.assertEquals("{\"conf2\":\"\",\"conf1\":\"value1\"}", payload.get("inject").toString());
+
+		// Check captured output
+		Assertions.assertEquals("process_response", headers.getFirst("X-Ligoj-Hook-hook1-message"));
+	}
+
+	@Test
+	void runLargeOutput() throws IOException {
+		final var response = Map.of("key1", "value1");
+		final var configuration = Mockito.mock(ConfigurationResource.class);
+		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
+		Mockito.when(configuration.get("LIGOJ_HOOK_TIMEOUT", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
+
+		final var exchange = Mockito.mock(Exchange.class);
+		final var principal = Mockito.mock(Principal.class);
+		final var uriInfo = Mockito.mock(UriInfo.class);
+		final var inMessage = Mockito.mock(Message.class);
+		final var inList = Arrays.asList("in1", "in2", uriInfo, Mockito.mock(SecurityContext.class), null);
+		final var local = new ThreadLocal<Map<String, ProcessBuilder>>();
+		local.set(new ConcurrentHashMap<>());
+		final var environments = new ConcurrentHashMap<String, Map<String, String>>();
+		Mockito.when(configuration.get("conf1", "")).thenReturn("value1");
+		Mockito.when(configuration.get("conf2", "")).thenReturn("");
+		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
+		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("Resource#method");
+		Mockito.when(exchange.getInMessage()).thenReturn(inMessage);
+		Mockito.when(inMessage.getContent(List.class)).thenReturn(inList);
+		Mockito.when(principal.getName()).thenReturn("junit");
+
+		final var outMessage = Mockito.mock(Message.class);
+		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var headers = new MetadataMap<String, Object>();
+		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+
+		final var hook1 = new SystemHook();
+		hook1.setName("hook1");
+		hook1.setDelay(0);
+		hook1.setCommand("/path/to/some args");
+		hook1.setInject(List.of("conf1", "conf2"));
+		hook1.setWorkingDirectory("working/directory");
+
+		final var runnable = new HookProcessRunnable(exchange, "GET", "foo/bar", principal,
+				response,
+				"NOW",
+				new ObjectMapper(),
+				hook1,
+				configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				final var builder = super.newBuilder(hook);
+				local.get().put(hook.getName(), builder);
+				final var processBuilder = Mockito.mock(ProcessBuilder.class);
+				final var environment = new HashMap<String, String>();
+				environments.put(hook.getName(), environment);
+				Mockito.when(processBuilder.environment()).thenReturn(environment);
+				final var process = Mockito.mock(Process.class);
+				try {
+					Mockito.when(processBuilder.start()).thenReturn(process);
+					// Generate a large output > 2048 bytes
+					final var largeOutput = "a".repeat(3000);
+					Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream(largeOutput.getBytes(StandardCharsets.UTF_8)));
+					final var timeout = ObjectUtils.getIfNull(hook.getTimeout(), 30);
+					Mockito.doReturn(timeout != 1).when(process).waitFor(timeout, TimeUnit.SECONDS);
+					Mockito.doReturn(1).when(process).exitValue();
+				} catch (final Exception e) {
+					log.error("Unable to mock process", e);
+				}
+				return processBuilder;
+			}
+		};
+		runnable.run();
+
+		// Check captured output is truncated to 2048
+		final var capturedMessage = (String) headers.getFirst("X-Ligoj-Hook-hook1-message");
+		Assertions.assertNotNull(capturedMessage);
+		Assertions.assertEquals(2048, capturedMessage.length());
+		Assertions.assertTrue(capturedMessage.startsWith("aaaaa"));
+	}
+
+	@Test
+	void limitCaptureOutputStream() throws IOException {
+		final var out = new ByteArrayOutputStream();
+		final var captured = new ByteArrayOutputStream();
+		final var limitOut = new HookProcessRunnable.LimitCaptureOutputStream(out, captured, 5);
+		limitOut.write('a');
+		limitOut.write("bc".getBytes(), 0, 2);
+		limitOut.write("def".getBytes(), 0, 3);
+		limitOut.write('g');
+		limitOut.write("hij".getBytes(), 0, 3);
+		Assertions.assertEquals("abcdefghij", out.toString());
+		Assertions.assertEquals("abcde", captured.toString());
 	}
 }
