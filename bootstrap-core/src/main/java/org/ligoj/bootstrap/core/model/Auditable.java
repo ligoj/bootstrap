@@ -5,6 +5,8 @@ package org.ligoj.bootstrap.core.model;
 
 import org.springframework.data.domain.Persistable;
 
+import java.util.Map;
+
 /**
  * Interface for auditable entities. Allows storing and retrieving creation and modification information. The changing
  * instance (typically some user) is to be defined by a generic definition.
@@ -88,12 +90,12 @@ public interface Auditable<U, K, D> extends Persistable<K> {
 	 * Set the free form text metadata.
 	 * @param metadata The free form metadata.
 	 */
-	void setMetadata(String metadata);
+	void setMetadata(Map<String, Object> metadata);
 
 	/**
 	 * Returns A free form metadata.
 	 *
 	 * @return a free form metadata.
 	 */
-	String getMetadata();
+	Map<String, Object> getMetadata();
 }

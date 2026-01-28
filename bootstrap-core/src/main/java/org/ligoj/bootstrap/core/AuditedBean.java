@@ -5,7 +5,6 @@ package org.ligoj.bootstrap.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,6 +12,7 @@ import org.ligoj.bootstrap.core.model.Auditable;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -55,14 +55,12 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	/**
 	 * A free form text at creation time only.
 	 */
-	@Column(length = 1024, updatable = false)
 	private String creationContext;
 
 	/**
 	 * An optional free form meta-data
 	 */
-	@Column(length = 2048)
-	private String metadata;
+	private Map<String, Object> metadata;
 
 	/**
 	 * Define the modifiable state of a valued object.

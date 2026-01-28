@@ -9,6 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -16,6 +18,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * Abstract base class for auditable entities. Stores the audition values in
@@ -63,6 +66,7 @@ public abstract class AbstractAudited<K extends Serializable> extends AbstractPe
 	 * An optional free form meta-data
 	 */
 	@Column(length = 2048)
-	private String metadata;
+	@JdbcTypeCode(SqlTypes.JSON)
+	private Map<String, Object> metadata;
 
 }
