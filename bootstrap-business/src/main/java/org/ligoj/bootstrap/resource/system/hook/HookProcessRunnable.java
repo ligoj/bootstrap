@@ -24,7 +24,11 @@ import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.context.ApplicationContext;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Arrays;
@@ -196,7 +200,7 @@ public class HookProcessRunnable implements Runnable {
 		final var hookName = hook.getName().replaceAll("[\\s\\W]", "-");
 		responseHeaders.putSingle("X-Ligoj-Hook-" + hookName, status);
 		if (StringUtils.isNotEmpty(message)) {
-			responseHeaders.putSingle("X-Ligoj-Hook-" + hookName + "-message", message);
+			responseHeaders.putSingle("X-Ligoj-Hook-" + hookName + "-Message", message.replaceAll("[\r\n]", " "));
 		}
 	}
 

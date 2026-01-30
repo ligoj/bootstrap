@@ -42,12 +42,7 @@ class HookProcessRunnableTest {
 		final var configuration = Mockito.mock(ConfigurationResource.class);
 		Mockito.doReturn("^/path/other/.*").when(configuration).get("ligoj.hook.path", "^$");
 		final var exchange = Mockito.mock(Exchange.class);
-		new HookProcessRunnable(exchange, "GET", "path", null,
-				null,
-				"NOW",
-				new ObjectMapper(),
-				null,
-				configuration).process(null, hook, null);
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), null, configuration).process(null, hook, null);
 		Mockito.verify(exchange, Mockito.never()).getInMessage();
 	}
 
@@ -65,12 +60,7 @@ class HookProcessRunnableTest {
 		Mockito.when(exchange.getInMessage()).thenReturn(message);
 		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
 
-		new HookProcessRunnable(exchange, "GET", "path", null,
-				null,
-				"NOW",
-				new ObjectMapper(),
-				hook,
-				configuration) {
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				throw new RuntimeException("Simulated failure");
@@ -98,12 +88,7 @@ class HookProcessRunnableTest {
 		final var headers = new MetadataMap<String, Object>();
 		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
 
-		new HookProcessRunnable(exchange, "GET", "path", null,
-				null,
-				"NOW",
-				new ObjectMapper(),
-				hook,
-				configuration) {
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				throw new RuntimeException("Simulated failure");
@@ -132,12 +117,7 @@ class HookProcessRunnableTest {
 		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
 		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(null);
 
-		new HookProcessRunnable(exchange, "GET", "path", null,
-				null,
-				"NOW",
-				new ObjectMapper(),
-				hook,
-				configuration) {
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				throw new RuntimeException("Simulated failure");
@@ -172,12 +152,7 @@ class HookProcessRunnableTest {
 
 		final var capturedPb = new AtomicReference<ProcessBuilder>();
 
-		new HookProcessRunnable(exchange, "GET", "path", null,
-				null,
-				"NOW",
-				new ObjectMapper(),
-				hook,
-				configuration) {
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var pb = Mockito.mock(ProcessBuilder.class);
@@ -191,7 +166,7 @@ class HookProcessRunnableTest {
 				return pb;
 			}
 		}.process(null, hook, new ByteArrayOutputStream());
-		
+
 		Assertions.assertNotNull(capturedPb.get(), "newBuilder was not called");
 		Mockito.verify(process).waitFor(1, TimeUnit.SECONDS);
 	}
@@ -235,11 +210,7 @@ class HookProcessRunnableTest {
 		final var capturedPayload = new AtomicReference<String>();
 
 		new HookProcessRunnable(exchange, "GET", "path", null, // null principal
-				response,
-				"NOW",
-				new ObjectMapper(),
-				hook,
-				configuration) {
+				response, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var pb = Mockito.mock(ProcessBuilder.class);
@@ -258,7 +229,7 @@ class HookProcessRunnableTest {
 		}.process(null, hook, null);
 
 		// Verify header name sanitization
-		Assertions.assertEquals("FAILED", headers.getFirst("X-Ligoj-Hook-hook-1"));
+		Assertions.assertEquals("FAILED", headers.getFirst("X-Ligoj-Hook-hook_1"));
 
 		// Verify payload
 		Assertions.assertNotNull(capturedPayload.get());
@@ -305,12 +276,7 @@ class HookProcessRunnableTest {
 		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
 
-		final var runnable = new HookProcessRunnable(exchange, "GET", "foo/bar", principal,
-				response,
-				"NOW",
-				new ObjectMapper(),
-				hook1,
-				configuration) {
+		final var runnable = new HookProcessRunnable(exchange, "GET", "foo/bar", principal, response, "NOW", new ObjectMapper(), hook1, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var builder = super.newBuilder(hook);
@@ -352,7 +318,7 @@ class HookProcessRunnableTest {
 		Assertions.assertEquals("{\"conf2\":\"\",\"conf1\":\"value1\"}", payload.get("inject").toString());
 
 		// Check captured output
-		Assertions.assertEquals("process_response", headers.getFirst("X-Ligoj-Hook-hook1-message"));
+		Assertions.assertEquals("process_response", headers.getFirst("X-Ligoj-Hook-hook1-Message"));
 	}
 
 	@Test
@@ -390,12 +356,7 @@ class HookProcessRunnableTest {
 		hook1.setInject(List.of("conf1", "conf2"));
 		hook1.setWorkingDirectory("working/directory");
 
-		final var runnable = new HookProcessRunnable(exchange, "GET", "foo/bar", principal,
-				response,
-				"NOW",
-				new ObjectMapper(),
-				hook1,
-				configuration) {
+		final var runnable = new HookProcessRunnable(exchange, "GET", "foo/bar", principal, response, "NOW", new ObjectMapper(), hook1, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var builder = super.newBuilder(hook);
@@ -422,7 +383,7 @@ class HookProcessRunnableTest {
 		runnable.run();
 
 		// Check captured output is truncated to 2048
-		final var capturedMessage = (String) headers.getFirst("X-Ligoj-Hook-hook1-message");
+		final var capturedMessage = (String) headers.getFirst("X-Ligoj-Hook-hook1-Message");
 		Assertions.assertNotNull(capturedMessage);
 		Assertions.assertEquals(2048, capturedMessage.length());
 		Assertions.assertTrue(capturedMessage.startsWith("aaaaa"));
