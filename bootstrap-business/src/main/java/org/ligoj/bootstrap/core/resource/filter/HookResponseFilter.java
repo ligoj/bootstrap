@@ -9,7 +9,6 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.jaxrs.impl.AbstractPropertiesImpl;
-import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.resource.handler.HookConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +19,7 @@ import java.util.List;
  */
 @Provider
 @Slf4j
-public class HookResponseFilter extends AbstractMapper implements ContainerResponseFilter {
+public class HookResponseFilter implements ContainerResponseFilter {
 
 	@Autowired
 	protected HookConfiguration hookConfiguration;
