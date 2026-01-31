@@ -24,11 +24,7 @@ import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.context.ApplicationContext;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Arrays;
@@ -138,6 +134,7 @@ public class HookProcessRunnable implements Runnable {
 		log.info("[Hook {} -> {}] Triggered", path, h.getName());
 		final var start = System.currentTimeMillis();
 		final var captured = new ByteArrayOutputStream();
+		var status = "?";
 		try {
 			// Create Map object
 			@SuppressWarnings("unchecked") final var params = exchange.getInMessage().getContent(List.class).stream()
@@ -170,11 +167,13 @@ public class HookProcessRunnable implements Runnable {
 			// Wait and get the code up to 30s
 			final var code = process.waitFor(timeout, TimeUnit.SECONDS) ? process.exitValue() : -1;
 			out.flush();
-			log.info("[Hook {} -> {}] Succeed, code: {}, duration: {}", path, h.getName(), code, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start));
-			markExecution(h, "SUCCEED", captured.toString(StandardCharsets.UTF_8));
+			status = code == 0 ? "Succeed" : "Failed";
+			log.info("[Hook {} -> {}] {}, code: {}, duration: {}", status, path, h.getName(), code, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start));
 		} catch (final Exception ex) {
-			log.error("[Hook {} -> {}] Failed, duration: {}", path, h.getName(), DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start), ex);
-			markExecution(h, "FAILED", captured.toString(StandardCharsets.UTF_8));
+			status = "Failed";
+			log.error("[Hook {} -> {}] {}, duration: {}", status, path, h.getName(), DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start), ex);
+		} finally {
+			markExecution(h, status.toUpperCase(), captured.toString(StandardCharsets.UTF_8));
 		}
 	}
 
