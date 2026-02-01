@@ -214,7 +214,7 @@ public class UserResource {
 
 		// Apply the changes
 		deletedRoles.forEach(r -> {
-			user.getRoles().removeIf(ra->r.equals(ra.getRole().getId()));
+			user.getRoles().removeIf(ra -> r.equals(ra.getRole().getId()));
 			roleAssignmentRepository.deleteAllBy("user.id", user.getLogin(), new String[]{"role.id"}, r);
 		});
 		newRoles.forEach(r -> {
