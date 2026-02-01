@@ -71,7 +71,7 @@ public class SystemHook extends AbstractNamedAuditedEntity<Integer> {
 	private List<String> inject;
 
 	/**
-	 * Maximum integration delay (in seconds). Default value is managed by `LIGOJ_HOOK_TIMEOUT` configuration. Default is `10` seconds.
+	 * Maximum integration delay (in seconds). Default value is managed by `ligoj.hook.timeout` configuration. Default is `10` seconds.
 	 */
 	@Positive
 	private Integer timeout;

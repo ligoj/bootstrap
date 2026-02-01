@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class HookProcessRunnable implements Runnable {
 
 	static final Base64 BASE64_CODEC = Base64.builder().setLineLength(0).get();
-	static final int DEFAULT_TIMEOUT = Integer.parseInt(System.getProperty("LIGOJ_HOOK_TIMEOUT", "30"), 10);
+	static final int DEFAULT_TIMEOUT = Integer.parseInt(System.getProperty("ligoj.hook.timeout", "30"), 10);
 
 	private final Exchange exchange;
 	private final String method;
@@ -73,8 +73,8 @@ public class HookProcessRunnable implements Runnable {
 	/**
 	 * Ignored class from payload.
 	 */
-	private static final Class<?>[] IGNORED_CLASSES = {UriInfo.class, SecurityContext.class, ServletConfig.class,
-			ServletRequest.class, ServletResponse.class, InputStream.class, ApplicationContext.class};
+	private static final Class<?>[] IGNORED_CLASSES = { UriInfo.class, SecurityContext.class, ServletConfig.class, ServletRequest.class, ServletResponse.class,
+			InputStream.class, ApplicationContext.class };
 
 	/**
 	 * Convert complex or Servlet like technical object to their class name only.
@@ -128,7 +128,8 @@ public class HookProcessRunnable implements Runnable {
 	void process(final String path, final SystemHook h, final OutputStream out) {
 		if (HookResource.isForbiddenCommand(configuration, h.getCommand())) {
 			markExecution(h, "SKIP", null);
-			log.info("[Hook {} -> {}] Triggered but skipped because the command '{}' is not within one of allowed ${ligoj.hook.path} value", path, h.getName(), h.getCommand());
+			log.info("[Hook {} -> {}] Triggered but skipped because the command '{}' is not within one of allowed ${ligoj.hook.path} value", path, h.getName(),
+					h.getCommand());
 			return;
 		}
 		log.info("[Hook {} -> {}] Triggered", path, h.getName());
@@ -137,18 +138,17 @@ public class HookProcessRunnable implements Runnable {
 		var status = "?";
 		try {
 			// Create Map object
-			@SuppressWarnings("unchecked") final var params = exchange.getInMessage().getContent(List.class).stream()
-					.map(this::convertForPayload).toList();
-			final var timeout = ObjectUtils.getIfNull(h.getTimeout(), 0) > 0 ? h.getTimeout() : configuration.get("LIGOJ_HOOK_TIMEOUT", DEFAULT_TIMEOUT);
+			@SuppressWarnings("unchecked")
+			final var params = exchange.getInMessage().getContent(List.class).stream().map(this::convertForPayload).toList();
+			final var timeout = ObjectUtils.getIfNull(h.getTimeout(), 0) > 0 ? h.getTimeout() : configuration.get("ligoj.hook.timeout", DEFAULT_TIMEOUT);
 			final var payload = new HashMap<String, Object>();
 			payload.put("now", now);
 			payload.put("name", h.getName());
 			payload.put("path", path);
 			payload.put("method", method);
 			payload.put("api", exchange.get("org.apache.cxf.resource.operation.name"));
-			payload.put("inject", CollectionUtils.emptyIfNull(h.getInject()).stream().collect(Collectors.toMap(
-					Function.identity(),
-					name -> configuration.get(name, ""))));
+			payload.put("inject",
+					CollectionUtils.emptyIfNull(h.getInject()).stream().collect(Collectors.toMap(Function.identity(), name -> configuration.get(name, ""))));
 			payload.put("timeout", timeout);
 			payload.put("params", params);
 			payload.put("user", Optional.ofNullable(principal).map(Principal::getName).orElse(null));
@@ -168,10 +168,12 @@ public class HookProcessRunnable implements Runnable {
 			final var code = process.waitFor(timeout, TimeUnit.SECONDS) ? process.exitValue() : -1;
 			out.flush();
 			status = code == 0 ? "Succeed" : "Failed";
-			log.info("[Hook {} -> {}] {}, code: {}, duration: {}", status, path, h.getName(), code, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start));
+			log.info("[Hook {} -> {}] {}, code: {}, duration: {}", status, path, h.getName(), code,
+					DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start));
 		} catch (final Exception ex) {
 			status = "Failed";
-			log.error("[Hook {} -> {}] {}, duration: {}", status, path, h.getName(), DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start), ex);
+			log.error("[Hook {} -> {}] {}, duration: {}", status, path, h.getName(), DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start),
+					ex);
 		} finally {
 			markExecution(h, status.toUpperCase(), captured.toString(StandardCharsets.UTF_8));
 		}

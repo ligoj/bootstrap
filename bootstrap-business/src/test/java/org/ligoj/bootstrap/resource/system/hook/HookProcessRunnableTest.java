@@ -246,7 +246,7 @@ class HookProcessRunnableTest {
 		final var response = Map.of("key1", "value1");
 		final var configuration = Mockito.mock(ConfigurationResource.class);
 		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		Mockito.when(configuration.get("LIGOJ_HOOK_TIMEOUT", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
+		Mockito.when(configuration.get("ligoj.hook.timeout", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
 
 		final var exchange = Mockito.mock(Exchange.class);
 		final var principal = Mockito.mock(Principal.class);
@@ -326,7 +326,7 @@ class HookProcessRunnableTest {
 		final var response = Map.of("key1", "value1");
 		final var configuration = Mockito.mock(ConfigurationResource.class);
 		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		Mockito.when(configuration.get("LIGOJ_HOOK_TIMEOUT", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
+		Mockito.when(configuration.get("ligoj.hook.timeout", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
 
 		final var exchange = Mockito.mock(Exchange.class);
 		final var principal = Mockito.mock(Principal.class);
