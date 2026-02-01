@@ -4,7 +4,7 @@
 package org.ligoj.bootstrap.core.resource.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.cxf.annotations.Provider;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -36,11 +36,10 @@ public class AsynchronousHookHandler extends AbstractPhaseInterceptor<Message> {
 
 	@Override
 	public void handleMessage(final Message message) {
-		log.info("{}#handleMessage {}", getPhase(), message);
 		final var request = (SecurityContextHolderAwareRequestWrapper) message.get("HTTP.REQUEST");
 		final var exchange = message.getExchange();
 		final var principal = request.getUserPrincipal();
-		final var path = StringUtils.removeStart(request.getPathInfo(), "/");
+		final var path = Strings.CS.removeStart(request.getPathInfo(), "/");
 		final var status = (Integer) exchange.getOutMessage().get("org.apache.cxf.message.Message.RESPONSE_CODE");
 		if (status >= 200 && status < 300) {
 			final var responseList = exchange.getOutMessage().getContent(List.class);
