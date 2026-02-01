@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * This mapper makes sure all enum values are converted in lower case. The conversion is done only once per value and
@@ -65,5 +66,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 		// Case insensitive enumeration
 		enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 		registerModule(module);
+
+		registerModule(new JavaTimeModule());
 	}
 }
