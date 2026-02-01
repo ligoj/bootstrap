@@ -3,16 +3,17 @@
  */
 package org.ligoj.bootstrap.model.system;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
-
-import org.ligoj.bootstrap.core.model.AbstractNamedEntity;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ligoj.bootstrap.core.model.AbstractNamedEntity;
+
+import java.time.Instant;
 
 /**
  * API token.
@@ -46,4 +47,10 @@ public class SystemApiToken extends AbstractNamedEntity<Integer> {
 	 */
 	@NotNull
 	private String hash;
+
+	/**
+	 * Optional maximal usage date of this token.
+	 */
+	@Column(updatable = false)
+	private Instant expiration;
 }

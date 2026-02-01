@@ -17,9 +17,11 @@ import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
+import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -29,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,6 +74,9 @@ public class ApiTokenResource {
 
 	@Autowired
 	private SecurityHelper securityHelper;
+
+	@Autowired
+	private SystemUserRepository userRepository;
 
 	/**
 	 * Amount of digest iterations applied to original message to produce the target hash.
@@ -261,21 +267,34 @@ public class ApiTokenResource {
 	}
 
 	/**
-	 * Create a new token for current user.
+	 * Create a new token for current user, without expiration.
 	 *
 	 * @param name New token name.
-	 * @return the generated token.
+	 * @return the generated token object.
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("{name:[\\w.-]+}")
 	public NamedBean<String> create(@PathParam("name") final String name) throws GeneralSecurityException {
-		return create(securityHelper.getLogin(), name);
+		return create(securityHelper.getLogin(), name, (Instant) null);
 	}
 
 	/**
-	 * Create a new token for given user.
+	 * Create a new token for current user.
+	 *
+	 * @param token New token
+	 * @return the generated token object.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public NamedBean<String> create(final SystemApiTokenEdition token) throws GeneralSecurityException {
+		return create(securityHelper.getLogin(), token.getName(), token.getExpiration());
+	}
+
+	/**
+	 * Create a new token for given user, without expiration.
 	 *
 	 * @param name New token name.
 	 * @param user The target user
@@ -283,11 +302,24 @@ public class ApiTokenResource {
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	public NamedBean<String> create(final String user, final String name) throws GeneralSecurityException {
-		return create(user, name, newToken());
+		return create(user, name, (Instant) null);
 	}
 
 	/**
 	 * Create a new token for given user.
+	 *
+	 * @param name       New token name.
+	 * @param user       The target user
+	 * @param expiration Optional expiration date.
+	 * @return the generated token.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	public NamedBean<String> create(final String user, final String name, final Instant expiration) throws GeneralSecurityException {
+		return create(user, name, expiration, newToken());
+	}
+
+	/**
+	 * Create a new token for given user, without expiration.
 	 *
 	 * @param name       New token name.
 	 * @param user       The target user.
@@ -296,9 +328,24 @@ public class ApiTokenResource {
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	public NamedBean<String> create(final String user, final String name, final String tokenValue) throws GeneralSecurityException {
+		return create(user, name, null, tokenValue);
+	}
+
+	/**
+	 * Create a new token for given user.
+	 *
+	 * @param name       New token name.
+	 * @param user       The target user.
+	 * @param expiration Optional expiration date.
+	 * @param tokenValue The forced token value.
+	 * @return the generated token as a bean where the identifier is the token value.
+	 * @throws GeneralSecurityException When there is a security issue.
+	 */
+	public NamedBean<String> create(final String user, final String name, final Instant expiration, final String tokenValue) throws GeneralSecurityException {
 		final var entity = new SystemApiToken();
 		entity.setName(name);
 		entity.setUser(user);
+		entity.setExpiration(expiration);
 		final var token = newToken(entity, tokenValue);
 		repository.saveAndFlush(entity);
 		return new NamedBean<>(token, name);
@@ -387,5 +434,31 @@ public class ApiTokenResource {
 	 */
 	public void removeAll(final String login) {
 		repository.deleteAllBy("user", login);
+	}
+
+	/**
+	 * Delete all expired API tokens of current principal.
+	 *
+	 * @return amount of deleted expired API tokens.
+	 */
+	@DELETE
+	@Path("purge/me")
+	public int purgeMe() {
+		return repository.deleteExpired(securityHelper.getLogin());
+	}
+
+	/**
+	 * Delete all expired API tokens. Only administrators can use this API.
+	 *
+	 * @return amount of deleted expired API tokens.
+	 */
+	@Scheduled(cron = "${api.token.purge:0 0 4 * * ?}")
+	@DELETE
+	@Path("purge/all")
+	public int purgeAll() {
+		if (securityHelper.getLogin() == null || userRepository.isAdmin(securityHelper.getLogin())) {
+			return repository.deleteExpired();
+		}
+		throw new ForbiddenException();
 	}
 }
