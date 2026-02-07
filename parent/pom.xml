@@ -91,7 +91,7 @@
         <log4j-api.version>2.25.3</log4j-api.version>
         <lombok.version>1.18.42</lombok.version>
         <mail-api.version>2.1.5</mail-api.version>
-        <maven-artifact.version>3.9.11</maven-artifact.version>
+        <maven-artifact.version>3.9.12</maven-artifact.version>
         <mockito.version>5.21.0</mockito.version>
         <mariadb.version>3.5.7</mariadb.version>
         <mysql.version>9.6.0</mysql.version>
