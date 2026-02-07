@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 /**
  * Test class of {@link AbstractSpecification}
  */
-public class TestAbstractSpecificationTest {
+class TestAbstractSpecificationTest {
 
 	@Test
 	void getExpressionTypeMatch() {

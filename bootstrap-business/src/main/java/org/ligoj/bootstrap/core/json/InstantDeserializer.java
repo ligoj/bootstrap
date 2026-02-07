@@ -4,9 +4,7 @@
 package org.ligoj.bootstrap.core.json;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeFeature;
 import org.ligoj.bootstrap.core.DateUtils;
 
@@ -24,8 +22,8 @@ public class InstantDeserializer extends com.fasterxml.jackson.datatype.jsr310.d
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final static boolean DEFAULT_NORMALIZE_ZONE_ID = JavaTimeFeature.NORMALIZE_DESERIALIZED_ZONE_ID.enabledByDefault();
-	private final static boolean DEFAULT_ALWAYS_ALLOW_STRINGIFIED_DATE_TIMESTAMPS
+	private static final boolean DEFAULT_NORMALIZE_ZONE_ID = JavaTimeFeature.NORMALIZE_DESERIALIZED_ZONE_ID.enabledByDefault();
+	private static final boolean DEFAULT_ALWAYS_ALLOW_STRINGIFIED_DATE_TIMESTAMPS
 			= JavaTimeFeature.ALWAYS_ALLOW_STRINGIFIED_DATE_TIMESTAMPS.enabledByDefault();
 
 	/**

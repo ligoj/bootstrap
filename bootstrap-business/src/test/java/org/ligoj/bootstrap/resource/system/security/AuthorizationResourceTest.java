@@ -3,9 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.io.IOException;
-import java.util.regex.PatternSyntaxException;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
 
 /**
  * Test class of {@link AuthorizationResource}
@@ -254,7 +253,7 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		cacheResource.invalidate("authorizations");
 		var result = resource.getAuthorizations().get(AuthorizationType.API).get("role1").get(HttpMethod.GET.name());
 		log.info("result {}", result);
-		Assertions.assertEquals(result.size(), 0);
+		Assertions.assertEquals(0,result.size());
 	}
 
 	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {

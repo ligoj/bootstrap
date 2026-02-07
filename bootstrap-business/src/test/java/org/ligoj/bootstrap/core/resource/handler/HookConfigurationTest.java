@@ -198,8 +198,9 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 	@Test
 	void processException() {
 		Mockito.when(self.findAll()).thenThrow(new RuntimeException("Simulated error"));
-		hookConfiguration.process(null, null, null, null, null, null, null);
-		// Should not throw exception
+		final BiConsumer<SystemHook, HookProcessRunnable> processor = Mockito.mock(BiConsumer.class);
+		hookConfiguration.process(null, null, null, null, null, null, processor);
+		Mockito.verify(processor, Mockito.never()).accept(Mockito.any(), Mockito.any());
 	}
 
 	@Test

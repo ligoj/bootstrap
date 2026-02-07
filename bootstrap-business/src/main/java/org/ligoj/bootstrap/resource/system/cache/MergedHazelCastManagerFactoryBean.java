@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.lang.Nullable;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -102,6 +103,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	}
 
 	@Override
+	@Nullable
 	public CacheManager getObject() {
 		return this.cacheManager;
 	}

@@ -70,7 +70,7 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 
 	/**
 	 * Delete all expired API tokens
-	 * Return deleted of deleted API tokens.
+	 * @return deleted of deleted API tokens.
 	 */
 	@Query("DELETE FROM SystemApiToken WHERE expiration IS NOT NULL AND expiration < CURRENT_TIMESTAMP")
 	@Modifying
@@ -78,7 +78,8 @@ public interface SystemApiTokenRepository extends RestRepository<SystemApiToken,
 
 	/**
 	 * Delete all expired API tokens owned by given user.
-	 * Return deleted of deleted API tokens.
+	 * @param user The owner.
+	 * @return deleted of deleted API tokens.
 	 */
 	@Query("DELETE FROM SystemApiToken WHERE expiration IS NOT NULL AND user=:user AND expiration < CURRENT_TIMESTAMP")
 	@Modifying

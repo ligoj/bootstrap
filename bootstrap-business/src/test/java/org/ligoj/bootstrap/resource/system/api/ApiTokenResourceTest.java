@@ -156,9 +156,9 @@ class ApiTokenResourceTest extends AbstractBootTest {
 
 	@Test
 	void checkInvalidDigest() {
-		final var resource = new ApiTokenResource();
-		resource.setTokenDigest("any");
-		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN));
+		final var mock = new ApiTokenResource();
+		mock.setTokenDigest("any");
+		Assertions.assertFalse(mock.check(DEFAULT_USER, TOKEN));
 	}
 
 	@Test
@@ -178,6 +178,25 @@ class ApiTokenResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("new-api", tokens.get(1));
 		Assertions.assertEquals(token, resource.getToken("new-api"));
 		Assertions.assertTrue(resource.hasToken(DEFAULT_USER, "new-api"));
+	}
+
+	@Test
+	void createWithVo() throws GeneralSecurityException {
+		var vo = new SystemApiTokenEdition();
+		vo.setName("new-api");
+		final var tokenObj = resource.create(vo);
+		Assertions.assertEquals("new-api", tokenObj.getName());
+	}
+
+	@Test
+	void createForUser() throws GeneralSecurityException {
+		final var tokenObj = resource.create(DEFAULT_USER, "new-api");
+		Assertions.assertEquals("new-api", tokenObj.getName());
+	}
+	@Test
+	void createWithValue() throws GeneralSecurityException {
+		final var tokenObj = resource.create(DEFAULT_USER, "new-api", "value");
+		Assertions.assertEquals("new-api", tokenObj.getName());
 	}
 
 	@Test
