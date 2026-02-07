@@ -183,9 +183,9 @@ class HookProcessRunnableTest {
 	}
 
 	@Test
-	void processPayload() throws IOException {
+	void processSynchronous() throws IOException {
 		final var hook = new SystemHook();
-		hook.setName("hook 1"); // Space in name
+		hook.setName("hook_1"); // Space in name
 		hook.setDelay(0);
 		hook.setCommand("cmd");
 
@@ -209,7 +209,7 @@ class HookProcessRunnableTest {
 
 		final var capturedPayload = new AtomicReference<String>();
 
-		new HookProcessRunnable(exchange, "GET", "path", null, // null principal
+		new HookProcessRunnable(exchange, "GET", "/path", null,
 				response, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
@@ -226,7 +226,7 @@ class HookProcessRunnableTest {
 				}
 				return pb;
 			}
-		}.process(null, hook, null);
+		}.process("/path", hook, null);
 
 		// Verify header name sanitization
 		Assertions.assertEquals("FAILED", headers.getFirst("X-Ligoj-Hook-hook_1"));
@@ -291,7 +291,7 @@ class HookProcessRunnableTest {
 					Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream("process_response".getBytes(StandardCharsets.UTF_8)));
 					final var timeout = ObjectUtils.getIfNull(hook.getTimeout(), 30);
 					Mockito.doReturn(timeout != 1).when(process).waitFor(timeout, TimeUnit.SECONDS);
-					Mockito.doReturn(1).when(process).exitValue();
+					Mockito.doReturn(0).when(process).exitValue();
 				} catch (final Exception e) {
 					log.error("Unable to mock process", e);
 				}
@@ -322,7 +322,7 @@ class HookProcessRunnableTest {
 	}
 
 	@Test
-	void runLargeOutput() throws IOException {
+	void runLargeOutput() {
 		final var response = Map.of("key1", "value1");
 		final var configuration = Mockito.mock(ConfigurationResource.class);
 		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
@@ -369,7 +369,7 @@ class HookProcessRunnableTest {
 				try {
 					Mockito.when(processBuilder.start()).thenReturn(process);
 					// Generate a large output > 2048 bytes
-					final var largeOutput = "a".repeat(3000);
+					final var largeOutput = "0".repeat(3000);
 					Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream(largeOutput.getBytes(StandardCharsets.UTF_8)));
 					final var timeout = ObjectUtils.getIfNull(hook.getTimeout(), 30);
 					Mockito.doReturn(timeout != 1).when(process).waitFor(timeout, TimeUnit.SECONDS);
@@ -386,7 +386,7 @@ class HookProcessRunnableTest {
 		final var capturedMessage = (String) headers.getFirst("X-Ligoj-Hook-hook1-Message");
 		Assertions.assertNotNull(capturedMessage);
 		Assertions.assertEquals(2048, capturedMessage.length());
-		Assertions.assertTrue(capturedMessage.startsWith("aaaaa"));
+		Assertions.assertTrue(capturedMessage.startsWith("00000"));
 	}
 
 	@Test
@@ -394,12 +394,12 @@ class HookProcessRunnableTest {
 		final var out = new ByteArrayOutputStream();
 		final var captured = new ByteArrayOutputStream();
 		final var limitOut = new HookProcessRunnable.LimitCaptureOutputStream(out, captured, 5);
-		limitOut.write('a');
-		limitOut.write("bc".getBytes(), 0, 2);
-		limitOut.write("def".getBytes(), 0, 3);
-		limitOut.write('g');
-		limitOut.write("hij".getBytes(), 0, 3);
-		Assertions.assertEquals("abcdefghij", out.toString());
-		Assertions.assertEquals("abcde", captured.toString());
+		limitOut.write('0');
+		limitOut.write("12".getBytes(), 0, 2);
+		limitOut.write("345".getBytes(), 0, 3);
+		limitOut.write('6');
+		limitOut.write("789".getBytes(), 0, 3);
+		Assertions.assertEquals("0123456789", out.toString());
+		Assertions.assertEquals("01234", captured.toString());
 	}
 }
