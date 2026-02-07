@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  * An integration test.
  */
 @Slf4j
-public abstract class AbstractRestTest extends AbstractTest {
+public abstract class AbstractRestTest extends AbstractDataGeneratorTest {
 	/**
 	 * URI
 	 */

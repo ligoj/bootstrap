@@ -165,6 +165,7 @@ public class ExceptionMapperResource {
 		hook.setName("mock-test");
 		hook.setCommand("java org.ligoj.bootstrap.core.resource.mapper.Main");
 		hook.setMatch("{\"path\":\"throw/hook/p1/p.*\"}");
+		hook.setTimeout(5);
 		hook.setWorkingDirectory(MOCK_PATH.getParent());
 		hookRepository.saveAndFlush(hook);
 		cacheResource.invalidate("hooks");
@@ -274,6 +275,14 @@ public class ExceptionMapperResource {
 	@Path("cannotAcquireLockException")
 	public void throwCannotAcquireLockException() {
 		throw new CannotAcquireLockException("lock");
+	}
+
+	@DELETE
+	@Path("jsr-310")
+	@Produces(MediaType.APPLICATION_JSON)
+	public DateWrapper jsr310(final DateWrapper input) {
+		// Return the same object for serialization
+		return input;
 	}
 
 }

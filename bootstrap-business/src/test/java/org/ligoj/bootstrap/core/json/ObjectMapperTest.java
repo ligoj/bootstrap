@@ -40,6 +40,12 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
+	void serializationInstant() throws IOException {
+		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2).getTime()),
+				mapper.writeValueAsString(getDate(2016, 8, 2).toInstant()));
+	}
+
+	@Test
 	void serializationLocalDateTime() throws IOException {
 		Assertions.assertEquals(String.valueOf(getDate(2016, 8, 2, 12, 54, 32).getTime()),
 				mapper.writeValueAsString(LocalDateTime.of(2016, 8, 2, 12, 54, 32)));
@@ -105,7 +111,6 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 		Assertions.assertThrows(InvalidFormatException.class,
 				() -> vanillaMapper.readValue("\"accepted\"", Status.class));
 	}
-
 
 	@Test
 	void deserializationInstant() throws IOException, ParseException {

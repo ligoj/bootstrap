@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 /**
  * Exception mapper test using {@link ExceptionMapperResource}
  */
+@SuppressWarnings("UastIncorrectHttpHeaderInspection")
 class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 
 	/**
@@ -350,7 +351,24 @@ class ExceptionMapperIT extends org.ligoj.bootstrap.AbstractRestTest {
 		Awaitility.waitAtMost(Duration.ofSeconds(3)).until(() -> Files.exists(new File("target/test-classes/hook.log").toPath()));
 		final var payload = FileUtils.readFileToString(new File("target/test-classes/hook.log"), StandardCharsets.UTF_8);
 		final var jsonString = new String(Base64.decodeBase64(payload));
-		Assertions.assertTrue(Pattern.matches("\\{\"result\":\\{\"name\":\"new_name\"},\"path\":\"throw/hook/p1/p2\",\"method\":\"DELETE\",\"now\":\"[^\"]+\",\"name\":\"mock-test\",\"api\":\"ExceptionMapperResource#hook\",\"params\":\\[\"p1\",\"p2\",\\{\"name\":\"JUNIT\"}],\"inject\":\\{},\"user\":\"junit\",\"timeout\":30}", jsonString));
+		Assertions.assertTrue(Pattern.matches("\\{\"result\":\\{\"name\":\"new_name\"},\"path\":\"throw/hook/p1/p2\",\"method\":\"DELETE\",\"now\":\"[^\"]+\",\"name\":\"mock-test\",\"api\":\"ExceptionMapperResource#hook\",\"params\":\\[\"p1\",\"p2\",\\{\"name\":\"JUNIT\"}],\"inject\":\\{},\"user\":\"junit\",\"timeout\":5}", jsonString));
+	}
+
+	/**
+	 * @see ExceptionMapperResource#jsr310(DateWrapper)
+	 */
+	@Test
+	void testJsr310() throws IOException {
+		final var message = new HttpDelete(BASE_URI + RESOURCE + "/jsr-310");
+		var time = getDate(2000, 1, 1).getTime();
+		message.setEntity(new StringEntity("{\"instant\":"+time+",\"localDate\":"+time+",\"date\":"+time+"}", ContentType.APPLICATION_JSON));
+		message.addHeader("sm_universalid", DEFAULT_USER);
+		httpclient.execute(message, response -> {
+			Assertions.assertEquals(HttpStatus.SC_OK, response.getCode());
+			final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+			Assertions.assertEquals("{\"instant\":"+time+",\"localDate\":"+time+",\"date\":"+time+"}", content);
+				return null;
+		});
 	}
 
 	/**
