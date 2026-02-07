@@ -107,14 +107,15 @@ class AsynchronousHookInterceptorTest {
 		final var predicateCaptor = ArgumentCaptor.forClass(Predicate.class);
 		Mockito.verify(hookConfiguration).process(Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.any(), Mockito.any(), predicateCaptor.capture(), Mockito.any());
-		
+
+		// Not executed, since synchronous hook
 		final var hookSync = new SystemHook();
 		hookSync.setDelay(0);
-		Assertions.assertTrue(((Predicate<SystemHook>)predicateCaptor.getValue()).test(hookSync));
+		Assertions.assertFalse(((Predicate<SystemHook>)predicateCaptor.getValue()).test(hookSync));
 		
 		final var hookAsync = new SystemHook();
 		hookAsync.setDelay(1);
-		Assertions.assertFalse(((Predicate<SystemHook>)predicateCaptor.getValue()).test(hookAsync));
+		Assertions.assertTrue(((Predicate<SystemHook>)predicateCaptor.getValue()).test(hookAsync));
 	}
 
 	@Test
