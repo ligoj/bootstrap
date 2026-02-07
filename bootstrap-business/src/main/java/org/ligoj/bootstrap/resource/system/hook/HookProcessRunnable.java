@@ -128,11 +128,11 @@ public class HookProcessRunnable implements Runnable {
 	void process(final String path, final SystemHook h, final OutputStream out) {
 		if (HookResource.isForbiddenCommand(configuration, h.getCommand())) {
 			markExecution(h, "SKIP", null);
-			log.info("[Hook {} -> {}] Triggered but skipped because the command '{}' is not within one of allowed ${ligoj.hook.path} value", path, h.getName(),
+			log.info("[Hook @{}:{}] Triggered but skipped because the command '{}' is not within one of allowed ${ligoj.hook.path} value", path, h.getName(),
 					h.getCommand());
 			return;
 		}
-		log.info("[Hook {} -> {}] Triggered", path, h.getName());
+		log.info("[Hook @{}:{}] Triggered", path, h.getName());
 		final var start = System.currentTimeMillis();
 		final var captured = new ByteArrayOutputStream();
 		var status = "?";
@@ -168,11 +168,11 @@ public class HookProcessRunnable implements Runnable {
 			final var code = process.waitFor(timeout, TimeUnit.SECONDS) ? process.exitValue() : -1;
 			out.flush();
 			status = code == 0 ? "Succeed" : "Failed";
-			log.info("[Hook {} -> {}] {}, code: {}, duration: {}", status, path, h.getName(), code,
+			log.info("[Hook @{}:{}] {}, code: {}, duration: {}", path, h.getName(), status,  code,
 					DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start));
 		} catch (final Exception ex) {
 			status = "Failed";
-			log.error("[Hook {} -> {}] {}, duration: {}", status, path, h.getName(), DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start),
+			log.error("[Hook @{}:{}] {}, duration: {}", path, h.getName(), status, DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - start),
 					ex);
 		} finally {
 			markExecution(h, status.toUpperCase(), captured.toString(StandardCharsets.UTF_8));
