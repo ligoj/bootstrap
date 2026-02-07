@@ -49,5 +49,5 @@
 	<bean id="unixTimestampParameterHandler" class="org.ligoj.bootstrap.core.resource.handler.UnixTimestampParameterHandler" />
 	<bean id="caseInsensitiveEnumInterceptor"  class="org.ligoj.bootstrap.core.resource.handler.CaseInsensitiveEnumInterceptor"/>
 	<bean id="insensitiveEnumParameterHandler"  class="org.ligoj.bootstrap.core.resource.handler.InsensitiveEnumParameterHandler"/>
-	<bean id="asynchronousHookHandler" class="org.ligoj.bootstrap.core.resource.handler.AsynchronousHookHandler" />
+	<bean id="asynchronousHookInterceptor" class="org.ligoj.bootstrap.core.resource.handler.AsynchronousHookInterceptor" />
 </beans>

@@ -20,13 +20,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
- * Test class for {@link AsynchronousHookHandler}
+ * Test class for {@link AsynchronousHookInterceptor}
  */
-class AsynchronousHookHandlerTest {
+class AsynchronousHookInterceptorTest {
 
 	@Test
 	void handleMessageIgnoreStatusLow() {
-		final var handler = new AsynchronousHookHandler();
+		final var handler = new AsynchronousHookInterceptor();
 		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
 		handler.hookConfiguration = hookConfiguration;
 		
@@ -47,7 +47,7 @@ class AsynchronousHookHandlerTest {
 
 	@Test
 	void handleMessageIgnoreStatusHigh() {
-		final var handler = new AsynchronousHookHandler();
+		final var handler = new AsynchronousHookInterceptor();
 		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
 		handler.hookConfiguration = hookConfiguration;
 
@@ -69,7 +69,7 @@ class AsynchronousHookHandlerTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	void handleMessage() {
-		final var handler = new AsynchronousHookHandler();
+		final var handler = new AsynchronousHookInterceptor();
 		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
 		handler.hookConfiguration = hookConfiguration;
 
@@ -119,7 +119,7 @@ class AsynchronousHookHandlerTest {
 
 	@Test
 	void handleMessageEmptyResponse() {
-		final var handler = new AsynchronousHookHandler();
+		final var handler = new AsynchronousHookInterceptor();
 		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
 		handler.hookConfiguration = hookConfiguration;
 

@@ -10,6 +10,7 @@
 	<jaxrs:server id="restServer" address="/" staticSubresourceResolution="true">
 		<jaxrs:inInterceptors>
 			<ref bean="validationInInterceptor" />
+			<ref bean="asynchronousHookInterceptor" />
 		</jaxrs:inInterceptors>
 		<jaxrs:serviceBeans>
 			<bean class="org.ligoj.bootstrap.core.resource.mapper.ExceptionMapperResource" />
@@ -44,7 +45,6 @@
 			<ref bean="cannotAcquireLockExceptionMapper" />
 			<ref bean="notImplementedExceptionMapper" />
 			<ref bean="failSafeExceptionMapper" />
-			<ref bean="asynchronousHookHandler" />
 		</jaxrs:providers>
 	</jaxrs:server>
 </beans>

@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @org.apache.cxf.annotations.Provider(value = Provider.Type.InInterceptor, scope = Provider.Scope.Server)
-public class AsynchronousHookHandler extends AbstractPhaseInterceptor<Message> {
+public class AsynchronousHookInterceptor extends AbstractPhaseInterceptor<Message> {
 
 	@Autowired
 	protected HookConfiguration hookConfiguration;
@@ -30,7 +30,7 @@ public class AsynchronousHookHandler extends AbstractPhaseInterceptor<Message> {
 	/**
 	 * Default constructor.
 	 */
-	public AsynchronousHookHandler() {
+	public AsynchronousHookInterceptor() {
 		super(Phase.POST_INVOKE);
 	}
 
@@ -45,7 +45,7 @@ public class AsynchronousHookHandler extends AbstractPhaseInterceptor<Message> {
 			final var responseList = exchange.getOutMessage().getContent(List.class);
 			final var response = responseList.isEmpty() ? null : responseList.getFirst();
 			hookConfiguration.process(exchange, request.getMethod(), path, principal, response,
-					hook -> hook.getDelay() == 0,
+					hook -> hook.getDelay() > 0,
 					(hook, runnable) -> CompletableFuture.delayedExecutor(hook.getDelay(), TimeUnit.SECONDS).execute(runnable));
 		}
 	}
