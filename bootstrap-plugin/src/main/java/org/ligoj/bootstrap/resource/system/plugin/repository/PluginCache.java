@@ -3,19 +3,14 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
-import java.util.function.Function;
-
-import javax.cache.expiry.AccessedExpiryPolicy;
-import javax.cache.expiry.Duration;
-import javax.cache.expiry.ModifiedExpiryPolicy;
-
+import com.hazelcast.cache.HazelcastCacheManager;
+import org.ligoj.bootstrap.resource.system.cache.CacheConfigurer;
 import org.ligoj.bootstrap.resource.system.cache.CacheManagerAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
-import com.hazelcast.cache.HazelcastCacheManager;
-import com.hazelcast.config.CacheConfig;
+import javax.cache.expiry.Duration;
 
 /**
  * Plug-in cache configuration.
@@ -25,12 +20,10 @@ import com.hazelcast.config.CacheConfig;
 public class PluginCache implements CacheManagerAware {
 
 	@Override
-	public void onCreate(final HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
-		final var central = provider.apply("authorizations");
-		central.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.ONE_DAY));
+	public void onCreate(final HazelcastCacheManager cacheManager, final CacheConfigurer configurer) {
+		final var central = configurer.newCacheConfig("plugins-last-version-central", Duration.ONE_DAY);
 		cacheManager.createCache("plugins-last-version-central", central);
-		final var nexus = provider.apply("authorizations");
-		nexus.setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(Duration.ONE_DAY));
+		final var nexus = configurer.newCacheConfig("plugins-last-version-nexus", Duration.ONE_DAY);
 		cacheManager.createCache("plugins-last-version-nexus", nexus);
 	}
 }

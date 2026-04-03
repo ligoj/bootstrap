@@ -3,21 +3,15 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import static java.util.concurrent.TimeUnit.HOURS;
-
-import java.util.function.Function;
-
-import javax.cache.expiry.Duration;
-import javax.cache.expiry.ModifiedExpiryPolicy;
-
+import com.hazelcast.cache.HazelcastCacheManager;
+import com.hazelcast.config.EvictionConfig;
+import org.ligoj.bootstrap.resource.system.cache.CacheConfigurer;
 import org.ligoj.bootstrap.resource.system.cache.CacheManagerAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
-import com.hazelcast.cache.HazelcastCacheManager;
-import com.hazelcast.config.CacheConfig;
-import com.hazelcast.config.EvictionConfig;
+import javax.cache.expiry.Duration;
 
 /**
  * Authorizations and user details cache configuration.
@@ -27,10 +21,9 @@ import com.hazelcast.config.EvictionConfig;
 public class AuthorizationCache implements CacheManagerAware {
 
 	@Override
-	public void onCreate(final HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
-		cacheManager.createCache("authorizations", provider.apply("authorizations"));
-		final var details = provider.apply("user-details");
-		details.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(HOURS, 1)));
+	public void onCreate(final HazelcastCacheManager cacheManager, final CacheConfigurer configurer) {
+		cacheManager.createCache("authorizations", configurer.newCacheConfig("authorizations"));
+		final var details = configurer.newCacheConfig("user-details", Duration.ONE_HOUR);
 		details.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("user-details", details);
 	}

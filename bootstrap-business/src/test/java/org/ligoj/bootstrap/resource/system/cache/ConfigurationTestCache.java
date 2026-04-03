@@ -3,19 +3,14 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
-import javax.cache.expiry.Duration;
-import javax.cache.expiry.ModifiedExpiryPolicy;
-import javax.cache.expiry.TouchedExpiryPolicy;
-
-import org.springframework.stereotype.Component;
-
 import com.hazelcast.cache.HazelcastCacheManager;
-import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
+import org.springframework.stereotype.Component;
+
+import javax.cache.expiry.Duration;
+import javax.cache.expiry.TouchedExpiryPolicy;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Configuration cache used for tests.
@@ -24,17 +19,16 @@ import com.hazelcast.config.EvictionPolicy;
 class ConfigurationTestCache implements CacheManagerAware {
 
 	@Override
-	public void onCreate(HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
-		final var config = provider.apply("test-cache");
+	public void onCreate(HazelcastCacheManager cacheManager, final CacheConfigurer configurer) {
+		final var config = configurer.newCacheConfig("test-cache");
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setSize(200));
 		cacheManager.createCache("test-cache", config);
 
-		final var tokens1 = provider.apply("test-cache-1");
-		tokens1.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, 1)));
+		final var tokens1 = configurer.newCacheConfig("test-cache-1", new Duration(TimeUnit.SECONDS, 1));
 		tokens1.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("test-cache-1", tokens1);
 
-		final var tokens2 = provider.apply("test-cache-2");
+		final var tokens2 = configurer.newCacheConfig("test-cache-2");
 		tokens2.setExpiryPolicyFactory(TouchedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, 1)));
 		tokens2.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("test-cache-2", tokens2);

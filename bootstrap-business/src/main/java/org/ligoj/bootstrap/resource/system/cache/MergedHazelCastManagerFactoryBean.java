@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * Factory of cache with modular {@link CacheConfig} creation delegate to
  * {@link CacheManagerAware} implementors.
  */
-public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean, ApplicationContextAware {
+public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean, ApplicationContextAware, CacheConfigurer {
 
 	/**
 	 * Cache manager instance.
@@ -64,7 +64,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 		final var provider = (com.hazelcast.cache.HazelcastCachingProvider) Caching.getCachingProvider();
 		final var manager = (HazelcastCacheManager) provider.getCacheManager(new URI("bootstrap-cache-manager"), null,
 				properties);
-		applicationContext.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this::newCacheConfig));
+		applicationContext.getBeansOfType(CacheManagerAware.class).forEach((n, a) -> a.onCreate(manager, this));
 		this.cacheManager = manager;
 	}
 
@@ -79,24 +79,21 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 		}
 	}
 
-	/**
-	 * Create a new {@link CacheConfig} with configured settings before {@link CacheManagerAware} implementor.
-	 *
-	 * @param name The cache name to configure.
-	 * @return The created  {@link CacheConfig} with the policy.
-	 */
-	protected CacheConfig<?, ?> newCacheConfig(final String name) {
+	@Override
+	public CacheConfig<?, ?> newCacheConfig(final String name, final Duration defaultDuration) {
 		final var config = new CacheConfig<>(name);
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU));
 		// Post configuration
 		postConfigure(config);
 
 		// Last chance to override the default TTL from system configuration
-		final var ttlDuration = NumberUtils.toInt(StringUtils.trimToNull(env.getProperty("cache." + name + ".ttl")), -1);
-		if (ttlDuration == -1) {
+		final var ttl = StringUtils.trimToNull(env.getProperty("cache." + name + ".ttl"));
+		if (ttl == null) {
+			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(defaultDuration));
+		} else if (ttl.equals("-1")) {
 			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.ETERNAL));
 		} else {
-			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, ttlDuration)));
+			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, NumberUtils.toLong(ttl))));
 		}
 
 		return config;
@@ -109,7 +106,7 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	}
 
 	@Override
-	public @NotNull  Class<? extends CacheManager> getObjectType() {
+	public @NotNull Class<? extends CacheManager> getObjectType() {
 		return this.cacheManager == null ? CacheManager.class : this.cacheManager.getClass();
 	}
 
