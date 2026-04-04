@@ -27,7 +27,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * JSon pagination test of {@link PaginationJson}.
+ * JSON pagination test of {@link PaginationJson}.
  */
 @ExtendWith(SpringExtension.class)
 class PaginationJsonTest extends AbstractBootTest {

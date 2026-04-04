@@ -6,6 +6,16 @@
 	default-autowire="byName">
 
 	<!-- JPA EntityManagerFactory -->
+
+	<!-- See  https://hsqldb.org/doc/2.0/guide/dbproperties-chapt.html -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="org.hsqldb.jdbc.JDBCDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:testdb;sql.enforce_size=true;hsqldb.tx=mvcc;check_props=true;sql.enforce_types=true" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+
+	<import resource="classpath*:/META-INF/spring/jpa-context-common.xml" />
 	<bean id="entityManagerFactory" parent="abstract-entityManagerFactory">
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" p:showSql="false">
@@ -20,14 +30,4 @@
 			</props>
 		</property>
 	</bean>
-
-	<!-- See  https://hsqldb.org/doc/2.0/guide/dbproperties-chapt.html -->
-	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
-		<property name="driverClassName" value="org.hsqldb.jdbc.JDBCDriver" />
-		<property name="url" value="jdbc:hsqldb:mem:testdb;sql.enforce_size=true;hsqldb.tx=mvcc;check_props=true;sql.enforce_types=true" />
-		<property name="username" value="sa" />
-		<property name="password" value="" />
-	</bean>
-
-	<import resource="classpath*:/META-INF/spring/jpa-context-common.xml" />
 </beans>

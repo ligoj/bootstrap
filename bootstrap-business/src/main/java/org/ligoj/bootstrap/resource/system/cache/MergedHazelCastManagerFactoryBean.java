@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.lang.Nullable;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;

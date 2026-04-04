@@ -10,10 +10,10 @@ import java.util.Properties;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 import lombok.Setter;

@@ -15,6 +15,7 @@
 	</bean>
 
 	<!-- JPA EntityManagerFactory -->
+	<import resource="classpath*:/META-INF/spring/jpa-context-common.xml" />
 	<bean id="entityManagerFactory" parent="abstract-entityManagerFactory">
 		<property name="jpaProperties">
 			<props>
@@ -26,7 +27,5 @@
 			</props>
 		</property>
 	</bean>
-
-	<import resource="classpath*:/META-INF/spring/jpa-context-common.xml" />
 
 </beans>

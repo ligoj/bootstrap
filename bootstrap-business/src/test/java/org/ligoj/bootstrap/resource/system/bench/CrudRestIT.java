@@ -274,7 +274,7 @@ class CrudRestIT extends AbstractRestTest {
 	/**
 	 * test multiple call on find all service
 	 */
-	@Test
+	@Test()
 	@Timed(millis = 8000)
 	void testMultipleFindAll() throws IOException {
 		testCreateAll();

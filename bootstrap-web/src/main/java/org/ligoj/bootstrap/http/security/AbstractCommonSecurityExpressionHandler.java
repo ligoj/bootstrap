@@ -6,7 +6,9 @@ package org.ligoj.bootstrap.http.security;
 import org.springframework.security.access.expression.AbstractSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.authorization.DefaultAuthorizationManagerFactory;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 /**
  * Custom expression handler using a different expression manager.
@@ -24,9 +26,9 @@ public abstract class AbstractCommonSecurityExpressionHandler<T> extends Abstrac
 	 */
 	protected WebSecurityExpressionRoot complete(final WebSecurityExpressionRoot root) {
 		root.setPermissionEvaluator(getPermissionEvaluator());
-		root.setTrustResolver(trustResolver);
-		root.setRoleHierarchy(getRoleHierarchy());
-		root.setDefaultRolePrefix("ROLE_");
+		var authManagerFactory =  new DefaultAuthorizationManagerFactory<RequestAuthorizationContext>();
+		authManagerFactory.setTrustResolver(trustResolver);
+		root.setAuthorizationManagerFactory(authManagerFactory);
 		return root;
 	}
 
