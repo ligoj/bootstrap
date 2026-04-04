@@ -81,7 +81,7 @@ public final class Main {
 					final var contexts = new ContextHandlerCollection();
 					server.setHandler(contexts);
 
-					final var webContext = new org.eclipse.jetty.ee10.webapp.WebAppContext();
+					final var webContext = new org.eclipse.jetty.ee11.webapp.WebAppContext();
 					webContext.setContextPath(System.getProperty("jetty.contextPath", "/bootstrap-business"));
 					webContext.setDescriptor(System.getProperty("jetty.descriptor"));
 

@@ -16,7 +16,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
-import org.eclipse.jetty.ee10.proxy.AsyncMiddleManServlet;
+import org.eclipse.jetty.ee11.proxy.AsyncMiddleManServlet;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
