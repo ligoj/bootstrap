@@ -5,9 +5,10 @@ package org.ligoj.bootstrap.resource.system.plugin.repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Map;
 
 /**
  * Result from maven search
@@ -24,12 +25,16 @@ public class CentralSearchResult implements Artifact {
 	/**
 	 * Artifact name (Maven central representation)
 	 */
-	@JsonProperty("a")
+	@JsonProperty("name")
 	private String artifact;
 
 	/**
 	 * Full artifact's version.
 	 */
-	@JsonProperty("latestVersion")
-	private String version;
+	public String getVersion() {
+		return (String) latestVersionInfo.get("version");
+	}
+
+	@JsonProperty("latestVersionInfo")
+	private Map<String,Object> latestVersionInfo;
 }

@@ -15,7 +15,7 @@
 		<security:csrf disabled="true" />
 	</security:http>
 
-	<security:global-method-security secured-annotations="enabled" jsr250-annotations="enabled" />
+	<security:method-security jsr250-enabled="true" secured-enabled="true"  />
 
 	<security:authentication-manager alias="authentication-manager" erase-credentials="true">
 		<security:authentication-provider ref="authenticationProvider" />

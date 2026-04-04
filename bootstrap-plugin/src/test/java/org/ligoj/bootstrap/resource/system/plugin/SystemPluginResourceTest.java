@@ -62,7 +62,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
+class SystemPluginResourceTest extends AbstractPluginTest {
 
 	private static final String USER_HOME_DIRECTORY = "target/test-classes/home-test";
 
@@ -87,7 +87,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	void prepareData() throws IOException {
 		persistEntities("csv-test", SystemConfiguration.class);
 		clearAllCache();
-		resource = mockCentral("search.json");
+		resource = mockCentral(null);
 		configuration.put("ligoj.plugin.ignore", " plugin-sample-ignore , any");
 		System.clearProperty("plugins.repository-manager.nexus.artifact.url");
 		System.clearProperty("plugins.repository-manager.nexus.search.url");
@@ -138,11 +138,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void findAllNewVersion() throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 		httpServer.start();
 		final var listener = Mockito.mock(PluginListener.class);
 		registerSingleton("mockPluginListener", listener);
@@ -209,11 +205,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void findAllSameVersion() throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 		httpServer.start();
 
 		try {
@@ -356,11 +348,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	private SystemPluginResource mockCentral(final String body) throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/" + body).getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(body);
 		httpServer.start();
 
 		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
@@ -422,11 +410,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void findAllOrphan() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, SecurityException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 		httpServer.start();
 
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
@@ -447,11 +431,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	void findAllJustInstalled() throws IOException, ClassNotFoundException, InstantiationException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 		httpServer.start();
 
 		try (var scope = new ThreadClassLoaderScope(new URLClassLoader(
@@ -889,11 +869,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		httpServer.stubFor(get(urlEqualTo("/maven2/org/ligoj/plugin/plugin-sample/0.0.1/plugin-sample-0.0.1.jar"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(IOUtils.toByteArray(
 						new ClassPathResource("mock-server/maven-repo/plugin-sample-0.0.1.jar").getInputStream()))));
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 	}
 
 	@Test
@@ -909,17 +885,6 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 		Assertions.assertFalse(localJavadocJar.exists());
 		localJar.delete();
 		localJavadocJar.delete();
-	}
-
-	@Test
-	void installNexusOnline() throws IOException {
-		configuration.delete("plugins.repository-manager.nexus.artifact.url");
-		configuration.delete("plugins.repository-manager.nexus.search.url");
-		final var localJar = toFile("plugin-iam-node-1.2.1.jar");
-		localJar.delete();
-		newPluginResourceInstall("plugin-iam-node-1.2.1.jar").install("plugin-iam-node", "nexus", false);
-		Assertions.assertTrue(localJar.exists());
-		localJar.delete();
 	}
 
 	@Test
@@ -1160,11 +1125,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	private List<Artifact> searchPluginsInMavenRepo(final String query) throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 		httpServer.start();
 		return resource.search(query, "central");
 	}
@@ -1196,11 +1157,7 @@ class SystemPluginResourceTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	@Test
 	void invalidateLastPluginVersions() throws IOException {
-		httpServer.stubFor(get(urlEqualTo("/solrsearch/select?wt=json&rows=100&q=g:org.ligoj.plugin"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
-						.withBody(IOUtils.toString(
-								new ClassPathResource("mock-server/maven-repo/search.json").getInputStream(),
-								StandardCharsets.UTF_8))));
+		stubMavenCentral(null);
 		httpServer.start();
 		final var versions = centralRepositoryManager.getLastPluginVersions();
 		Assertions.assertEquals(versions.keySet(), centralRepositoryManager.getLastPluginVersions().keySet());
