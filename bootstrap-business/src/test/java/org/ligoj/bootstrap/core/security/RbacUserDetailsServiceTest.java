@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +20,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * {@link RbacUserDetailsService} test class.
@@ -37,6 +42,11 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@BeforeEach
 	void setup() {
+		var attributes = Mockito.mock(ServletRequestAttributes.class);
+		var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(attributes.getRequest()).thenReturn(request);
+		Mockito.when(request.getHeader("x-api-local-roles")).thenReturn("false");
+		RequestContextHolder.setRequestAttributes(attributes);
 		clearAllCache();
 		final var user = new SystemUser();
 		user.setLogin(DEFAULT_USER);
@@ -96,11 +106,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
-	/**
-	 * Loading with a well known user and connected yesterday.
-	 */
-	@Test
-	void testWellKnownUserNow() {
+	private UserDetails initService(final String... rolesAsString) {
 		var service = new RbacUserDetailsService();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(service);
 		final var settings = new SessionSettings();
@@ -112,7 +118,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Mockito.when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
 				.thenReturn(Collections.singletonMap("provider", provider));
 
-		final List<GrantedAuthority> roles = List.of(new SimpleGrantedAuthority("PLUGIN_ROLE"));
+		var roles = Stream.of(rolesAsString).map(r -> (GrantedAuthority) new SimpleGrantedAuthority(r)).toList();
 		Mockito.when(provider.getGrantedAuthorities(DEFAULT_USER)).thenReturn(roles);
 
 		var user = em.find(SystemUser.class, DEFAULT_USER);
@@ -134,18 +140,60 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		roleAssignment2.setRole(role);
 		roleAssignment2.setUser(user);
 		em.persist(roleAssignment2);
-
-		final var userDetails = service.loadUserByUsername(DEFAULT_USER);
-		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
-		user = em.find(SystemUser.class, DEFAULT_USER);
-		Assertions.assertNotNull(user.getLastConnection());
+		var result = service.loadUserByUsername(DEFAULT_USER);
 		Assertions.assertEquals(expectedTime, user.getLastConnection());
+		return result;
+	}
+
+	/**
+	 * Loading with a well known user with plugin roles contribution.
+	 */
+	@Test
+	void testWellKnownUserWithPluginRoles() {
+		final var userDetails = initService("PLUGIN_ROLE");
+		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
+		var user = em.find(SystemUser.class, DEFAULT_USER);
+		Assertions.assertNotNull(user.getLastConnection());
 		Assertions.assertEquals(3, userDetails.getAuthorities().size());
 		final var iterator = userDetails.getAuthorities().iterator();
 		Assertions.assertEquals("PLUGIN_ROLE", iterator.next().getAuthority());
 		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, iterator.next().getAuthority());
 		Assertions.assertEquals(DEFAULT_ROLE, iterator.next().getAuthority());
+	}
 
+
+	private void checkRoles(UserDetails userDetails) {
+		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
+		var user = em.find(SystemUser.class, DEFAULT_USER);
+		Assertions.assertNotNull(user.getLastConnection());
+		Assertions.assertEquals(2, userDetails.getAuthorities().size());
+		final var iterator = userDetails.getAuthorities().iterator();
+		Assertions.assertEquals(SystemRole.DEFAULT_ROLE, iterator.next().getAuthority());
+		Assertions.assertEquals(DEFAULT_ROLE, iterator.next().getAuthority());
+	}
+
+	/**
+	 * Loading with a well known user with plugin roles contribution (empty)
+	 */
+	@Test
+	void testWellKnownUserWithPluginRolesEmpty() {
+		final var userDetails = initService();
+		checkRoles(userDetails);
+
+	}
+
+	/**
+	 * Loading with a well known user and connected yesterday.
+	 */
+	@Test
+	void testWellKnownUserLocalRoles() {
+		var attributes = Mockito.mock(ServletRequestAttributes.class);
+		var request = Mockito.mock(HttpServletRequest.class);
+		Mockito.when(attributes.getRequest()).thenReturn(request);
+		Mockito.when(request.getHeader("x-api-local-roles")).thenReturn("true");
+		RequestContextHolder.setRequestAttributes(attributes);
+		final var userDetails = initService("PLUGIN_ROLE");
+		checkRoles(userDetails);
 	}
 
 }

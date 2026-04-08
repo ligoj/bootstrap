@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -15,6 +16,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CacheResult;
@@ -29,6 +32,7 @@ import java.util.Set;
  * User details service backed in the database. All authenticated users get the role {@link SystemRole#DEFAULT_ROLE}
  */
 @Component
+@Slf4j
 public class RbacUserDetailsService implements UserDetailsService {
 
 	/**
@@ -68,7 +72,18 @@ public class RbacUserDetailsService implements UserDetailsService {
 		authorities.add(new SimpleGrantedAuthority(SystemRole.DEFAULT_ROLE));
 
 		// Ask providers to complete the session details
-		applicationContext.getBeansOfType(ISessionSettingsProvider.class).values().forEach(p -> authorities.addAll(p.getGrantedAuthorities(username)));
+		final var requestAttributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+		final var request = requestAttributes.getRequest();
+		if (!"true".equalsIgnoreCase(request.getHeader("x-api-local-roles"))) {
+			// Ask providers to complete the session details
+			applicationContext.getBeansOfType(ISessionSettingsProvider.class).values().forEach(p -> {
+				final var addedRoles = p.getGrantedAuthorities(username);
+				if (!addedRoles.isEmpty()) {
+					log.debug("Add resolved roles {}", addedRoles);
+					authorities.addAll(addedRoles);
+				}
+			});
+		}
 
 		return new User(username, "N/A", authorities);
 	}
