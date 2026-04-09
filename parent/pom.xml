@@ -83,7 +83,7 @@
         <jakarta.xml.ws-api.version>4.0.2</jakarta.xml.ws-api.version>
         <jasypt.version>1.9.3</jasypt.version>
         <jaxb-api.version>4.0.5</jaxb-api.version>
-        <jaxb.version>4.0.6</jaxb.version>
+        <jaxb.version>4.0.7</jaxb.version>
         <jetty.version>12.1.8</jetty.version>
         <jodd-bean.version>5.1.6</jodd-bean.version>
         <jsoup.version>1.22.1</jsoup.version>
