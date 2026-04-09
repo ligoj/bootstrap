@@ -72,10 +72,10 @@
         <guava.version>33.5.0-jre</guava.version>
         <gentyref.version>1.2.0</gentyref.version>
         <hazelcast.version>5.6.0</hazelcast.version>
-        <hibernate.version>7.0.10.Final</hibernate.version>
+        <hibernate.version>7.2.10.Final</hibernate.version>
         <hibernate-validator.version>9.0.1.Final</hibernate-validator.version>
-        <httpclient.version>5.5.2</httpclient.version>
-        <httpcore.version>5.3.6</httpcore.version>
+        <httpclient.version>5.6</httpclient.version>
+        <httpcore.version>5.4.2</httpcore.version>
         <hsqldb.version>2.7.4</hsqldb.version>
         <jackson.version>2.21.2</jackson.version>
         <jackson.databind.version>2.21.2</jackson.databind.version>
@@ -91,7 +91,7 @@
         <log4j-api.version>2.25.4</log4j-api.version>
         <lombok.version>1.18.44</lombok.version>
         <mail-api.version>2.1.5</mail-api.version>
-        <maven-artifact.version>3.9.12</maven-artifact.version>
+        <maven-artifact.version>3.9.14</maven-artifact.version>
         <mockito.version>5.23.0</mockito.version>
         <mariadb.version>3.5.8</mariadb.version>
         <mysql.version>9.6.0</mysql.version>
