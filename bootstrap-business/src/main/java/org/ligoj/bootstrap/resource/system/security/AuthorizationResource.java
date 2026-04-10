@@ -3,33 +3,13 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Stream;
-
-import javax.cache.annotation.CacheRemoveAll;
-import javax.cache.annotation.CacheResult;
-
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -38,6 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
+
+import javax.cache.annotation.CacheRemoveAll;
+import javax.cache.annotation.CacheResult;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Stream;
 
 /**
  * Authorization resource.
@@ -229,14 +216,14 @@ public class AuthorizationResource {
 	 */
 	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final String method,
 			final String pattern) {
-		var patterns = existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>());
-		// Add the pattern if it is not yet in the list as compiled Pattern
+		final var patterns = existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>());
 
+		// Add the pattern if it is not yet in the list as compiled Pattern
 		try {
 			final var compiled = Pattern.compile(pattern);
 			if (".*".equals(pattern)) {
 				existingAuthorizations.put(method, List.of(compiled));
-			} else if (patterns.stream().noneMatch(p -> p.pattern().equals(".*") || p.pattern().equals(pattern))) {
+			} else if (patterns.stream().noneMatch(p -> Strings.CS.equalsAny(p.pattern(), ".*", pattern))) {
 				patterns.add(compiled);
 			}
 		} catch (final PatternSyntaxException pe) {
