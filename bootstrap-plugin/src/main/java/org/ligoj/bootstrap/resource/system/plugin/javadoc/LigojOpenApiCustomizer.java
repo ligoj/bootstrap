@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * OpenAPI customizer with JavaDoc contribution.
+ * OpenAPI customizer with Javadoc contribution.
  */
 public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 
@@ -44,7 +44,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	private final SystemPluginRepository repository;
 
 	/**
-	 * Construction from JavaDoc URLs and plugin registry.
+	 * Construction from Javadoc URLs and plugin registry.
 	 *
 	 * @param javadocUrls Source JavaDoc URLs.
 	 * @param repository  Plugin registry.
@@ -159,16 +159,14 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 			if (schema != null) {
 				// Complete doc of this type
 				schema.setDescription(((JavadocDocumentationProvider) javadocProvider).getClassDoc(javaClass));
-				final var properties = schema.getProperties();
-				if (properties != null) {
-					properties.forEach((p, pSchema) -> {
-						if (pSchema instanceof ArraySchema) {
-							completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
-						} else {
-							pSchema.setDescription(getGetterDoc(p, javaClass, genericType));
-						}
-					});
-				}
+				@SuppressWarnings("rawtypes") final Map<String, Schema> properties = Objects.requireNonNullElse(schema.getProperties(), Collections.emptyMap());
+				properties.forEach((p, pSchema) -> {
+					if (pSchema instanceof ArraySchema) {
+						completeSchemaDoc(pSchema.getItems(), genericType, null, completedSchemas, schemas);
+					} else {
+						pSchema.setDescription(getGetterDoc(p, javaClass, genericType));
+					}
+				});
 			}
 		}
 	}
