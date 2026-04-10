@@ -73,15 +73,15 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 	 *
 	 * @param mapConfig The target {@link CacheConfig} to configure.
 	 */
-	protected void postConfigure(final CacheConfig<?, ?> mapConfig) {
+	protected void postConfigure(final CacheConfig<String, Object> mapConfig) {
 		if (statisticsEnabled) {
 			mapConfig.setStatisticsEnabled(true);
 		}
 	}
 
 	@Override
-	public CacheConfig<?, ?> newCacheConfig(final String name, final Duration defaultDuration) {
-		final var config = new CacheConfig<>(name);
+	public CacheConfig<String, Object> newCacheConfig(final String name, final Duration defaultDuration) {
+		final var config = new CacheConfig<String, Object>(name);
 		config.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU));
 		// Post configuration
 		postConfigure(config);

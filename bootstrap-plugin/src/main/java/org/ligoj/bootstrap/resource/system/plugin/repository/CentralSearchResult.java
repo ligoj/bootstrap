@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -36,5 +37,5 @@ public class CentralSearchResult implements Artifact {
 	}
 
 	@JsonProperty("latestVersionInfo")
-	private Map<String,Object> latestVersionInfo;
+	private Map<String, Serializable> latestVersionInfo;
 }

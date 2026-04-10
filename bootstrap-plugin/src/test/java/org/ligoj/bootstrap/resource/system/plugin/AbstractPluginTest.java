@@ -16,7 +16,7 @@ import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 /**
  * Base test class for plugin search
  */
-public class AbstractPluginTest extends org.ligoj.bootstrap.AbstractServerTest {
+public abstract class AbstractPluginTest extends org.ligoj.bootstrap.AbstractServerTest {
 
 	protected static final Integer PROXY_PORT = 8122;
 

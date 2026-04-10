@@ -198,7 +198,7 @@ public class HookProcessRunnable implements Runnable {
 			responseHeaders = new MetadataMap<>();
 			exchange.getOutMessage().put(Message.PROTOCOL_HEADERS, responseHeaders);
 		}
-		final var hookName = hook.getName().replaceAll("[\\s\\W]", "-");
+		final var hookName = hook.getName().replaceAll("\\W", "-");
 		responseHeaders.putSingle("X-Ligoj-Hook-" + hookName, status);
 		if (StringUtils.isNotEmpty(message)) {
 			responseHeaders.putSingle("X-Ligoj-Hook-" + hookName + "-Message", message.replaceAll("[\r\n]", " "));

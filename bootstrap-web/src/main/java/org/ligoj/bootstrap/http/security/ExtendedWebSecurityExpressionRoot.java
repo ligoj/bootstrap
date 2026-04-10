@@ -4,9 +4,10 @@
 package org.ligoj.bootstrap.http.security;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.WebSecurityExpressionRoot;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 import java.util.function.Supplier;
 
@@ -16,27 +17,15 @@ import java.util.function.Supplier;
 public class ExtendedWebSecurityExpressionRoot extends WebSecurityExpressionRoot {
 
 	/**
-	 * Takes authentication and request contexts.
-	 *
-	 * @param authentication
-	 *            the current authentication. Might be anonymous.
-	 * @param invocation
-	 *            current invocation. Can be method or request.
+	 * Creates an instance for the given {@link Supplier} of the {@link Authentication}
+	 * and {@link HttpServletRequest}.
+	 * @param authentication the {@link Supplier} of the {@link Authentication} to use
+	 * @param context the {@link RequestAuthorizationContext} to use
+	 * @since 7.0
 	 */
-	public ExtendedWebSecurityExpressionRoot(final Authentication authentication, final FilterInvocation invocation) {
-		super(authentication, invocation);
-	}
-
-	/**
-	 * Takes authentication and request contexts.
-	 *
-	 * @param authentication
-	 *            the current authentication. Might be anonymous.
-	 * @param request
-	 *            current invocation. Can be method or request.
-	 */
-	public ExtendedWebSecurityExpressionRoot(final Supplier<Authentication> authentication, final HttpServletRequest request) {
-		super(authentication, request);
+	public ExtendedWebSecurityExpressionRoot(Supplier<? extends @Nullable Authentication> authentication,
+			RequestAuthorizationContext context) {
+		super(authentication, context);
 	}
 
 	/**

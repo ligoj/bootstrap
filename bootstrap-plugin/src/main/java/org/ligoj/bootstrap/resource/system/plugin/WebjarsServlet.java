@@ -57,6 +57,12 @@ public class WebjarsServlet extends HttpServlet {
 		return url.toString().startsWith("file:");
 	}
 
+	/**
+	 * Return resources matching to requested URI.
+	 *
+	 * @param webjarsResourceURI Requested resource's URI.
+	 * @return enumerated matches.
+	 */
 	protected Enumeration<URL> getResources(String webjarsResourceURI) throws IOException {
 		return Thread.currentThread().getContextClassLoader().getResources(webjarsResourceURI);
 	}
@@ -75,7 +81,14 @@ public class WebjarsServlet extends HttpServlet {
 		}
 
 		// Regular file, use the last resource instead of the first found
-		final var resources = getResources(webjarsResourceURI);
+		Enumeration<URL> resources;
+		try {
+			resources = getResources(webjarsResourceURI);
+		} catch (IOException e) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
 		URL webjarsResourceURL = null;
 		if (resources.hasMoreElements()) {
 			webjarsResourceURL = resources.nextElement();

@@ -19,7 +19,6 @@ import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.*;
 import org.ligoj.bootstrap.AbstractRestTest;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
-import org.springframework.test.annotation.Timed;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -244,7 +243,7 @@ class CrudRestIT extends AbstractRestTest {
 	 * test multiple call on create service
 	 */
 	@Test
-	@Timed(millis = 4000)
+	@Timeout(4)
 	void testMultipleCreate() throws IOException {
 		testCreateAll();
 	}
@@ -264,7 +263,7 @@ class CrudRestIT extends AbstractRestTest {
 	 * test multiple call on update service
 	 */
 	@Test
-	@Timed(millis = 4000)
+	@Timeout(4)
 	void testMultipleUpdate() throws IOException {
 		for (final var id : testCreateAll()) {
 			testUpdate(id);
@@ -274,8 +273,8 @@ class CrudRestIT extends AbstractRestTest {
 	/**
 	 * test multiple call on find all service
 	 */
-	@Test()
-	@Timed(millis = 8000)
+	@Test
+	@Timeout(8)
 	void testMultipleFindAll() throws IOException {
 		testCreateAll();
 		for (var loop = NB_ITERATION; loop-- > 0; ) {
@@ -287,7 +286,7 @@ class CrudRestIT extends AbstractRestTest {
 	 * test multiple call on find by id service
 	 */
 	@Test
-	@Timed(millis = 8000)
+	@Timeout(8)
 	void testMultipleFindById() throws IOException {
 		for (final var id : testCreateAll()) {
 			testFindById(id);
@@ -298,7 +297,7 @@ class CrudRestIT extends AbstractRestTest {
 	 * test multiple call on delete service
 	 */
 	@Test
-	@Timed(millis = 8000)
+	@Timeout(8)
 	void testMultipleDelete() throws IOException {
 		for (final var id : testCreateAll()) {
 			testDelete(id);

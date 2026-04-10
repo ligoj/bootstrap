@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
- * This mapper makes sure all enum values are converted in lower case. The conversion is done only once per value and
- * cached internally by the Enum[Serializer/Deserializer].
+ * This mapper makes sure all enum values are converted in lower case. The conversion is done only once per value and cached internally by
+ * the Enum[Serializer/Deserializer].
  */
 public class ObjectMapperTrim extends ObjectMapper {
 
@@ -51,13 +51,13 @@ public class ObjectMapperTrim extends ObjectMapper {
 	/**
 	 * Default constructor overriding the default annotation introspect.
 	 */
-	@SuppressWarnings({"this-escape", "deprecation"})
+	@SuppressWarnings({ "this-escape", "deprecation" })
 	public ObjectMapperTrim() {
 		final var module = new SimpleModule("BootstrapModule", new Version(1, 0, 1, null, null, null));
 
 		// JSR 310 date management
 		module.addDeserializer(Date.class, DateDeserializer.INSTANCE);
-		module.addDeserializer(Instant.class, InstantDeserializer.INSTANT);
+		module.addDeserializer(Instant.class, InstantDeserializer.INSTANCE);
 		module.addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
 		module.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
 		module.addSerializer(Date.class, DateSerializer.INSTANCE);
@@ -66,7 +66,7 @@ public class ObjectMapperTrim extends ObjectMapper {
 		module.addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
 		disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
 
-		// Case insensitive enumeration
+		// Case-insensitive enumeration
 		module.addSerializer(Enum.class, new LowerCasingEnumSerializer());
 		enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 		registerModule(module);

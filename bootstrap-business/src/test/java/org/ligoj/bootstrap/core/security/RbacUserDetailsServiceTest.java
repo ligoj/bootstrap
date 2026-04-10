@@ -28,7 +28,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -67,8 +66,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		em.flush();
 		final var user = em.find(SystemUser.class, "none");
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertTrue(
-				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertTrue(Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -82,8 +80,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		final var user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertTrue(
-				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertTrue(Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	/**
@@ -102,8 +99,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		Assertions.assertEquals(DEFAULT_USER, userDetails.getUsername());
 		user = em.find(SystemUser.class, DEFAULT_USER);
 		Assertions.assertNotNull(user.getLastConnection());
-		Assertions.assertTrue(
-				Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
+		Assertions.assertTrue(Math.abs(Instant.now().toEpochMilli() - user.getLastConnection().toEpochMilli()) < DateUtils.MILLIS_PER_MINUTE);
 	}
 
 	private UserDetails initService(final String... rolesAsString) {
@@ -115,8 +111,7 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		service.applicationContext = applicationContext;
 		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
 		var provider = Mockito.mock(ISessionSettingsProvider.class);
-		Mockito.when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
-				.thenReturn(Collections.singletonMap("provider", provider));
+		Mockito.when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class)).thenReturn(Collections.singletonMap("provider", provider));
 
 		var roles = Stream.of(rolesAsString).map(r -> (GrantedAuthority) new SimpleGrantedAuthority(r)).toList();
 		Mockito.when(provider.getGrantedAuthorities(DEFAULT_USER)).thenReturn(roles);
@@ -196,4 +191,14 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		checkRoles(userDetails);
 	}
 
+	@Test
+	void defaultAuthorities() {
+		var provider = new ISessionSettingsProvider() {
+			@Override
+			public void decorate(SessionSettings settings) {
+				// Nothing
+			}
+		};
+		Assertions.assertTrue(provider.getGrantedAuthorities("foo").isEmpty());
+	}
 }

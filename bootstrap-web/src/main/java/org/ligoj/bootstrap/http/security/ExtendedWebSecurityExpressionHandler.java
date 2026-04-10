@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class ExtendedWebSecurityExpressionHandler extends AbstractCommonSecurityExpressionHandler<RequestAuthorizationContext> {
 	@Override
 	protected SecurityExpressionOperations createSecurityExpressionRoot(final Authentication authentication, final RequestAuthorizationContext fi) {
-		return complete(new ExtendedWebSecurityExpressionRoot(() -> authentication, fi.getRequest()));
+		return complete(new ExtendedWebSecurityExpressionRoot(() -> authentication, fi));
 	}
 
 }

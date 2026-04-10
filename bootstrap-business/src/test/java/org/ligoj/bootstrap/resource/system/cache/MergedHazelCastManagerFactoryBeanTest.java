@@ -45,16 +45,21 @@ class MergedHazelCastManagerFactoryBeanTest {
 		Assertions.assertNotNull(bean.getObjectType());
 	}
 
+	@SuppressWarnings("unchecked")
+	private CacheConfig<String, Object> newMockConfig() {
+		return Mockito.mock(CacheConfig.class);
+	}
+
 	@Test
 	void postConfigureNoPolicy() {
-		final CacheConfig<?, ?> mapConfig = Mockito.mock(CacheConfig.class);
+		final CacheConfig<String, Object> mapConfig = newMockConfig();
 		bean.postConfigure(mapConfig);
 		Mockito.verify(mapConfig, Mockito.never()).setStatisticsEnabled(true);
 	}
 
 	@Test
 	void postConfigureWithoutStatistics() {
-		final CacheConfig<?, ?> mapConfig = Mockito.mock(CacheConfig.class);
+		final CacheConfig<String, Object> mapConfig = newMockConfig();
 		bean.setStatisticsEnabled(false);
 		bean.postConfigure(mapConfig);
 		Mockito.verify(mapConfig, Mockito.never()).setStatisticsEnabled(true);
@@ -62,7 +67,7 @@ class MergedHazelCastManagerFactoryBeanTest {
 
 	@Test
 	void postConfigureWithStatistics() {
-		final CacheConfig<?, ?> mapConfig = Mockito.mock(CacheConfig.class);
+		final CacheConfig<String, Object> mapConfig = newMockConfig();
 		bean.setStatisticsEnabled(true);
 		bean.postConfigure(mapConfig);
 		Mockito.verify(mapConfig, Mockito.times(1)).setStatisticsEnabled(true);

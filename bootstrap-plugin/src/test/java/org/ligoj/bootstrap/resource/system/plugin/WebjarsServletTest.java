@@ -69,6 +69,15 @@ class WebjarsServletTest {
 	}
 
 	@Test
+	void fileNotFoundIOE() throws Exception {
+		final var request = defaultRequest("IOException");
+		final var response = Mockito.mock(HttpServletResponse.class);
+
+		getServlet("false").doGet(request, response);
+		Mockito.verify(response).sendError(ArgumentMatchers.anyInt());
+	}
+
+	@Test
 	void downloadFile() throws Exception {
 		final var webjarResource = "META-INF/resources/webjars/image.png";
 		final var request = defaultRequest();
@@ -169,6 +178,9 @@ class WebjarsServletTest {
 
 		@Override
 		protected Enumeration<URL> getResources(String webjarsResourceURI) throws IOException {
+			if ("META-INF/resources/webjars/IOException".equalsIgnoreCase(webjarsResourceURI)) {
+				throw new IOException();
+			}
 			return urls == null ? super.getResources(webjarsResourceURI) : Collections.enumeration(urls);
 		}
 	}

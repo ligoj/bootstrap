@@ -96,6 +96,16 @@ public class HookConfiguration {
 		return hp;
 	}
 
+	/**
+	 * Process the hook
+	 * @param exchange The current CXF exchange.
+	 * @param method Current HHTP method name. Upper case.
+	 * @param path Current HHTP path.
+	 * @param principal Current principal
+	 * @param response Last REST response entity
+	 * @param filter Active filter to validate eligible hook executions.
+	 * @param processor Target hook execution.
+	 */
 	public void process(final Exchange exchange, String method, final String path, final Principal principal, final Object response,
 			final Predicate<SystemHook> filter,
 			final BiConsumer<SystemHook, HookProcessRunnable> processor) {

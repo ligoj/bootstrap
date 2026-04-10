@@ -19,7 +19,7 @@ public interface CacheConfigurer {
 	 * @param defaultDuration The default TTL in seconds.
 	 * @return The created  {@link CacheConfig} with the policy.
 	 */
-	CacheConfig<?, ?> newCacheConfig(final String name, final Duration defaultDuration);
+	CacheConfig<String, Object> newCacheConfig(final String name, final Duration defaultDuration);
 
 	/**
 	 * Create a new {@link CacheConfig} with configured settings before {@link CacheManagerAware} implementor.
@@ -27,7 +27,7 @@ public interface CacheConfigurer {
 	 * @param name            The cache name to configure.
 	 * @return The created  {@link CacheConfig} with the policy.
 	 */
-	default CacheConfig<?, ?> newCacheConfig(final String name) {
+	default CacheConfig<String, Object> newCacheConfig(final String name) {
 		return newCacheConfig(name, Duration.ETERNAL);
 	}
 }

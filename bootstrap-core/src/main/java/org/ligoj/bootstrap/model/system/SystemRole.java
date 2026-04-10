@@ -50,6 +50,7 @@ public class SystemRole extends AbstractAudited<Integer> implements GrantedAutho
 
 	@Override
 	@JsonIgnore
+	@NotNull
 	public String getAuthority() {
 		return getName();
 	}
