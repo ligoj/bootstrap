@@ -225,7 +225,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 			baseQuery = new StringBuilder(String.format(patternQuery, ei.getEntityName()));
 			addFilter(baseQuery, property, value, 0);
 		} else {
-			// "FROM WHERE property ... value
+			// FROM WHERE property ... value
 			baseQuery = new StringBuilder(String.format(patternQuery, ei.getEntityName(), property, PARAM_VALUE + 0));
 		}
 		for (var index = 0; index < values.length; index++) {

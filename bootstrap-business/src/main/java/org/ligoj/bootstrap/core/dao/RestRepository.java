@@ -25,7 +25,7 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	/**
 	 * Count entities having the given property the expected value.
 	 *
-	 * @param property Property's name.
+	 * @param property Property's name. This property must be carefully sanitized, and should not be a user input because of possible SQL injection.
 	 * @param value    Property's value.
 	 * @return The count.
 	 */
@@ -42,7 +42,7 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	/**
 	 * Delete all entities having the given property with the expected value.
 	 *
-	 * @param property property's name.
+	 * @param property Property's name. This property must be carefully sanitized, and should not be a user input because of possible SQL injection.
 	 * @param value    property's value.
 	 * @return the amount of deleted entities
 	 */
