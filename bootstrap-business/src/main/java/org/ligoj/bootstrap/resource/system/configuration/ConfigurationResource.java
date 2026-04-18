@@ -97,6 +97,17 @@ public class ConfigurationResource {
 		return cryptoHelper.decryptedOnly(getRaw(name));
 	}
 
+	/**
+	 * Return the configuration value with decryption.
+	 * - [spring] Command-line arguments (spring application)
+	 * - [spring] Java System properties
+	 * - [spring] OS environment variables
+	 * - [spring] Application properties or YAML files
+	 * - [spring] Profile-specific configuration files
+	 * - [spring] External configuration files
+	 * - [spring] JNDI attributes
+	 * - [ligoj] Database
+	 */
 	private String getRaw(final String name) {
 		var value = StringUtils.trimToNull(env.getProperty(name));
 		if (value == null) {

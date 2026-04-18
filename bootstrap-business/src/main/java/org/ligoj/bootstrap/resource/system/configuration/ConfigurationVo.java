@@ -21,7 +21,7 @@ public class ConfigurationVo extends SystemConfiguration {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * When <code>true</code> is backed by an entity.
+	 * When <code>true</code> is backed by an entity in database.
 	 */
 	private boolean persisted;
 
@@ -32,6 +32,7 @@ public class ConfigurationVo extends SystemConfiguration {
 
 	/**
 	 * When <code>true</code> the value is defined in system and persisted and different from the database value.
+	 * The database value has a lower priority.
 	 */
 	private boolean overridden;
 

@@ -131,16 +131,23 @@ class ConfigurationResourceTest extends AbstractBootTest {
 	void findAll() {
 		final var result = new HashMap<String, ConfigurationVo>();
 		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
-		Assertions.assertNull(result.get("test-key0").getValue());
-		Assertions.assertTrue(result.get("test-key0").isSecured());
-		Assertions.assertTrue(result.get("test-key0").isPersisted());
-		Assertions.assertTrue(result.get("test-key0").isOverridden());
+		var key0 = result.get("test-key0");
+		Assertions.assertNull(key0.getValue());
+		Assertions.assertTrue(key0.isSecured());
+		Assertions.assertTrue(key0.isPersisted());
+		Assertions.assertTrue(key0.isOverridden());
+		Assertions.assertEquals("value0",resource.get("test-key0"));
+
 		Assertions.assertEquals("systemProperties", result.get("test-key0").getSource());
 		Assertions.assertNull(result.get("test-key1").getValue());
 		Assertions.assertFalse(result.get("test-key1").isOverridden());
-		Assertions.assertEquals("value2", result.get("test-key2").getValue());
-		Assertions.assertTrue(result.get("test-key2").isPersisted());
-		Assertions.assertFalse(result.get("test-key2").isSecured());
+
+		var key2 = result.get("test-key2");
+		Assertions.assertEquals("value2", key2.getValue());
+		Assertions.assertEquals("value2",resource.get("test-key2"));
+		Assertions.assertTrue(key2.isPersisted());
+		Assertions.assertFalse(key2.isSecured());
+
 		Assertions.assertEquals("value3", result.get("test-key3").getValue());
 		Assertions.assertEquals("value-db4", result.get("test-key4").getValue());
 		Assertions.assertEquals("database", result.get("test-key4").getSource());
