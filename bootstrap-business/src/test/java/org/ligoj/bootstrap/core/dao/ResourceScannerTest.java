@@ -57,8 +57,8 @@ class ResourceScannerTest {
 	}
 
 	private ScanEnvironment newScanEnvironment() {
-		var environment = Mockito.mock(ScanEnvironment.class);
-		List<URL> nonRootUrls = new ArrayList<>();
+		final var environment = Mockito.mock(ScanEnvironment.class);
+		final var nonRootUrls = new ArrayList<URL>();
 		Mockito.when(environment.getNonRootUrls()).thenReturn(nonRootUrls);
 		return environment;
 	}
@@ -68,7 +68,7 @@ class ResourceScannerTest {
 	 */
 	@Test
 	void testFilesInJarInWar() {
-		final ResourceScanner scanner = new ResourceScanner() {
+		final var scanner = new ResourceScanner() {
 			@Override
 			protected Enumeration<URL> getOrmUrls() throws IOException {
 				return Collections.enumeration(List.of(URI.create("jar:file:/c://my.war!/WEB-INF/libs/my.jar!/com/my_company/MyClass.class").toURL()));
@@ -104,7 +104,7 @@ class ResourceScannerTest {
 	@Test
 	void testFilesInJarIoException2() {
 		final var scanner = new ResourceScanner();
-		var scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
+		final var scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
 				Mockito.mock(ScanParameters.class));
 		Assertions.assertNotNull(scan);
 	}

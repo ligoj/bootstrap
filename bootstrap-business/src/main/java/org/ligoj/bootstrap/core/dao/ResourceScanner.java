@@ -14,7 +14,6 @@ import org.hibernate.boot.archive.scan.spi.ScanResult;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -22,7 +21,7 @@ import java.util.LinkedHashSet;
 
 /**
  * Special scanner handling the VFS protocol.
- * 
+ *
  * @author Fabrice Daugan
  */
 @Slf4j
@@ -37,8 +36,7 @@ public class ResourceScanner extends StandardScanner {
 	 * Perform the scanning against the described persistence unit using the defined options, and return the scan
 	 * results.
 	 *
-	 * @param scanOptions
-	 *            The scan options
+	 * @param scanOptions The scan options
 	 * @return The scan results.
 	 */
 	@Override
@@ -68,32 +66,23 @@ public class ResourceScanner extends StandardScanner {
 		try {
 			return getJarUrl(ormUrl);
 		} catch (final Exception e) {
-			throw new IllegalStateException("Unable to read ORM file from jar", e);
+			throw new IllegalStateException("Unable to read ORM file '" + ormUrl + "' from jar", e);
 		}
 	}
 
 	/**
 	 * Return JAR URL from ORM URL.
 	 *
-	 * @param ormUrl
-	 *            ORM URL.
+	 * @param ormUrl ORM URL.
 	 * @return the URL of JAR containing the given ORM file.
-	 * @throws MalformedURLException
-	 *             if JAR URL cannot be built from the ORM.
+	 * @throws MalformedURLException if JAR URL cannot be built from the ORM.
 	 */
-	protected URL getJarUrl(final URL ormUrl) throws MalformedURLException, URISyntaxException {
+	protected URL getJarUrl(final URL ormUrl) throws MalformedURLException {
 		final URI ormJarUrl;
 		final var urlStr = ormUrl.toString();
 		if ("jar".equals(ormUrl.getProtocol())) {
-			if (StringUtils.countMatches(ormUrl.getPath(), "!") > 1) {
-				// Cascaded JAR URL, remove only the last fragment
-				log.debug("Hibernate ORM, remove nested part from path {}", ormUrl);
-				ormJarUrl = URI.create(StringUtils.substringBeforeLast(urlStr, "!"));
-			} else {
-				// Extract the jar containing this file
-				log.debug("Hibernate ORM, remove nested part from file URL from {}", ormUrl);
-				ormJarUrl = new URI("file", ormUrl.getHost(), ormUrl.getPath().substring("file:".length(), ormUrl.getPath().indexOf('!')), null);
-			}
+			log.debug("Hibernate ORM, remove nested part from path {}", ormUrl);
+			ormJarUrl = URI.create(StringUtils.substringBeforeLast(urlStr.replace("jar:", ""), "!"));
 		} else {
 			// Remove the trailing path
 			log.debug("Hibernate ORM, remove trailing /orm.xml from {}", ormUrl);
@@ -104,10 +93,9 @@ public class ResourceScanner extends StandardScanner {
 
 	/**
 	 * Return existing ORM resources.
-	 * 
+	 *
 	 * @return existing ORM resources found in class-path.
-	 * @throws IOException
-	 *             from {@link ClassLoader#getResources(String)}
+	 * @throws IOException from {@link ClassLoader#getResources(String)}
 	 */
 	protected Enumeration<URL> getOrmUrls() throws IOException {
 		return Thread.currentThread().getContextClassLoader().getResources(META_INF_ORM_XML);
