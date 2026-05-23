@@ -54,7 +54,7 @@ class RedirectStrategyTest {
 	@Test
 	void sendRedirectNotSuccessJS() throws IOException {
 		var out = sendRedirect(false, "/some.js", "");
-		Assertions.assertEquals("errorManager?.handleRedirect('');", out.toString());
+		Assertions.assertEquals("globalThis.errorManager?.handleRedirect('');", out.toString());
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class RedirectStrategyTest {
 	@Test
 	void sendRedirectNotSuccessForce() throws IOException {
 		var out = sendRedirect(false, "/some.js", null);
-		Assertions.assertEquals("errorManager?.handleRedirect('');", out.toString());
+		Assertions.assertEquals("globalThis.errorManager?.handleRedirect('');", out.toString());
 	}
 
 	@Test

@@ -59,8 +59,14 @@ public class RedirectAuthenticationEntryPoint extends LoginUrlAuthenticationEntr
 			// Standard redirection
 			super.commence(request, response, authException);
 		} else {
-			// Redirect for this request
-			redirectStrategy.sendRedirect(request, response, forceRedirectUrl ? null : "");
+			// REST-style redirect: emit a 401 + x-redirect header so an
+			// XHR caller (the SPA) knows where to send the browser next.
+			// When `forceRedirectUrl` is set (typical for OIDC), include
+			// the configured loginFormUrl in the redirect — without it
+			// the SPA can't distinguish "session expired, show local
+			// form" from "OIDC mode, navigate to /oauth2/authorization/...".
+			redirectStrategy.sendRedirect(request, response,
+					forceRedirectUrl ? getLoginFormUrl() : "");
 		}
 	}
 }

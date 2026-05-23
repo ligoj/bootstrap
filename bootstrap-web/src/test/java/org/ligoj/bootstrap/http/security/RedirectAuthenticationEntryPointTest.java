@@ -46,9 +46,12 @@ class RedirectAuthenticationEntryPointTest {
 		entryPoint.commence(request, null, null);
 		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "");
 
+		// With `forceRedirectUrl`, the configured loginFormUrl is now
+		// forwarded to the strategy (was previously hardcoded to null).
+		// The SPA needs it to detect OIDC mode from the x-redirect header.
 		entryPoint.setForceRedirectUrl(true);
 		entryPoint.commence(request, null, null);
-		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "");
+		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "http://h");
 	}
 
 	@Test

@@ -58,7 +58,13 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		if (StringUtils.defaultIfEmpty(pathInfo, "").endsWith("/messages.js")) {
 			IOUtils.write("define({root: {}})", response.getOutputStream(), StandardCharsets.UTF_8);
 		} else if ("text/javascript".equals(mime)) {
-			IOUtils.write(String.format("errorManager?.handleRedirect('%s');", redirect), response.getOutputStream(), StandardCharsets.UTF_8);
+			// `globalThis.errorManager` qualifies the lookup so an
+			// undeclared identifier doesn't throw `ReferenceError` in
+			// the new Vue host (no global `errorManager` exists there).
+			// In the legacy UI the global is defined and the optional
+			// call still runs; in the new UI this is a silent no-op
+			// and the SPA's plugin loader handles the 401 itself.
+			IOUtils.write(String.format("globalThis.errorManager?.handleRedirect('%s');", redirect), response.getOutputStream(), StandardCharsets.UTF_8);
 		} else if ("text/html".equals(mime)) {
 			IOUtils.write("<div></div>", response.getOutputStream(), StandardCharsets.UTF_8);
 		} else if ("text/css".equals(mime)) {
