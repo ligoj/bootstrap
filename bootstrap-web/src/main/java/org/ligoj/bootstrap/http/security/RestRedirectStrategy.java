@@ -5,6 +5,7 @@ package org.ligoj.bootstrap.http.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -17,8 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * This strategy replace the standard 302 code by a simple JSON data since the client is a hidden Ajax thread. More
- * information could be added later in the JSON stream.
+ * This strategy replace the standard 302 code by a simple JSON data since the client is a hidden Ajax thread. More information could be
+ * added later in the JSON stream.
  */
 @Setter
 public class RestRedirectStrategy implements RedirectStrategy {
@@ -29,6 +30,12 @@ public class RestRedirectStrategy implements RedirectStrategy {
 	 * Failure redirection mode. Default is true.
 	 */
 	private boolean success;
+
+	/**
+	 * When true, redirects must be followed for login/logout responses.
+	 */
+	@Setter
+	private boolean forceRedirect;
 
 	/**
 	 * Status to use.
@@ -47,7 +54,7 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		final var extension = FilenameUtils.getExtension(pathInfo);
 		final var mime = StringUtils.isEmpty(extension) ? null : EXTENSION_TO_MIME.get(extension);
 		// Write the JSON data containing the redirection and the status
-		final var redirect = response.encodeRedirectURL(request.getContextPath()) + (url == null ? "" : url);
+		final var redirect = forceRedirect ? response.encodeRedirectURL(request.getContextPath()) + (url == null ? "" : url) : "local";
 		response.setStatus(mime == null ? status : HttpServletResponse.SC_OK);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 		response.setContentType(mime == null ? "application/json" : mime);
@@ -55,9 +62,7 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Expires", "0");
-		if (StringUtils.defaultIfEmpty(pathInfo, "").endsWith("/messages.js")) {
-			IOUtils.write("define({root: {}})", response.getOutputStream(), StandardCharsets.UTF_8);
-		} else if ("text/javascript".equals(mime)) {
+		if ("text/javascript".equals(mime)) {
 			// `globalThis.errorManager` qualifies the lookup so an
 			// undeclared identifier doesn't throw `ReferenceError` in
 			// the new Vue host (no global `errorManager` exists there).
@@ -70,8 +75,7 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		} else if ("text/css".equals(mime)) {
 			IOUtils.write("", response.getOutputStream(), StandardCharsets.UTF_8);
 		} else {
-			IOUtils.write(String.format("{\"success\":%b,\"redirect\":\"%s\"}", success, redirect), response.getOutputStream(),
-					StandardCharsets.UTF_8);
+			IOUtils.write(String.format("{\"success\":%b,\"redirect\":\"%s\"}", success, redirect), response.getOutputStream(), StandardCharsets.UTF_8);
 		}
 	}
 

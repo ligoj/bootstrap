@@ -493,13 +493,14 @@ class BackendProxyServletTest {
 	void isApiRequestFromBrowser() {
 		final var request = Mockito.mock(HttpServletRequest.class);
 		Mockito.when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		Mockito.when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Macintosh; Intel Mac)");
 		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
 	}
 
 	@Test
 	void isApiRequest() {
 		final var request = Mockito.mock(HttpServletRequest.class);
+		// Add application/json header
+		Mockito.when(request.getHeader("Content-type")).thenReturn("application/json");
 		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
 	}
 

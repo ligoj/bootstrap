@@ -22,9 +22,11 @@ import java.util.List;
  * Custom redirection test of class {@link RestRedirectStrategy}
  */
 class RedirectStrategyTest {
-
-
 	ByteArrayOutputStream sendRedirect(boolean success, String path, String url) throws IOException {
+		return sendRedirect(success, path, url, false);
+	}
+
+	ByteArrayOutputStream sendRedirect(boolean success, String path, String url, boolean forceRedirect) throws IOException {
 		final var response = Mockito.mock(HttpServletResponse.class);
 		final var out = new ByteArrayOutputStream();
 		Mockito.when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(out));
@@ -35,26 +37,27 @@ class RedirectStrategyTest {
 		final var redirectStrategy = new RestRedirectStrategy();
 		redirectStrategy.setSuccess(success);
 		redirectStrategy.setStatus(1);
+		redirectStrategy.setForceRedirect(forceRedirect);
 		redirectStrategy.sendRedirect(request, response, url);
 		return out;
 	}
 
 	@Test
-	void sendRedirect() throws IOException {
-		var out = sendRedirect(true, "any", "");
+	void sendRedirectUrlUrl() throws IOException {
+		var out = sendRedirect(true, "any", "/context", true);
+		Assertions.assertEquals("{\"success\":true,\"redirect\":\"/context\"}", out.toString());
+	}
+
+	@Test
+	void sendRedirectDefault() throws IOException {
+		var out = sendRedirect(true, "any", null, true);
 		Assertions.assertEquals("{\"success\":true,\"redirect\":\"\"}", out.toString());
 	}
 
 	@Test
-	void sendRedirectNotSuccessMessagesJS() throws IOException {
-		var out = sendRedirect(false, "/messages.js", "");
-		Assertions.assertEquals("define({root: {}})", out.toString());
-	}
-
-	@Test
-	void sendRedirectNotSuccessJS() throws IOException {
-		var out = sendRedirect(false, "/some.js", "");
-		Assertions.assertEquals("globalThis.errorManager?.handleRedirect('');", out.toString());
+	void sendRedirect() throws IOException {
+		var out = sendRedirect(true, "any", "", false);
+		Assertions.assertEquals("{\"success\":true,\"redirect\":\"local\"}", out.toString());
 	}
 
 	@Test
@@ -66,13 +69,13 @@ class RedirectStrategyTest {
 	@Test
 	void sendRedirectNotSuccessForce() throws IOException {
 		var out = sendRedirect(false, "/some.js", null);
-		Assertions.assertEquals("globalThis.errorManager?.handleRedirect('');", out.toString());
+		Assertions.assertEquals("globalThis.errorManager?.handleRedirect('local');", out.toString());
 	}
 
 	@Test
 	void sendRedirectNotSuccessJPG() throws IOException {
 		var out = sendRedirect(false, "/some.jpg", "");
-		Assertions.assertEquals("{\"success\":false,\"redirect\":\"\"}", out.toString());
+		Assertions.assertEquals("{\"success\":false,\"redirect\":\"local\"}", out.toString());
 	}
 
 	@Test
