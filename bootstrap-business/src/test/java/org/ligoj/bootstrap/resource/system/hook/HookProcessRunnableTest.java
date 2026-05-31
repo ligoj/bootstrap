@@ -209,8 +209,7 @@ class HookProcessRunnableTest {
 
 		final var capturedPayload = new AtomicReference<String>();
 
-		new HookProcessRunnable(exchange, "GET", "/path", null,
-				response, "NOW", new ObjectMapper(), hook, configuration) {
+		new HookProcessRunnable(exchange, "GET", "/path", null, response, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var pb = Mockito.mock(ProcessBuilder.class);
@@ -393,12 +392,13 @@ class HookProcessRunnableTest {
 	void limitCaptureOutputStream() throws IOException {
 		final var out = new ByteArrayOutputStream();
 		final var captured = new ByteArrayOutputStream();
-		final var limitOut = new HookProcessRunnable.LimitCaptureOutputStream(out, captured, 5);
-		limitOut.write('0');
-		limitOut.write("12".getBytes(), 0, 2);
-		limitOut.write("345".getBytes(), 0, 3);
-		limitOut.write('6');
-		limitOut.write("789".getBytes(), 0, 3);
+		try (var limitOut = new HookProcessRunnable.LimitCaptureOutputStream(out, captured, 5)) {
+			limitOut.write('0');
+			limitOut.write("12".getBytes(), 0, 2);
+			limitOut.write("345".getBytes(), 0, 3);
+			limitOut.write('6');
+			limitOut.write("789".getBytes(), 0, 3);
+		}
 		Assertions.assertEquals("0123456789", out.toString());
 		Assertions.assertEquals("01234", captured.toString());
 	}

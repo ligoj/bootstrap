@@ -157,10 +157,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		match4.setMethod(null); // Any method
 		hp4.setMatchObject(match4);
 
-		final var patterns = Map.of(
-				Pattern.compile("path/.*"), List.of(hp1, hp2, hp4),
-				Pattern.compile("other/.*"), List.of(hp3)
-		);
+		final var patterns = Map.of(Pattern.compile("path/.*"), List.of(hp1, hp2, hp4), Pattern.compile("other/.*"), List.of(hp3));
 
 		Mockito.when(self.findAll()).thenReturn(patterns);
 
@@ -198,6 +195,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 	@Test
 	void processException() {
 		Mockito.when(self.findAll()).thenThrow(new RuntimeException("Simulated error"));
+		@SuppressWarnings("unchecked")
 		final BiConsumer<SystemHook, HookProcessRunnable> processor = Mockito.mock(BiConsumer.class);
 		hookConfiguration.process(null, null, null, null, null, null, processor);
 		Mockito.verify(processor, Mockito.never()).accept(Mockito.any(), Mockito.any());
@@ -208,7 +206,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		// This is tested via process(), but we can add a specific test if needed.
 		// process() calls filterUnSafe() inside a try-catch.
 		// If we want to test filterUnSafe logic specifically without try-catch, we can call it directly (it's package-private).
-		
+
 		final var exchange = Mockito.mock(Exchange.class);
 		final var principal = Mockito.mock(Principal.class);
 		final var response = new Object();
@@ -223,7 +221,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 
 		final var counter = new AtomicInteger();
 		hookConfiguration.filterUnSafe(exchange, "GET", "path", principal, response, h -> false, (h, r) -> counter.incrementAndGet());
-		
+
 		Assertions.assertEquals(0, counter.get()); // Filter returned false
 	}
 }

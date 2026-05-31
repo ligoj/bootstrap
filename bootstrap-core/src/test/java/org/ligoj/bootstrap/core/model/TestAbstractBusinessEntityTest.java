@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class TestAbstractBusinessEntityTest {
 
 	@Test
-    void testIsNewNew() {
+	void testIsNewNew() {
 		Assertions.assertTrue(new AbstractBusinessEntity<Integer>() {
 
 			// Nothing
@@ -20,7 +20,7 @@ class TestAbstractBusinessEntityTest {
 	}
 
 	@Test
-    void testNamed() {
+	void testNamed() {
 		AbstractNamedBusinessEntity<Integer> entity = new AbstractNamedBusinessEntity<>() {
 
 			/**
@@ -34,7 +34,7 @@ class TestAbstractBusinessEntityTest {
 	}
 
 	@Test
-    void testIsNewSet() {
+	void testIsNewSet() {
 		AbstractBusinessEntity<Integer> entity = new AbstractBusinessEntity<>() {
 			// Nothing
 		};
@@ -42,9 +42,8 @@ class TestAbstractBusinessEntityTest {
 		Assertions.assertFalse(entity.isNew());
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	@Test
-    void testEquals() {
+	void testEquals() {
 		final var entity1 = new DummyBusinessEntity();
 		Assertions.assertTrue(entity1.equals(entity1));
 		final var entity2 = new DummyBusinessEntity();
@@ -61,7 +60,7 @@ class TestAbstractBusinessEntityTest {
 	}
 
 	@Test
-    void testHashCode() {
+	void testHashCode() {
 		final var entity1 = new DummyBusinessEntity();
 		entity1.hashCode();
 		entity1.setId("a");
@@ -72,7 +71,7 @@ class TestAbstractBusinessEntityTest {
 	 * Test equals and hash code operation with all possible combinations with default identifier.
 	 */
 	@Test
-    void testToString() {
+	void testToString() {
 		final var entity = new DummyBusinessEntity();
 		entity.setId("any");
 		Assertions.assertEquals("AbstractBusinessEntity(id=any)", entity.toString());
