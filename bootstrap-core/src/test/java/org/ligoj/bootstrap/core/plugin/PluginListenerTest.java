@@ -58,7 +58,7 @@ class PluginListenerTest {
 		Assertions.assertEquals("{\"id\":\"I\",\"name\":\"N\",\"plugin\":{\"id\":null,"
 				+ "\"createdBy\":null,\"createdDate\":null,\"lastModifiedBy\":null,\"lastModifiedDate\":null,"
 				+ "\"creationContext\":null,\"metadata\":null,\"version\":\"V\",\"key\":\"K\",\"artifact\":\"A\",\"basePackage\":\"P\",\"type\":\"T\"},"
-				+ "\"vendor\":\"V\",\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false}",
+				+ "\"vendor\":\"V\",\"signature\":null,\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false}",
 				new ObjectMapper().writeValueAsString(pluginVo));
 	}
 

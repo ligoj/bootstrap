@@ -26,9 +26,17 @@ public class PluginVo extends NamedBean<String> {
 	private SystemPlugin plugin;
 
 	/**
-	 * The plug-in vendor. May be <code>null</code>.
+	 * The plug-in vendor. May be <code>null</code>. This value is self-declared by the plug-in
+	 * (<code>Implementation-Vendor</code> manifest attribute), see {@link #signature} for the verified identity.
 	 */
 	private String vendor;
+
+	/**
+	 * The code signature state of the installed plug-in JAR, computed at startup. <code>null</code> for not locally
+	 * installed plug-ins. The {@link PluginSignature#signer()} holds the certificate identity, trustable only with
+	 * the {@link PluginSignature.Status#VERIFIED} status.
+	 */
+	private PluginSignature signature;
 
 	/**
 	 * Location of this plug-in.

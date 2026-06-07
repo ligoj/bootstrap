@@ -195,6 +195,10 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 			});
 		});
 
+		// Add the code signature states computed at startup by the plug-ins class-loader
+		final var signatures = getPluginClassLoader().getSignatures();
+		enabled.forEach((artifact, vo) -> vo.setSignature(signatures.get(artifact)));
+
 		//
 		return enabled.values().stream().sorted(Comparator.comparing(NamedBean::getId)).toList();
 	}
