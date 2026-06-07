@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import jakarta.persistence.criteria.JoinType;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -11,9 +10,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.NamedBean;
-import org.ligoj.bootstrap.core.dao.PaginationDao;
 import org.ligoj.bootstrap.core.json.PaginationJson;
 import org.ligoj.bootstrap.core.json.TableItem;
+import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
@@ -23,6 +22,7 @@ import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.cache.annotation.CacheKey;
@@ -41,10 +41,10 @@ import java.util.function.Function;
 public class UserResource {
 
 	@Autowired
-	private PaginationDao pagination;
+	private PaginationJson paginationJson;
 
 	@Autowired
-	private PaginationJson paginationJson;
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private ApiTokenResource apiTokenResource;
@@ -72,13 +72,10 @@ public class UserResource {
 	}
 
 	/**
-	 * Fetched associations.
+	 * Ordered columns of the {@link #findAllWithRoles(UriInfo, String)} lookup: the JPQL string query cannot order by
+	 * the "roles.role.name" collection path, and the extended details live in provider-side entities.
 	 */
-	private static final Map<String, JoinType> FETCHED_ASSOCIATIONS = new HashMap<>();
-
-	static {
-		FETCHED_ASSOCIATIONS.put("roles", JoinType.LEFT);
-	}
+	private static final Map<String, String> ORDERED_COLUMNS_LOOKUP = Map.of("login", "login");
 
 	private static final ToBusinessConverterRole TO_BUSINESS_ROLES = new ToBusinessConverterRole();
 
@@ -143,17 +140,32 @@ public class UserResource {
 	}
 
 	/**
-	 * Return all users with roles.
+	 * Return all users with their roles and their optional extended details (first name, last name, mails) filled by
+	 * the available {@link ISystemUserDetailsProvider} implementations. The criteria is looked up in the login and,
+	 * through the providers, in the extended details.
 	 *
-	 * @param uriInfo Query context.
-	 * @return all users.
+	 * @param uriInfo  Query context.
+	 * @param criteria The optional lookup criteria.
+	 * @return all matching users.
 	 */
 	@GET
 	@Path("roles")
-	public TableItem<SystemUserVo> findAllWithRoles(@Context final UriInfo uriInfo) {
-		final var findAll = pagination.findAll(SystemUser.class, uriInfo, ORDERED_COLUMNS, null, FETCHED_ASSOCIATIONS);
-		// apply pagination
-		return paginationJson.applyPagination(uriInfo, findAll, TO_BUSINESS_ROLES);
+	public TableItem<SystemUserVo> findAllWithRoles(@Context final UriInfo uriInfo,
+			@QueryParam(DataTableAttributes.SEARCH) final String criteria) {
+		final var trimmedCriteria = StringUtils.trimToEmpty(criteria);
+		final var providers = applicationContext.getBeansOfType(ISystemUserDetailsProvider.class).values();
+		final var pageRequest = paginationJson.getPageRequest(uriInfo, ORDERED_COLUMNS_LOOKUP);
+
+		// Delegate the paginated lookup to the first available provider — it also matches the extended
+		// details (mails, names, ...) — or fall back to the local, login-only lookup
+		final var findAll = providers.stream().findFirst()
+				.map(p -> p.findAll(trimmedCriteria, pageRequest))
+				.orElseGet(() -> repository.findAllDetailed(trimmedCriteria, pageRequest));
+
+		// Apply pagination, then let the providers decorate the page with the extended details
+		final var result = paginationJson.applyPagination(uriInfo, findAll, TO_BUSINESS_ROLES);
+		providers.forEach(p -> p.decorate(result.getData()));
+		return result;
 	}
 
 	/**

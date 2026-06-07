@@ -15,9 +15,16 @@ import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.security.GeneralSecurityException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -86,10 +93,72 @@ class UserResourceTest extends AbstractBootTest {
 		em.persist(assignment);
 
 		final var uriInfo = newUriInfo();
-		final var users = resource.findAllWithRoles(uriInfo);
+		final var users = resource.findAllWithRoles(uriInfo, null);
 		Assertions.assertEquals(1, users.getData().size());
 		Assertions.assertEquals(DEFAULT_USER, users.getData().getFirst().getLogin());
 		Assertions.assertEquals(DEFAULT_ROLE, users.getData().getFirst().getRoles().getFirst().getName());
+
+		// No details provider in this layer: extended attributes stay null
+		Assertions.assertNull(users.getData().getFirst().getFirstName());
+		Assertions.assertNull(users.getData().getFirst().getLastName());
+		Assertions.assertNull(users.getData().getFirst().getMails());
+	}
+
+	@Test
+	void findAllWithRolesCriteriaLogin() {
+		final var users = resource.findAllWithRoles(newUriInfo(), DEFAULT_USER.substring(1, 4));
+		Assertions.assertEquals(1, users.getData().size());
+		Assertions.assertEquals(DEFAULT_USER, users.getData().getFirst().getLogin());
+	}
+
+	@Test
+	void findAllWithRolesCriteriaNoMatch() {
+		final var users = resource.findAllWithRoles(newUriInfo(), "no-match-zzz");
+		Assertions.assertEquals(0, users.getData().size());
+	}
+
+	@Test
+	void findAllWithRolesCriteriaProvider() {
+		// A details provider performing the paginated lookup against its own attributes,
+		// then decorating the page
+		final var provider = new ISystemUserDetailsProvider() {
+
+			@Override
+			public Page<SystemUser> findAll(final String criteria, final Pageable page) {
+				// Match the login or this provider's extended details
+				if (DEFAULT_USER.contains(criteria) || "some@mail.com".contains(criteria)) {
+					return new PageImpl<>(List.of(userRepository.findOne(DEFAULT_USER)), page, 1);
+				}
+				return Page.empty(page);
+			}
+
+			@Override
+			public void decorate(final Collection<SystemUserVo> users) {
+				users.stream().filter(u -> DEFAULT_USER.equals(u.getLogin())).forEach(u -> {
+					u.setFirstName("First");
+					u.setLastName("Last");
+					u.setMails(List.of("some@mail.com"));
+				});
+			}
+		};
+		final var beanFactory = (DefaultSingletonBeanRegistry) ((ConfigurableApplicationContext) applicationContext)
+				.getBeanFactory();
+		beanFactory.registerSingleton("test-user-details-provider", provider);
+		try {
+			// The criteria does not match the login, only the provider's details
+			final var users = resource.findAllWithRoles(newUriInfo(), "some@mail");
+			Assertions.assertEquals(1, users.getData().size());
+			final var user = users.getData().getFirst();
+			Assertions.assertEquals(DEFAULT_USER, user.getLogin());
+			Assertions.assertEquals("First", user.getFirstName());
+			Assertions.assertEquals("Last", user.getLastName());
+			Assertions.assertEquals(List.of("some@mail.com"), user.getMails());
+
+			// Unmatched criteria, neither login nor provider details
+			Assertions.assertEquals(0, resource.findAllWithRoles(newUriInfo(), "no-match-zzz").getData().size());
+		} finally {
+			beanFactory.destroySingleton("test-user-details-provider");
+		}
 	}
 
 	@Test

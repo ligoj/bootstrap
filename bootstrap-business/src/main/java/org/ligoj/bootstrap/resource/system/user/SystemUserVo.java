@@ -23,4 +23,22 @@ public class SystemUserVo extends AbstractSystemUserVo {
 	 */
 	private List<SystemRoleVo> roles = new ArrayList<>();
 
+	/**
+	 * Optional first name, filled by the available {@link ISystemUserDetailsProvider} implementations. May be
+	 * <code>null</code> when there is no provider or no match.
+	 */
+	private String firstName;
+
+	/**
+	 * Optional last name, filled by the available {@link ISystemUserDetailsProvider} implementations. May be
+	 * <code>null</code> when there is no provider or no match.
+	 */
+	private String lastName;
+
+	/**
+	 * Optional mails, filled by the available {@link ISystemUserDetailsProvider} implementations. May be
+	 * <code>null</code> when there is no provider or no match.
+	 */
+	private List<String> mails;
+
 }
