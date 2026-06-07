@@ -74,10 +74,19 @@ public class PluginsClassLoader extends URLClassLoader {
 
 	/**
 	 * Optional system property pointing to the truststore (PKCS12 or JKS) containing the trusted code-signing
-	 * certificates of the plug-in vendors. When defined, the signature of each plug-in JAR is validated against it:
-	 * a valid signature chaining to this truststore is reported as {@link PluginSignature.Status#VERIFIED}.
+	 * certificates of the plug-in vendors. When undefined, defaults to the {@value #SIGNATURE_TRUSTSTORE_FILE} file
+	 * inside the home directory. When the truststore is available, the signature of each plug-in JAR is validated
+	 * against it: a valid signature chaining to this truststore is reported as
+	 * {@link PluginSignature.Status#VERIFIED}.
 	 */
 	public static final String SIGNATURE_TRUSTSTORE_PROPERTY = "ligoj.plugin.signature.truststore";
+
+	/**
+	 * Default truststore file name, inside the home directory, when {@value #SIGNATURE_TRUSTSTORE_PROPERTY} is not
+	 * defined. This file only holds the trusted vendor CERTIFICATES — never private keys: the signing keystore stays
+	 * on the release machine.
+	 */
+	public static final String SIGNATURE_TRUSTSTORE_FILE = "plugin-vendors.p12";
 
 	/**
 	 * Optional system property holding the password of {@value #SIGNATURE_TRUSTSTORE_PROPERTY}. Default is
@@ -144,9 +153,9 @@ public class PluginsClassLoader extends URLClassLoader {
 		this.parent = Thread.currentThread().getContextClassLoader();
 		this.enabled = Boolean.parseBoolean(System.getProperty(ENABLED_PROPERTY, "true"));
 		this.signatureRequired = Boolean.parseBoolean(System.getProperty(SIGNATURE_REQUIRED_PROPERTY, "false"));
-		this.signatureTrustStore = loadSignatureTrustStore();
 		this.homeDirectory = computeHome();
 		this.pluginDirectory = this.homeDirectory.resolve(PLUGINS_DIR);
+		this.signatureTrustStore = loadSignatureTrustStore();
 
 		// Create the plug-in directory as needed
 		log.info("Initialize the plug-ins from directory from {}", homeDirectory);
@@ -276,22 +285,37 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Load the optional code-signing truststore from {@value #SIGNATURE_TRUSTSTORE_PROPERTY}.
+	 * Load the code-signing truststore from {@value #SIGNATURE_TRUSTSTORE_PROPERTY}, defaulting to the
+	 * {@value #SIGNATURE_TRUSTSTORE_FILE} file inside the home directory.
 	 *
-	 * @return The loaded {@link KeyStore} or <code>null</code> when not configured or not loadable.
+	 * @return The loaded {@link KeyStore} or <code>null</code> when the truststore is not available or not loadable.
 	 */
 	private KeyStore loadSignatureTrustStore() {
-		final var location = System.getProperty(SIGNATURE_TRUSTSTORE_PROPERTY);
-		if (location == null) {
+		final var explicitLocation = System.getProperty(SIGNATURE_TRUSTSTORE_PROPERTY);
+		final var location = explicitLocation == null
+				? homeDirectory.resolve(SIGNATURE_TRUSTSTORE_FILE).toString()
+				: explicitLocation;
+		final var path = Paths.get(location);
+		if (!Files.exists(path)) {
+			if (explicitLocation == null) {
+				log.info("No plugin code-signing truststore at default location {}:"
+						+ " valid plugin signatures will be reported as SIGNED, never as VERIFIED."
+						+ " Place the truststore there or set the '{}' property",
+						location, SIGNATURE_TRUSTSTORE_PROPERTY);
+			} else {
+				log.error("Plugin code-signing truststore not found at {} ('{}' property):"
+						+ " valid plugin signatures will be reported as SIGNED, never as VERIFIED",
+						location, SIGNATURE_TRUSTSTORE_PROPERTY);
+			}
 			return null;
 		}
-		try (var input = Files.newInputStream(Paths.get(location))) {
+		try (var input = Files.newInputStream(path)) {
 			final var store = KeyStore.getInstance(location.endsWith(".jks") ? "JKS" : "PKCS12");
 			store.load(input, System.getProperty(SIGNATURE_TRUSTSTORE_PASSWORD_PROPERTY, "changeit").toCharArray());
-			log.info("Plugin code-signing truststore loaded from {} with {} entries", location, store.size());
+			log.info("Plugin code-signing truststore read from {} with {} trusted entries", location, store.size());
 			return store;
 		} catch (final IOException | GeneralSecurityException e) {
-			log.error("Unable to load the plugin code-signing truststore from {}", location, e);
+			log.error("Unable to read the plugin code-signing truststore from {}", location, e);
 			return null;
 		}
 	}

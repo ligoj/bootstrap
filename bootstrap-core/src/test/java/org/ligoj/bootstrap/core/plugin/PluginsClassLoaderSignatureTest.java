@@ -31,7 +31,11 @@ class PluginsClassLoaderSignatureTest {
 	}
 
 	private PluginsClassLoader newClassLoader() throws IOException, NoSuchAlgorithmException {
-		System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY, HOME);
+		return newClassLoader(HOME);
+	}
+
+	private PluginsClassLoader newClassLoader(final String home) throws IOException, NoSuchAlgorithmException {
+		System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY, home);
 		try (var classLoader = new PluginsClassLoader()) {
 			return classLoader;
 		}
@@ -73,6 +77,15 @@ class PluginsClassLoaderSignatureTest {
 		Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-signed").signer());
 		Assertions.assertEquals(PluginSignature.Status.UNSIGNED, signatures.get("plugin-unsigned").status());
 		Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-tampered").status());
+	}
+
+	@Test
+	void signaturesWithDefaultTrustStoreLocation() throws Exception {
+		// No property: the truststore is read from the default `code-signing.p12` file inside the home directory
+		final var signatures = newClassLoader("target/test-classes/home-test-signature-default/.ligoj")
+				.getSignatures();
+		Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-signed").status());
+		Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-signed").signer());
 	}
 
 	@Test
