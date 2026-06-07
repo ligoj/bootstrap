@@ -55,7 +55,7 @@
         <awaitility-proxy.version>3.1.6</awaitility-proxy.version>
         <byte-buddy.version>1.18.8</byte-buddy.version>
         <cache.version>1.1.1</cache.version>
-        <c3p0.version>0.13.0</c3p0.version>
+        <c3p0.version>0.14.0</c3p0.version>
         <checker-qual.version>4.1.0</checker-qual.version>
         <commons-codec>1.22.0</commons-codec>
         <commons-collections4.version>4.5.0</commons-collections4.version>
@@ -76,7 +76,7 @@
         <hibernate-validator.version>9.0.1.Final</hibernate-validator.version>
         <httpclient.version>5.6.1</httpclient.version>
         <httpcore.version>5.4.2</httpcore.version>
-        <hsqldb.version>2.7.4</hsqldb.version>
+        <hsqldb.version>2.7.</hsqldb.version>
         <jackson.version>2.21.4</jackson.version>
         <jackson.databind.version>2.21.4</jackson.databind.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
@@ -84,7 +84,7 @@
         <jasypt.version>1.9.3</jasypt.version>
         <jaxb-api.version>4.0.5</jaxb-api.version>
         <jaxb.version>4.0.9</jaxb.version>
-        <jetty.version>12.1.9</jetty.version>
+        <jetty.version>12.1.10</jetty.version>
         <jodd-bean.version>5.1.6</jodd-bean.version>
         <jsoup.version>1.22.2</jsoup.version>
         <log4j.version>2.26.0</log4j.version>
