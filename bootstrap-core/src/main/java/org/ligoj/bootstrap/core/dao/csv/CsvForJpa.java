@@ -231,6 +231,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
+	@SuppressWarnings("overloads")
 	public <T> List<T> toJpa(final Class<T> beanType, final Reader input, final boolean hasHeader,
 			final boolean persist, final Predicate<T> filter) throws IOException {
 		final var result = new ArrayList<T>();

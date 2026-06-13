@@ -378,6 +378,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
+	@SuppressWarnings("try")
 	void closeTwice() {
 		try (final var processor = new CurlProcessor()) {
 			//noinspection RedundantExplicitClose
@@ -386,6 +387,7 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
+	@SuppressWarnings("try")
 	void closeErrorTwice() throws IOException {
 		final var mock = Mockito.mock(CloseableHttpClient.class);
 		Mockito.doThrow(new IOException()).when(mock).close();
