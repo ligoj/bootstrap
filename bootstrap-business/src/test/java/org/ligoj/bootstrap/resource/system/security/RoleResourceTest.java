@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
-import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -33,9 +32,6 @@ class RoleResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private RoleResource resource;
-
-	@Autowired
-	private SystemUserRepository userRepository;
 
 	@Autowired
 	private SystemRoleRepository roleRepository;
@@ -215,21 +211,5 @@ class RoleResourceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		Assertions.assertNull(em.find(SystemRole.class, roleTestId));
-	}
-
-	@Test
-	void isAdmin() {
-		Assertions.assertTrue(userRepository.isAdmin("admin-test"));
-		Assertions.assertFalse(userRepository.isAdmin("jdupont"));
-	}
-
-	@Test
-	void isAdminNoRole() {
-		Assertions.assertFalse(userRepository.isAdmin("any"));
-	}
-
-	@Test
-	void isAdminOtherUser() {
-		Assertions.assertFalse(userRepository.isAdmin("jdupont"));
 	}
 }

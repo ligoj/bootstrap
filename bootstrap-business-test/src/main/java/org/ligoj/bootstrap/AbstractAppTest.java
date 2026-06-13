@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap;
 
+import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.ligoj.bootstrap.model.system.SystemRole;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * Basic Application test support.
@@ -19,7 +21,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 public abstract class AbstractAppTest extends AbstractJpaTest {
 
 	/**
-	 * Persist system user, role and assignment for user DEFAULT_USER.
+	 * Persist system user, role and assignment granting an administrative API authorization ({@code .*}) to
+	 * {@code DEFAULT_USER}, and reflect that administration access level on the current security context by granting it
+	 * the {@value org.ligoj.bootstrap.core.security.SecurityHelper#ADMIN} virtual authority &mdash; exactly as
+	 * {@code RbacUserDetailsService} does at authentication time. This keeps the "{@code DEFAULT_USER} is an
+	 * administrator" contract working with the {@link org.ligoj.bootstrap.model.system.SystemUser#IS_ADMIN} principal
+	 * based check. Tests requiring a non-administrator principal override it afterwards with
+	 * {@code initSpringSecurityContext(otherUser)}.
 	 */
 	protected void persistSystemEntities() {
 		final var role = new SystemRole();
@@ -37,6 +45,9 @@ public abstract class AbstractAppTest extends AbstractJpaTest {
 		assignment.setRole(role);
 		assignment.setUser(user);
 		em.persist(assignment);
+
+		// Reflect the administration access level on the principal, as the production authentication would
+		initSpringSecurityContext(DEFAULT_USER, new SimpleGrantedAuthority(SecurityHelper.ADMIN));
 	}
 
 	/**

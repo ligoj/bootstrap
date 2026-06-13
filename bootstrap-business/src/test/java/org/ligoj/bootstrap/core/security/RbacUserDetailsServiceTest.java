@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -25,6 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -189,6 +191,32 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		RequestContextHolder.setRequestAttributes(attributes);
 		final var userDetails = initService("PLUGIN_ROLE");
 		checkRoles(userDetails);
+	}
+
+	/**
+	 * Loading administrator and non-administrator users. The {@value SecurityHelper#ADMIN} virtual authority is granted
+	 * only when one of the resolved authorities holds an administrative API authorization (pattern {@code .*}, no
+	 * method, type {@code API}). In the dataset {@code admin-test} and {@code fdaugan} own the {@code Administrator}
+	 * role (which has such an authorization), {@code jdupont} owns {@code Manager} and {@code none} is unknown.
+	 */
+	@Test
+	void loadUserByUsernameAdmin() throws IOException {
+		persistEntities(SystemRole.class, "csv/system-test/role.csv");
+		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
+		persistEntities(SystemUser.class, "csv/system-test/user.csv");
+		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
+		em.flush();
+		em.clear();
+		clearAllCache();
+		Assertions.assertTrue(hasAdminAuthority("admin-test"));
+		Assertions.assertTrue(hasAdminAuthority("fdaugan"));
+		Assertions.assertFalse(hasAdminAuthority("jdupont"));
+		Assertions.assertFalse(hasAdminAuthority("none"));
+	}
+
+	private boolean hasAdminAuthority(final String login) {
+		return userDetailsService.loadUserByUsername(login).getAuthorities().stream()
+				.anyMatch(a -> SecurityHelper.ADMIN.equals(a.getAuthority()));
 	}
 
 	@Test

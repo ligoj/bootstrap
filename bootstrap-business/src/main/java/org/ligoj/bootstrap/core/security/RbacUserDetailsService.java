@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.core.security;
 
 import lombok.extern.slf4j.Slf4j;
+import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
@@ -40,6 +41,9 @@ public class RbacUserDetailsService implements UserDetailsService {
 	 */
 	@Autowired
 	private SystemUserRepository userRepository;
+
+	@Autowired
+	private AuthorizationRepository authorizationRepository;
 
 	@Autowired
 	protected ApplicationContext applicationContext;
@@ -83,6 +87,13 @@ public class RbacUserDetailsService implements UserDetailsService {
 					authorities.addAll(addedRoles);
 				}
 			});
+		}
+
+		// Grant the virtual administrator authority when one of the resolved authorities (database roles or provider
+		// contributions) holds an administrative API authorization. This is the truthful administration access level.
+		final var adminRoles = authorizationRepository.findAdminApiRoles();
+		if (authorities.stream().anyMatch(a -> adminRoles.contains(a.getAuthority()))) {
+			authorities.add(new SimpleGrantedAuthority(SecurityHelper.ADMIN));
 		}
 
 		return new User(username, "N/A", authorities);

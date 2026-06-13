@@ -27,15 +27,18 @@ import java.util.Set;
 public class SystemUser implements Serializable {
 
 	/**
-	 * Administrator role implicit criteria.
+	 * Administrator implicit criteria. Reflects the <strong>truthful</strong> administration access level of the
+	 * current principal: the {@value org.ligoj.bootstrap.core.security.SecurityHelper#ADMIN} virtual authority granted
+	 * by {@code RbacUserDetailsService} when one of the resolved authorities holds an administrative API authorization.
+	 * <p>
+	 * This is a Spring Data SpEL bind parameter ({@code :#{...}}): it is evaluated against the security context on
+	 * <em>each</em> query execution and bound as a regular parameter, so — unlike a render-time constant — it is safe
+	 * with Hibernate's query plan cache and includes authorities that are not stored in database (e.g.
+	 * {@code ISessionSettingsProvider} contributions).
+	 *
+	 * @see org.ligoj.bootstrap.core.security.SecurityHelper#isAdmin()
 	 */
-	public static final String IS_ADMIN = """
-			 (EXISTS(SELECT 1 FROM SystemRoleAssignment ra INNER JOIN ra.role r WHERE ra.user.id = :user
-			         AND EXISTS(SELECT 1 FROM SystemAuthorization a WHERE a.role = r AND a.pattern = '.*'
-			                AND a.method IS NULL
-			                AND a.type = org.ligoj.bootstrap.model.system.SystemAuthorization$AuthorizationType.API)
-			 ))
-			""";
+	public static final String IS_ADMIN = "(:#{@securityHelper.isAdmin()} = TRUE)";
 
 	/**
 	 * SID

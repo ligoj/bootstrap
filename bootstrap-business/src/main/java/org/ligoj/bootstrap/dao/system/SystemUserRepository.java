@@ -43,16 +43,4 @@ public interface SystemUserRepository extends RestRepository<SystemUser, String>
 	 */
 	@Query("SELECT user, r FROM SystemUser user LEFT JOIN user.roles ra LEFT JOIN ra.role r WHERE user.login = ?1")
 	Object[][] findByLoginFetchRoles(String login);
-
-	/**
-	 * Return <code>true</code> when given user is an administrator. Is
-	 * considered administrators, user having all API authorization (.*)
-	 * pattern.
-	 *
-	 * @param user
-	 *            The username requesting the operation.
-	 * @return <code>true</code> when the current user is an administrator.
-	 */
-	@Query("SELECT COUNT(s)>0 FROM SystemUser s WHERE " + SystemUser.IS_ADMIN)
-	boolean isAdmin(String user);
 }

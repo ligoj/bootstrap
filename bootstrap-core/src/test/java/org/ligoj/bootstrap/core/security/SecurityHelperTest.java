@@ -3,10 +3,14 @@
  */
 package org.ligoj.bootstrap.core.security;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -48,6 +52,37 @@ class SecurityHelperTest {
 	@Test
 	void getLogin() {
 		Assertions.assertNull(new SecurityHelper().getLogin());
+	}
+
+	/**
+	 * No authentication at all.
+	 */
+	@Test
+	void isAdminNoContext() {
+		Assertions.assertFalse(new SecurityHelper().isAdmin());
+	}
+
+	/**
+	 * Authenticated, but without the administrator virtual authority.
+	 */
+	@Test
+	void isAdminFalse() {
+		authenticate("USER", "Manager");
+		Assertions.assertFalse(new SecurityHelper().isAdmin());
+	}
+
+	/**
+	 * Authenticated with the administrator virtual authority.
+	 */
+	@Test
+	void isAdmin() {
+		authenticate("USER", SecurityHelper.ADMIN);
+		Assertions.assertTrue(new SecurityHelper().isAdmin());
+	}
+
+	private void authenticate(final String... authorities) {
+		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("name", "N/A",
+				Stream.of(authorities).map(SimpleGrantedAuthority::new).toList()));
 	}
 
 }

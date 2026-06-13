@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
+import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
 import org.ligoj.bootstrap.model.system.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -334,6 +336,8 @@ class ApiTokenResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(2, repository.findAllByUser(OTHER_USER).size());
 		Assertions.assertEquals(9, repository.findAll().size());
 
+		// The principal holds the administrator virtual authority granted at authentication
+		initSpringSecurityContext(DEFAULT_USER, new SimpleGrantedAuthority(SecurityHelper.ADMIN));
 		Assertions.assertEquals(2, resource.purgeAll());
 		Assertions.assertEquals(5, repository.findAllByUser(DEFAULT_USER).size());
 		Assertions.assertEquals(2, repository.findAllByUser(OTHER_USER).size());

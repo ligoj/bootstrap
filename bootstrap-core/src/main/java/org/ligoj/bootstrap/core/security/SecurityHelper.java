@@ -26,6 +26,14 @@ public class SecurityHelper {
 	public static final String SYSTEM_USERNAME = "_system";
 
 	/**
+	 * The virtual authority granted to administrators. A principal holding this authority has an administrative API
+	 * authorization. It is granted by {@code RbacUserDetailsService} at authentication time, not stored in database.
+	 *
+	 * @see #isAdmin()
+	 */
+	public static final String ADMIN = "$admin";
+
+	/**
 	 * Replace the username of current authentication by the given one. This is performed by creating a partial copy of
 	 * current {@link SecurityContext}. Is equivalent to a "su" linux command, but without "exit" solution but calling
 	 * again this function.
@@ -66,7 +74,7 @@ public class SecurityHelper {
 
 	/**
 	 * Return the current username.
-	 * 
+	 *
 	 * @return the current username.
 	 */
 	public String getLogin() {
@@ -75,5 +83,19 @@ public class SecurityHelper {
 			return context.getAuthentication().getName();
 		}
 		return null;
+	}
+
+	/**
+	 * Indicate the current principal is an administrator, that is, holds the {@value #ADMIN} virtual authority. This is
+	 * the truthful and complete administration access level: it accounts for all resolved authorities, including those
+	 * not stored in database. This method is meant to be referenced from repository queries through the
+	 * {@link org.ligoj.bootstrap.model.system.SystemUser#IS_ADMIN} SpEL bind parameter.
+	 *
+	 * @return <code>true</code> when the current principal is an administrator.
+	 */
+	public boolean isAdmin() {
+		final var authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication != null
+				&& authentication.getAuthorities().stream().anyMatch(a -> ADMIN.equals(a.getAuthority()));
 	}
 }

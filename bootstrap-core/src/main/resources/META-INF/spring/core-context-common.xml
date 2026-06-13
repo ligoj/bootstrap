@@ -45,6 +45,6 @@
 	</bean>
 
 	<bean class="org.ligoj.bootstrap.core.SpringUtils" />
-	<bean class="org.ligoj.bootstrap.core.security.SecurityHelper" />
+	<bean id="securityHelper" class="org.ligoj.bootstrap.core.security.SecurityHelper" />
 	<bean class="org.ligoj.bootstrap.core.crypto.CryptoHelper" />
 </beans>

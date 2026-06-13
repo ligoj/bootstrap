@@ -17,7 +17,6 @@ import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
-import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,9 +73,6 @@ public class ApiTokenResource {
 
 	@Autowired
 	private SecurityHelper securityHelper;
-
-	@Autowired
-	private SystemUserRepository userRepository;
 
 	/**
 	 * Amount of digest iterations applied to original message to produce the target hash.
@@ -456,7 +452,7 @@ public class ApiTokenResource {
 	@DELETE
 	@Path("purge/all")
 	public int purgeAll() {
-		if (securityHelper.getLogin() == null || userRepository.isAdmin(securityHelper.getLogin())) {
+		if (securityHelper.getLogin() == null || securityHelper.isAdmin()) {
 			return repository.deleteExpired();
 		}
 		throw new ForbiddenException();
