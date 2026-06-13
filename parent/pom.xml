@@ -98,7 +98,7 @@
         <postgresql.version>42.7.11</postgresql.version>
         <paranamer.version>2.8.3</paranamer.version>
         <persistence.version>3.2.0</persistence.version>
-        <quartz.version>2.3.2</quartz.version>
+        <quartz.version>2.5.2</quartz.version>
         <servlet.version>6.1.0</servlet.version>
         <slf4j.version>2.0.18</slf4j.version>
         <soap-api.version>3.0.2</soap-api.version>
