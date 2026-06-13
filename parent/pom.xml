@@ -109,7 +109,7 @@
         <spring-data.version>4.0.5</spring-data.version>
         <spring-security.version>7.0.5</spring-security.version>
         <swagger-ui.version>5.32.6</swagger-ui.version>
-        <swagger-jaxrs2-jakarta.version>2.2.50</swagger-jaxrs2-jakarta.version>
+        <swagger-jaxrs2-jakarta.version>2.2.51</swagger-jaxrs2-jakarta.version>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
         <wiremock.version>3.13.2</wiremock.version>
