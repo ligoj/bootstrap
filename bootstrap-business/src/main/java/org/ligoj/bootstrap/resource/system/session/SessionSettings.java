@@ -55,6 +55,12 @@ public class SessionSettings {
 	private List<String> roles;
 
 	/**
+	 * Adminstrator flag.
+	 */
+	@Setter
+	private boolean isAdmin;
+
+	/**
 	 * Roles granted by external plugins
 	 */
 	@Setter

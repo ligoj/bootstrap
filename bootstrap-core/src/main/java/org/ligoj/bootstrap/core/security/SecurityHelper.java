@@ -86,16 +86,26 @@ public class SecurityHelper {
 	}
 
 	/**
-	 * Indicate the current principal is an administrator, that is, holds the {@value #ADMIN} virtual authority. This is
-	 * the truthful and complete administration access level: it accounts for all resolved authorities, including those
-	 * not stored in database. This method is meant to be referenced from repository queries through the
+	 * Indicate the current principal is an administrator. This is the truthful and complete administration access
+	 * level: it accounts for all resolved authorities, including those not stored in database. This method is meant to
+	 * be referenced from repository queries through the
 	 * {@link org.ligoj.bootstrap.model.system.SystemUser#IS_ADMIN} SpEL bind parameter.
+	 * <p>
+	 * When the principal has been issued by {@code RbacUserDetailsService} (the regular authentication path), the
+	 * decision reads the precomputed {@link RbacUserDetails#isAdmin()} flag without scanning the authorities. For any
+	 * other principal (impersonation, tests, ...) it falls back to the {@value #ADMIN} virtual authority.
 	 *
 	 * @return <code>true</code> when the current principal is an administrator.
 	 */
 	public boolean isAdmin() {
 		final var authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication != null
-				&& authentication.getAuthorities().stream().anyMatch(a -> ADMIN.equals(a.getAuthority()));
+		if (authentication == null) {
+			return false;
+		}
+		if (authentication.getPrincipal() instanceof RbacUserDetails details) {
+			return details.isAdmin();
+		}
+		// Fallback for principals not issued by RbacUserDetailsService
+		return authentication.getAuthorities().stream().anyMatch(a -> ADMIN.equals(a.getAuthority()));
 	}
 }

@@ -208,15 +208,21 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		em.flush();
 		em.clear();
 		clearAllCache();
-		Assertions.assertTrue(hasAdminAuthority("admin-test"));
-		Assertions.assertTrue(hasAdminAuthority("fdaugan"));
-		Assertions.assertFalse(hasAdminAuthority("jdupont"));
-		Assertions.assertFalse(hasAdminAuthority("none"));
+		assertAdmin("admin-test", true);
+		assertAdmin("fdaugan", true);
+		assertAdmin("jdupont", false);
+		assertAdmin("none", false);
 	}
 
-	private boolean hasAdminAuthority(final String login) {
-		return userDetailsService.loadUserByUsername(login).getAuthorities().stream()
-				.anyMatch(a -> SecurityHelper.ADMIN.equals(a.getAuthority()));
+	/**
+	 * Assert both the {@value SecurityHelper#ADMIN} virtual authority and the precomputed
+	 * {@link RbacUserDetails#isAdmin()} flag are consistent with the expected administration access level.
+	 */
+	private void assertAdmin(final String login, final boolean expected) {
+		final var details = userDetailsService.loadUserByUsername(login);
+		Assertions.assertEquals(expected, details.getAuthorities().stream()
+				.anyMatch(a -> SecurityHelper.ADMIN.equals(a.getAuthority())), () -> "authority for " + login);
+		Assertions.assertEquals(expected, ((RbacUserDetails) details).isAdmin(), () -> "flag for " + login);
 	}
 
 	@Test

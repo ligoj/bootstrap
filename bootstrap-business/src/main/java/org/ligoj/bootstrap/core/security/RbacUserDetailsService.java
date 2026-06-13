@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -89,14 +88,16 @@ public class RbacUserDetailsService implements UserDetailsService {
 			});
 		}
 
-		// Grant the virtual administrator authority when one of the resolved authorities (database roles or provider
-		// contributions) holds an administrative API authorization. This is the truthful administration access level.
+		// Resolve the administration access level: the principal is an administrator when one of the resolved
+		// authorities (database roles or provider contributions) holds an administrative API authorization. Both the
+		// virtual authority (for SpEL/authority based checks) and the precomputed flag (read by SecurityHelper) are set.
 		final var adminRoles = authorizationRepository.findAdminApiRoles();
-		if (authorities.stream().anyMatch(a -> adminRoles.contains(a.getAuthority()))) {
+		final var admin = authorities.stream().anyMatch(a -> adminRoles.contains(a.getAuthority()));
+		if (admin) {
 			authorities.add(new SimpleGrantedAuthority(SecurityHelper.ADMIN));
 		}
 
-		return new User(username, "N/A", authorities);
+		return new RbacUserDetails(username, "N/A", admin, authorities);
 	}
 
 	/**

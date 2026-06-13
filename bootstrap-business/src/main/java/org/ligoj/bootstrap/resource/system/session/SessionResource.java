@@ -18,6 +18,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
@@ -54,6 +55,9 @@ public class SessionResource {
 	@Autowired
 	private AuthorizationResource authorizationResource;
 
+	@Autowired
+	private SecurityHelper securityHelper;
+
 	/**
 	 * Current session settings.
 	 *
@@ -81,8 +85,11 @@ public class SessionResource {
 	 * Add roles and authorizations.
 	 */
 	private void addAuthorizations(final SessionSettings settings) {
-		final var rolesAsString = getRolesAsString();
+		final var roles = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		final var rolesNoAdmin = roles.stream().filter(r -> !r.getAuthority().equals(SecurityHelper.ADMIN)).toList();
+		final var rolesAsString = rolesNoAdmin.stream().map(GrantedAuthority::getAuthority).toList();
 		settings.setRoles(rolesAsString);
+		settings.setAdmin(securityHelper.isAdmin());
 
 		// Add authorizations
 		final var cache = authorizationResource.getAuthorizations();
@@ -93,8 +100,7 @@ public class SessionResource {
 	/**
 	 * Return only authorization for the granted authorities.
 	 */
-	private List<Map<String, List<Pattern>>> filterRoles(final Map<String, Map<String, List<Pattern>>> authorizations,
-			final List<String> rolesAsString) {
+	private List<Map<String, List<Pattern>>> filterRoles(final Map<String, Map<String, List<Pattern>>> authorizations, final List<String> rolesAsString) {
 		if (authorizations == null) {
 			// No authorization -> no roles
 			return EMPTY_ROLES;
@@ -108,14 +114,6 @@ public class SessionResource {
 	private Set<String> toPatterns(final List<Map<String, List<Pattern>>> authorizations) {
 		return authorizations.stream().map(Map::values).flatMap(Collection::stream).flatMap(Collection::stream).map(Pattern::pattern)
 				.collect(Collectors.toSet());
-	}
-
-	/**
-	 * Build and return the list of roles.
-	 */
-	private List<String> getRolesAsString() {
-		final var roles = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		return roles.stream().map(GrantedAuthority::getAuthority).toList();
 	}
 
 	/**
