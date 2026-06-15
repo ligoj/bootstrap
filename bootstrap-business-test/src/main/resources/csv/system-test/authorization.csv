@@ -1,10 +1,10 @@
-role.name;type;pattern
+role.name;type;pattern;method
 USER;API;"^session"
 Administrator;API;".*"
 Administrator;UI;".*"
 Manager;API;"^bpr"
 Manager;UI;"^bpr"
-Developer;API;"^demo"
+Developer;API;"^demo";GET
 Developer;UI;"^tech-dev"
 Developer;UI;"^tech-arch"
 Developer;UI;"^tech-design"

@@ -46,4 +46,9 @@ public class AuthorizationEditionVo implements Serializable{
 	@RegEx
 	private String pattern;
 
+	/**
+	 * Authorized URL method. Can be <code>null</code> for all methods.
+	 */
+	private String method;
+
 }

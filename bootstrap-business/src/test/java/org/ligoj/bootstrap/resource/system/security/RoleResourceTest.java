@@ -83,6 +83,7 @@ class RoleResourceTest extends AbstractBootTest {
 		final var role = result.getData().get(4);
 		Assertions.assertEquals("Developer", role.getName());
 		Assertions.assertEquals(4, role.getAuthorizations().size()); // No duplicated authorizations
+		Assertions.assertEquals("GET", role.getAuthorizations().getFirst().getMethod()); // No duplicated authorizations
 	}
 
 	/**

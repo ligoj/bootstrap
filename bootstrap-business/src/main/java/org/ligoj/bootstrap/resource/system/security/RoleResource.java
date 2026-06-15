@@ -136,11 +136,12 @@ public class RoleResource {
 		final var auths = authorizationRepository.findAll();
 		final var roleAuthDistinct = new HashSet<>();
 		for (final var auth : auths) {
-			if (roleAuthDistinct.add(auth.getRole().getId() +auth.getPattern()+auth.getType())){
+			if (roleAuthDistinct.add(auth.getRole().getId() + auth.getPattern() + auth.getType() + auth.getMethod())) {
 				final var authVo = new AuthorizationEditionVo();
 				results.get(auth.getRole().getId()).getAuthorizations().add(authVo);
 				authVo.setId(auth.getId());
 				authVo.setPattern(auth.getPattern());
+				authVo.setMethod(auth.getMethod());
 				authVo.setType(auth.getType());
 			}
 		}
@@ -163,13 +164,18 @@ public class RoleResource {
 
 		// create authorizations
 		for (final var authVo : roleVo.getAuthorizations()) {
-			final var auth = new SystemAuthorization();
-			auth.setRole(role);
-			auth.setPattern(authVo.getPattern());
-			auth.setType(authVo.getType());
-			authorizationRepository.save(auth);
+			newAuthorization(authVo, role);
 		}
 		return roleId;
+	}
+
+	private void newAuthorization(AuthorizationEditionVo authVo, SystemRole role) {
+		final var auth = new SystemAuthorization();
+		auth.setRole(role);
+		auth.setPattern(authVo.getPattern());
+		auth.setType(authVo.getType());
+		auth.setMethod(authVo.getMethod());
+		authorizationRepository.save(auth);
 	}
 
 	/**
@@ -192,11 +198,7 @@ public class RoleResource {
 		// create new ones
 		for (final var authVo : roleVo.getAuthorizations()) {
 			if (authVo.getId() == null) {
-				final var auth = new SystemAuthorization();
-				auth.setRole(role);
-				auth.setPattern(authVo.getPattern());
-				auth.setType(authVo.getType());
-				authorizationRepository.save(auth);
+				newAuthorization(authVo, role);
 			}
 		}
 		repository.save(role);
