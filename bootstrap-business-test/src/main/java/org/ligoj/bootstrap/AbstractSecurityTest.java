@@ -3,12 +3,9 @@
  */
 package org.ligoj.bootstrap;
 
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.ligoj.bootstrap.core.security.RbacUserDetails;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +14,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Basic Security mock setup.
@@ -46,24 +47,50 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 
 	/**
 	 * Initialize {@link SecurityContextHolder} for given user.
-	 * 
+	 *
 	 * @param user
 	 *            the user to set in the context.
 	 * @param authorities
 	 *            the optional authorities name
 	 * @return The configured {@link SecurityContext}.
 	 */
-	@SuppressWarnings("unchecked")
 	protected SecurityContext initSpringSecurityContext(final String user, final GrantedAuthority... authorities) {
+		final var authoritiesAsList = Arrays.asList(authorities);
+		final var userDetails = new User(user, USER_DETAILS_NA, authoritiesAsList);
+		return initSpringSecurityContext(userDetails);
+	}
+
+	/**
+	 * Initialize {@link SecurityContextHolder} for given user. And promoted as administrator.
+	 *
+	 * @param user
+	 *            the user to set in the context.
+	 * @param authorities
+	 *            the optional authorities name
+	 * @return The configured {@link SecurityContext}.
+	 */
+	protected SecurityContext initSpringSecurityContextAdmin(final String user, final GrantedAuthority... authorities) {
+		final var authoritiesAsList = Arrays.asList(authorities);
+		final var userDetails = new RbacUserDetails(user, USER_DETAILS_NA, true ,authoritiesAsList);
+		return initSpringSecurityContext(userDetails);
+	}
+
+	/**
+	 * Initialize {@link SecurityContextHolder} for given user.
+	 *
+	 * @param userDetails
+	 *            the user details to set in the context.
+	 * @return The configured {@link SecurityContext}.
+	 */
+	@SuppressWarnings("unchecked")
+	protected SecurityContext initSpringSecurityContext(final User userDetails) {
 		SecurityContextHolder.clearContext();
 		final var context = Mockito.mock(SecurityContext.class);
 		final var authentication = Mockito.mock(Authentication.class);
-		final var authoritiesAsList = Arrays.asList(authorities);
-		final var userDetails = new User(user, USER_DETAILS_NA, authoritiesAsList);
-		Mockito.when((List<GrantedAuthority>) authentication.getAuthorities()).thenReturn(authoritiesAsList);
+		Mockito.when((Collection<GrantedAuthority>) authentication.getAuthorities()).thenReturn( userDetails.getAuthorities());
 		Mockito.when(context.getAuthentication()).thenReturn(authentication);
 		Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
-		Mockito.when(authentication.getName()).thenReturn(user);
+		Mockito.when(authentication.getName()).thenReturn(userDetails.getUsername());
 		SecurityContextHolder.setContext(context);
 		return context;
 	}
