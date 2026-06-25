@@ -6,11 +6,17 @@ package org.ligoj.bootstrap.resource.system.plugin.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.ligoj.bootstrap.core.curl.CurlProcessor;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
@@ -106,6 +112,12 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	}
 
 	/**
+	 * Maven version qualifier identifying a snapshot. Snapshot artifacts are not published with a literal
+	 * "-SNAPSHOT" file name but with a timestamped build version resolved from the {@code maven-metadata.xml} file.
+	 */
+	private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
+
+	/**
 	 * Return the plug-ins download URL.
 	 *
 	 * @param groupId    The Maven groupID path.
@@ -116,12 +128,99 @@ public abstract class AbstractRemoteRepositoryManager implements RepositoryManag
 	 * @return The plug-ins download URL. Ends with "/".
 	 */
 	protected String getArtifactUrl(String groupId, String artifact, String version, final String defaultUrl, final String classifier) {
+		// For "-SNAPSHOT" versions the directory keeps the snapshot version while the file uses the resolved build version
+		final var fileVersion = getResolvedVersion(groupId, artifact, version, defaultUrl);
 		return Strings.CS.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/")
 				+ groupId.replace('.', '/') + "/"
 				+ artifact + "/" + version + "/"
-				+ artifact + "-" + version
+				+ artifact + "-" + fileVersion
 				+ (StringUtils.isBlank(classifier) ? "" : Strings.CS.prependIfMissing(classifier, "-"))
 				+ ".jar";
+	}
+
+	/**
+	 * Resolve the version used in the artifact file name. For a release version, the version is returned unchanged.
+	 * For a "-SNAPSHOT" version, the actual timestamped build version is resolved from the remote
+	 * {@code maven-metadata.xml} file (for instance <code>1.0.0-SNAPSHOT</code> becomes
+	 * <code>1.0.0-20231201.123456-3</code>). When the metadata cannot be downloaded or parsed, the original
+	 * "-SNAPSHOT" version is returned as a best effort.
+	 *
+	 * @param groupId    The Maven groupId.
+	 * @param artifact   The Maven artifact identifier.
+	 * @param version    The requested version, possibly ending with "-SNAPSHOT".
+	 * @param defaultUrl The default artifact base URL.
+	 * @return The version to use in the artifact file name.
+	 */
+	protected String getResolvedVersion(final String groupId, final String artifact, final String version, final String defaultUrl) {
+		if (!Strings.CS.endsWith(version, SNAPSHOT_SUFFIX)) {
+			// Release version, used as-is without any extra remote call
+			return version;
+		}
+		final var metadataUrl = getArtifactMetadataUrl(groupId, artifact, version, defaultUrl);
+		try (final var processor = new CurlProcessor(getArtifactProxyHost(), getArtifactProxyPort())) {
+			final var metadata = processor.get(metadataUrl);
+			if (StringUtils.isBlank(metadata)) {
+				log.info("No snapshot metadata available at {}, falling back to literal version {}", metadataUrl, version);
+				return version;
+			}
+			final var resolved = parseSnapshotVersion(metadata, version);
+			log.info("Resolved snapshot version {} to {} from {}", version, resolved, metadataUrl);
+			return resolved;
+		}
+	}
+
+	/**
+	 * Return the URL of the {@code maven-metadata.xml} file holding the snapshot build versions.
+	 *
+	 * @param groupId    The Maven groupId.
+	 * @param artifact   The Maven artifact identifier.
+	 * @param version    The snapshot version.
+	 * @param defaultUrl The default artifact base URL.
+	 * @return The {@code maven-metadata.xml} URL.
+	 */
+	protected String getArtifactMetadataUrl(final String groupId, final String artifact, final String version, final String defaultUrl) {
+		return Strings.CS.appendIfMissing(getArtifactBaseUrl(defaultUrl), "/")
+				+ groupId.replace('.', '/') + "/"
+				+ artifact + "/" + version + "/maven-metadata.xml";
+	}
+
+	/**
+	 * Parse the snapshot {@code maven-metadata.xml} content and resolve the timestamped build version. The build
+	 * version is built from the base version and the {@code versioning/snapshot/timestamp} and
+	 * {@code versioning/snapshot/buildNumber} elements. When these elements are missing, the original "-SNAPSHOT"
+	 * version is returned.
+	 *
+	 * @param metadata The {@code maven-metadata.xml} content.
+	 * @param version  The requested "-SNAPSHOT" version.
+	 * @return The resolved build version, or the original version when the metadata cannot be parsed.
+	 */
+	private String parseSnapshotVersion(final String metadata, final String version) {
+		try {
+			final var factory = DocumentBuilderFactory.newInstance();
+			// Harden the parser against XML external entity (XXE) attacks
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			factory.setExpandEntityReferences(false);
+			final var document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(metadata)));
+			final var timestamp = getFirstElementText(document, "timestamp");
+			final var buildNumber = getFirstElementText(document, "buildNumber");
+			if (timestamp != null && buildNumber != null) {
+				return Strings.CS.removeEnd(version, SNAPSHOT_SUFFIX) + "-" + timestamp + "-" + buildNumber;
+			}
+			log.warn("Snapshot metadata has no timestamped build version, falling back to literal version {}", version);
+		} catch (final Exception e) { // NOSONAR - Any parsing error falls back to the literal version
+			log.warn("Unable to parse snapshot metadata, falling back to literal version {}", version, e);
+		}
+		return version;
+	}
+
+	/**
+	 * Return the trimmed text content of the first element matching the given tag name, or <code>null</code> when
+	 * absent or blank.
+	 */
+	private String getFirstElementText(final Document document, final String tagName) {
+		final var nodes = document.getElementsByTagName(tagName);
+		return nodes.getLength() == 0 ? null : StringUtils.trimToNull(nodes.item(0).getTextContent());
 	}
 
 	/**

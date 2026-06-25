@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -55,5 +56,53 @@ class NexusRepositoryManagerTest extends AbstractServerTest {
 		Assertions.assertEquals("0.0.1", versions.get("plugin-sample").getVersion());
 		resource.invalidateLastPluginVersions();
 		Assertions.assertEquals(versions.keySet(), resource.getLastPluginVersions().keySet());
+	}
+
+	@Test
+	void getArtifactInputStreamSnapshot() throws IOException {
+		// The "-SNAPSHOT" version is resolved to its timestamped build version from the metadata file
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/maven-metadata.xml"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
+								.withBody(IOUtils.toString(
+										new ClassPathResource("mock-server/nexus-repo/maven-metadata.xml").getInputStream(),
+										StandardCharsets.UTF_8))));
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/plugin-sample-1.0.0-20231201.123456-3.jar"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("SNAPSHOT-OK")));
+		httpServer.start();
+
+		try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-sample", "1.0.0-SNAPSHOT", null)) {
+			Assertions.assertEquals("SNAPSHOT-OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
+		}
+	}
+
+	@Test
+	void getArtifactInputStreamSnapshotNoMetadata() throws IOException {
+		// When the metadata is not available, the literal "-SNAPSHOT" version is used as a best effort
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/maven-metadata.xml"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/plugin-sample-1.0.0-SNAPSHOT.jar"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("LITERAL-OK")));
+		httpServer.start();
+
+		try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-sample", "1.0.0-SNAPSHOT", null)) {
+			Assertions.assertEquals("LITERAL-OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
+		}
+	}
+
+	@Test
+	void getArtifactInputStreamRelease() throws IOException {
+		// A release version is downloaded directly without any metadata resolution
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0/plugin-sample-1.0.0.jar"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("RELEASE-OK")));
+		httpServer.start();
+
+		try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-sample", "1.0.0", null)) {
+			Assertions.assertEquals("RELEASE-OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
+		}
 	}
 }
