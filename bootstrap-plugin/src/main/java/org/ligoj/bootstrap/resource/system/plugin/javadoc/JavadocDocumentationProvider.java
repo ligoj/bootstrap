@@ -60,7 +60,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 				return null;
 			}
 			return doc.getClassInfo();
-		} catch (Exception ex) {
+		} catch (Exception _) {
 			// ignore
 		}
 		return null;
@@ -104,7 +104,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	private MethodDocs getMethodDocs(Method method) {
 		try {
 			return getOperationDocInternal(method);
-		} catch (Exception ex) {
+		} catch (Exception _) {
 			// ignore
 		}
 		return null;

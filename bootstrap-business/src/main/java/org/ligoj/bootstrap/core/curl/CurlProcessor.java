@@ -344,7 +344,7 @@ public class CurlProcessor implements AutoCloseable {
 	public void close() {
 		try {
 			getHttpClient().close();
-		} catch (IOException e) {
+		} catch (IOException _) {
 			// Ignore
 		}
 	}

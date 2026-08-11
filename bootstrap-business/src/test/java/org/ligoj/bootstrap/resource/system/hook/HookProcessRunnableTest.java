@@ -163,7 +163,7 @@ class HookProcessRunnableTest {
 				when(pb.environment()).thenReturn(new HashMap<>());
 				try {
 					when(pb.start()).thenReturn(process);
-				} catch (IOException e) {
+				} catch (IOException _) {
 					// Ignore
 				}
 				return pb;
@@ -223,7 +223,7 @@ class HookProcessRunnableTest {
 						capturedPayload.set(env.get("PAYLOAD"));
 						throw new RuntimeException("Stop here");
 					});
-				} catch (IOException e) {
+				} catch (IOException _) {
 					// Ignore
 				}
 				return pb;

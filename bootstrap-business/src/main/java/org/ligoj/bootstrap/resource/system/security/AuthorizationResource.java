@@ -90,7 +90,7 @@ public class AuthorizationResource {
 					try {
 						Pattern.compile(authorization.getPattern());
 						return true;
-					} catch (PatternSyntaxException e) {
+					} catch (PatternSyntaxException _) {
 						return false;
 					}
 				}

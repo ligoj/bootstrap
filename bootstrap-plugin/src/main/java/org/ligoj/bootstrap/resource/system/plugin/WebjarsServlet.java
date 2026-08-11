@@ -100,7 +100,7 @@ public class WebjarsServlet extends HttpServlet {
 		Enumeration<URL> resources;
 		try {
 			resources = getResources(webjarsResourceURI);
-		} catch (IOException e) {
+		} catch (IOException _) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}

@@ -7,7 +7,9 @@ import org.hibernate.engine.jdbc.env.spi.NameQualifierSupport;
 import org.hibernate.type.StandardBasicTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test class of {@link PostgreSQL95NoSchemaDialect}
@@ -22,6 +24,6 @@ class PostgreSQL95NoSchemaDialectTest extends AbstractDialectTest{
 	@Test
 	void initializeFunctionRegistry() {
 		new PostgreSQL95NoSchemaDialect().initializeFunctionRegistry(newFunctionContributions());
-		Mockito.verify(basicTypeRegistry, Mockito.atLeastOnce()).resolve(StandardBasicTypes.DOUBLE);
+		verify(basicTypeRegistry, atLeastOnce()).resolve(StandardBasicTypes.DOUBLE);
 	}
 }

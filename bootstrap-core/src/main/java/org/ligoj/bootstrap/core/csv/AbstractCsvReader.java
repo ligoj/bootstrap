@@ -133,14 +133,14 @@ public abstract class AbstractCsvReader<T> {
 		final TypeConverter<Date> dateJConverter = value -> {
 			try {
 				return dateConverter.convert(value);
-			} catch (DateTimeParseException | TypeConversionException tce) {
+			} catch (DateTimeParseException | TypeConversionException _) {
 				for (final var pattern : DATE_PATTERNS) {
 					final var format = new SimpleDateFormat(pattern);
 					format.setTimeZone(DateUtils.getApplicationTimeZone());
 					format.setLenient(false);
 					try {
 						return format.parse((String) value);
-					} catch (ParseException dfe) {
+					} catch (ParseException _) {
 						// Ignore
 					}
 				}

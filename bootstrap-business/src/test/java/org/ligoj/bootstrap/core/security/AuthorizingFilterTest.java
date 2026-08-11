@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -70,9 +71,9 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(outputStream, Mockito.atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
-		Mockito.verify(chain, Mockito.never()).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(outputStream, atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
+		verify(chain, never()).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	/**
@@ -100,9 +101,9 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(outputStream, Mockito.atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
-		Mockito.verify(chain, Mockito.never()).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(outputStream, atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
+		verify(chain, never()).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	/**
@@ -116,8 +117,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		final var request = mock(HttpServletRequest.class);
 		final var response = mock(HttpServletResponse.class);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.atLeastOnce()).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(chain, atLeastOnce()).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	/**
@@ -139,9 +140,9 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(outputStream, Mockito.atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
-		Mockito.verify(chain, Mockito.never()).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(outputStream, atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
+		verify(chain, never()).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	/**
@@ -172,9 +173,9 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		authorizingFilter.doFilter(request, response, chain);
 		when(request.getMethod()).thenReturn("HEAD");
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(outputStream, Mockito.atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
-		Mockito.verify(chain, Mockito.never()).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(outputStream, atLeastOnce()).write(ArgumentMatchers.any(byte[].class));
+		verify(chain, never()).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	/**
@@ -199,11 +200,11 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		when(response.getOutputStream()).thenReturn(outputStream);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
+		verify(chain, times(1)).doFilter(request, response);
 		when(request.getMethod()).thenReturn("HEAD");
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(chain, times(1)).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	/**
@@ -235,8 +236,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("SUPER_USER")));
 		when(userDetailsService.loadUserByUsername(DEFAULT_USER)).thenReturn(adminUser);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.times(0)).doFilter(request, response);
-		Mockito.verify(response, Mockito.times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+		verify(chain, times(0)).doFilter(request, response);
+		verify(response, times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
 	}
 
 	/**
@@ -268,11 +269,11 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("SUPER_USER")));
 		when(userDetailsService.loadUserByUsername(DEFAULT_USER)).thenReturn(adminUser);
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
+		verify(chain, times(1)).doFilter(request, response);
 		when(request.getMethod()).thenReturn("HEAD");
 		authorizingFilter.doFilter(request, response, chain);
-		Mockito.verify(chain, Mockito.times(1)).doFilter(request, response);
-		Mockito.validateMockitoUsage();
+		verify(chain, times(1)).doFilter(request, response);
+		validateMockitoUsage();
 	}
 
 	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {

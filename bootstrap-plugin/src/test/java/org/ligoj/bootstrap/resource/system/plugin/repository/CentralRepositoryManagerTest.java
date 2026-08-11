@@ -89,7 +89,7 @@ class CentralRepositoryManagerTest extends AbstractPluginTest {
 			System.clearProperty("plugins.repository-manager.central.artifact.proxy.port");
 			try {
 				proxyServer.stop();
-			} catch (Exception e) {
+			} catch (Exception _) {
 				// Ignore
 			}
 		}

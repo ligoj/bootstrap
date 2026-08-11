@@ -190,7 +190,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 					return ((JavadocDocumentationProvider) javadocProvider).getMethodDoc(pd.getReadMethod());
 				}
 			}
-		} catch (final Exception e) {
+		} catch (final Exception _) {
 			// Ignore
 		}
 		return null;

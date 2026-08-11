@@ -89,7 +89,7 @@ public class HookConfiguration {
 			hp.setTimeout(Optional.ofNullable(h.getTimeout()).orElse(10));
 			hp.setInject(h.getInject());
 			hp.setDelay(Optional.ofNullable(h.getDelay()).orElse(1));
-		} catch (final JacksonException ioe) {
+		} catch (final JacksonException _) {
 			// Ignore
 			hp.setMatchObject(null);
 		}

@@ -41,7 +41,7 @@ public final class CryptoHelper {
 		try {
 			// Try a decryption
 			return decrypt(value);
-		} catch (final EncryptionOperationNotPossibleException ignored) {
+		} catch (final EncryptionOperationNotPossibleException _) {
 			// This value could be encrypted, but was not
 			return value;
 		}
@@ -49,7 +49,7 @@ public final class CryptoHelper {
 
 	/**
 	 * Return the given value only if it is not encrypted. Otherwise, return <code>null</code>.
-	 * 
+	 *
 	 * @param value The encrypted (or not) value to check.
 	 * @return the raw value only when not encrypted. Otherwise <code>null</code>.
 	 */
@@ -91,7 +91,7 @@ public final class CryptoHelper {
 
 			// Value is already encrypted
 			return value;
-		} catch (final EncryptionOperationNotPossibleException ignored) {
+		} catch (final EncryptionOperationNotPossibleException _) {
 			// This value could be encrypted, but was not
 			return encrypt(value);
 		}

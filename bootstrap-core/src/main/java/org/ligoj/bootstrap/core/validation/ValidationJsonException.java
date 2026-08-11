@@ -17,7 +17,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.hibernate.validator.path.Path;
-import tools.jackson.databind.DatabindException;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
@@ -104,7 +104,7 @@ public class ValidationJsonException extends RuntimeException {
 		this(mappingException, mappingException.getPropertyName(), "Mapping");
 	}
 
-	private ValidationJsonException(final DatabindException mappingException, final String message,
+	private ValidationJsonException(final JacksonException mappingException, final String message,
 			final String rule) {
 		this(message);
 		final var propertyPath = buildPropertyPath(mappingException.getPath());
@@ -185,9 +185,9 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build and return a property path of given exception.
 	 */
-	private StringBuilder buildPropertyPath(final List<DatabindException.Reference> path) {
+	private StringBuilder buildPropertyPath(final List<JacksonException.Reference> path) {
 		final var propertyPath = new StringBuilder();
-		DatabindException.Reference parent = null;
+		JacksonException.Reference parent = null;
 		for (final var reference : path) {
 			buildPropertyPath(propertyPath, reference, parent);
 			parent = reference;
@@ -198,8 +198,8 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build and return a property path of given exception.
 	 */
-	private void buildPropertyPath(final StringBuilder propertyPath, final DatabindException.Reference reference,
-			final DatabindException.Reference parent) {
+	private void buildPropertyPath(final StringBuilder propertyPath, final JacksonException.Reference reference,
+			final JacksonException.Reference parent) {
 		if (parent != null) {
 			buildNestedPropertyPath(propertyPath, reference);
 		}
@@ -212,7 +212,7 @@ public class ValidationJsonException extends RuntimeException {
 	 * Build nested property path.
 	 */
 	private void buildNestedPropertyPath(final StringBuilder propertyPath,
-			final DatabindException.Reference reference) {
+			final JacksonException.Reference reference) {
 		if (reference.getIndex() > -1) {
 			propertyPath.append('[');
 			propertyPath.append(reference.getIndex());

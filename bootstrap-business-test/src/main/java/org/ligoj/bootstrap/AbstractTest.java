@@ -74,7 +74,7 @@ public class AbstractTest {
 			if (closeable != null) {
 				closeable.close();
 			}
-		} catch (final IOException ioe) {
+		} catch (final IOException _) {
 			// ignore
 		}
 	}
