@@ -3,12 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.TypedQuery;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +18,10 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test class of {@link RoleResource}

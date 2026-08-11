@@ -3,15 +3,15 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.TriConsumer;
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.TriConsumer;
-import org.springframework.stereotype.Component;
 
 /**
  * Component able to generate CSV data from JPA entity - the managed properties - and also the standard Java Beans. This

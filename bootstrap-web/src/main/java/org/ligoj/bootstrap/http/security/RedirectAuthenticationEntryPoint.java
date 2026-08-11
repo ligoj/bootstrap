@@ -3,18 +3,16 @@
  */
 package org.ligoj.bootstrap.http.security;
 
-import java.io.IOException;
-import java.util.Set;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import lombok.Setter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import lombok.Setter;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Allow to choose a redirection strategy depending on the current request.

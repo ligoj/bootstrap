@@ -3,12 +3,11 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.io.Serializable;
-
-import org.hibernate.validator.constraints.Length;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+
+import java.io.Serializable;
 
 /**
  * An audited and described bean

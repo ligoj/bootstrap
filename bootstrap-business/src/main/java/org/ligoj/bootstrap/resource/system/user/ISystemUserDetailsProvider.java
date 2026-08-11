@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.Collection;
-
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Collection;
 
 /**
  * A provider of extended {@link SystemUser} details — attributes living outside this layer (e.g. an IAM cache entity

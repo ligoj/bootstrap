@@ -3,16 +3,16 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.model.AbstractDescribedAuditedEntity;
 import org.ligoj.bootstrap.core.model.AbstractDescribedBusinessEntity;
 import org.ligoj.bootstrap.core.model.AbstractDescribedEntity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * {@link DescribedBean} test class.

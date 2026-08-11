@@ -54,6 +54,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class of {@link SystemPluginResource}
@@ -107,8 +109,8 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 
 	@Test
 	void findAllOffline() throws IOException {
-		final var repo = Mockito.mock(RepositoryManager.class);
-		final var cl = Mockito.mock(PluginsClassLoader.class);
+		final var repo = mock(RepositoryManager.class);
+		final var cl = mock(PluginsClassLoader.class);
 		Mockito.doThrow(IOException.class).when(repo).getLastPluginVersions();
 		Mockito.doReturn(Collections.emptyMap()).when(cl).getInstalledPlugins();
 		final var resource = new SystemPluginResource() {
@@ -140,7 +142,7 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 	void findAllNewVersion() throws IOException {
 		stubMavenCentral(null);
 		httpServer.start();
-		final var listener = Mockito.mock(PluginListener.class);
+		final var listener = mock(PluginListener.class);
 		registerSingleton("mockPluginListener", listener);
 		try {
 			// This plug-in is available in the remote storage with a newer version
@@ -351,15 +353,15 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 		stubMavenCentral(body);
 		httpServer.start();
 
-		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		Mockito.when(pluginsClassLoader.getHomeDirectory())
+		final var pluginsClassLoader = mock(PluginsClassLoader.class);
+		when(pluginsClassLoader.getHomeDirectory())
 				.thenReturn(Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER));
-		Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
+		when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 				Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));
 		final var map = new HashMap<String, String>();
 		map.put("plugin-foo", "plugin-foo-Z0000001Z0000000Z0000001Z0000000");
 		map.put("plugin-bar", "plugin-bar-Z0000001Z0000000Z0000000Z0000000");
-		Mockito.when(pluginsClassLoader.getInstalledPlugins()).thenReturn(map);
+		when(pluginsClassLoader.getInstalledPlugins()).thenReturn(map);
 		final var pluginResource = new SystemPluginResource() {
 			@Override
 			protected PluginsClassLoader getPluginClassLoader() {
@@ -559,16 +561,16 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 
 	@Test
 	void configurePluginInstallManagedEntitiesNotSameClassloader() {
-		final var service1 = Mockito.mock(FeaturePlugin.class);
-		Mockito.when(service1.getKey()).thenReturn("service:sample");
-		Mockito.when(service1.getInstalledEntities()).thenReturn(Collections.singletonList(SystemBench.class));
+		final var service1 = mock(FeaturePlugin.class);
+		when(service1.getKey()).thenReturn("service:sample");
+		when(service1.getInstalledEntities()).thenReturn(Collections.singletonList(SystemBench.class));
 		Assertions.assertThrows(TechnicalException.class, () -> resource.configurePluginInstall(service1));
 	}
 
 	@Test
 	void configurePluginInstallError() {
-		final var service1 = Mockito.mock(FeaturePlugin.class);
-		Mockito.when(service1.getInstalledEntities()).thenThrow(ValidationJsonException.class);
+		final var service1 = mock(FeaturePlugin.class);
+		when(service1.getInstalledEntities()).thenThrow(ValidationJsonException.class);
 		Assertions.assertThrows(TechnicalException.class, () -> resource.configurePluginInstall(service1));
 	}
 
@@ -590,7 +592,7 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 
 	@Test
 	void configurePluginUpdateFail() {
-		final var service1 = Mockito.mock(SampleService.class);
+		final var service1 = mock(SampleService.class);
 		Mockito.doThrow(new RuntimeException()).when(service1).getInstalledEntities();
 		final var plugin = new SystemPlugin();
 
@@ -611,7 +613,7 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 			protected String getLastModifiedTime(final FeaturePlugin plugin) throws IOException {
 				throw new IOException();
 			}
-		}.getVersion(Mockito.mock(FeaturePlugin.class)));
+		}.getVersion(mock(FeaturePlugin.class)));
 	}
 
 	@Test
@@ -621,13 +623,13 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 			protected String getLastModifiedTime(final FeaturePlugin plugin) throws URISyntaxException {
 				throw new URISyntaxException("input", "reason");
 			}
-		}.getVersion(Mockito.mock(FeaturePlugin.class)));
+		}.getVersion(mock(FeaturePlugin.class)));
 	}
 
 	@Test
 	void refreshPlugins() throws Exception {
-		final var event = Mockito.mock(ContextRefreshedEvent.class);
-		Mockito.when(event.getApplicationContext()).thenReturn(applicationContext);
+		final var event = mock(ContextRefreshedEvent.class);
+		when(event.getApplicationContext()).thenReturn(applicationContext);
 		registerSingleton("mockPluginListener", new MockPluginListener());
 		try {
 			resource.refreshPlugins(event);
@@ -638,10 +640,10 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 
 	@Test
 	void refreshPluginsVetoInstall() throws Exception {
-		final var event = Mockito.mock(ContextRefreshedEvent.class);
-		Mockito.when(event.getApplicationContext()).thenReturn(applicationContext);
-		var listener = Mockito.mock(PluginListener.class);
-		Mockito.when(listener.install(ArgumentMatchers.any())).thenReturn(false);
+		final var event = mock(ContextRefreshedEvent.class);
+		when(event.getApplicationContext()).thenReturn(applicationContext);
+		var listener = mock(PluginListener.class);
+		when(listener.install(ArgumentMatchers.any())).thenReturn(false);
 		registerSingleton("mockPluginListener", listener);
 		// Add a plug-in is an initial version
 		registerSingleton("sampleService", new SampleService() {
@@ -718,8 +720,8 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 				}
 			});
 
-			final var event = Mockito.mock(ContextRefreshedEvent.class);
-			Mockito.when(event.getApplicationContext()).thenReturn(applicationContext);
+			final var event = mock(ContextRefreshedEvent.class);
+			when(event.getApplicationContext()).thenReturn(applicationContext);
 			resource.refreshPlugins(event);
 			Assertions.assertEquals("1.1", repository.findByExpected("key", "service:sample").getVersion());
 
@@ -757,8 +759,8 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 			final var url = Thread.currentThread().getContextClassLoader()
 					.getResource("csv/sample-business-entity.csv");
 			final var pluginResource = new SystemPluginResource();
-			pluginResource.em = Mockito.mock(EntityManager.class);
-			pluginResource.csvForJpa = Mockito.mock(CsvForJpa.class);
+			pluginResource.em = mock(EntityManager.class);
+			pluginResource.csvForJpa = mock(CsvForJpa.class);
 			pluginResource.configurePluginEntity(Arrays.stream(new URL[]{url}), SampleBusinessEntity.class,
 					url.getPath());
 		}
@@ -769,7 +771,7 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 		final var url = Thread.currentThread().getContextClassLoader()
 				.getResource("csv-test/sample-business-entity.csv");
 		final var pluginResource = new SystemPluginResource();
-		pluginResource.em = Mockito.mock(EntityManager.class);
+		pluginResource.em = mock(EntityManager.class);
 		pluginResource.csvForJpa = csvForJpa;
 		pluginResource.configurePluginEntity(Arrays.stream(new URL[]{url}), SampleBusinessEntity.class,
 				url.toString());
@@ -779,8 +781,8 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 	void configurePluginEntitySystemUser() throws IOException {
 		final var url = Thread.currentThread().getContextClassLoader().getResource("csv-test/sample-system-user.csv");
 		final var pluginResource = new SystemPluginResource();
-		pluginResource.em = Mockito.mock(EntityManager.class);
-		var query = Mockito.mock(Query.class);
+		pluginResource.em = mock(EntityManager.class);
+		var query = mock(Query.class);
 		Mockito.doReturn(query).when(pluginResource.em).createQuery(Mockito.anyString());
 		Mockito.doReturn(query).when(query).setParameter(Mockito.eq("value"), Mockito.anyString());
 		Mockito.doReturn(new ArrayList<SystemUser>()).when(query).getResultList();
@@ -989,7 +991,7 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 
 	@Test
 	void getPluginClassLoader() {
-		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
+		final var pluginsClassLoader = mock(PluginsClassLoader.class);
 		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertInstanceOf(URLClassLoader.class, classLoader.getScopedClassLoader());
 			Assertions.assertNotNull(resource.getPluginClassLoader());
@@ -997,15 +999,15 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 	}
 
 	private SystemPluginResource newPluginResourceInstall(final String fixedFileName) {
-		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
-		final var directory = Mockito.mock(Path.class);
-		Mockito.when(pluginsClassLoader.getHomeDirectory()).thenReturn(Paths.get(USER_HOME_DIRECTORY));
-		Mockito.when(directory.resolve(ArgumentMatchers.anyString()))
+		final var pluginsClassLoader = mock(PluginsClassLoader.class);
+		final var directory = mock(Path.class);
+		when(pluginsClassLoader.getHomeDirectory()).thenReturn(Paths.get(USER_HOME_DIRECTORY));
+		when(directory.resolve(ArgumentMatchers.anyString()))
 				.then((Answer<Path>) invocation -> Paths
 						.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR)
 						.resolve(fixedFileName == null ? invocation.getArgument(0) : fixedFileName));
 
-		Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(directory);
+		when(pluginsClassLoader.getPluginDirectory()).thenReturn(directory);
 		final var pluginResource = new SystemPluginResource() {
 			@Override
 			protected PluginsClassLoader getPluginClassLoader() {
@@ -1033,11 +1035,11 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 	}
 
 	private SystemPluginResource newPluginResourceDelete() {
-		final var pluginsClassLoader = Mockito.mock(PluginsClassLoader.class);
+		final var pluginsClassLoader = mock(PluginsClassLoader.class);
 		try (var classLoader = new ThreadClassLoaderScope(new URLClassLoader(new URL[0], pluginsClassLoader))) {
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
 			Assertions.assertInstanceOf(URLClassLoader.class, classLoader.getScopedClassLoader());
-			Mockito.when(pluginsClassLoader.getPluginDirectory()).thenReturn(
+			when(pluginsClassLoader.getPluginDirectory()).thenReturn(
 					Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR));
 			final var resource = new SystemPluginResource() {
 				@Override
@@ -1224,8 +1226,8 @@ class SystemPluginResourceTest extends AbstractPluginTest {
 
 	@Test
 	void decorate() {
-		final var settings = Mockito.mock(SessionSettings.class);
-		Mockito.when(settings.getApplicationSettings()).thenReturn(applicationSettings);
+		final var settings = mock(SessionSettings.class);
+		when(settings.getApplicationSettings()).thenReturn(applicationSettings);
 		Assertions.assertNull(applicationSettings.getPlugins());
 		resource.decorate(settings);
 		Assertions.assertNotNull(settings.getApplicationSettings().getPlugins());

@@ -3,17 +3,10 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter;
@@ -25,11 +18,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Component;
-
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * Pagination management utility class for DataTables.

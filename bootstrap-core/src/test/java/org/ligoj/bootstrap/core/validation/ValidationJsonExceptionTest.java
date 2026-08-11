@@ -19,7 +19,6 @@ import org.hibernate.validator.internal.metadata.location.ConstraintLocation.Con
 import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDescriptor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.UnrecognizedPropertyException;
@@ -28,6 +27,9 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.util.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Check some validation serialization features of {@link ValidationJsonException}.
@@ -267,8 +269,8 @@ class ValidationJsonExceptionTest {
 				SampleEntity.class, bean, new Object(), "value", MutablePath.createPathFromString("grapes").materialize(),
 				notEmptyGrapesDescriptor, ElementType.FIELD));
 
-		final var violationException = Mockito.mock(ConstraintViolationException.class);
-		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
+		final var violationException = mock(ConstraintViolationException.class);
+		when(violationException.getConstraintViolations()).thenReturn(violations);
 
 		final var validationJsonException = new ValidationJsonException(violationException);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());
@@ -292,8 +294,8 @@ class ValidationJsonExceptionTest {
 				SampleEntity.class, bean, new Object(), "value", path.materialize(), notEmptyNameDescriptor, null,
 				ElementType.PARAMETER));
 
-		final var violationException = Mockito.mock(ConstraintViolationException.class);
-		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);
+		final var violationException = mock(ConstraintViolationException.class);
+		when(violationException.getConstraintViolations()).thenReturn(violations);
 
 		final var validationJsonException = new ValidationJsonException(violationException);
 		Assertions.assertFalse(validationJsonException.getErrors().isEmpty());

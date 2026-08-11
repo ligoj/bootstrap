@@ -3,12 +3,11 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
-
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 import com.thoughtworks.paranamer.DefaultParanamer;
+import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
 
 /**
  * JAX-RS name provider exploiting JAX-RS annotations to give the parameter name. Useful for end-user feedback and

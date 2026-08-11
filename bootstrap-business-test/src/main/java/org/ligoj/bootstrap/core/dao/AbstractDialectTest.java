@@ -11,9 +11,11 @@ import org.hibernate.type.BasicTypeRegistry;
 import org.hibernate.type.descriptor.jdbc.JdbcTypeIndicators;
 import org.hibernate.type.spi.TypeConfiguration;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.lang.reflect.Type;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test class of Dialect customizer test classes.
@@ -23,22 +25,22 @@ abstract class AbstractDialectTest {
 
 	@SuppressWarnings("unchecked")
 	protected FunctionContributions newFunctionContributions() {
-		final var functionContributions = Mockito.mock(FunctionContributions.class);
+		final var functionContributions = mock(FunctionContributions.class);
 		final var functionRegistry = new SqmFunctionRegistry();
-		final var typeConfiguration = Mockito.mock(TypeConfiguration.class);
-		basicTypeRegistry = Mockito.mock(BasicTypeRegistry.class);
-		final var jdbcTypeIndicators = Mockito.mock(JdbcTypeIndicators.class);
+		final var typeConfiguration = mock(TypeConfiguration.class);
+		basicTypeRegistry = mock(BasicTypeRegistry.class);
+		final var jdbcTypeIndicators = mock(JdbcTypeIndicators.class);
 
-		Mockito.doReturn(typeConfiguration).when(functionContributions).getTypeConfiguration();
-		Mockito.doReturn(basicTypeRegistry).when(typeConfiguration).getBasicTypeRegistry();
-		Mockito.doReturn(jdbcTypeIndicators).when(typeConfiguration).getCurrentBaseSqlTypeIndicators();
-		Mockito.doReturn(functionRegistry).when(functionContributions).getFunctionRegistry();
-		final var basicType =Mockito.mock(BasicType.class) ;
-		Mockito.doReturn(basicType).when(typeConfiguration).standardBasicTypeForJavaType( ArgumentMatchers.any(Type.class));
-		Mockito.doReturn(basicType).when(typeConfiguration).standardBasicTypeForJavaType( ArgumentMatchers.any(Class.class));
-		Mockito.doReturn(basicType).when(basicTypeRegistry).resolve(ArgumentMatchers.any(BasicTypeReference.class));
-		Mockito.doReturn(basicType).when(basicTypeRegistry).resolve(ArgumentMatchers.any(Class.class), ArgumentMatchers.any(Integer.class ));
-		Mockito.doReturn(basicType).when(basicTypeRegistry).getRegisteredType(ArgumentMatchers.any(Class.class ));
+		doReturn(typeConfiguration).when(functionContributions).getTypeConfiguration();
+		doReturn(basicTypeRegistry).when(typeConfiguration).getBasicTypeRegistry();
+		doReturn(jdbcTypeIndicators).when(typeConfiguration).getCurrentBaseSqlTypeIndicators();
+		doReturn(functionRegistry).when(functionContributions).getFunctionRegistry();
+		final var basicType = mock(BasicType.class) ;
+		doReturn(basicType).when(typeConfiguration).standardBasicTypeForJavaType( ArgumentMatchers.any(Type.class));
+		doReturn(basicType).when(typeConfiguration).standardBasicTypeForJavaType( ArgumentMatchers.any(Class.class));
+		doReturn(basicType).when(basicTypeRegistry).resolve(ArgumentMatchers.any(BasicTypeReference.class));
+		doReturn(basicType).when(basicTypeRegistry).resolve(ArgumentMatchers.any(Class.class), ArgumentMatchers.any(Integer.class ));
+		doReturn(basicType).when(basicTypeRegistry).getRegisteredType(ArgumentMatchers.any(Class.class ));
 		return functionContributions;
 	}
 }

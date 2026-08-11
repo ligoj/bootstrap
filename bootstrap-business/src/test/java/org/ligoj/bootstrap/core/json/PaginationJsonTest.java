@@ -3,14 +3,7 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
-
 import jakarta.ws.rs.core.UriInfo;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +13,19 @@ import org.ligoj.bootstrap.core.json.jqgrid.BasicRule;
 import org.ligoj.bootstrap.core.json.jqgrid.BasicRule.RuleOperator;
 import org.ligoj.bootstrap.core.json.jqgrid.UiFilter.FilterOperator;
 import org.ligoj.bootstrap.model.system.SystemUser;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * JSON pagination test of {@link PaginationJson}.
@@ -471,12 +472,12 @@ class PaginationJsonTest extends AbstractBootTest {
 		// create a mock URI info with pagination information
 		final var uriInfo = newUriInfo();
 		@SuppressWarnings("unchecked")
-		final Page<SystemUser> page = Mockito.mock(Page.class);
+		final Page<SystemUser> page = mock(Page.class);
 		final List<SystemUser> list = new ArrayList<>();
 		uriInfo.getQueryParameters().putSingle(DataTableAttributes.ECHO, "echo");
 		list.add(new SystemUser());
-		Mockito.when(page.getContent()).thenReturn(list);
-		Mockito.when(page.getTotalElements()).thenReturn(1L);
+		when(page.getContent()).thenReturn(list);
+		when(page.getTotalElements()).thenReturn(1L);
 		final var pageRequest = paginationJson.applyPagination(uriInfo, page, Function.identity());
 
 		Assertions.assertNotNull(pageRequest);
@@ -493,10 +494,10 @@ class PaginationJsonTest extends AbstractBootTest {
 	void applyPaginationNullUriInfo() {
 		// create a mock URI info with pagination information
 		@SuppressWarnings("unchecked")
-		final Page<SystemUser> page = Mockito.mock(Page.class);
+		final Page<SystemUser> page = mock(Page.class);
 		final List<SystemUser> list = new ArrayList<>();
 		list.add(new SystemUser());
-		Mockito.when(page.getContent()).thenReturn(list);
+		when(page.getContent()).thenReturn(list);
 		final var pageRequest = paginationJson.applyPagination(null, page, Function.identity());
 
 		Assertions.assertNotNull(pageRequest);

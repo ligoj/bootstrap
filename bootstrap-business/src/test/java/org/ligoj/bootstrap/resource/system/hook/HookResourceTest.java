@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import tools.jackson.core.JacksonException;
 import jakarta.ws.rs.ForbiddenException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tools.jackson.core.JacksonException;
 
 /**
  * Test class of {@link HookResource}

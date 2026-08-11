@@ -3,10 +3,7 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.IOException;
-
 import org.springframework.data.domain.Persistable;
-
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
@@ -15,11 +12,6 @@ import tools.jackson.databind.ser.std.StdSerializer;
  * Serialize entities with their identifier.
  */
 public class ToIdSerializer extends StdSerializer<Persistable<?>> {
-
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * JAX-RS serializer instance.

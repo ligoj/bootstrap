@@ -3,20 +3,17 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.hazelcast.cache.HazelcastCacheManager;
+import com.hazelcast.cache.impl.CacheProxy;
+import com.hazelcast.cluster.Member;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.hazelcast.internal.cluster.ClusterService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
@@ -26,14 +23,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Service;
 
-import com.hazelcast.cache.HazelcastCacheManager;
-import com.hazelcast.cache.impl.CacheProxy;
-import com.hazelcast.cluster.Member;
-import com.hazelcast.core.HazelcastInstanceNotActiveException;
-import com.hazelcast.internal.cluster.ClusterService;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Cache resource.

@@ -6,13 +6,11 @@ package org.ligoj.bootstrap.resource.system.bench;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.ligoj.bootstrap.core.validation.UpperCase;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Win demo resource data.

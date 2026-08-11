@@ -6,12 +6,13 @@ package org.ligoj.bootstrap.resource.system.plugin.javadoc;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Test class of {@link LigojOpenApiFeature}
@@ -30,10 +31,10 @@ class LigojOpenApiFeatureTest {
 
 		};
 
-		final var classloader = Mockito.mock(PluginsClassLoader.class);
+		final var classloader = mock(PluginsClassLoader.class);
 		final var path = Paths.get(USER_HOME_DIRECTORY, PluginsClassLoader.HOME_DIR_FOLDER, PluginsClassLoader.PLUGINS_DIR).resolve("plugin-javadoc.jar");
 		final var pluginFiles = Map.of("plugin-javadoc", path.toString());
-		Mockito.doAnswer(invocationOnMock -> {
+		doAnswer(invocationOnMock -> {
 			@SuppressWarnings("unchecked") final var versionFileToPath = (Map<String, Path>) invocationOnMock.getArgument(0);
 			versionFileToPath.put(path.toString(), path);
 			return pluginFiles;
@@ -44,7 +45,7 @@ class LigojOpenApiFeatureTest {
 				return classloader;
 			}
 		}.addJavadoc();
-		Mockito.verify(classloader, Mockito.atLeastOnce()).getInstalledPlugins(ArgumentMatchers.any(), ArgumentMatchers.eq(true));
+		verify(classloader, atLeastOnce()).getInstalledPlugins(ArgumentMatchers.any(), ArgumentMatchers.eq(true));
 	}
 
 }

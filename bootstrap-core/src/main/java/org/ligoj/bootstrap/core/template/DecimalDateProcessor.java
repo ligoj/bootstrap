@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.core.template;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import org.apache.commons.lang3.time.DateUtils;
 
 /**
  * Decimal date.

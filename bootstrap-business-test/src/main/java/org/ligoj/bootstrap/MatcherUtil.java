@@ -3,18 +3,17 @@
  */
 package org.ligoj.bootstrap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import jakarta.validation.ConstraintViolationException;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * {@link ConstraintViolationException} and {@link ValidationJsonException}

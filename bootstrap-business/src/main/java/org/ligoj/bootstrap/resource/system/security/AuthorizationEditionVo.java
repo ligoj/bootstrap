@@ -3,16 +3,13 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.io.Serializable;
-
 import jakarta.validation.constraints.NotNull;
-
-import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 
 import javax.annotation.RegEx;
+import java.io.Serializable;
 
 /**
  * Simple authorization for creation and update operations.

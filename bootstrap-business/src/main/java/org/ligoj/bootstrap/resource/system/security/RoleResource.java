@@ -3,24 +3,9 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.cache.annotation.CacheRemoveAll;
-
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
 import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
@@ -29,6 +14,12 @@ import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.cache.annotation.CacheRemoveAll;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Role management.

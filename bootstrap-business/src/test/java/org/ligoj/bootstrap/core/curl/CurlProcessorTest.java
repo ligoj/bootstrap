@@ -12,13 +12,14 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test class of {@link CurlProcessor}
@@ -389,8 +390,8 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	@Test
 	@SuppressWarnings("try")
 	void closeErrorTwice() throws IOException {
-		final var mock = Mockito.mock(CloseableHttpClient.class);
-		Mockito.doThrow(new IOException()).when(mock).close();
+		final var mock = mock(CloseableHttpClient.class);
+		doThrow(new IOException()).when(mock).close();
 		try (final var processor = new CurlProcessor() {
 			@Override
 			public CloseableHttpClient getHttpClient() {

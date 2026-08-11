@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import java.sql.SQLException;
-
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
+
+import java.sql.SQLException;
 
 /**
  * Exception mapper test using {@link DataAccessResourceFailureExceptionMapper}

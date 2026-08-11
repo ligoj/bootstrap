@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.mock.web.DelegatingServletOutputStream;
 
 import java.io.ByteArrayInputStream;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Test class of {@link WebjarsServlet}
@@ -49,89 +50,89 @@ class WebjarsServletTest {
 
 	@Test
 	void mustNotBeADirectory() throws Exception {
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getRequestURI()).thenReturn("/context-path/webjars/");
-		Mockito.when(request.getContextPath()).thenReturn("/context-path");
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var request = mock(HttpServletRequest.class);
+		when(request.getRequestURI()).thenReturn("/context-path/webjars/");
+		when(request.getContextPath()).thenReturn("/context-path");
+		final var response = mock(HttpServletResponse.class);
 		getServlet("false").doGet(request, response);
 
 		// 404 error, even for a directory listing
-		Mockito.verify(response).sendError(404);
+		verify(response).sendError(404);
 	}
 
 	@Test
 	void fileNotFound() throws Exception {
 		final var request = defaultRequest("error.png");
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var response = mock(HttpServletResponse.class);
 
 		getServlet("false").doGet(request, response);
-		Mockito.verify(response).sendError(ArgumentMatchers.anyInt());
+		verify(response).sendError(ArgumentMatchers.anyInt());
 	}
 
 	@Test
 	void fileNotFoundIOE() throws Exception {
 		final var request = defaultRequest("IOException");
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var response = mock(HttpServletResponse.class);
 
 		getServlet("false").doGet(request, response);
-		Mockito.verify(response).sendError(ArgumentMatchers.anyInt());
+		verify(response).sendError(ArgumentMatchers.anyInt());
 	}
 
 	@Test
 	void downloadFile() throws Exception {
 		final var webjarResource = "META-INF/resources/webjars/image.png";
 		final var request = defaultRequest();
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var response = mock(HttpServletResponse.class);
 
 		final var baos = new ByteArrayOutputStream();
 		final var out = new DelegatingServletOutputStream(baos);
-		Mockito.when(response.getOutputStream()).thenReturn(out);
+		when(response.getOutputStream()).thenReturn(out);
 		final var urls = new ArrayList<URL>();
 		final var url = Thread.currentThread().getContextClassLoader().getResource(webjarResource);
 		urls.add(url);
 		urls.add(url);
 		getServlet("false", true, urls).doGet(request, response);
 		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
-		Mockito.verify(response).setContentType("image/x-png");
+		verify(response).setContentType("image/x-png");
 		getServlet("false", false, urls).doGet(request, response);
-		Mockito.verify(response, Mockito.never()).setStatus(ArgumentMatchers.anyInt());
-		Mockito.verify(response, Mockito.never()).sendError(ArgumentMatchers.anyInt());
+		verify(response, never()).setStatus(ArgumentMatchers.anyInt());
+		verify(response, never()).sendError(ArgumentMatchers.anyInt());
 	}
 
 	@Test
 	void mimeTypeIsNotFound() throws Exception {
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var response = mock(HttpServletResponse.class);
 		final var baos = new ByteArrayOutputStream();
 		final var out = new DelegatingServletOutputStream(baos);
-		Mockito.when(response.getOutputStream()).thenReturn(out);
+		when(response.getOutputStream()).thenReturn(out);
 		final var servlet = getServlet("false");
 		servlet.serveFile(response, "image.bin",
 				new ByteArrayInputStream("image-content".getBytes(StandardCharsets.UTF_8)));
 		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
-		Mockito.verify(response).setContentType("application/octet-stream");
+		verify(response).setContentType("application/octet-stream");
 	}
 
 	@Test
 	void mimeTypeIsCustom() throws Exception {
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var response = mock(HttpServletResponse.class);
 		final var baos = new ByteArrayOutputStream();
 		final var out = new DelegatingServletOutputStream(baos);
-		Mockito.when(response.getOutputStream()).thenReturn(out);
+		when(response.getOutputStream()).thenReturn(out);
 		final var servlet = getServlet("false");
 		servlet.serveFile(response, "image.woff2",
 				new ByteArrayInputStream("image-content".getBytes(StandardCharsets.UTF_8)));
 		Assertions.assertEquals("image-content", baos.toString(StandardCharsets.UTF_8));
-		Mockito.verify(response).setContentType("font/woff2");
+		verify(response).setContentType("font/woff2");
 	}
 
 	@Test
 	void inputStreamIsClosedAfterException() throws Exception {
-		final var response = Mockito.mock(HttpServletResponse.class);
+		final var response = mock(HttpServletResponse.class);
 		final var servlet = getServlet("false");
-		final var inputStream = Mockito.mock(InputStream.class);
-		Mockito.when(inputStream.transferTo(ArgumentMatchers.any())).thenThrow(new TechnicalException(""));
+		final var inputStream = mock(InputStream.class);
+		when(inputStream.transferTo(ArgumentMatchers.any())).thenThrow(new TechnicalException(""));
 		Assertions.assertThrows(TechnicalException.class, () -> servlet.serveFile(response, "image.png", inputStream));
-		Mockito.verify(inputStream).close();
+		verify(inputStream).close();
 	}
 
 	private HttpServletRequest defaultRequest() {
@@ -139,9 +140,9 @@ class WebjarsServletTest {
 	}
 
 	private HttpServletRequest defaultRequest(final String file) {
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getRequestURI()).thenReturn("/context-path/webjars/" + file);
-		Mockito.when(request.getContextPath()).thenReturn("/context-path");
+		final var request = mock(HttpServletRequest.class);
+		when(request.getRequestURI()).thenReturn("/context-path/webjars/" + file);
+		when(request.getContextPath()).thenReturn("/context-path");
 		return request;
 	}
 
@@ -152,11 +153,11 @@ class WebjarsServletTest {
 
 	private WebjarsServlet getServlet(final String disableCache, boolean fileHasMorePriority, List<URL> urls) throws ServletException {
 		final var servlet = new MyWebjarsServlet(fileHasMorePriority, urls);
-		final var servletConfig = Mockito.mock(ServletConfig.class);
-		final var servletContext = Mockito.mock(ServletContext.class);
-		Mockito.when(servletConfig.getInitParameter("disableCache")).thenReturn(disableCache);
-		Mockito.when(servletContext.getMimeType("image.png")).thenReturn("image/x-png");
-		Mockito.when(servletConfig.getServletContext()).thenReturn(servletContext);
+		final var servletConfig = mock(ServletConfig.class);
+		final var servletContext = mock(ServletContext.class);
+		when(servletConfig.getInitParameter("disableCache")).thenReturn(disableCache);
+		when(servletContext.getMimeType("image.png")).thenReturn("image/x-png");
+		when(servletConfig.getServletContext()).thenReturn(servletContext);
 		servlet.init(servletConfig);
 		return servlet;
 	}

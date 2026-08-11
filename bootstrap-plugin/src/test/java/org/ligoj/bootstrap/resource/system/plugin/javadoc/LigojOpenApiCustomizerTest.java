@@ -32,6 +32,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Test class of {@link LigojOpenApiCustomizer}
  */
@@ -42,7 +45,7 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 	@BeforeEach
 	void configure() throws IOException {
 		final var javadocUrls = newJavadocUrls();
-		final var repository = Mockito.mock(SystemPluginRepository.class);
+		final var repository = mock(SystemPluginRepository.class);
 		final var plugin1 = new SystemPlugin();
 		plugin1.setBasePackage(SampleTool2.class.getPackageName());
 		plugin1.setArtifact("tool1");
@@ -74,7 +77,7 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 		final var ori = new OperationResourceInfo(method, cri1, new URITemplate("/{param1:regEx}"), "POST", "application/json", "application/json", List.of(parameter1, parameter2), true);
 		cri1.getMethodDispatcher().bind(ori, method);
 		final var oriNotExists = new OperationResourceInfo(method, cri1, new URITemplate("/not-exists"), "PATCH", null, null, Collections.emptyList(), true);
-		final var methodNotExist = Mockito.mock(Method.class);
+		final var methodNotExist = mock(Method.class);
 		Mockito.doReturn("not-exists").when(methodNotExist).getName();
 		cri1.getMethodDispatcher().bind(oriNotExists, methodNotExist);
 
@@ -184,16 +187,16 @@ class LigojOpenApiCustomizerTest extends AbstractJavaDocTest {
 	@Test
 	void getGenericType() {
 		Assertions.assertNull(customizer.getGenericType(null));
-		Assertions.assertNull(customizer.getGenericType(Mockito.mock(Type.class)));
-		var parameterizedTypeEmpty = Mockito.mock(ParameterizedType.class);
-		Mockito.when(parameterizedTypeEmpty.getActualTypeArguments()).thenReturn(new Type[]{});
+		Assertions.assertNull(customizer.getGenericType(mock(Type.class)));
+		var parameterizedTypeEmpty = mock(ParameterizedType.class);
+		when(parameterizedTypeEmpty.getActualTypeArguments()).thenReturn(new Type[]{});
 		Assertions.assertNull(customizer.getGenericType(parameterizedTypeEmpty));
-		var parameterizedTypes = Mockito.mock(ParameterizedType.class);
-		Mockito.when(parameterizedTypes.getActualTypeArguments()).thenReturn(new Type[]{Mockito.mock(Type.class)});
+		var parameterizedTypes = mock(ParameterizedType.class);
+		when(parameterizedTypes.getActualTypeArguments()).thenReturn(new Type[]{mock(Type.class)});
 		Assertions.assertNull(customizer.getGenericType(parameterizedTypes));
 
-		var parameterizedTypesClass = Mockito.mock(ParameterizedType.class);
-		Mockito.when(parameterizedTypesClass.getActualTypeArguments()).thenReturn(new Type[]{String.class});
+		var parameterizedTypesClass = mock(ParameterizedType.class);
+		when(parameterizedTypesClass.getActualTypeArguments()).thenReturn(new Type[]{String.class});
 		Assertions.assertEquals(String.class, customizer.getGenericType(parameterizedTypesClass));
 	}
 

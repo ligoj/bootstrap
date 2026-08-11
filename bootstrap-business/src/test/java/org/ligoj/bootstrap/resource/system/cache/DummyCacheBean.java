@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
+import org.springframework.stereotype.Component;
+
 import javax.cache.annotation.CacheKey;
 import javax.cache.annotation.CachePut;
 import javax.cache.annotation.CacheResult;
 import javax.cache.annotation.CacheValue;
-
-import org.springframework.stereotype.Component;
 
 /**
  * Test bean for JSR-107 tests

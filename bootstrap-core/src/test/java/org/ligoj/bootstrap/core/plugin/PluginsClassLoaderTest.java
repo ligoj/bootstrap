@@ -8,7 +8,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Test class of {@link PluginsClassLoader}
@@ -115,7 +116,7 @@ class PluginsClassLoaderTest {
 	@Test
 	void getInstance() throws IOException {
 		var old = Thread.currentThread().getContextClassLoader();
-		try (var cl = new URLClassLoader(new URL[0], Mockito.mock(PluginsClassLoader.class))) {
+		try (var cl = new URLClassLoader(new URL[0], mock(PluginsClassLoader.class))) {
 			Thread.currentThread().setContextClassLoader(cl);
 			Assertions.assertNotNull(PluginsClassLoader.getInstance());
 		} finally {
@@ -265,20 +266,20 @@ class PluginsClassLoaderTest {
 	@Test
 	void getBootstrapCodeError() throws IOException, NoSuchAlgorithmException {
 		try (var classLoader = new PluginsClassLoader()) {
-			var url = Mockito.mock(URL.class);
+			var url = mock(URL.class);
 			Assertions.assertThrows(NullPointerException.class, () -> classLoader.getBootstrapCode(url));
 
-			var input = Mockito.mock(InputStream.class);
-			Mockito.doReturn(input).when(url).openStream();
+			var input = mock(InputStream.class);
+			doReturn(input).when(url).openStream();
 			Assertions.assertThrows(NullPointerException.class, () -> classLoader.getBootstrapCode(url));
 
-			Mockito.doThrow(new IOException()).when(input).readAllBytes();
+			doThrow(new IOException()).when(input).readAllBytes();
 			Assertions.assertThrows(IOException.class, () -> classLoader.getBootstrapCode(url));
 
-			Mockito.doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();
+			doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();
 			Assertions.assertEquals("ok", classLoader.getBootstrapCode(url));
 
-			Mockito.doThrow(new IOException()).when(input).close();
+			doThrow(new IOException()).when(input).close();
 			Assertions.assertThrows(IOException.class, () -> classLoader.getBootstrapCode(url));
 		}
 	}
@@ -286,10 +287,10 @@ class PluginsClassLoaderTest {
 	@Test
 	void getBootstrapCode() throws IOException, NoSuchAlgorithmException {
 		try (var classLoader = new PluginsClassLoader()) {
-			var url = Mockito.mock(URL.class);
-			var input = Mockito.mock(InputStream.class);
-			Mockito.doReturn(input).when(url).openStream();
-			Mockito.doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();
+			var url = mock(URL.class);
+			var input = mock(InputStream.class);
+			doReturn(input).when(url).openStream();
+			doReturn("ok".getBytes(StandardCharsets.UTF_8)).when(input).readAllBytes();
 			Assertions.assertEquals("ok", classLoader.getBootstrapCode(url));
 		}
 

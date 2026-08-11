@@ -3,10 +3,9 @@
  */
 package org.ligoj.bootstrap.resource.system.configuration;
 
-import org.ligoj.bootstrap.model.system.SystemConfiguration;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.model.system.SystemConfiguration;
 
 /**
  * "Configuration" value with source information for edition.

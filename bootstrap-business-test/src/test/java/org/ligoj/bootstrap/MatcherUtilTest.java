@@ -3,23 +3,19 @@
  */
 package org.ligoj.bootstrap;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.mockito.Mockito;
 import org.opentest4j.AssertionFailedError;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class of {@link MatcherUtil}
@@ -34,10 +30,10 @@ class MatcherUtilTest {
 	@Test
 	void assertThrowsNotSameField() {
 		final Set<ConstraintViolation<?>> violations = new HashSet<>();
-		final ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
-		final var path = Mockito.mock(Path.class);
-		Mockito.when(violation.getPropertyPath()).thenReturn(path);
-		Mockito.when(path.toString()).thenReturn("any");
+		final ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+		final var path = mock(Path.class);
+		when(violation.getPropertyPath()).thenReturn(path);
+		when(path.toString()).thenReturn("any");
 		violations.add(violation);
 		final var violationException = new ConstraintViolationException(violations);
 		Assertions.assertEquals("expected: <firstName> but was: <[any]>",
@@ -61,11 +57,11 @@ class MatcherUtilTest {
 	@Test
 	void assertThrows() {
 		final Set<ConstraintViolation<?>> violations = new HashSet<>();
-		final ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
-		final var path = Mockito.mock(Path.class);
-		Mockito.when(violation.getPropertyPath()).thenReturn(path);
-		Mockito.when(violation.getMessageTemplate()).thenReturn("message");
-		Mockito.when(path.toString()).thenReturn("firstName");
+		final ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+		final var path = mock(Path.class);
+		when(violation.getPropertyPath()).thenReturn(path);
+		when(violation.getMessageTemplate()).thenReturn("message");
+		when(path.toString()).thenReturn("firstName");
 		violations.add(violation);
 
 		final var violationException = new ConstraintViolationException(violations);
@@ -75,11 +71,11 @@ class MatcherUtilTest {
 	@Test
 	void assertThrowsMessagePackage() {
 		final Set<ConstraintViolation<?>> violations = new HashSet<>();
-		final ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
-		final var path = Mockito.mock(Path.class);
-		Mockito.when(violation.getPropertyPath()).thenReturn(path);
-		Mockito.when(violation.getMessageTemplate()).thenReturn("some.Message.error");
-		Mockito.when(path.toString()).thenReturn("firstName");
+		final ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+		final var path = mock(Path.class);
+		when(violation.getPropertyPath()).thenReturn(path);
+		when(violation.getMessageTemplate()).thenReturn("some.Message.error");
+		when(path.toString()).thenReturn("firstName");
 		violations.add(violation);
 
 		final var violationException = new ConstraintViolationException(violations);
@@ -89,11 +85,11 @@ class MatcherUtilTest {
 	@Test
 	void assertThrowsNotSameMessage() {
 		final Set<ConstraintViolation<?>> violations = new HashSet<>();
-		final ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
-		final var path = Mockito.mock(Path.class);
-		Mockito.when(path.toString()).thenReturn("firstName");
-		Mockito.when(violation.getPropertyPath()).thenReturn(path);
-		Mockito.when(violation.getMessageTemplate()).thenReturn("any");
+		final ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+		final var path = mock(Path.class);
+		when(path.toString()).thenReturn("firstName");
+		when(violation.getPropertyPath()).thenReturn(path);
+		when(violation.getMessageTemplate()).thenReturn("any");
 		violations.add(violation);
 
 		final var violationException = new ConstraintViolationException(violations);

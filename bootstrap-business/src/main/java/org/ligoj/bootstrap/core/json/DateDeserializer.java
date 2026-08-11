@@ -3,25 +3,19 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.ligoj.bootstrap.core.DateUtils;
-
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.deser.std.StdDeserializer;
+
+import java.util.Date;
 
 /**
  * {@link Date} deserializer using the shared {@link DateUtils#getApplicationTimeZone()}.
  */
 public class DateDeserializer extends StdDeserializer<Date> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 	/**
 	 * JAX-RS serializer instance.
 	 */

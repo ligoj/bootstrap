@@ -3,9 +3,9 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
-import tools.jackson.databind.ObjectMapper;
 import org.ligoj.bootstrap.core.curl.CurlProcessor;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.cache.annotation.CacheRemoveAll;
 import javax.cache.annotation.CacheResult;
@@ -28,7 +28,7 @@ public class NexusRepositoryManager extends AbstractRemoteRepositoryManager {
 
 	@Override
 	@CacheResult(cacheName = "plugins-last-version-nexus")
-	public Map<String, Artifact> getLastPluginVersions() throws IOException {
+	public Map<String, Artifact> getLastPluginVersions() {
 		try (var processor = new CurlProcessor(getSearchProxyHost(), getSearchProxyPort())) {
 			final var searchResult = Objects.toString(
 					processor.get(getSearchUrl(DEFAULT_SEARCH_URL + getGroupId(DEFAULT_GROUP_ID)), "Accept:application/json"), "{\"data\":[]}");

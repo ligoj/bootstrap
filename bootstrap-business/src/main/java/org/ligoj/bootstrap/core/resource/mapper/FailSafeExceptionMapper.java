@@ -3,15 +3,14 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import javax.naming.CommunicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
+import lombok.extern.slf4j.Slf4j;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.naming.CommunicationException;
 
 /**
  * Handles uncaught {@link Throwable} errors exception to a JSON string. This is a fail-safe security guard against

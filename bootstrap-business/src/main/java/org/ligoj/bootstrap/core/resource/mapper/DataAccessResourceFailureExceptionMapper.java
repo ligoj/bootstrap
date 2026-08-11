@@ -6,10 +6,8 @@ package org.ligoj.bootstrap.core.resource.mapper;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
-import org.springframework.dao.DataAccessResourceFailureException;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * Handles database (no transaction) issue to a JSON string.

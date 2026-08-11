@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.DateUtils;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Test of {@link AbstractDataGeneratorTest}
@@ -28,7 +29,7 @@ class TestAbstractDataGeneratorTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void testSetApplicationContext() {
-		setApplicationContext(Mockito.mock(ApplicationContext.class));
+		setApplicationContext(mock(ApplicationContext.class));
 	}
 
 	@Test

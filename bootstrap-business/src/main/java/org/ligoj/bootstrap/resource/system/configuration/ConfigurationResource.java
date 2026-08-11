@@ -20,7 +20,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.stereotype.Service;
 
-import javax.cache.annotation.*;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheRemove;
+import javax.cache.annotation.CacheRemoveAll;
+import javax.cache.annotation.CacheResult;
 import java.util.*;
 
 /**

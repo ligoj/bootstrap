@@ -3,16 +3,14 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.Serializable;
-
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
-
-import org.ligoj.bootstrap.core.INamableBean;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ligoj.bootstrap.core.INamableBean;
+
+import java.io.Serializable;
 
 /**
  * Abstract entity with business key and name.

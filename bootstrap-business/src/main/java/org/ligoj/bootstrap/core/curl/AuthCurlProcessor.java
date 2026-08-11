@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.core5.http.HttpHeaders;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * Basic authenticated CURL processor. Credentials are sent in each request.

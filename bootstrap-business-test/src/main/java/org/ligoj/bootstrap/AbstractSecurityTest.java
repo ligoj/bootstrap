@@ -6,7 +6,6 @@ package org.ligoj.bootstrap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.ligoj.bootstrap.core.security.RbacUserDetails;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -18,6 +17,9 @@ import org.springframework.security.core.userdetails.User;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Basic Security mock setup.
@@ -85,12 +87,12 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	@SuppressWarnings("unchecked")
 	protected SecurityContext initSpringSecurityContext(final User userDetails) {
 		SecurityContextHolder.clearContext();
-		final var context = Mockito.mock(SecurityContext.class);
-		final var authentication = Mockito.mock(Authentication.class);
-		Mockito.when((Collection<GrantedAuthority>) authentication.getAuthorities()).thenReturn( userDetails.getAuthorities());
-		Mockito.when(context.getAuthentication()).thenReturn(authentication);
-		Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
-		Mockito.when(authentication.getName()).thenReturn(userDetails.getUsername());
+		final var context = mock(SecurityContext.class);
+		final var authentication = mock(Authentication.class);
+		when((Collection<GrantedAuthority>) authentication.getAuthorities()).thenReturn( userDetails.getAuthorities());
+		when(context.getAuthentication()).thenReturn(authentication);
+		when(authentication.getPrincipal()).thenReturn(userDetails);
+		when(authentication.getName()).thenReturn(userDetails.getUsername());
 		SecurityContextHolder.setContext(context);
 		return context;
 	}
@@ -119,10 +121,10 @@ public abstract class AbstractSecurityTest extends AbstractDataGeneratorTest {
 	 * @return A {@link jakarta.ws.rs.core.SecurityContext} with a defined {@link Principal} mock
 	 */
 	protected jakarta.ws.rs.core.SecurityContext getJaxRsSecurityContext(final String user) {
-		final var context = Mockito.mock(jakarta.ws.rs.core.SecurityContext.class);
-		final var principal = Mockito.mock(Principal.class);
-		Mockito.when(principal.getName()).thenReturn(user);
-		Mockito.when(context.getUserPrincipal()).thenReturn(principal);
+		final var context = mock(jakarta.ws.rs.core.SecurityContext.class);
+		final var principal = mock(Principal.class);
+		when(principal.getName()).thenReturn(user);
+		when(context.getUserPrincipal()).thenReturn(principal);
 		return context;
 	}
 

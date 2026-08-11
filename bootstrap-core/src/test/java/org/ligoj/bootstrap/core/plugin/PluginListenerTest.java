@@ -3,14 +3,13 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
-import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
-
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
+
+import java.util.function.Supplier;
 
 /**
  * Test class of {@link PluginListener}

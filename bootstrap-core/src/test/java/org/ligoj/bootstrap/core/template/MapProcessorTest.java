@@ -3,14 +3,14 @@
  */
 package org.ligoj.bootstrap.core.template;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.ligoj.bootstrap.model.system.SystemUser;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.ligoj.bootstrap.model.system.SystemUser;
 
 /**
  * Test class of {@link MapProcessor}

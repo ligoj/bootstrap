@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.io.Serializable;
-
 import jakarta.validation.constraints.NotBlank;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.Serializable;
 
 /**
  * An audited and named bean

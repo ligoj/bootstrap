@@ -8,13 +8,11 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.springframework.transaction.TransactionSystemException;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Maps a {@link TransactionSystemException} wrapping {@link ConstraintViolationException} to a JSR-303 validation error. Status code, and contents are updated.

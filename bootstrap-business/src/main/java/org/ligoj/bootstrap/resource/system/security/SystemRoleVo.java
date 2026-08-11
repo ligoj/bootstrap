@@ -3,15 +3,13 @@
  */
 package org.ligoj.bootstrap.resource.system.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.validation.constraints.NotEmpty;
-
-import org.ligoj.bootstrap.core.NamedBean;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.NamedBean;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Corporate user.

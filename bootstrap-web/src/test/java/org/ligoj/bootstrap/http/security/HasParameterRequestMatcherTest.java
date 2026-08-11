@@ -4,10 +4,11 @@
 package org.ligoj.bootstrap.http.security;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class of {@link HasParameterRequestMatcher}
@@ -16,15 +17,15 @@ class HasParameterRequestMatcherTest {
 
 	@Test
     void testMatches() {
-        var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getParameter("parameter")).thenReturn("value");
+        var request = mock(HttpServletRequest.class);
+		when(request.getParameter("parameter")).thenReturn("value");
 		Assertions.assertTrue(new HasParameterRequestMatcher("parameter").matches(request));
 	}
 
 	@Test
     void testBlank() {
-        var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getParameter("parameter")).thenReturn(" ");
+        var request = mock(HttpServletRequest.class);
+		when(request.getParameter("parameter")).thenReturn(" ");
 		Assertions.assertFalse(new HasParameterRequestMatcher("parameter").matches(request));
 	}
 }

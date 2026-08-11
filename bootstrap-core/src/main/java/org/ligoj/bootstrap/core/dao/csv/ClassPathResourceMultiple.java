@@ -3,17 +3,16 @@
  */
 package org.ligoj.bootstrap.core.dao.csv;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.ClassPathResource;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Multiple classpath resource locator using CameL cases, lower case combinations.

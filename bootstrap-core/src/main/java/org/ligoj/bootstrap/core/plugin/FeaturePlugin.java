@@ -3,10 +3,10 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A plug-in. The plug-in behavior is massively based on naming convention. The key of the plug-in must be unique and

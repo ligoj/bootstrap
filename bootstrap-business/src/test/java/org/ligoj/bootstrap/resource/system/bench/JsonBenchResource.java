@@ -3,14 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.bench;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -18,8 +10,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import org.ligoj.bootstrap.core.json.TableItem;
+
+import java.util.*;
 
 /**
  * Very simple JSon data binding services. Note that inheritance and raw (declared as Object) checks are not yet there.

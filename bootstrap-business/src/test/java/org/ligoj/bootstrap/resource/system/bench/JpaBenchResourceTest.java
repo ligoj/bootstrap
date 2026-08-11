@@ -11,13 +11,15 @@ import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.ligoj.bootstrap.dao.system.BenchResult;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test class of {@link JpaBenchResource}.
@@ -77,8 +79,8 @@ class JpaBenchResourceTest extends AbstractBootTest {
 			// Proceed to the test
 			resource.prepareData("1", openStream);
 			final var downloadLobFile = resource.downloadLobFile();
-			final var output = Mockito.mock(OutputStream.class);
-			Mockito.doThrow(new IOException()).when(output).write(ArgumentMatchers.any(byte[].class));
+			final var output = mock(OutputStream.class);
+			doThrow(new IOException()).when(output).write(ArgumentMatchers.any(byte[].class));
 
 			Assertions.assertThrows(IllegalStateException.class, () -> downloadLobFile.write(output));
 		}

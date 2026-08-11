@@ -3,16 +3,13 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.io.IOException;
-import java.util.Date;
-
+import lombok.Setter;
 import org.ligoj.bootstrap.core.DateUtils;
-
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
 
-import lombok.Setter;
+import java.util.Date;
 
 /**
  * {@link Date} serializer using the shared {@link DateUtils#getApplicationTimeZone()}.
@@ -20,10 +17,6 @@ import lombok.Setter;
 @Setter
 public class DateSerializer extends StdSerializer<Date> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 	/**
 	 * JAX-RS serializer instance.
 	 */

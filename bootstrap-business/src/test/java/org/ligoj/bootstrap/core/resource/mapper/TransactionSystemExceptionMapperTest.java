@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import java.util.Collections;
-
 import jakarta.validation.ConstraintViolationException;
-
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 import org.springframework.transaction.TransactionSystemException;
+
+import java.util.Collections;
 
 /**
  * Exception mapper test using {@link TransactionSystemExceptionMapper}

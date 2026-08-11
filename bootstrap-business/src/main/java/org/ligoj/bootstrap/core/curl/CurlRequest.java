@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * HTTP query to execute.

@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core.resource.handler;
 
-import java.time.Instant;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 import org.ligoj.bootstrap.core.DateUtils;
+
+import java.time.Instant;
 
 /**
  * Test class of {@link LocalDateParamConverter}

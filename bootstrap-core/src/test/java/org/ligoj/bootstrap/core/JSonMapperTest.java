@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core;
 
-import tools.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +27,13 @@ class JSonMapperTest {
 	private static final int ITERATION = 100000;
 
 	@BeforeEach
-	void initializeMapper() throws IOException {
+	void initializeMapper() {
 		jackSonMapper = new ObjectMapper();
 		warmup();
 
 	}
 
-	private void warmup() throws IOException {
+	private void warmup() {
 		for (var i = ITERATION; i-- > 0; ) {
 			readObject("\"value\"", String.class);
 		}
@@ -46,7 +46,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testReadDate() throws IOException {
+	void testReadDate() {
 		var lastObject = new TestDate();
 		final var start = System.currentTimeMillis();
 		for (var i = ITERATION; i-- > 0; ) {
@@ -60,7 +60,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testWriteDate() throws IOException {
+	void testWriteDate() {
 		final var lastObject = new TestDate();
 		lastObject.setDate(new Date());
 		String lastValue = null;
@@ -85,7 +85,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testReadLong() throws IOException {
+	void testReadLong() {
 		var lastObject = new TestLong();
 		final var start = System.currentTimeMillis();
 		for (var i = ITERATION * 10; i-- > 0; ) {
@@ -100,7 +100,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testWriteLong() throws IOException {
+	void testWriteLong() {
 		final var lastObject = new TestLong();
 		lastObject.setNumberLong(6L);
 		String lastValue = null;
@@ -120,7 +120,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testReadStringList() throws IOException {
+	void testReadStringList() {
 		var lastObject = new TestStringArray();
 		final var valueBuffer = new StringBuilder("{\"array\":[");
 		for (var i = 100; i-- > 0; ) {
@@ -144,7 +144,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testWriteStringList() throws IOException {
+	void testWriteStringList() {
 		final var lastObject = new TestStringArray();
 		final var array = new ArrayList<String>();
 		for (var i = 100; i-- > 0; ) {
@@ -168,7 +168,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testReadGenericArray() throws IOException {
+	void testReadGenericArray() {
 		var lastObject = new TestGenericArray();
 		final var valueBuffer = new StringBuilder("{\"array\":[");
 		for (var i = 100; i-- > 0; ) {
@@ -192,7 +192,7 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testWriteGenericArray() throws IOException {
+	void testWriteGenericArray() {
 		final var lastObject = new TestGenericArray();
 		final var array = new ArrayList<TestLong>();
 		for (var i = 100; i-- > 0; ) {
@@ -220,7 +220,7 @@ class JSonMapperTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void testReadGenericObjectArray() throws IOException {
+	void testReadGenericObjectArray() {
 		final var valueBuffer = new StringBuilder("[");
 		for (var i = 20; i-- > 0; ) {
 			if (i != 19) {
@@ -247,9 +247,8 @@ class JSonMapperTest {
 	}
 
 	@Test
-	void testWriteGenericObjectArray() throws IOException {
-		@SuppressWarnings("unchecked")
-		final var lastObject = (TestGenericObjectArray<Integer, String>[])new TestGenericObjectArray<?,?>[20];
+	void testWriteGenericObjectArray() {
+		@SuppressWarnings("unchecked") final var lastObject = (TestGenericObjectArray<Integer, String>[]) new TestGenericObjectArray<?, ?>[20];
 		for (var i = 20; i-- > 0; ) {
 			lastObject[i] = new TestGenericObjectArray<>();
 			lastObject[i].setKey(6);
@@ -266,11 +265,11 @@ class JSonMapperTest {
 		log.info("write-generic-object-array\t{}", end - start);
 	}
 
-	private <T> T readObject(final String value, final Class<T> clazz) throws IOException {
+	private <T> T readObject(final String value, final Class<T> clazz) {
 		return jackSonMapper.readValue(value, clazz);
 	}
 
-	private String writeValue(final Object object) throws IOException {
+	private String writeValue(final Object object) {
 		return jackSonMapper.writeValueAsString(object);
 	}
 }

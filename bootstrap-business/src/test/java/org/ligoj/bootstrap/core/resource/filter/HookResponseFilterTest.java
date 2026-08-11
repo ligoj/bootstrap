@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * ContainerResponseFilter resource test, includes {@link HookResponseFilter}
  */
@@ -31,9 +34,9 @@ class HookResponseFilterTest {
 	@Test
 	void filterIgnoreStatusLow() {
 		final var filter = new HookResponseFilter();
-		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		Mockito.when(responseContext.getStatus()).thenReturn(100);
+		final var requestContext = mock(ContainerRequestContextImpl.class);
+		final var responseContext = mock(ContainerResponseContext.class);
+		when(responseContext.getStatus()).thenReturn(100);
 		filter.filter(requestContext, responseContext);
 		Mockito.verifyNoInteractions(requestContext);
 	}
@@ -41,9 +44,9 @@ class HookResponseFilterTest {
 	@Test
 	void filterIgnoreStatusHigh() {
 		final var filter = new HookResponseFilter();
-		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		Mockito.when(responseContext.getStatus()).thenReturn(300);
+		final var requestContext = mock(ContainerRequestContextImpl.class);
+		final var responseContext = mock(ContainerResponseContext.class);
+		when(responseContext.getStatus()).thenReturn(300);
 		filter.filter(requestContext, responseContext);
 		Mockito.verifyNoInteractions(requestContext);
 	}
@@ -52,28 +55,28 @@ class HookResponseFilterTest {
 	@Test
 	void filter() {
 		final var filter = new HookResponseFilter();
-		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
+		final var hookConfiguration = mock(HookConfiguration.class);
 		filter.hookConfiguration = hookConfiguration;
 
-		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		final var message = Mockito.mock(Message.class);
-		final var exchange = Mockito.mock(Exchange.class);
-		final var securityContext = Mockito.mock(SecurityContext.class);
-		final var principal = Mockito.mock(Principal.class);
-		final var uriInfo = Mockito.mock(UriInfo.class);
-		final var outMessage = Mockito.mock(Message.class);
+		final var requestContext = mock(ContainerRequestContextImpl.class);
+		final var responseContext = mock(ContainerResponseContext.class);
+		final var message = mock(Message.class);
+		final var exchange = mock(Exchange.class);
+		final var securityContext = mock(SecurityContext.class);
+		final var principal = mock(Principal.class);
+		final var uriInfo = mock(UriInfo.class);
+		final var outMessage = mock(Message.class);
 
-		Mockito.when(responseContext.getStatus()).thenReturn(200);
-		Mockito.when(requestContext.getMessage()).thenReturn(message);
-		Mockito.when(message.getExchange()).thenReturn(exchange);
-		Mockito.when(requestContext.getSecurityContext()).thenReturn(securityContext);
-		Mockito.when(securityContext.getUserPrincipal()).thenReturn(principal);
-		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
-		Mockito.when(uriInfo.getPath()).thenReturn("path");
-		Mockito.when(requestContext.getMethod()).thenReturn("GET");
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
-		Mockito.when(outMessage.getContent(List.class)).thenReturn(List.of("response"));
+		when(responseContext.getStatus()).thenReturn(200);
+		when(requestContext.getMessage()).thenReturn(message);
+		when(message.getExchange()).thenReturn(exchange);
+		when(requestContext.getSecurityContext()).thenReturn(securityContext);
+		when(securityContext.getUserPrincipal()).thenReturn(principal);
+		when(requestContext.getUriInfo()).thenReturn(uriInfo);
+		when(uriInfo.getPath()).thenReturn("path");
+		when(requestContext.getMethod()).thenReturn("GET");
+		when(exchange.getOutMessage()).thenReturn(outMessage);
+		when(outMessage.getContent(List.class)).thenReturn(List.of("response"));
 
 		filter.filter(requestContext, responseContext);
 
@@ -83,7 +86,7 @@ class HookResponseFilterTest {
 
 		// Verify processor execution
 		final var hook = new SystemHook();
-		final var runnable = Mockito.mock(HookProcessRunnable.class);
+		final var runnable = mock(HookProcessRunnable.class);
 		captor.getValue().accept(hook, runnable);
 		Mockito.verify(runnable).run();
 		
@@ -104,24 +107,24 @@ class HookResponseFilterTest {
 	@Test
 	void filterEmptyResponse() {
 		final var filter = new HookResponseFilter();
-		final var hookConfiguration = Mockito.mock(HookConfiguration.class);
+		final var hookConfiguration = mock(HookConfiguration.class);
 		filter.hookConfiguration = hookConfiguration;
 
-		final var requestContext = Mockito.mock(ContainerRequestContextImpl.class);
-		final var responseContext = Mockito.mock(ContainerResponseContext.class);
-		final var message = Mockito.mock(Message.class);
-		final var exchange = Mockito.mock(Exchange.class);
-		final var securityContext = Mockito.mock(SecurityContext.class);
-		final var uriInfo = Mockito.mock(UriInfo.class);
-		final var outMessage = Mockito.mock(Message.class);
+		final var requestContext = mock(ContainerRequestContextImpl.class);
+		final var responseContext = mock(ContainerResponseContext.class);
+		final var message = mock(Message.class);
+		final var exchange = mock(Exchange.class);
+		final var securityContext = mock(SecurityContext.class);
+		final var uriInfo = mock(UriInfo.class);
+		final var outMessage = mock(Message.class);
 
-		Mockito.when(responseContext.getStatus()).thenReturn(200);
-		Mockito.when(requestContext.getMessage()).thenReturn(message);
-		Mockito.when(message.getExchange()).thenReturn(exchange);
-		Mockito.when(requestContext.getSecurityContext()).thenReturn(securityContext);
-		Mockito.when(requestContext.getUriInfo()).thenReturn(uriInfo);
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
-		Mockito.when(outMessage.getContent(List.class)).thenReturn(Collections.emptyList());
+		when(responseContext.getStatus()).thenReturn(200);
+		when(requestContext.getMessage()).thenReturn(message);
+		when(message.getExchange()).thenReturn(exchange);
+		when(requestContext.getSecurityContext()).thenReturn(securityContext);
+		when(requestContext.getUriInfo()).thenReturn(uriInfo);
+		when(exchange.getOutMessage()).thenReturn(outMessage);
+		when(outMessage.getContent(List.class)).thenReturn(Collections.emptyList());
 
 		filter.filter(requestContext, responseContext);
 

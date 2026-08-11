@@ -8,12 +8,10 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.Length;
-import org.ligoj.bootstrap.core.model.AbstractPersistable;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+import org.ligoj.bootstrap.core.model.AbstractPersistable;
 
 /**
  * Wine entity.

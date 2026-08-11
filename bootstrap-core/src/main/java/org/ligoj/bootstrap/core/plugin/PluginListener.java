@@ -3,9 +3,9 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
-import java.util.function.Supplier;
-
 import org.ligoj.bootstrap.model.system.SystemPlugin;
+
+import java.util.function.Supplier;
 
 /**
  * Plug-in life cycle listener.

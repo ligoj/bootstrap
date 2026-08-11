@@ -3,15 +3,14 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.util.Map;
-
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.FetchParent;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * JPA association fetch helper

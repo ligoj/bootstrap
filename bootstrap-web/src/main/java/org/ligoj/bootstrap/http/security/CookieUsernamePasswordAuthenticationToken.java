@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.http.security;
 
-import java.util.Collection;
-import java.util.List;
-
+import lombok.Getter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-import lombok.Getter;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Authentication token with back-office cookies to forward to end-user.

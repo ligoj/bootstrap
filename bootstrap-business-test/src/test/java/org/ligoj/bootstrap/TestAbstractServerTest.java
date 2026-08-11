@@ -9,11 +9,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Test class of {@link AbstractServerTest}
@@ -62,10 +63,10 @@ class TestAbstractServerTest extends AbstractServerTest {
 	 */
 	@Test
 	void stopTwice() {
-		httpServer = Mockito.mock(WireMockServer.class);
-		Mockito.doThrow(new RuntimeException()).when(httpServer).stop();
+		httpServer = mock(WireMockServer.class);
+		doThrow(new RuntimeException()).when(httpServer).stop();
 		shutDownMockServer();
-		Mockito.verify(httpServer, Mockito.times(1)).stop();
+		verify(httpServer, times(1)).stop();
 	}
 
 	/**

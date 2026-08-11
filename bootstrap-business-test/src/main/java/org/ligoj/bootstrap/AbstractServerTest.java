@@ -3,10 +3,9 @@
  */
 package org.ligoj.bootstrap;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-
-import com.github.tomakehurst.wiremock.WireMockServer;
 
 /**
  * Test using mock http server.

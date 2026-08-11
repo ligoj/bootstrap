@@ -3,12 +3,11 @@
  */
 package org.ligoj.bootstrap.core.json;
 
+import org.ligoj.bootstrap.core.DateUtils;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
-import org.ligoj.bootstrap.core.DateUtils;
 
-import java.io.IOException;
 import java.time.Instant;
 
 /**
@@ -16,10 +15,6 @@ import java.time.Instant;
  */
 public class InstantSerializer extends StdSerializer<Instant> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 	/**
 	 * JAX-RS serializer instance.
 	 */

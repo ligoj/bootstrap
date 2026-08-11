@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core.resource.handler;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.AbstractDataGeneratorTest;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * Test class of {@link UnixTimestampParameterHandler}

@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.core.security;
 
-import java.util.Optional;
-
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 
-import lombok.Setter;
+import java.util.Optional;
 
 /**
  * To declare the auditor of current transaction. As default, when there is no declared auditor

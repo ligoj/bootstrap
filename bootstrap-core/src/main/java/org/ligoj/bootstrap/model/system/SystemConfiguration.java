@@ -9,11 +9,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractNamedAuditedEntity;
 
 /**
  * System configuration. The name property corresponds to the key.

@@ -3,26 +3,19 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
 import org.ligoj.bootstrap.dao.system.SystemUserSettingRepository;
 import org.ligoj.bootstrap.model.system.AbstractNamedValue;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Manage {@link SystemUserSetting}. User settings are scoped by current user.

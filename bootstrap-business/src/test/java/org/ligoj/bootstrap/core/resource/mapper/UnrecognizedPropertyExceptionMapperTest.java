@@ -3,12 +3,11 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
-
 import tools.jackson.databind.exc.UnrecognizedPropertyException;
+
+import java.util.Collections;
 
 /**
  * Exception mapper test using {@link UnrecognizedPropertyExceptionMapper}

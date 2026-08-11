@@ -3,18 +3,11 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.JoinType;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.SpringUtils;
@@ -23,6 +16,12 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementation of {@link RestRepository}.
@@ -88,7 +87,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 		SpringUtils.getBean(FetchHelper.class).applyFetchedAssociations(fetchedAssociations, root);
 
 		// Apply specification
-		final Specification<T> specification = (r, q, cb) -> cb.equal(r.get("id"), id);
+		final Specification<T> specification = (r, _, cb) -> cb.equal(r.get("id"), id);
 		query.where(specification.toPredicate(root, query, builder));
 		query.select(root);
 		return em.createQuery(query).getSingleResult();

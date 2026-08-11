@@ -6,10 +6,8 @@ package org.ligoj.bootstrap.core.resource.filter;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-
-import org.ligoj.bootstrap.core.resource.OnNullReturn404;
-
 import lombok.extern.slf4j.Slf4j;
+import org.ligoj.bootstrap.core.resource.OnNullReturn404;
 
 /**
  * ContainerResponse resource test.

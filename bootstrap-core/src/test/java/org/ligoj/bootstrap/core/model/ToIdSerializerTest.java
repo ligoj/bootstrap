@@ -3,15 +3,13 @@
  */
 package org.ligoj.bootstrap.core.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.annotation.JsonSerialize;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * Test class of {@link ToIdSerializer}

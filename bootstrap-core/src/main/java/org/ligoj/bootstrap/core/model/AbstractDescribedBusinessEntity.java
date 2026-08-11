@@ -3,16 +3,14 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.Serializable;
-
 import jakarta.persistence.MappedSuperclass;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.ligoj.bootstrap.core.IDescribableBean;
 import org.ligoj.bootstrap.core.validation.SafeHtml;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
 
 /**
  * Abstract entity with business key, name and description.

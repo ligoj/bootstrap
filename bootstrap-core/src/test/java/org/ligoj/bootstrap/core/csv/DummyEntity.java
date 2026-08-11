@@ -4,12 +4,10 @@
 package org.ligoj.bootstrap.core.csv;
 
 import jakarta.persistence.*;
-
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.Length;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * Dummy entity.

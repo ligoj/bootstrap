@@ -3,11 +3,8 @@
  */
 package org.ligoj.bootstrap.core.crypto;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.function.UnaryOperator;
-
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,8 +12,10 @@ import org.jasypt.encryption.pbe.config.SimplePBEConfig;
 import org.ligoj.bootstrap.core.GlobalPropertyUtils;
 import org.springframework.core.io.ClassPathResource;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.function.UnaryOperator;
 
 /**
  * Fail-safe password configuration using in this order :

@@ -3,20 +3,15 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-
-import javax.inject.Named;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.CookieParam;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-
+import jakarta.ws.rs.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.ClassUtils;
+
+import javax.inject.Named;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
 
 /**
  * Test class of {@link JaxRsAnnotationParanamer}

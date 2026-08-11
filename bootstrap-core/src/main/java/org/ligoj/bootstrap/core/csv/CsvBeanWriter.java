@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
-import java.io.IOException;
-import java.io.Writer;
-
+import jodd.bean.BeanUtil;
 import org.apache.commons.text.StringEscapeUtils;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 
-import jodd.bean.BeanUtil;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Basic writer extension supporting <code>null</code> values.

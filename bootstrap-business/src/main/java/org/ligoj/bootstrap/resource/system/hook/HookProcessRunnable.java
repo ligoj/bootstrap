@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -23,6 +22,7 @@ import org.apache.cxf.message.Message;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.context.ApplicationContext;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

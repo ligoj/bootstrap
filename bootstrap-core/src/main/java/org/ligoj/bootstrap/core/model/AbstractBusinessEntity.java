@@ -3,20 +3,17 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.Serializable;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
-
-import org.springframework.data.domain.Persistable;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.domain.Persistable;
+
+import java.io.Serializable;
 
 /**
  * Abstract entity with business key. No auto generated key.

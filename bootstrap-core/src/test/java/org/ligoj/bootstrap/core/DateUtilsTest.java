@@ -3,10 +3,10 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.util.TimeZone;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.TimeZone;
 
 /**
  * Check date utilities of DateUtils.

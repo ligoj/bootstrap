@@ -7,7 +7,9 @@ import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * {@link CryptoHelper} test class.
@@ -19,9 +21,9 @@ class CryptoHelperTest {
 	 */
 	@Test
     void encryptAsNeeded() {
-		final var stringEncryptor = Mockito.mock(StringEncryptor.class);
-		Mockito.when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
-		Mockito.when(stringEncryptor.encrypt("value")).thenReturn("encrypted");
+		final var stringEncryptor = mock(StringEncryptor.class);
+		when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
+		when(stringEncryptor.encrypt("value")).thenReturn("encrypted");
 		final var securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
 		Assertions.assertEquals("encrypted", securityHelper.encryptAsNeeded("value"));
@@ -32,8 +34,8 @@ class CryptoHelperTest {
 	 */
 	@Test
     void encryptAsNeededAlreadyEncrypted() {
-		final var stringEncryptor = Mockito.mock(StringEncryptor.class);
-		Mockito.when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
+		final var stringEncryptor = mock(StringEncryptor.class);
+		when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
 		final var securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
 		Assertions.assertEquals("encrypted", securityHelper.encryptAsNeeded("encrypted"));
@@ -44,8 +46,8 @@ class CryptoHelperTest {
 	 */
 	@Test
     void decryptAsNeeded() {
-		final var stringEncryptor = Mockito.mock(StringEncryptor.class);
-		Mockito.when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
+		final var stringEncryptor = mock(StringEncryptor.class);
+		when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
 		final var securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
 		Assertions.assertEquals("value", securityHelper.decryptAsNeeded("encrypted"));
@@ -56,8 +58,8 @@ class CryptoHelperTest {
 	 */
 	@Test
     void decryptedOnlyWasNotSecured() {
-		final var stringEncryptor = Mockito.mock(StringEncryptor.class);
-		Mockito.when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
+		final var stringEncryptor = mock(StringEncryptor.class);
+		when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
 		final var securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
 		Assertions.assertEquals("value", securityHelper.decryptedOnly("value"));
@@ -68,8 +70,8 @@ class CryptoHelperTest {
 	 */
 	@Test
     void decryptedOnlyWasSecured() {
-		final var stringEncryptor = Mockito.mock(StringEncryptor.class);
-		Mockito.when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
+		final var stringEncryptor = mock(StringEncryptor.class);
+		when(stringEncryptor.decrypt("encrypted")).thenReturn("value");
 		final var securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
 		Assertions.assertNull(securityHelper.decryptedOnly("encrypted"));
@@ -89,8 +91,8 @@ class CryptoHelperTest {
 	 */
 	@Test
     void decryptAsNeededAlreadyDecrypted() {
-		final var stringEncryptor = Mockito.mock(StringEncryptor.class);
-		Mockito.when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
+		final var stringEncryptor = mock(StringEncryptor.class);
+		when(stringEncryptor.decrypt("value")).thenThrow(new EncryptionOperationNotPossibleException());
 		final var securityHelper = new CryptoHelper();
 		securityHelper.setEncryptor(stringEncryptor);
 		Assertions.assertEquals("value", securityHelper.decryptAsNeeded("value"));

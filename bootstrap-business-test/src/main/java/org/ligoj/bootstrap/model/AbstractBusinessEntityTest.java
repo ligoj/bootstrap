@@ -3,16 +3,16 @@
  */
 package org.ligoj.bootstrap.model;
 
+import jodd.bean.BeanUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.jupiter.api.Assertions;
+
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
-
-import jodd.bean.BeanUtil;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test business keyed entities basic ORM operations : hash code and equals.
@@ -60,7 +60,7 @@ public abstract class AbstractBusinessEntityTest {
 		testCombinations(modelClass, combinations);
 
 		// Test inheritance "canEqual" if available (as Scala)
-		final var mockCanEqual = Mockito.mock(modelClass);
+		final var mockCanEqual = mock(modelClass);
 		systemUser.equals(mockCanEqual);
 	}
 

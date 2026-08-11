@@ -3,13 +3,6 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +11,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
-
 import org.apache.cxf.jaxrs.ext.Nullable;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.apache.cxf.message.Exchange;
@@ -28,10 +20,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemUser;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Method;
+import java.util.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * {@link JAXRSBeanValidationImplicitInInterceptor} checks.
@@ -138,9 +135,9 @@ class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 	}
 
 	private static final TestClass INSTANCE = new TestClass();
-	private static final Message MESSAGE = Mockito.mock(Message.class);
+	private static final Message MESSAGE = mock(Message.class);
 	static {
-		Mockito.when(MESSAGE.getExchange()).thenReturn(Mockito.mock(Exchange.class));
+		when(MESSAGE.getExchange()).thenReturn(mock(Exchange.class));
 	}
 
 	@Test

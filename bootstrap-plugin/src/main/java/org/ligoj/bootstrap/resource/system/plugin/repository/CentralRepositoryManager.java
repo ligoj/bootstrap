@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
-import tools.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.HttpMethod;
 import org.ligoj.bootstrap.core.curl.CurlProcessor;
 import org.ligoj.bootstrap.core.curl.CurlRequest;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.cache.annotation.CacheRemoveAll;
 import javax.cache.annotation.CacheResult;
@@ -35,7 +35,7 @@ public class CentralRepositoryManager extends AbstractRemoteRepositoryManager {
 	}
 
 	@CacheResult(cacheName = "plugins-last-version-central")
-	public Map<String, Artifact> getLastPluginVersions() throws IOException {
+	public Map<String, Artifact> getLastPluginVersions() {
 		var result = new HashMap<String, Artifact>();
 		try (var processor = new CurlProcessor(getSearchProxyHost(), getSearchProxyPort())) {
 			var page = 0;

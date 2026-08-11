@@ -23,13 +23,15 @@ import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.model.test.DummyBusinessEntity3;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test class of {@link PaginationDao} {@link DynamicSpecification}, {@link FetchHelper}, {@link CustomSpecification}
@@ -888,15 +890,15 @@ class PaginationDaoTest extends AbstractBootTest {
 	@Test
 	void findAllJoinInvalidOrmPath() {
 		@SuppressWarnings("unchecked")
-		final var expression = (JpaPath<Expression<String>>) Mockito.mock(JpaPath.class);
-		final var pathRoot = Mockito.mock(NavigablePath.class);
-		final var pathParent = Mockito.mock(NavigablePath.class);
-		final var path = Mockito.mock(NavigablePath.class);
-		Mockito.doReturn(path).when(expression).getNavigablePath();
-		Mockito.doReturn(pathParent).when(path).getParent();
-		Mockito.doReturn(pathRoot).when(pathParent).getParent();
-		Mockito.doReturn("org.ligoj.bootstrap.model.system.SystemDialect").when(pathRoot).getLocalName();
-		Mockito.doReturn("invalid").when(pathParent).getLocalName();
+		final var expression = (JpaPath<Expression<String>>) mock(JpaPath.class);
+		final var pathRoot = mock(NavigablePath.class);
+		final var pathParent = mock(NavigablePath.class);
+		final var path = mock(NavigablePath.class);
+		doReturn(path).when(expression).getNavigablePath();
+		doReturn(pathParent).when(path).getParent();
+		doReturn(pathRoot).when(pathParent).getParent();
+		doReturn("org.ligoj.bootstrap.model.system.SystemDialect").when(pathRoot).getLocalName();
+		doReturn("invalid").when(pathParent).getLocalName();
 		Assertions.assertThrows(ValidationJsonException.class,()->AbstractSpecification.toRawData(em, null, expression));
 	}
 

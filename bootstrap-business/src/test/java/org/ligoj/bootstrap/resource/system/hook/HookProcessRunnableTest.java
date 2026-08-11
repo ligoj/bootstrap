@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import tools.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.mockito.Mockito;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * HookProcessRunnable resource test, includes {@link HookProcessRunnable}
  */
@@ -39,9 +42,9 @@ class HookProcessRunnableTest {
 		final var hook = new SystemHook();
 		hook.setDelay(1);
 		hook.setCommand("/path/to/any");
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn("^/path/other/.*").when(configuration).get("ligoj.hook.path", "^$");
-		final var exchange = Mockito.mock(Exchange.class);
+		final var exchange = mock(Exchange.class);
 		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), null, configuration).process(null, hook, null);
 		Mockito.verify(exchange, Mockito.never()).getInMessage();
 	}
@@ -52,13 +55,13 @@ class HookProcessRunnableTest {
 		hook.setName("hook1");
 		hook.setDelay(1);
 		hook.setCommand("/path/to/foo");
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		final var exchange = Mockito.mock(Exchange.class);
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
-		final var message = Mockito.mock(Message.class);
-		Mockito.when(exchange.getInMessage()).thenReturn(message);
-		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
+		when(message.getContent(List.class)).thenReturn(Collections.emptyList());
 
 		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
@@ -75,18 +78,18 @@ class HookProcessRunnableTest {
 		hook.setDelay(0); // Sync
 		hook.setName("hook1");
 		hook.setCommand("/path/to/foo");
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		final var exchange = Mockito.mock(Exchange.class);
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
-		final var message = Mockito.mock(Message.class);
-		Mockito.when(exchange.getInMessage()).thenReturn(message);
-		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
+		when(message.getContent(List.class)).thenReturn(Collections.emptyList());
 
-		final var outMessage = Mockito.mock(Message.class);
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var outMessage = mock(Message.class);
+		when(exchange.getOutMessage()).thenReturn(outMessage);
 		final var headers = new MetadataMap<String, Object>();
-		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+		when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
 
 		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
@@ -105,17 +108,17 @@ class HookProcessRunnableTest {
 		hook.setDelay(0); // Sync
 		hook.setName("hook1");
 		hook.setCommand("/path/to/foo");
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn("^/path/other/.*,^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		final var exchange = Mockito.mock(Exchange.class);
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
-		final var message = Mockito.mock(Message.class);
-		Mockito.when(exchange.getInMessage()).thenReturn(message);
-		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
+		when(message.getContent(List.class)).thenReturn(Collections.emptyList());
 
-		final var outMessage = Mockito.mock(Message.class);
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
-		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(null);
+		final var outMessage = mock(Message.class);
+		when(exchange.getOutMessage()).thenReturn(outMessage);
+		when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(null);
 
 		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
@@ -136,30 +139,30 @@ class HookProcessRunnableTest {
 		hook.setCommand("/path/to/foo");
 		hook.setTimeout(1);
 
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn(".*").when(configuration).get("ligoj.hook.path", "^$");
-		final var exchange = Mockito.mock(Exchange.class);
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
-		final var message = Mockito.mock(Message.class);
-		Mockito.when(exchange.getInMessage()).thenReturn(message);
-		Mockito.when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
+		when(message.getContent(List.class)).thenReturn(Collections.emptyList());
 
-		final var process = Mockito.mock(Process.class);
-		final var inputStream = Mockito.mock(InputStream.class);
-		Mockito.when(process.getInputStream()).thenReturn(inputStream);
-		Mockito.when(inputStream.transferTo(Mockito.any())).thenReturn(0L);
-		Mockito.when(process.waitFor(1, TimeUnit.SECONDS)).thenReturn(false); // Timeout
+		final var process = mock(Process.class);
+		final var inputStream = mock(InputStream.class);
+		when(process.getInputStream()).thenReturn(inputStream);
+		when(inputStream.transferTo(Mockito.any())).thenReturn(0L);
+		when(process.waitFor(1, TimeUnit.SECONDS)).thenReturn(false); // Timeout
 
 		final var capturedPb = new AtomicReference<ProcessBuilder>();
 
 		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
-				final var pb = Mockito.mock(ProcessBuilder.class);
+				final var pb = mock(ProcessBuilder.class);
 				capturedPb.set(pb);
-				Mockito.when(pb.environment()).thenReturn(new HashMap<>());
+				when(pb.environment()).thenReturn(new HashMap<>());
 				try {
-					Mockito.when(pb.start()).thenReturn(process);
+					when(pb.start()).thenReturn(process);
 				} catch (IOException e) {
 					// Ignore
 				}
@@ -183,26 +186,26 @@ class HookProcessRunnableTest {
 	}
 
 	@Test
-	void processSynchronous() throws IOException {
+	void processSynchronous() {
 		final var hook = new SystemHook();
 		hook.setName("hook_1"); // Space in name
 		hook.setDelay(0);
 		hook.setCommand("cmd");
 
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn(".*").when(configuration).get("ligoj.hook.path", "^$");
 
-		final var exchange = Mockito.mock(Exchange.class);
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
-		final var message = Mockito.mock(Message.class);
-		Mockito.when(exchange.getInMessage()).thenReturn(message);
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
 		// Use String to avoid serialization issues
-		Mockito.when(message.getContent(List.class)).thenReturn(List.of("param1"));
+		when(message.getContent(List.class)).thenReturn(List.of("param1"));
 
-		final var outMessage = Mockito.mock(Message.class);
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var outMessage = mock(Message.class);
+		when(exchange.getOutMessage()).thenReturn(outMessage);
 		final var headers = new MetadataMap<String, Object>();
-		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+		when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
 
 		// Use String for response
 		final var response = "response1";
@@ -212,11 +215,11 @@ class HookProcessRunnableTest {
 		new HookProcessRunnable(exchange, "GET", "/path", null, response, "NOW", new ObjectMapper(), hook, configuration) {
 			@Override
 			ProcessBuilder newBuilder(final SystemHook hook) {
-				final var pb = Mockito.mock(ProcessBuilder.class);
+				final var pb = mock(ProcessBuilder.class);
 				final var env = new HashMap<String, String>();
-				Mockito.when(pb.environment()).thenReturn(env);
+				when(pb.environment()).thenReturn(env);
 				try {
-					Mockito.when(pb.start()).thenAnswer(invocation -> {
+					when(pb.start()).thenAnswer(invocation -> {
 						capturedPayload.set(env.get("PAYLOAD"));
 						throw new RuntimeException("Stop here");
 					});
@@ -241,32 +244,32 @@ class HookProcessRunnableTest {
 	}
 
 	@Test
-	void run() throws IOException {
+	void run() {
 		final var response = Map.of("key1", "value1");
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		Mockito.when(configuration.get("ligoj.hook.timeout", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
+		when(configuration.get("ligoj.hook.timeout", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
 
-		final var exchange = Mockito.mock(Exchange.class);
-		final var principal = Mockito.mock(Principal.class);
-		final var uriInfo = Mockito.mock(UriInfo.class);
-		final var inMessage = Mockito.mock(Message.class);
-		final var inList = Arrays.asList("in1", "in2", uriInfo, Mockito.mock(SecurityContext.class), null);
+		final var exchange = mock(Exchange.class);
+		final var principal = mock(Principal.class);
+		final var uriInfo = mock(UriInfo.class);
+		final var inMessage = mock(Message.class);
+		final var inList = Arrays.asList("in1", "in2", uriInfo, mock(SecurityContext.class), null);
 		final var local = new ThreadLocal<Map<String, ProcessBuilder>>();
 		local.set(new ConcurrentHashMap<>());
 		final var environments = new ConcurrentHashMap<String, Map<String, String>>();
-		Mockito.when(configuration.get("conf1", "")).thenReturn("value1");
-		Mockito.when(configuration.get("conf2", "")).thenReturn("");
-		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("Resource#method");
-		Mockito.when(exchange.getInMessage()).thenReturn(inMessage);
-		Mockito.when(inMessage.getContent(List.class)).thenReturn(inList);
-		Mockito.when(principal.getName()).thenReturn("junit");
+		when(configuration.get("conf1", "")).thenReturn("value1");
+		when(configuration.get("conf2", "")).thenReturn("");
+		when(uriInfo.getPath()).thenReturn("foo/bar");
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("Resource#method");
+		when(exchange.getInMessage()).thenReturn(inMessage);
+		when(inMessage.getContent(List.class)).thenReturn(inList);
+		when(principal.getName()).thenReturn("junit");
 
-		final var outMessage = Mockito.mock(Message.class);
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var outMessage = mock(Message.class);
+		when(exchange.getOutMessage()).thenReturn(outMessage);
 		final var headers = new MetadataMap<String, Object>();
-		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+		when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
 
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
@@ -280,14 +283,14 @@ class HookProcessRunnableTest {
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var builder = super.newBuilder(hook);
 				local.get().put(hook.getName(), builder);
-				final var processBuilder = Mockito.mock(ProcessBuilder.class);
+				final var processBuilder = mock(ProcessBuilder.class);
 				final var environment = new HashMap<String, String>();
 				environments.put(hook.getName(), environment);
-				Mockito.when(processBuilder.environment()).thenReturn(environment);
-				final var process = Mockito.mock(Process.class);
+				when(processBuilder.environment()).thenReturn(environment);
+				final var process = mock(Process.class);
 				try {
-					Mockito.when(processBuilder.start()).thenReturn(process);
-					Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream("process_response".getBytes(StandardCharsets.UTF_8)));
+					when(processBuilder.start()).thenReturn(process);
+					when(process.getInputStream()).thenReturn(new ByteArrayInputStream("process_response".getBytes(StandardCharsets.UTF_8)));
 					final var timeout = ObjectUtils.getIfNull(hook.getTimeout(), 30);
 					Mockito.doReturn(timeout != 1).when(process).waitFor(timeout, TimeUnit.SECONDS);
 					Mockito.doReturn(0).when(process).exitValue();
@@ -323,30 +326,30 @@ class HookProcessRunnableTest {
 	@Test
 	void runLargeOutput() {
 		final var response = Map.of("key1", "value1");
-		final var configuration = Mockito.mock(ConfigurationResource.class);
+		final var configuration = mock(ConfigurationResource.class);
 		Mockito.doReturn("/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
-		Mockito.when(configuration.get("ligoj.hook.timeout", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
+		when(configuration.get("ligoj.hook.timeout", HookProcessRunnable.DEFAULT_TIMEOUT)).thenReturn(30);
 
-		final var exchange = Mockito.mock(Exchange.class);
-		final var principal = Mockito.mock(Principal.class);
-		final var uriInfo = Mockito.mock(UriInfo.class);
-		final var inMessage = Mockito.mock(Message.class);
-		final var inList = Arrays.asList("in1", "in2", uriInfo, Mockito.mock(SecurityContext.class), null);
+		final var exchange = mock(Exchange.class);
+		final var principal = mock(Principal.class);
+		final var uriInfo = mock(UriInfo.class);
+		final var inMessage = mock(Message.class);
+		final var inList = Arrays.asList("in1", "in2", uriInfo, mock(SecurityContext.class), null);
 		final var local = new ThreadLocal<Map<String, ProcessBuilder>>();
 		local.set(new ConcurrentHashMap<>());
 		final var environments = new ConcurrentHashMap<String, Map<String, String>>();
-		Mockito.when(configuration.get("conf1", "")).thenReturn("value1");
-		Mockito.when(configuration.get("conf2", "")).thenReturn("");
-		Mockito.when(uriInfo.getPath()).thenReturn("foo/bar");
-		Mockito.when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("Resource#method");
-		Mockito.when(exchange.getInMessage()).thenReturn(inMessage);
-		Mockito.when(inMessage.getContent(List.class)).thenReturn(inList);
-		Mockito.when(principal.getName()).thenReturn("junit");
+		when(configuration.get("conf1", "")).thenReturn("value1");
+		when(configuration.get("conf2", "")).thenReturn("");
+		when(uriInfo.getPath()).thenReturn("foo/bar");
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("Resource#method");
+		when(exchange.getInMessage()).thenReturn(inMessage);
+		when(inMessage.getContent(List.class)).thenReturn(inList);
+		when(principal.getName()).thenReturn("junit");
 
-		final var outMessage = Mockito.mock(Message.class);
-		Mockito.when(exchange.getOutMessage()).thenReturn(outMessage);
+		final var outMessage = mock(Message.class);
+		when(exchange.getOutMessage()).thenReturn(outMessage);
 		final var headers = new MetadataMap<String, Object>();
-		Mockito.when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
+		when(outMessage.get(Message.PROTOCOL_HEADERS)).thenReturn(headers);
 
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
@@ -360,16 +363,16 @@ class HookProcessRunnableTest {
 			ProcessBuilder newBuilder(final SystemHook hook) {
 				final var builder = super.newBuilder(hook);
 				local.get().put(hook.getName(), builder);
-				final var processBuilder = Mockito.mock(ProcessBuilder.class);
+				final var processBuilder = mock(ProcessBuilder.class);
 				final var environment = new HashMap<String, String>();
 				environments.put(hook.getName(), environment);
-				Mockito.when(processBuilder.environment()).thenReturn(environment);
-				final var process = Mockito.mock(Process.class);
+				when(processBuilder.environment()).thenReturn(environment);
+				final var process = mock(Process.class);
 				try {
-					Mockito.when(processBuilder.start()).thenReturn(process);
+					when(processBuilder.start()).thenReturn(process);
 					// Generate a large output > 2048 bytes
 					final var largeOutput = "0".repeat(3000);
-					Mockito.when(process.getInputStream()).thenReturn(new ByteArrayInputStream(largeOutput.getBytes(StandardCharsets.UTF_8)));
+					when(process.getInputStream()).thenReturn(new ByteArrayInputStream(largeOutput.getBytes(StandardCharsets.UTF_8)));
 					final var timeout = ObjectUtils.getIfNull(hook.getTimeout(), 30);
 					Mockito.doReturn(timeout != 1).when(process).waitFor(timeout, TimeUnit.SECONDS);
 					Mockito.doReturn(1).when(process).exitValue();

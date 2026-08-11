@@ -3,17 +3,14 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
-import java.io.IOException;
-
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
-
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
+
+import java.io.IOException;
 
 /**
  * {@link AbstractMapper} test.

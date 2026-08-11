@@ -3,16 +3,15 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.ligoj.bootstrap.core.plugin.PluginsClassLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Application listener able to alter the class loader to the plug-in class-loader.

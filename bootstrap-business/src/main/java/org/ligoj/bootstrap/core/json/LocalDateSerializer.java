@@ -3,24 +3,18 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.io.IOException;
-import java.time.LocalDate;
-
 import org.ligoj.bootstrap.core.DateUtils;
-
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
+
+import java.time.LocalDate;
 
 /**
  * {@link LocalDate} serializer using the shared {@link DateUtils#getApplicationTimeZone()}.
  */
 public class LocalDateSerializer extends StdSerializer<LocalDate> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 	/**
 	 * JAX-RS serializer instance.
 	 */

@@ -4,10 +4,8 @@
 package org.ligoj.bootstrap.http.security;
 
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Matches when the current request contains a specific parameter.

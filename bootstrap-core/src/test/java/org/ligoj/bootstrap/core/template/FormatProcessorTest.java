@@ -3,15 +3,15 @@
  */
 package org.ligoj.bootstrap.core.template;
 
-import java.text.ParseException;
-import java.util.Deque;
-import java.util.LinkedList;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemUser;
+
+import java.text.ParseException;
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  * Test class of {@link FormatProcessor}

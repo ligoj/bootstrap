@@ -3,17 +3,10 @@
  */
 package org.ligoj.bootstrap.model.system;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-
-import org.ligoj.bootstrap.core.model.AbstractAudited;
-
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractAudited;
 
 /**
  * System performance entity.

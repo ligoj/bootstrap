@@ -3,15 +3,14 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
+import jakarta.persistence.criteria.JoinType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.persistence.criteria.JoinType;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
 
 /**
  * JAX-RS repository managing standard behaviors of REST.

@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core.template;
 
-import java.util.TimeZone;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.DateUtils;
+
+import java.util.TimeZone;
 
 /**
  * Test class of {@link DecimalDateProcessor}

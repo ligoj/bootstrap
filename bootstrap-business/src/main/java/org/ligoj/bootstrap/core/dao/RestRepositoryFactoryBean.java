@@ -3,10 +3,8 @@
  */
 package org.ligoj.bootstrap.core.dao;
 
-import java.io.Serializable;
-
 import jakarta.persistence.EntityManager;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +13,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.Serializable;
 
 /**
  * Repository factory.

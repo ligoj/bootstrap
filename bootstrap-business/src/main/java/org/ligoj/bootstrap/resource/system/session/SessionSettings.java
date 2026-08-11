@@ -3,18 +3,17 @@
  */
 package org.ligoj.bootstrap.resource.system.session;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * ConnectedUser settings including.

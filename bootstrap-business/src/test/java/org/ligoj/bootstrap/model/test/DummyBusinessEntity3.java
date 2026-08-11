@@ -6,11 +6,9 @@ package org.ligoj.bootstrap.model.test;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
 
 /**
  * Simple business entity

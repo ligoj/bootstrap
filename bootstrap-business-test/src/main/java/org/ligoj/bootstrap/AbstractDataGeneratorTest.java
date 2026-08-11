@@ -10,13 +10,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.SpringUtils;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.lang.reflect.Modifier;
 import java.security.SecureRandom;
 import java.util.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Provides convenient methods to generate pseudo-generated data. Assuming a given salt, generated data will be always
@@ -382,8 +384,8 @@ public abstract class AbstractDataGeneratorTest extends AbstractTest implements 
 	 * @return a new mocked {@link UriInfo} instance.
 	 */
 	protected UriInfo newUriInfo() {
-		final var uriInfo = Mockito.mock(UriInfo.class);
-		Mockito.when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<>());
+		final var uriInfo = mock(UriInfo.class);
+		when(uriInfo.getQueryParameters()).thenReturn(new MetadataMap<>());
 		return uriInfo;
 	}
 

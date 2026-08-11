@@ -3,14 +3,14 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 /**
  * Code-signature tests of {@link PluginsClassLoader}: fixtures hold a signed, an unsigned and a tampered (altered

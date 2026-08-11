@@ -8,10 +8,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
-import org.ligoj.bootstrap.core.resource.AbstractMapper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.ligoj.bootstrap.core.resource.AbstractMapper;
 
 /**
  * Handles all CXF level errors.

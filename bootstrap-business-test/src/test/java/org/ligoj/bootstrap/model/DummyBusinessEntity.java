@@ -3,10 +3,9 @@
  */
 package org.ligoj.bootstrap.model;
 
-import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
 
 /**
  * Simple business entity

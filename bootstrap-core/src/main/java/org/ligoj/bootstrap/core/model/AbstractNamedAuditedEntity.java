@@ -3,18 +3,12 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.Serializable;
-
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
-
+import lombok.*;
 import org.ligoj.bootstrap.core.INamableBean;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.io.Serializable;
 
 /**
  * Named and audited entity.

@@ -4,13 +4,13 @@
 package org.ligoj.bootstrap.core.resource;
 
 import jakarta.ws.rs.core.Response;
-
 import org.junit.jupiter.api.Assertions;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
+
+import static org.mockito.Mockito.when;
 
 /**
  * Base test class of {@link AbstractMapper}
@@ -19,7 +19,7 @@ public abstract class AbstractMapperTest {
 
 	protected <T extends AbstractMapper> T mock(T mapper) {
 		mapper.jacksonJsonProvider = Mockito.mock(JacksonJsonProvider.class);
-		Mockito.when(mapper.jacksonJsonProvider.locateMapper(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(new ObjectMapperTrim());
+		when(mapper.jacksonJsonProvider.locateMapper(ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(new ObjectMapperTrim());
 		return mapper;
 	}
 

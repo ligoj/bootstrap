@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemConfiguration;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
@@ -19,6 +18,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class of {@link ConfigurationResource}
@@ -362,10 +364,10 @@ class ConfigurationResourceTest extends AbstractBootTest {
 	void findAllNotEnumerable() {
 		final var resource = new ConfigurationResource();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
-		resource.env = Mockito.mock(ConfigurableEnvironment.class);
+		resource.env = mock(ConfigurableEnvironment.class);
 		final var mutablePropertySources = new MutablePropertySources();
-		mutablePropertySources.addFirst(Mockito.mock(PropertySource.class));
-		Mockito.when(resource.env.getPropertySources()).thenReturn(mutablePropertySources);
+		mutablePropertySources.addFirst(mock(PropertySource.class));
+		when(resource.env.getPropertySources()).thenReturn(mutablePropertySources);
 		final Map<String, ConfigurationVo> result = new HashMap<>();
 		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
 		Assertions.assertEquals("value-db0", result.get("test-key0").getValue());

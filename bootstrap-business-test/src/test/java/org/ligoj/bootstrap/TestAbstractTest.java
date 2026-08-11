@@ -3,11 +3,12 @@
  */
 package org.ligoj.bootstrap;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 
 /**
  * Test of {@link AbstractTest}
@@ -16,17 +17,17 @@ class TestAbstractTest extends AbstractTest {
 
 	@Test
 	void testCloseQuietly() throws IOException {
-		final var mock = Mockito.mock(Closeable.class);
+		final var mock = mock(Closeable.class);
 		closeQuietly(mock);
-		Mockito.verify(mock, Mockito.atLeastOnce()).close();
+		verify(mock, atLeastOnce()).close();
 	}
 
 	@Test
 	void testCloseQuietlyClosed() throws IOException {
-		final var mock = Mockito.mock(Closeable.class);
-		Mockito.doThrow(new IOException()).when(mock).close();
+		final var mock = mock(Closeable.class);
+		doThrow(new IOException()).when(mock).close();
 		closeQuietly(mock);
-		Mockito.verify(mock, Mockito.atLeastOnce()).close();
+		verify(mock, atLeastOnce()).close();
 	}
 
 	@Test

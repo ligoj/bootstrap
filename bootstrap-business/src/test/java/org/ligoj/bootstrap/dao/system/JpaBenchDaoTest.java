@@ -3,8 +3,6 @@
  */
 package org.ligoj.bootstrap.dao.system;
 
-import java.net.URL;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.net.URL;
 
 /**
  * JPA bench test.

@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import javax.naming.CommunicationException;
-
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
+
+import javax.naming.CommunicationException;
 
 /**
  * Exception mapper test using {@link FailSafeExceptionMapper}

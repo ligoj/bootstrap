@@ -3,12 +3,11 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.lang.annotation.Annotation;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import org.apache.commons.lang3.StringUtils;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Char based validator.

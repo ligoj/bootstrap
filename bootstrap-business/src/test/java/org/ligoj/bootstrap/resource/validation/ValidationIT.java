@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.validation;
 
-import tools.jackson.core.type.TypeReference;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
+import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

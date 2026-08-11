@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 import org.springframework.mail.MailSendException;
+
+import java.io.IOException;
 
 /**
  * Exception mapper test using {@link MailSendExceptionMapper}

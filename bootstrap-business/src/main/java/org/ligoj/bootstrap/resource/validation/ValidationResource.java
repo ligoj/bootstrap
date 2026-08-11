@@ -3,17 +3,16 @@
  */
 package org.ligoj.bootstrap.resource.validation;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import org.ligoj.bootstrap.core.validation.ValidatorBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-
-import org.ligoj.bootstrap.core.validation.ValidatorBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Validation resource.

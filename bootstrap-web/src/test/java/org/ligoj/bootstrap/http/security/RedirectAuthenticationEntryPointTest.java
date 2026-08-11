@@ -8,11 +8,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.security.web.RedirectStrategy;
 
 import java.io.IOException;
 import java.util.Set;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Test {@link RedirectAuthenticationEntryPoint} implementation.
@@ -29,39 +30,39 @@ class RedirectAuthenticationEntryPointTest {
 
 	@Test
 	void redirectByContentNoForce() throws IOException, ServletException {
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getServletPath()).thenReturn("/something-else");
-		final var strategy = Mockito.mock(RedirectStrategy.class);
+		final var request = mock(HttpServletRequest.class);
+		when(request.getServletPath()).thenReturn("/something-else");
+		final var strategy = mock(RedirectStrategy.class);
 		entryPoint.setRedirectStrategy(strategy);
 		entryPoint.commence(request, null, null);
-		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "");
+		verify(strategy, atLeastOnce()).sendRedirect(request, null, "");
 	}
 
 	@Test
 	void redirectByContentForceHtml() throws IOException, ServletException {
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getServletPath()).thenReturn("/page.html");
-		final var strategy = Mockito.mock(RedirectStrategy.class);
+		final var request = mock(HttpServletRequest.class);
+		when(request.getServletPath()).thenReturn("/page.html");
+		final var strategy = mock(RedirectStrategy.class);
 		entryPoint.setRedirectStrategy(strategy);
 		entryPoint.commence(request, null, null);
-		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "");
+		verify(strategy, atLeastOnce()).sendRedirect(request, null, "");
 
 		// With `forceRedirectUrl`, the configured loginFormUrl is now
 		// forwarded to the strategy (was previously hardcoded to null).
 		// The SPA needs it to detect OIDC mode from the x-redirect header.
 		entryPoint.setForceRedirectUrl(true);
 		entryPoint.commence(request, null, null);
-		Mockito.verify(strategy, Mockito.atLeastOnce()).sendRedirect(request, null, "http://h");
+		verify(strategy, atLeastOnce()).sendRedirect(request, null, "http://h");
 	}
 
 	@Test
 	void standardRedirect() throws IOException, ServletException {
-		final var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getServletPath()).thenReturn("/index.html");
-		final var response = Mockito.mock(HttpServletResponse.class);
-		Mockito.when(response.encodeRedirectURL("http://h")).thenReturn("encoded");
+		final var request = mock(HttpServletRequest.class);
+		when(request.getServletPath()).thenReturn("/index.html");
+		final var response = mock(HttpServletResponse.class);
+		when(response.encodeRedirectURL("http://h")).thenReturn("encoded");
 		entryPoint.setForceRedirectUrl(true);
 		entryPoint.commence(request, response, null);
-		Mockito.verify(response, Mockito.atLeastOnce()).sendRedirect("encoded");
+		verify(response, atLeastOnce()).sendRedirect("encoded");
 	}
 }

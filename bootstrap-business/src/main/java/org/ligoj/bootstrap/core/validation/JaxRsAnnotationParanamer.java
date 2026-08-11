@@ -3,18 +3,13 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
+import com.thoughtworks.paranamer.AnnotationParanamer;
+import jakarta.ws.rs.*;
+
 import java.lang.annotation.Annotation;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import jakarta.ws.rs.CookieParam;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-
-import com.thoughtworks.paranamer.AnnotationParanamer;
 
 /**
  * An extension of default annotation provider adding JAX-RS annotation support : {@link QueryParam},

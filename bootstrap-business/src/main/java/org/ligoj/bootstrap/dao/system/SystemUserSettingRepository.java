@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.dao.system;
 
-import java.util.List;
-
 import org.ligoj.bootstrap.core.dao.RestRepository;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * User Settings repository.

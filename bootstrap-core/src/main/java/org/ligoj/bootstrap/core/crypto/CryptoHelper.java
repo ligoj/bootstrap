@@ -3,12 +3,11 @@
  */
 package org.ligoj.bootstrap.core.crypto;
 
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import lombok.Setter;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Role;
 

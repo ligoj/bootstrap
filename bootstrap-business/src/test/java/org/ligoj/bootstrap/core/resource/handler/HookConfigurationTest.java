@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core.resource.handler;
 
-import tools.jackson.core.JacksonException;
 import org.apache.cxf.message.Exchange;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
@@ -20,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.core.JacksonException;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class for {@link HookConfiguration}
@@ -52,7 +55,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	void findAll() throws IOException {
+	void findAll() {
 		final var hook1 = new SystemHook();
 		hook1.setName("hook1");
 		hook1.setMatch("{\"path\":\"path1\"}");
@@ -66,15 +69,15 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		hook2.setName("hook2");
 		hook2.setMatch("{\"path\":\"path2\"}");
 
-		Mockito.when(repository.findAll()).thenReturn(List.of(hook1, hook2));
+		when(repository.findAll()).thenReturn(List.of(hook1, hook2));
 
 		final var match1 = new HookMatch();
 		match1.setPath("path1");
-		Mockito.when(objectMapper.readValue("{\"path\":\"path1\"}", HookMatch.class)).thenReturn(match1);
+		when(objectMapper.readValue("{\"path\":\"path1\"}", HookMatch.class)).thenReturn(match1);
 
 		final var match2 = new HookMatch();
 		match2.setPath("path2");
-		Mockito.when(objectMapper.readValue("{\"path\":\"path2\"}", HookMatch.class)).thenReturn(match2);
+		when(objectMapper.readValue("{\"path\":\"path2\"}", HookMatch.class)).thenReturn(match2);
 
 		final var result = hookConfiguration.findAll();
 
@@ -100,30 +103,30 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	void findAllInvalidJson() throws IOException {
+	void findAllInvalidJson() {
 		final var hook3 = new SystemHook(); // Invalid JSON
 		hook3.setName("hook3");
 		hook3.setMatch("{invalid}");
 
-		Mockito.when(repository.findAll()).thenReturn(List.of(hook3));
-		final var exc = Mockito.mock(JacksonException.class);
-		Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(HookMatch.class))).thenThrow(exc);
+		when(repository.findAll()).thenReturn(List.of(hook3));
+		final var exc = mock(JacksonException.class);
+		when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(HookMatch.class))).thenThrow(exc);
 
 		final var result = hookConfiguration.findAll();
 		Assertions.assertTrue(result.isEmpty());
 	}
 
 	@Test
-	void findAllInvalidPattern() throws IOException {
+	void findAllInvalidPattern() {
 		final var hook4 = new SystemHook(); // Invalid Pattern
 		hook4.setName("hook4");
 		hook4.setMatch("{\"path\":\"(\"}");
 
-		Mockito.when(repository.findAll()).thenReturn(List.of(hook4));
+		when(repository.findAll()).thenReturn(List.of(hook4));
 
 		final var match4 = new HookMatch();
 		match4.setPath("(");
-		Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(HookMatch.class))).thenReturn(match4);
+		when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(HookMatch.class))).thenReturn(match4);
 
 		final var result = hookConfiguration.findAll();
 		Assertions.assertTrue(result.isEmpty());
@@ -131,8 +134,8 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void process() {
-		final var exchange = Mockito.mock(Exchange.class);
-		final var principal = Mockito.mock(Principal.class);
+		final var exchange = mock(Exchange.class);
+		final var principal = mock(Principal.class);
 		final var response = new Object();
 
 		final var hp1 = getSystemHookParse();
@@ -159,7 +162,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 
 		final var patterns = Map.of(Pattern.compile("path/.*"), List.of(hp1, hp2, hp4), Pattern.compile("other/.*"), List.of(hp3));
 
-		Mockito.when(self.findAll()).thenReturn(patterns);
+		when(self.findAll()).thenReturn(patterns);
 
 		final var counter = new AtomicInteger();
 		final BiConsumer<SystemHook, HookProcessRunnable> processor = (h, r) -> {
@@ -194,9 +197,9 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void processException() {
-		Mockito.when(self.findAll()).thenThrow(new RuntimeException("Simulated error"));
+		when(self.findAll()).thenThrow(new RuntimeException("Simulated error"));
 		@SuppressWarnings("unchecked")
-		final BiConsumer<SystemHook, HookProcessRunnable> processor = Mockito.mock(BiConsumer.class);
+		final BiConsumer<SystemHook, HookProcessRunnable> processor = mock(BiConsumer.class);
 		hookConfiguration.process(null, null, null, null, null, null, processor);
 		Mockito.verify(processor, Mockito.never()).accept(Mockito.any(), Mockito.any());
 	}
@@ -207,8 +210,8 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		// process() calls filterUnSafe() inside a try-catch.
 		// If we want to test filterUnSafe logic specifically without try-catch, we can call it directly (it's package-private).
 
-		final var exchange = Mockito.mock(Exchange.class);
-		final var principal = Mockito.mock(Principal.class);
+		final var exchange = mock(Exchange.class);
+		final var principal = mock(Principal.class);
 		final var response = new Object();
 
 		final var hp1 = new org.ligoj.bootstrap.core.resource.filter.SystemHookParse();
@@ -217,7 +220,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		match1.setPath("path");
 		hp1.setMatchObject(match1);
 
-		Mockito.when(self.findAll()).thenReturn(Map.of(Pattern.compile("path"), List.of(hp1)));
+		when(self.findAll()).thenReturn(Map.of(Pattern.compile("path"), List.of(hp1)));
 
 		final var counter = new AtomicInteger();
 		hookConfiguration.filterUnSafe(exchange, "GET", "path", principal, response, h -> false, (h, r) -> counter.incrementAndGet());

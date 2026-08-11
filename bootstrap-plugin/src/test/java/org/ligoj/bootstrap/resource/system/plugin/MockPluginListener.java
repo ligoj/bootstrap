@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin;
 
-import java.util.function.Supplier;
-
 import org.ligoj.bootstrap.core.plugin.FeaturePlugin;
 import org.ligoj.bootstrap.core.plugin.PluginListener;
 import org.ligoj.bootstrap.core.plugin.PluginVo;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
+
+import java.util.function.Supplier;
 
 /**
  * Mock registerable {@link PluginListener} singleton.

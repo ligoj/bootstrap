@@ -10,7 +10,9 @@ import org.hibernate.metamodel.mapping.MappingType;
 import org.hibernate.type.descriptor.java.JavaType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test class of {@link AbstractSpecification}
@@ -19,28 +21,28 @@ class TestAbstractSpecificationTest {
 
 	@Test
 	void getExpressionTypeMatch() {
-		var model = Mockito.mock(EntityMappingType.class);
-		var mapping = Mockito.mock(EntityIdentifierMapping.class);
-		var mappingType = org.mockito.Mockito.mock(MappingType.class);
-		var javaType = Mockito.mock(JavaType.class);
+		var model = mock(EntityMappingType.class);
+		var mapping = mock(EntityIdentifierMapping.class);
+		var mappingType = mock(MappingType.class);
+		var javaType = mock(JavaType.class);
 
 
-		Mockito.doReturn(mapping).when(model).getIdentifierMapping();
-		Mockito.doReturn(mappingType).when(mapping).getMappedType();
-		Mockito.doReturn("path").when(mapping).getAttributeName();
-		Mockito.doReturn(javaType).when(mappingType).getMappedJavaType();
-		Mockito.doReturn(Integer.class).when(javaType).getJavaTypeClass();
+		doReturn(mapping).when(model).getIdentifierMapping();
+		doReturn(mappingType).when(mapping).getMappedType();
+		doReturn("path").when(mapping).getAttributeName();
+		doReturn(javaType).when(mappingType).getMappedJavaType();
+		doReturn(Integer.class).when(javaType).getJavaTypeClass();
 		Assertions.assertSame(Integer.class, AbstractSpecification.getExpressionType(model, "path"));
 
-		var attributeMapping = Mockito.mock(AttributeMapping.class);
-		var attributeMappingType = org.mockito.Mockito.mock(MappingType.class);
-		var attributeJavaType = Mockito.mock(JavaType.class);
-		Mockito.doReturn(1).when(model).getNumberOfAttributeMappings();
-		Mockito.doReturn(attributeMapping).when(model).getAttributeMapping(0);
-		Mockito.doReturn(attributeMappingType).when(attributeMapping).getMappedType();
-		Mockito.doReturn(attributeJavaType).when(attributeMappingType).getMappedJavaType();
-		Mockito.doReturn(String.class).when(attributeJavaType).getJavaTypeClass();
-		Mockito.doReturn("join").when(attributeMapping).getFetchableName();
+		var attributeMapping = mock(AttributeMapping.class);
+		var attributeMappingType = mock(MappingType.class);
+		var attributeJavaType = mock(JavaType.class);
+		doReturn(1).when(model).getNumberOfAttributeMappings();
+		doReturn(attributeMapping).when(model).getAttributeMapping(0);
+		doReturn(attributeMappingType).when(attributeMapping).getMappedType();
+		doReturn(attributeJavaType).when(attributeMappingType).getMappedJavaType();
+		doReturn(String.class).when(attributeJavaType).getJavaTypeClass();
+		doReturn("join").when(attributeMapping).getFetchableName();
 		Assertions.assertSame(String.class, AbstractSpecification.getExpressionType(model, "join"));
 
 		Assertions.assertNull(AbstractSpecification.getExpressionType(model, "other"));

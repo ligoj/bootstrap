@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core.resource.handler;
 
-import tools.jackson.core.JacksonException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -18,6 +17,7 @@ import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
 
 import javax.cache.annotation.CacheResult;
 import java.security.Principal;

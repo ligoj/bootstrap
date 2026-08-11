@@ -3,18 +3,16 @@
  */
 package org.ligoj.bootstrap.model.system;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
-
-import org.ligoj.bootstrap.core.model.AbstractAudited;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractAudited;
+
+import java.io.Serializable;
 
 /**
  * Data model representing a plug-in and its state. The key corresponds to the feature key. A plug-in may include

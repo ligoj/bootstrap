@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import tools.jackson.core.JacksonException;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 /**
  * Map any server error to a JSON string.

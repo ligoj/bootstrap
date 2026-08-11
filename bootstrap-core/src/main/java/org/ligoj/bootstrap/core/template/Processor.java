@@ -3,10 +3,10 @@
  */
 package org.ligoj.bootstrap.core.template;
 
-import java.util.Deque;
-
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import java.util.Deque;
 
 /**
  * A processor able to return a value.

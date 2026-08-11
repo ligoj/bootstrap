@@ -7,12 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-
-import org.ligoj.bootstrap.core.model.AbstractAudited;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ligoj.bootstrap.core.model.AbstractAudited;
 
 /**
  * An assignment. Currently, is only managing a many-to-many (2 many-to-one) relationship, but should handle assignment

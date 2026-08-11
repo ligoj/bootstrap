@@ -3,9 +3,9 @@
  */
 package org.ligoj.bootstrap.core.template;
 
-import java.lang.reflect.Field;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * A processor using bean reflection to retrieve the value.

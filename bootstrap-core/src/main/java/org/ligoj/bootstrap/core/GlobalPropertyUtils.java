@@ -3,10 +3,7 @@
  */
 package org.ligoj.bootstrap.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Properties;
-
+import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
@@ -16,7 +13,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringValueResolver;
 
-import lombok.Setter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Share all non localized properties loaded by Spring.

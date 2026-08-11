@@ -3,13 +3,8 @@
  */
 package org.ligoj.bootstrap.resource.validation;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-
 import org.ligoj.bootstrap.core.validation.Wine;
 import org.springframework.stereotype.Service;
 

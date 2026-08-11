@@ -3,10 +3,10 @@
  */
 package org.ligoj.bootstrap.resource.system.cache;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * A cache cluster.

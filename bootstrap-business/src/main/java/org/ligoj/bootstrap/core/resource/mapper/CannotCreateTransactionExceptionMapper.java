@@ -6,10 +6,8 @@ package org.ligoj.bootstrap.core.resource.mapper;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
-import org.springframework.transaction.CannotCreateTransactionException;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.CannotCreateTransactionException;
 
 /**
  * Handles transaction creation issue to a JSON string.

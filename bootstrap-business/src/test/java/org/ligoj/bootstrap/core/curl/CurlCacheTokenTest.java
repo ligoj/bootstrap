@@ -3,16 +3,18 @@
  */
 package org.ligoj.bootstrap.core.curl;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.UnaryOperator;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.UnaryOperator;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class of {@link CurlCacheToken}
@@ -25,8 +27,8 @@ class CurlCacheTokenTest {
 	@AfterEach
 	void clearCache() {
 		cacheToken = new CurlCacheToken();
-		cacheToken.applicationContext = Mockito.mock(ApplicationContext.class);
-		Mockito.when(cacheToken.applicationContext.getBean(CurlCacheToken.class)).thenReturn(cacheToken);
+		cacheToken.applicationContext = mock(ApplicationContext.class);
+		when(cacheToken.applicationContext.getBean(CurlCacheToken.class)).thenReturn(cacheToken);
 	}
 
 	@Test

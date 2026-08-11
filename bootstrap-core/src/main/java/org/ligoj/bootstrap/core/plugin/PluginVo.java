@@ -3,11 +3,10 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
-import org.ligoj.bootstrap.core.NamedBean;
-import org.ligoj.bootstrap.model.system.SystemPlugin;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.NamedBean;
+import org.ligoj.bootstrap.model.system.SystemPlugin;
 
 /**
  * Plug-in information. The "id" property correspond to the related plug-in's key.

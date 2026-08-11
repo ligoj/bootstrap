@@ -3,6 +3,20 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
+import jakarta.persistence.GeneratedValue;
+import jodd.bean.BeanUtil;
+import jodd.typeconverter.TypeConversionException;
+import jodd.typeconverter.TypeConverter;
+import jodd.typeconverter.TypeConverterManager;
+import jodd.typeconverter.impl.DateConverter;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.log4j.util.TriConsumer;
+import org.ligoj.bootstrap.core.DateUtils;
+import org.ligoj.bootstrap.core.resource.TechnicalException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
@@ -12,32 +26,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
-
-import jakarta.persistence.GeneratedValue;
-
-import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.logging.log4j.util.TriConsumer;
-import org.ligoj.bootstrap.core.DateUtils;
-import org.ligoj.bootstrap.core.resource.TechnicalException;
-
-import jodd.bean.BeanUtil;
-import jodd.typeconverter.TypeConversionException;
-import jodd.typeconverter.TypeConverter;
-import jodd.typeconverter.TypeConverterManager;
-import jodd.typeconverter.impl.DateConverter;
+import java.util.*;
 
 /**
  * CSV reader implementation based on Camel implementation where some issues have been fixed.

@@ -3,12 +3,12 @@
  */
 package org.ligoj.bootstrap.core.csv;
 
+import org.ligoj.bootstrap.core.resource.TechnicalException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.ligoj.bootstrap.core.resource.TechnicalException;
 
 /**
  * CSV raw data reader. Instance is not thread.

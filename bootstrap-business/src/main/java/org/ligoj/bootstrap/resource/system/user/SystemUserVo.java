@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.resource.system.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Corporate user details.

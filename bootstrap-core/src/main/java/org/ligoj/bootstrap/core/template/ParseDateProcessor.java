@@ -3,11 +3,11 @@
  */
 package org.ligoj.bootstrap.core.template;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.ligoj.bootstrap.core.DateUtils;
+
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * A {@link Processor} parsing a {@link String} to a {@link Date}.

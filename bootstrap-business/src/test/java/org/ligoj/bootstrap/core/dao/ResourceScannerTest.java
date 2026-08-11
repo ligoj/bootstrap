@@ -8,7 +8,6 @@ import org.hibernate.boot.archive.scan.spi.ScanOptions;
 import org.hibernate.boot.archive.scan.spi.ScanParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link ResourceScanner}
@@ -57,9 +59,9 @@ class ResourceScannerTest {
 	}
 
 	private ScanEnvironment newScanEnvironment() {
-		final var environment = Mockito.mock(ScanEnvironment.class);
+		final var environment = mock(ScanEnvironment.class);
 		final var nonRootUrls = new ArrayList<URL>();
-		Mockito.when(environment.getNonRootUrls()).thenReturn(nonRootUrls);
+		when(environment.getNonRootUrls()).thenReturn(nonRootUrls);
 		return environment;
 	}
 
@@ -76,7 +78,7 @@ class ResourceScannerTest {
 
 		};
 		Assertions.assertTrue(
-				scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
+				scanner.scan(newScanEnvironment(), mock(ScanOptions.class), mock(ScanParameters.class))
 						.getLocatedMappingFiles().isEmpty());
 	}
 
@@ -94,7 +96,7 @@ class ResourceScannerTest {
 
 		};
 		Assertions.assertTrue(
-				scanner.scan(newScanEnvironment(), Mockito.mock(ScanOptions.class), Mockito.mock(ScanParameters.class))
+				scanner.scan(newScanEnvironment(), mock(ScanOptions.class), mock(ScanParameters.class))
 						.getLocatedMappingFiles().isEmpty());
 	}
 
@@ -104,8 +106,8 @@ class ResourceScannerTest {
 	@Test
 	void testFilesInJarIoException2() {
 		final var scanner = new ResourceScanner();
-		final var scan = scanner.scan(Mockito.mock(ScanEnvironment.class), Mockito.mock(ScanOptions.class),
-				Mockito.mock(ScanParameters.class));
+		final var scan = scanner.scan(mock(ScanEnvironment.class), mock(ScanOptions.class),
+				mock(ScanParameters.class));
 		Assertions.assertNotNull(scan);
 	}
 

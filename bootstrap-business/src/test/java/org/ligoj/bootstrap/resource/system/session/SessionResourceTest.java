@@ -3,23 +3,14 @@
  */
 package org.ligoj.bootstrap.resource.system.session;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
-import org.ligoj.bootstrap.model.system.SystemAuthorization;
+import org.ligoj.bootstrap.model.system.*;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
-import org.ligoj.bootstrap.model.system.SystemRole;
-import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
-import org.ligoj.bootstrap.model.system.SystemUser;
-import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.ligoj.bootstrap.resource.system.cache.CacheResource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
@@ -27,6 +18,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.mockito.Mockito.*;
 
 /**
  * {@link SessionResource} test class.
@@ -47,11 +44,11 @@ class SessionResourceTest extends AbstractBootTest {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(resource);
 		final var settings = new SessionSettings();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
-		var applicationContext = Mockito.mock(ApplicationContext.class);
+		var applicationContext = mock(ApplicationContext.class);
 		resource.applicationContext = applicationContext;
-		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
-		provider = Mockito.mock(ISessionSettingsProvider.class);
-		Mockito.when(resource.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
+		when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
+		provider = mock(ISessionSettingsProvider.class);
+		when(resource.applicationContext.getBeansOfType(ISessionSettingsProvider.class))
 				.thenReturn(Collections.singletonMap("provider", provider));
 	}
 
@@ -67,7 +64,7 @@ class SessionResourceTest extends AbstractBootTest {
 		Assertions.assertNotNull(applicationSettings.getBootstrapPrivateCode());
 		Assertions.assertNull(applicationSettings.getPlugins());
 
-		Mockito.doAnswer(i -> {
+		doAnswer(i -> {
 			final var s = (SessionSettings) i.getArgument(0);
 			s.getApplicationSettings().setPlugins(Collections.singletonList("test"));
 			return null;
@@ -96,7 +93,7 @@ class SessionResourceTest extends AbstractBootTest {
 		em.persist(userSetting);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+		when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
 				.thenReturn(authorities);
 		authorities.add(role);
 		final var assignment = new SystemRoleAssignment();
@@ -146,7 +143,7 @@ class SessionResourceTest extends AbstractBootTest {
 		em.persist(soloRole);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+		when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
 				.thenReturn(authorities);
 		authorities.add(soloRole);
 		final var assignmentSolo = new SystemRoleAssignment();
@@ -182,7 +179,7 @@ class SessionResourceTest extends AbstractBootTest {
 		em.persist(user);
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+		when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
 				.thenReturn(authorities);
 
 		// Invalidate cache of previous test
@@ -216,7 +213,7 @@ class SessionResourceTest extends AbstractBootTest {
 
 		final Collection<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(SystemRole.DEFAULT_ROLE));
-		Mockito.when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+		when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
 				.thenReturn(authorities);
 		authorities.add(role);
 		final var assignment = new SystemRoleAssignment();

@@ -5,11 +5,9 @@ package org.ligoj.bootstrap.resource.system.plugin;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
-import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.ligoj.bootstrap.core.model.AbstractBusinessEntity;
 
 /**
  * Sample entity extending {@link AbstractBusinessEntity}

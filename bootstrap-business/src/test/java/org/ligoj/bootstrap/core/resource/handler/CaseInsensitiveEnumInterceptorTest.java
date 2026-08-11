@@ -5,7 +5,9 @@ package org.ligoj.bootstrap.core.resource.handler;
 
 import org.apache.cxf.message.Message;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test class of {@link CaseInsensitiveEnumInterceptor}
@@ -14,8 +16,8 @@ class CaseInsensitiveEnumInterceptorTest {
 
 	@Test
 	void handleMessage() {
-        var message = Mockito.mock(Message.class);
+        var message = mock(Message.class);
 		new CaseInsensitiveEnumInterceptor().handleMessage(message);
-		Mockito.verify(message).put("enum.conversion.case.sensitive", Boolean.TRUE);
+		verify(message).put("enum.conversion.case.sensitive", Boolean.TRUE);
 	}
 }

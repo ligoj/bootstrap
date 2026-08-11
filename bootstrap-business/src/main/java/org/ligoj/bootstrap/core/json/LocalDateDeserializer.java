@@ -3,13 +3,12 @@
  */
 package org.ligoj.bootstrap.core.json;
 
+import org.ligoj.bootstrap.core.DateUtils;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.deser.std.StdDeserializer;
-import org.ligoj.bootstrap.core.DateUtils;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,11 +18,6 @@ import java.time.LocalTime;
  */
 public class LocalDateDeserializer extends StdDeserializer<LocalDate> {
 
-	
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 	/**
 	 * JAX-RS serializer instance.
 	 */

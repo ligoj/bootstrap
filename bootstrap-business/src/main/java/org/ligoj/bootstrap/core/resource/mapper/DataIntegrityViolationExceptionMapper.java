@@ -3,20 +3,18 @@
  */
 package org.ligoj.bootstrap.core.resource.mapper;
 
-import java.util.regex.Pattern;
-
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.resource.ServerError;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.regex.Pattern;
 
 /**
  * Handles database integrity issue to a JSON string.

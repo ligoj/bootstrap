@@ -16,7 +16,6 @@ import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.session.ISessionSettingsProvider;
 import org.ligoj.bootstrap.resource.system.session.SessionSettings;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +31,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * {@link RbacUserDetailsService} test class.
  */
@@ -43,10 +45,10 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@BeforeEach
 	void setup() {
-		var attributes = Mockito.mock(ServletRequestAttributes.class);
-		var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(attributes.getRequest()).thenReturn(request);
-		Mockito.when(request.getHeader("x-api-local-roles")).thenReturn("false");
+		var attributes = mock(ServletRequestAttributes.class);
+		var request = mock(HttpServletRequest.class);
+		when(attributes.getRequest()).thenReturn(request);
+		when(request.getHeader("x-api-local-roles")).thenReturn("false");
 		RequestContextHolder.setRequestAttributes(attributes);
 		clearAllCache();
 		final var user = new SystemUser();
@@ -109,14 +111,14 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(service);
 		final var settings = new SessionSettings();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
-		var applicationContext = Mockito.mock(ApplicationContext.class);
+		var applicationContext = mock(ApplicationContext.class);
 		service.applicationContext = applicationContext;
-		Mockito.when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
-		var provider = Mockito.mock(ISessionSettingsProvider.class);
-		Mockito.when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class)).thenReturn(Collections.singletonMap("provider", provider));
+		when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
+		var provider = mock(ISessionSettingsProvider.class);
+		when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class)).thenReturn(Collections.singletonMap("provider", provider));
 
 		var roles = Stream.of(rolesAsString).map(r -> (GrantedAuthority) new SimpleGrantedAuthority(r)).toList();
-		Mockito.when(provider.getGrantedAuthorities(DEFAULT_USER)).thenReturn(roles);
+		when(provider.getGrantedAuthorities(DEFAULT_USER)).thenReturn(roles);
 
 		var user = em.find(SystemUser.class, DEFAULT_USER);
 		user.setLastConnection(Instant.now().minusSeconds(1));
@@ -184,10 +186,10 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 	 */
 	@Test
 	void testWellKnownUserLocalRoles() {
-		var attributes = Mockito.mock(ServletRequestAttributes.class);
-		var request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(attributes.getRequest()).thenReturn(request);
-		Mockito.when(request.getHeader("x-api-local-roles")).thenReturn("true");
+		var attributes = mock(ServletRequestAttributes.class);
+		var request = mock(HttpServletRequest.class);
+		when(attributes.getRequest()).thenReturn(request);
+		when(request.getHeader("x-api-local-roles")).thenReturn("true");
 		RequestContextHolder.setRequestAttributes(attributes);
 		final var userDetails = initService("PLUGIN_ROLE");
 		checkRoles(userDetails);

@@ -3,10 +3,7 @@
  */
 package org.ligoj.bootstrap.core.model;
 
-import java.io.IOException;
-
 import org.ligoj.bootstrap.core.INamableBean;
-
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
@@ -16,10 +13,6 @@ import tools.jackson.databind.ser.std.StdSerializer;
  */
 public class ToNameSerializer extends StdSerializer<INamableBean<?>> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
 	/**
 	 * JAX-RS serializer instance.
 	 */

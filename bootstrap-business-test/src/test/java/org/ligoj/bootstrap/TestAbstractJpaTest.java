@@ -10,11 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.dao.csv.CsvForJpa;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test of {@link AbstractJpaTest}
@@ -23,17 +25,17 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 
 	@Test
 	void persistEntities() throws IOException {
-		em = Mockito.mock(EntityManager.class);
-		csvForJpa = Mockito.mock(CsvForJpa.class);
+		em = mock(EntityManager.class);
+		csvForJpa = mock(CsvForJpa.class);
 		final var entities = new ArrayList<SystemUser>();
 		entities.add(new SystemUser());
-		Mockito.when(csvForJpa.toJpa(ArgumentMatchers.eq(SystemUser.class), ArgumentMatchers.any(Reader.class), ArgumentMatchers.eq(true), ArgumentMatchers.eq(true))).thenReturn(entities);
+		when(csvForJpa.toJpa(ArgumentMatchers.eq(SystemUser.class), ArgumentMatchers.any(Reader.class), ArgumentMatchers.eq(true), ArgumentMatchers.eq(true))).thenReturn(entities);
 		Assertions.assertEquals(entities, super.persistEntities(SystemUser.class, "log4j2.json"));
 	}
 
 	@Test
 	void persistEntities2() throws IOException {
-		csvForJpa = Mockito.mock(CsvForJpa.class);
+		csvForJpa = mock(CsvForJpa.class);
 		super.persistEntities("log4j2.json");
 	}
 

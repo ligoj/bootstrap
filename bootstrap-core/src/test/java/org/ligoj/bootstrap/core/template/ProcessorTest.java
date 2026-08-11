@@ -3,13 +3,13 @@
  */
 package org.ligoj.bootstrap.core.template;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemRoleAssignment;
 import org.ligoj.bootstrap.model.system.SystemUser;
+
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  * Test class of {@link Processor}

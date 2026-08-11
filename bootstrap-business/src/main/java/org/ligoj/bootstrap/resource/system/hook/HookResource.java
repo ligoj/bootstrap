@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import tools.jackson.core.JacksonException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -18,6 +17,7 @@ import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
 
 import javax.cache.annotation.CacheRemoveAll;
 import java.util.Arrays;
