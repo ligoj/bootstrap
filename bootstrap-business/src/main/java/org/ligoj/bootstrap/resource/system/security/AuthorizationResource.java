@@ -186,7 +186,7 @@ public class AuthorizationResource {
 	 */
 	private Map<String, List<Pattern>> newCacheRole(final Map<String, Map<String, List<Pattern>>> existingAuthorizations,
 			final SystemAuthorization authorization) {
-		return existingAuthorizations.computeIfAbsent(authorization.getRole().getName(), r -> new HashMap<>());
+		return existingAuthorizations.computeIfAbsent(authorization.getRole().getName(), _ -> new HashMap<>());
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class AuthorizationResource {
 	private Map<String, Map<String, List<Pattern>>> newCacheType(
 			final Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>> authorizationsCache,
 			final SystemAuthorization authorization) {
-		return authorizationsCache.computeIfAbsent(authorization.getType(), a -> new HashMap<>());
+		return authorizationsCache.computeIfAbsent(authorization.getType(), _ -> new HashMap<>());
 	}
 
 	/**
@@ -216,7 +216,7 @@ public class AuthorizationResource {
 	 */
 	private void addAuthorization(final Map<String, List<Pattern>> existingAuthorizations, final String method,
 			final String pattern) {
-		final var patterns = existingAuthorizations.computeIfAbsent(method, m -> new ArrayList<>());
+		final var patterns = existingAuthorizations.computeIfAbsent(method, _ -> new ArrayList<>());
 
 		// Add the pattern if it is not yet in the list as compiled Pattern
 		try {

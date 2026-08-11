@@ -92,7 +92,7 @@ public class ValidationJsonException extends RuntimeException {
 	public ValidationJsonException(final ConstraintViolationException validation) {
 		this(validation.getMessage());
 		validation.getConstraintViolations().forEach(e -> errors
-				.computeIfAbsent(getPropertyPath(e), k -> new ArrayList<>()).add(serializeHibernateValidationError(e)));
+				.computeIfAbsent(getPropertyPath(e), _ -> new ArrayList<>()).add(serializeHibernateValidationError(e)));
 	}
 
 	/**

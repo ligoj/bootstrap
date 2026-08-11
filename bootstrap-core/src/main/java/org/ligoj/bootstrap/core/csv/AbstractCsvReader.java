@@ -281,7 +281,7 @@ public abstract class AbstractCsvReader<T> {
 	 * @return the {@link Field} of this property.
 	 */
 	protected Field getField(final Class<?> beanType, final String property) {
-		final var field = fields.computeIfAbsent(beanType, c -> new HashMap<>()).computeIfAbsent(property,
+		final var field = fields.computeIfAbsent(beanType, _ -> new HashMap<>()).computeIfAbsent(property,
 				p -> FieldUtils.getField(beanType, p, true));
 		if (field == null) {
 			throw new TechnicalException("Unknown property " + property + " in class " + beanType.getName());

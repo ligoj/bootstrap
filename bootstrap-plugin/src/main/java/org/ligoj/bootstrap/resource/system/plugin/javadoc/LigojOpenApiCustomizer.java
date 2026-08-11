@@ -104,7 +104,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	}
 
 	private void completeOperation(Map<String, String> tags, String tagOperation, ClassResourceInfo cri, OperationResourceInfo ori, Operation operation, Set<String> completedSchemas, Map<String, Schema<?>> schemas) {
-		tags.computeIfAbsent(tagOperation, t -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri), false));
+		tags.computeIfAbsent(tagOperation, _ -> JavadocDocumentationProvider.normalize(javadocProvider.getClassDoc(cri), false));
 		fillSummaryAndDescription(javadocProvider.getMethodDoc(ori), operation);
 		for (var i = 0; i < CollectionUtils.emptyIfNull(operation.getParameters()).size(); i++) {
 			operation.getParameters().get(i).setDescription(JavadocDocumentationProvider.normalize(extractJavadoc(operation, ori, i), false));
@@ -120,7 +120,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 				}
 			}
 		}
-		operation.getResponses().forEach((n, r) -> r.getContent().forEach((m, c) -> completeSchemaDoc(c.getSchema(),
+		operation.getResponses().forEach((_, r) -> r.getContent().forEach((_, c) -> completeSchemaDoc(c.getSchema(),
 				ori.getMethodToInvoke().getReturnType(),
 				getGenericType(ori.getMethodToInvoke().getGenericReturnType()), completedSchemas, schemas)
 		));

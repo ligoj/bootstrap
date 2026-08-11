@@ -164,12 +164,12 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		when(self.findAll()).thenReturn(patterns);
 
 		final var counter = new AtomicInteger();
-		final BiConsumer<SystemHook, HookProcessRunnable> processor = (h, r) -> {
+		final BiConsumer<SystemHook, HookProcessRunnable> processor = (_, r) -> {
 			counter.incrementAndGet();
 			Assertions.assertNotNull(r);
 		};
 
-		hookConfiguration.process(exchange, "GET", "path/foo", principal, response, h -> true, processor);
+		hookConfiguration.process(exchange, "GET", "path/foo", principal, response, _ -> true, processor);
 
 		Assertions.assertEquals(2, counter.get()); // hook1 and hook4 should match
 	}
@@ -222,7 +222,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		when(self.findAll()).thenReturn(Map.of(Pattern.compile("path"), List.of(hp1)));
 
 		final var counter = new AtomicInteger();
-		hookConfiguration.filterUnSafe(exchange, "GET", "path", principal, response, h -> false, (h, r) -> counter.incrementAndGet());
+		hookConfiguration.filterUnSafe(exchange, "GET", "path", principal, response, _ -> false, (_, _) -> counter.incrementAndGet());
 
 		Assertions.assertEquals(0, counter.get()); // Filter returned false
 	}

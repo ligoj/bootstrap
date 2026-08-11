@@ -219,7 +219,7 @@ class HookProcessRunnableTest {
 				final var env = new HashMap<String, String>();
 				when(pb.environment()).thenReturn(env);
 				try {
-					when(pb.start()).thenAnswer(invocation -> {
+					when(pb.start()).thenAnswer(_ -> {
 						capturedPayload.set(env.get("PAYLOAD"));
 						throw new RuntimeException("Stop here");
 					});
