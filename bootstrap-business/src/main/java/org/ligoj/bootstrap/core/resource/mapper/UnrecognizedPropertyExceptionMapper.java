@@ -11,7 +11,7 @@ import jakarta.ws.rs.ext.Provider;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * Reduce {@link UnrecognizedPropertyException} technical information exposition.

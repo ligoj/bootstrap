@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import org.springframework.data.domain.Persistable;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 /**
  * Serialize entities with their identifier.
@@ -30,12 +30,11 @@ public class ToIdSerializer extends StdSerializer<Persistable<?>> {
 	 * Default constructor.
 	 */
 	protected ToIdSerializer() {
-		super(Persistable.class, false);
+		super(Persistable.class);
 	}
 
 	@Override
-	public void serialize(final Persistable<?> bean, final JsonGenerator generator, final SerializerProvider provider)
-			throws IOException {
+	public void serialize(final Persistable<?> bean, final JsonGenerator generator, final SerializationContext provider) {
 		if (bean.getId() instanceof Number n) {
 			// Numeric, but no decimal accepted
 			generator.writeNumber(n.longValue());

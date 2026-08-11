@@ -6,9 +6,9 @@ package org.ligoj.bootstrap.core.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,14 +37,14 @@ class ToIdSerializerTest {
 	}
 
 	@Test
-    void serializeInt() throws JsonProcessingException {
+    void serializeInt() throws JacksonException {
 		final var bean = new BeanA();
 		bean.setId(1);
 		Assertions.assertEquals("{\"asIdInt\":1,\"asIdString\":null}", new ObjectMapper().writeValueAsString(new Bean(bean, null)));
 	}
 
 	@Test
-    void serializeString() throws JsonProcessingException {
+    void serializeString() throws JacksonException {
 		final var bean = new BeanB();
 		bean.setId("key");
 		Assertions.assertEquals("{\"asIdInt\":null,\"asIdString\":\"key\"}", new ObjectMapper().writeValueAsString(new Bean(null, bean)));

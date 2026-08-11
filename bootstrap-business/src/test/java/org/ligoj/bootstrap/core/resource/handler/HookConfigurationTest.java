@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.core.resource.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import org.apache.cxf.message.Exchange;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
@@ -106,7 +106,7 @@ class HookConfigurationTest extends AbstractDataGeneratorTest {
 		hook3.setMatch("{invalid}");
 
 		Mockito.when(repository.findAll()).thenReturn(List.of(hook3));
-		final var exc = Mockito.mock(JsonProcessingException.class);
+		final var exc = Mockito.mock(JacksonException.class);
 		Mockito.when(objectMapper.readValue(Mockito.anyString(), Mockito.eq(HookMatch.class))).thenThrow(exc);
 
 		final var result = hookConfiguration.findAll();

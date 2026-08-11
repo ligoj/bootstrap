@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;

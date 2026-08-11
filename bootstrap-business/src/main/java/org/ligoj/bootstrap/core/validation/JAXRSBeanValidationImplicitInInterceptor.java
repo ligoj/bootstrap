@@ -14,7 +14,7 @@ import org.apache.cxf.logging.FaultListener;
 import org.apache.cxf.logging.NoOpFaultListener;
 import org.apache.cxf.message.Message;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
-import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.hibernate.validator.internal.engine.path.MutablePath;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
@@ -104,10 +104,11 @@ public class JAXRSBeanValidationImplicitInInterceptor extends JAXRSBeanValidatio
 			// Parameter is null, is it manually checked of managed by CXF for
 			// multipart?
 			// All non-body parameters are required by default
-			final var propertyPath = PathImpl.createPathFromString(method.getName());
+			final var propertyPath = MutablePath.createPathFromString(method.getName());
 			propertyPath.addParameterNode(parameter.getName(), index);
+			// The mutable path must be materialized: its 'hashCode()' throws UnsupportedOperationException
 			validationErrors.add(ConstraintViolationImpl.forParameterValidation(NotNull.class.getName(), null, null,
-					"interpolated", null, null, null, null, propertyPath, NOT_NULL_DESCRIPTOR, null, null));
+					"interpolated", null, null, null, null, propertyPath.materialize(), NOT_NULL_DESCRIPTOR, null, null));
 			return;
 		}
 

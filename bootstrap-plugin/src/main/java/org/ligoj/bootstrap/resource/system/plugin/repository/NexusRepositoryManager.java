@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.plugin.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.ligoj.bootstrap.core.curl.CurlProcessor;
 import org.springframework.stereotype.Component;
 

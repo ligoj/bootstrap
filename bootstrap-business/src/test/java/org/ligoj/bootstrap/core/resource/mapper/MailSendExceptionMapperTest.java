@@ -18,14 +18,14 @@ class MailSendExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new MailSendException("message-error");
 		check(mock(new MailSendExceptionMapper()).toResponse(exception), 503,
-				"{\"code\":\"mail-down\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"mail-down\"}");
 	}
 
 	@Test
 	void toResponseMessageDrop() {
 		final var exception = new MailSendException("message", new IOException("Connection refused"));
 		check(mock(new MailSendExceptionMapper()).toResponse(exception), 503,
-				"{\"code\":\"mail-down\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"mail-down\"}");
 	}
 
 }

@@ -18,6 +18,6 @@ class JpaObjectRetrievalFailureExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new JpaObjectRetrievalFailureException(new EntityNotFoundException("key"));
 		check(mock(new JpaObjectRetrievalFailureExceptionMapper()).toResponse(exception), 404,
-				"{\"code\":\"entity\",\"message\":\"key\",\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"entity\",\"message\":\"key\"}");
 	}
 }

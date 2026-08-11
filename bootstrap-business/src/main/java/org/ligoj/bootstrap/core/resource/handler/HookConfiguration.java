@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.resource.handler;
 
+import tools.jackson.core.JacksonException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.cache.annotation.CacheResult;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -89,7 +89,7 @@ public class HookConfiguration {
 			hp.setTimeout(Optional.ofNullable(h.getTimeout()).orElse(10));
 			hp.setInject(h.getInject());
 			hp.setDelay(Optional.ofNullable(h.getDelay()).orElse(1));
-		} catch (final IOException ioe) {
+		} catch (final JacksonException ioe) {
 			// Ignore
 			hp.setMatchObject(null);
 		}

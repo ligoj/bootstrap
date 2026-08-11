@@ -3,24 +3,16 @@
  */
 package org.ligoj.bootstrap.core.validation;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.metadata.ConstraintDescriptor;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
-import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.hibernate.validator.internal.engine.path.MutablePath;
 import org.hibernate.validator.internal.metadata.core.ConstraintHelper;
 import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.hibernate.validator.internal.metadata.location.ConstraintLocation.ConstraintLocationKind;
@@ -28,13 +20,14 @@ import org.hibernate.validator.internal.util.annotation.ConstraintAnnotationDesc
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.util.*;
 
 /**
  * Check some validation serialization features of {@link ValidationJsonException}.
@@ -265,13 +258,13 @@ class ValidationJsonExceptionTest {
 		final ConstraintDescriptor<Length> lengthNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
 				getAnnotation("name", Length.class), ConstraintLocationKind.FIELD);
 		violations.add(ConstraintViolationImpl.forBeanValidation("name-Empty", null, null, "interpolated",
-				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("name"),
+				SampleEntity.class, bean, new Object(), "value", MutablePath.createPathFromString("name").materialize(),
 				notEmptyNameDescriptor, ElementType.FIELD));
 		violations.add(ConstraintViolationImpl.forBeanValidation("name-length", null, null, "interpolated",
-				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("name"),
+				SampleEntity.class, bean, new Object(), "value", MutablePath.createPathFromString("name").materialize(),
 				lengthNameDescriptor, ConstraintLocationKind.FIELD));
 		violations.add(ConstraintViolationImpl.forBeanValidation("grapes-Empty", null, null, "interpolated",
-				SampleEntity.class, bean, new Object(), "value", PathImpl.createPathFromString("grapes"),
+				SampleEntity.class, bean, new Object(), "value", MutablePath.createPathFromString("grapes").materialize(),
 				notEmptyGrapesDescriptor, ElementType.FIELD));
 
 		final var violationException = Mockito.mock(ConstraintViolationException.class);
@@ -293,11 +286,11 @@ class ValidationJsonExceptionTest {
 
 		final ConstraintDescriptor<NotEmpty> notEmptyNameDescriptor = new ConstraintDescriptorImpl<>(helper, null,
 				getAnnotation("name", NotEmpty.class), ConstraintLocationKind.FIELD);
-		var path = PathImpl.createPathFromString("name");
-		violations.add(ConstraintViolationImpl.forParameterValidation("name-Empty", null, null, "interpolated",
-				SampleEntity.class, bean, new Object(), "value", path, notEmptyNameDescriptor, null,
-				ElementType.PARAMETER));
+		var path = MutablePath.createPathFromString("name");
 		path.addParameterNode("parameter1", 0);
+		violations.add(ConstraintViolationImpl.forParameterValidation("name-Empty", null, null, "interpolated",
+				SampleEntity.class, bean, new Object(), "value", path.materialize(), notEmptyNameDescriptor, null,
+				ElementType.PARAMETER));
 
 		final var violationException = Mockito.mock(ConstraintViolationException.class);
 		Mockito.when(violationException.getConstraintViolations()).thenReturn(violations);

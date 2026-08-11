@@ -11,7 +11,9 @@ import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
+
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 /**
  * {@link AbstractMapper} test.
@@ -30,35 +32,35 @@ class MapperTest extends AbstractMapper {
 				return super.toResponse(Status.FORBIDDEN, new NonSerializableObject());
 			}
 		};
-		mapper.jacksonJsonProvider = new JacksonJsonProvider();
+		mapper.jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
 		Assertions.assertEquals("Unable to build a JSON string from a server error",
 				Assertions.assertThrows(TechnicalException.class, () -> mapper.toResponse(null, null)).getMessage());
 	}
 
 	@Test
 	void toResponse() {
-		jacksonJsonProvider = new JacksonJsonProvider();
+		jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
 		super.toResponse(Status.FORBIDDEN, null, new NullPointerException());
 	}
 
 	@Test
 	void toResponseNoException() {
-		jacksonJsonProvider = new JacksonJsonProvider();
-		Assertions.assertEquals("{\"code\":null,\"message\":null,\"parameters\":null,\"cause\":null}",
+		jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
+		Assertions.assertEquals("{}",
 				toResponse(Status.FORBIDDEN, null, null).getEntity());
 	}
 
 	@Test
 	void toResponseParameteredException() {
-		jacksonJsonProvider = new JacksonJsonProvider();
-		Assertions.assertEquals("{\"code\":null,\"message\":\"message\",\"parameters\":[\"p1\",\"p2\"],\"cause\":null}",
+		jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
+		Assertions.assertEquals("{\"message\":\"message\",\"parameters\":[\"p1\",\"p2\"]}",
 				toResponse(Status.FORBIDDEN, null, new BusinessException("message", "p1", "p2")).getEntity());
 	}
 
 	@Test
 	void toResponseParameteredExceptionNoParameter() {
-		jacksonJsonProvider = new JacksonJsonProvider();
-		Assertions.assertEquals("{\"code\":null,\"message\":\"message\",\"parameters\":null,\"cause\":null}",
+		jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
+		Assertions.assertEquals("{\"message\":\"message\"}",
 				toResponse(Status.FORBIDDEN, null, new BusinessException("message")).getEntity());
 	}
 

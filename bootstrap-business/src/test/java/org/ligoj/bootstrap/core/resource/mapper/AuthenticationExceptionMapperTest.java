@@ -16,6 +16,6 @@ class AuthenticationExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new PreAuthenticatedCredentialsNotFoundException("message-error");
 		check(mock(new AuthenticationExceptionMapper()).toResponse(exception), 401,
-				"{\"code\":\"security\",\"message\":\"message-error\",\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"security\",\"message\":\"message-error\"}");
 	}
 }

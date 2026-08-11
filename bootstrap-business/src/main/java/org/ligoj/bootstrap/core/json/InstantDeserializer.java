@@ -3,28 +3,22 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeFeature;
 import org.ligoj.bootstrap.core.DateUtils;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.cfg.DateTimeFeature;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 /**
  * {@link Instant} deserializer using the shared {@link DateUtils#getApplicationTimeZone()}.
  */
-public class InstantDeserializer extends com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer<Instant> {
+public class InstantDeserializer extends tools.jackson.databind.ext.javatime.deser.InstantDeserializer<Instant> {
 
-	/**
-	 * SID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private static final boolean DEFAULT_NORMALIZE_ZONE_ID = JavaTimeFeature.NORMALIZE_DESERIALIZED_ZONE_ID.enabledByDefault();
+	private static final boolean DEFAULT_NORMALIZE_ZONE_ID = DateTimeFeature.NORMALIZE_DESERIALIZED_ZONE_ID.enabledByDefault();
 	private static final boolean DEFAULT_ALWAYS_ALLOW_STRINGIFIED_DATE_TIMESTAMPS
-			= JavaTimeFeature.ALWAYS_ALLOW_STRINGIFIED_DATE_TIMESTAMPS.enabledByDefault();
+			= DateTimeFeature.ALWAYS_ALLOW_STRINGIFIED_DATE_TIMESTAMPS.enabledByDefault();
 
 	/**
 	 * JAX-RS serializer instance.
@@ -45,7 +39,7 @@ public class InstantDeserializer extends com.fasterxml.jackson.datatype.jsr310.d
 	}
 
 	@Override
-	public Instant deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
+	public Instant deserialize(final JsonParser parser, final DeserializationContext context) {
 		var result = super.deserialize(parser, context);
 		if (result != null) {
 			result = result.atZone(DateUtils.getApplicationTimeZone().toZoneId()).toInstant();

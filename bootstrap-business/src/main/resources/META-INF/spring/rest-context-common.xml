@@ -3,13 +3,12 @@
 	xsi:schemaLocation="
  		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<!-- Jackson Provider -->
-	<bean id="jacksonProvider" class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider" lazy-init="true">
+	<bean id="jacksonProvider" class="tools.jackson.jakarta.rs.json.JacksonJsonProvider" lazy-init="true">
 		<property name="mapper" ref="objectMapper" />
 	</bean>
 
-	<bean id="objectMapper" class="org.ligoj.bootstrap.core.json.ObjectMapperTrim">
-		<property name="serializationInclusion" value="NON_NULL" />
-	</bean>
+	<!-- Jackson 3 mappers are immutable: NON_NULL inclusion is configured inside ObjectMapperTrim -->
+	<bean id="objectMapper" class="org.ligoj.bootstrap.core.json.ObjectMapperTrim" />
 
 	<bean id="jaxRsParameterNameProvider" class="org.ligoj.bootstrap.core.validation.JaxRsParameterNameProvider"/>
 	<bean id="validationProvider" class="org.apache.cxf.validation.BeanValidationProvider" >

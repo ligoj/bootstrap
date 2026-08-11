@@ -16,6 +16,6 @@ class TechnicalExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new TechnicalException("message-error", "p", "v");
 		check(mock(new TechnicalExceptionMapper()).toResponse(exception), 500,
-				"{\"code\":\"technical\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"technical\"}");
 	}
 }

@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -236,8 +236,8 @@ class HookProcessRunnableTest {
 		final var payload = new ObjectMapper().readTree(jsonString);
 
 		Assertions.assertTrue(payload.get("user").isNull());
-		Assertions.assertEquals("response1", payload.get("result").textValue());
-		Assertions.assertEquals("param1", payload.get("params").get(0).textValue());
+		Assertions.assertEquals("response1", payload.get("result").stringValue());
+		Assertions.assertEquals("param1", payload.get("params").get(0).stringValue());
 	}
 
 	@Test
@@ -308,12 +308,12 @@ class HookProcessRunnableTest {
 		Assertions.assertNotNull(payload64);
 		final var jsonString = new String(HookProcessRunnable.BASE64_CODEC.decode(payload64), StandardCharsets.UTF_8);
 		final var payload = new ObjectMapper().readTree(jsonString);
-		Assertions.assertEquals("GET", payload.get("method").textValue());
-		Assertions.assertEquals("hook1", payload.get("name").textValue());
-		Assertions.assertEquals("junit", payload.get("user").textValue());
-		Assertions.assertEquals("foo/bar", payload.get("path").textValue());
-		Assertions.assertEquals("NOW", payload.get("now").textValue());
-		Assertions.assertEquals("Resource#method", payload.get("api").textValue());
+		Assertions.assertEquals("GET", payload.get("method").stringValue());
+		Assertions.assertEquals("hook1", payload.get("name").stringValue());
+		Assertions.assertEquals("junit", payload.get("user").stringValue());
+		Assertions.assertEquals("foo/bar", payload.get("path").stringValue());
+		Assertions.assertEquals("NOW", payload.get("now").stringValue());
+		Assertions.assertEquals("Resource#method", payload.get("api").stringValue());
 		Assertions.assertEquals("{\"conf2\":\"\",\"conf1\":\"value1\"}", payload.get("inject").toString());
 
 		// Check captured output

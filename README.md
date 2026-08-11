@@ -40,7 +40,7 @@ mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="^(.*[.-
 ```
 
 # List dependencies of modules
-
+****
 ```bash
 mvn dependency:tree
 ```

@@ -3,10 +3,12 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.EnumFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.exc.InvalidFormatException;
 import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,9 +17,12 @@ import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Test class of {@link ObjectMapperTrim}
@@ -25,10 +30,11 @@ import java.util.Date;
 class ObjectMapperTest extends AbstractDataGeneratorTest {
 
 	private final ObjectMapper mapper = new ObjectMapperTrim();
-	private final ObjectMapper vanillaMapper = new ObjectMapper();
+	private final ObjectMapper vanillaMapper = JsonMapper.builderWithJackson2Defaults()
+			.disable(EnumFeature.READ_ENUMS_USING_TO_STRING, EnumFeature.WRITE_ENUMS_USING_TO_STRING).build();
 
 	@Test
-	void serializationEnum() throws JsonProcessingException {
+	void serializationEnum() throws JacksonException {
 		Assertions.assertEquals("\"accepted\"", mapper.writeValueAsString(Status.ACCEPTED));
 		Assertions.assertEquals("\"ACCEPTED\"", vanillaMapper.writeValueAsString(Status.ACCEPTED));
 	}
@@ -89,7 +95,7 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void deserializationDateFailed() {
-		Assertions.assertThrows(JsonParseException.class, () -> mapper.readValue("any", Date.class));
+		Assertions.assertThrows(StreamReadException.class, () -> mapper.readValue("any", Date.class));
 	}
 
 	@Test
@@ -114,8 +120,13 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void deserializationInstant() throws IOException, ParseException {
-		var instant = DateFormat.getDateInstance(DateFormat.SHORT).parse("2025/11/09 01:02:03").toInstant();
-		Assertions.assertEquals("6554210400000",mapper.writeValueAsString(instant));
+		// Explicit locale and time zone: SHORT pattern is locale-dependent (US 'M/d/yy' vs FR 'dd/MM/y')
+		// and lenient parsing resolves the day at midnight of the format's time zone
+		final var format = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+		format.setTimeZone(TimeZone.getTimeZone("UTC"));
+		final var instant = format.parse("2025/11/09 01:02:03").toInstant();
+		Assertions.assertEquals("6554217600000", mapper.writeValueAsString(instant));
+		Assertions.assertEquals(instant, mapper.readValue("6554217600000", Instant.class));
 	}
 
 }

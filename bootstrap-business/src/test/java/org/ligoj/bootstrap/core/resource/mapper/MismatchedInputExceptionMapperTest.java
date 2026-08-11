@@ -6,7 +6,7 @@ package org.ligoj.bootstrap.core.resource.mapper;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import tools.jackson.databind.exc.MismatchedInputException;
 
 /**
  * Exception mapper test using {@link MismatchedInputExceptionMapper}

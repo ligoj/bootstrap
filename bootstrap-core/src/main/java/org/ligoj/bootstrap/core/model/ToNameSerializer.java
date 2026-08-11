@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import org.ligoj.bootstrap.core.INamableBean;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 /**
  * Serialize entities with their name.
@@ -29,11 +29,11 @@ public class ToNameSerializer extends StdSerializer<INamableBean<?>> {
 	 * Default constructor.
 	 */
 	protected ToNameSerializer() {
-		super(INamableBean.class, false);
+		super(INamableBean.class);
 	}
 
 	@Override
-	public void serialize(final INamableBean<?> date, final JsonGenerator generator, final SerializerProvider provider) throws IOException {
+	public void serialize(final INamableBean<?> date, final JsonGenerator generator, final SerializationContext provider) {
 		generator.writeString(date.getName());
 	}
 

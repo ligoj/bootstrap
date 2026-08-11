@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -113,16 +113,16 @@ public class HookResource {
 	 *
 	 * @param vo the object to create.
 	 * @return the entity's identifier.
-	 * @throws JsonProcessingException When <code>math</code> parameter is not a valid JSON.
+	 * @throws JacksonException When <code>math</code> parameter is not a valid JSON.
 	 */
 	@POST
 	@CacheRemoveAll(cacheName = "hooks")
-	public int create(final SystemHook vo) throws JsonProcessingException {
+	public int create(final SystemHook vo) throws JacksonException {
 		check(vo);
 		return repository.saveAndFlush(vo).getId();
 	}
 
-	private void check(final SystemHook vo) throws JsonProcessingException {
+	private void check(final SystemHook vo) throws JacksonException {
 		if (isForbiddenCommand(configurationResource, vo.getCommand())) {
 			throw new ForbiddenException("Hook command is not within one of allowed ${ligoj.hook.path} value");
 		}
@@ -136,11 +136,11 @@ public class HookResource {
 	 *
 	 * @param vo the object to update.
 	 * @return the entity's identifier.
-	 * @throws JsonProcessingException When <code>math</code> parameter is not a valid JSON.
+	 * @throws JacksonException When <code>math</code> parameter is not a valid JSON.
 	 */
 	@PUT
 	@CacheRemoveAll(cacheName = "hooks")
-	public int update(final SystemHook vo) throws JsonProcessingException {
+	public int update(final SystemHook vo) throws JacksonException {
 		check(vo);
 		SystemHook entity;
 		if (vo.getId() == null) {

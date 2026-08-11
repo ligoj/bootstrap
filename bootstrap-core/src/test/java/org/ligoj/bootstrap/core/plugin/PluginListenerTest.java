@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.model.system.SystemPlugin;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Test class of {@link PluginListener}
@@ -39,7 +39,7 @@ class PluginListenerTest {
 	}
 
 	@Test
-    void pluginVoSerialize() throws JsonProcessingException {
+    void pluginVoSerialize() throws JacksonException {
         var pluginVo = new PluginVo();
 		pluginVo.setDeleted(false);
 		pluginVo.setLocation("L");
@@ -59,7 +59,8 @@ class PluginListenerTest {
 				+ "\"createdBy\":null,\"createdDate\":null,\"lastModifiedBy\":null,\"lastModifiedDate\":null,"
 				+ "\"creationContext\":null,\"metadata\":null,\"version\":\"V\",\"key\":\"K\",\"artifact\":\"A\",\"basePackage\":\"P\",\"type\":\"T\"},"
 				+ "\"vendor\":\"V\",\"signature\":null,\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false}",
-				new ObjectMapper().writeValueAsString(pluginVo));
+				// Jackson 2 defaults: keep the declaration order of properties, as ObjectMapperTrim does
+				JsonMapper.builderWithJackson2Defaults().build().writeValueAsString(pluginVo));
 	}
 
 }

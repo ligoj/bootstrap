@@ -11,7 +11,7 @@ import jakarta.ws.rs.ext.Provider;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 /**
  * Maps a {@link jakarta.validation.ConstraintViolationException} to a JSR-303 validation error. Status code, and contents

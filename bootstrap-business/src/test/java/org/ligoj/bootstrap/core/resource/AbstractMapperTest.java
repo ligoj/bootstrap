@@ -10,7 +10,7 @@ import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 /**
  * Base test class of {@link AbstractMapper}

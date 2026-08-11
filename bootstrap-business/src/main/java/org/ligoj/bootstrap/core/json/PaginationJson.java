@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
@@ -27,7 +26,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -311,7 +311,7 @@ public class PaginationJson {
 			final ObjectMapper mapper = new org.ligoj.bootstrap.core.json.ObjectMapperTrim();
 			try {
 				return mapper.readValue(jsonString, UiFilter.class);
-			} catch (final IOException e) {
+			} catch (final JacksonException e) {
 				// Ignore invalid UI filter, considered as no UI filter
 				log.error(String.format("Unable to parse JSon data :%s", jsonString), e);
 			}

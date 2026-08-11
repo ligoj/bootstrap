@@ -16,7 +16,7 @@ class AccessDeniedExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new AccessDeniedException("message-error");
 		check(mock(new AccessDeniedExceptionMapper()).toResponse(exception), 403,
-				"{\"code\":\"security\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"security\"}");
 	}
 
 }

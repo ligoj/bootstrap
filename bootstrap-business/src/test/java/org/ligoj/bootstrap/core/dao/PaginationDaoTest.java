@@ -146,7 +146,11 @@ class PaginationDaoTest extends AbstractBootTest {
 		ruleNE.setOp(RuleOperator.EQ);
 		rulesGroupOr.add(ruleNE);
 
-		final var uiPageRequest = newOr10();
+		// No pagination here: since Hibernate 7.4, pagination with a collection fetch is emulated with a
+		// derived table, and the embedded to-one fetch columns get there invalid aliases when the column
+		// requires quoting (reserved words like "authorization"). See #findAllWithFetchManyAndPage()
+		final var uiPageRequest = newOr();
+		uiPageRequest.setPageSize(0);
 		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
 
 		final var mapping = new HashMap<String, String>();
@@ -158,6 +162,48 @@ class PaginationDaoTest extends AbstractBootTest {
 		final var fetch = new LinkedHashMap<String, JoinType>();
 		fetch.put("link", JoinType.LEFT);
 		fetch.put("link.link", JoinType.LEFT);
+		fetch.put("linkedChildren.link", JoinType.LEFT);
+
+		final var findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, fetch);
+		Assertions.assertTrue(findAll.hasContent());
+		Assertions.assertEquals(1, findAll.getContent().size());
+		Assertions.assertEquals(Integer.valueOf(lastKnownEntity), findAll.getContent().getFirst().getId());
+	}
+
+	/**
+	 * Find all with pagination combined with a collection fetch: paginated with a derived table since
+	 * Hibernate 7.4. To-one fetches are excluded: their columns would be embedded in the derived table
+	 * with invalid aliases for quoted columns such as "authorization".
+	 */
+	@Test
+	void findAllWithFetchManyAndPage() {
+		final var rulesGroupOr = new ArrayList<UIRule>();
+		final var dialect = em.find(SystemDialect.class, lastKnownEntity);
+		dialect.setLink(dialect);
+		em.flush();
+
+		final var ruleEQ = new BasicRule();
+		ruleEQ.setData(String.valueOf(lastKnownEntity));
+		ruleEQ.setField("link.linkImplicitId");
+		ruleEQ.setOp(RuleOperator.EQ);
+		rulesGroupOr.add(ruleEQ);
+
+		final var ruleNE = new BasicRule();
+		ruleNE.setData(String.valueOf(lastKnownEntity));
+		ruleNE.setField("children.dialLong");
+		ruleNE.setOp(RuleOperator.EQ);
+		rulesGroupOr.add(ruleNE);
+
+		final var uiPageRequest = newOr10();
+		uiPageRequest.getUiFilter().setRules(rulesGroupOr);
+
+		final var mapping = new HashMap<String, String>();
+		mapping.put("link", "link.id");
+		mapping.put("link.linkImplicitId", "link.link");
+		mapping.put("children.dialLong", "children.dialLong");
+		mapping.put("A.link", "A.link.id");
+
+		final var fetch = new LinkedHashMap<String, JoinType>();
 		fetch.put("linkedChildren.link", JoinType.LEFT);
 
 		final var findAll = paginationDao.findAll(SystemDialect.class, uiPageRequest, mapping, null, fetch);

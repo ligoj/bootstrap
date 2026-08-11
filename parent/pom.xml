@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.ligoj.parent</groupId>
         <artifactId>project</artifactId>
-        <version>21.0.11</version>
+        <version>25.0.0</version>
         <relativePath />
     </parent>
 
     <groupId>org.ligoj.bootstrap</groupId>
     <artifactId>parent</artifactId>
-    <version>3.3.8-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Ligoj - Bootstrap - Parent</name>
     <description>Ligoj Bootstrap Parent</description>
@@ -64,7 +64,7 @@
         <commons-io.version>2.22.0</commons-io.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-text.version>1.15.0</commons-text.version>
-        <cxf.version>4.2.2</cxf.version>
+        <cxf.version>4.2.3</cxf.version>
         <dom4j.version>2.2.0</dom4j.version>
         <el.version>5.0.0-M1</el.version>
         <el-api.version>6.0.1</el-api.version>
@@ -72,13 +72,13 @@
         <guava.version>33.6.0-jre</guava.version>
         <gentyref.version>1.2.0</gentyref.version>
         <hazelcast.version>5.7.0</hazelcast.version>
-        <hibernate.version>7.2.22.Final</hibernate.version><!-- 7.3+ version requires com.fasterxml -->
-        <hibernate-validator.version>9.0.1.Final</hibernate-validator.version>
+        <hibernate.version>7.4.5.Final</hibernate.version><!-- 7.3+ version requires com.fasterxml -->
+        <hibernate-validator.version>9.1.3.Final</hibernate-validator.version>
         <httpclient.version>5.6.2</httpclient.version>
         <httpcore.version>5.4.3</httpcore.version>
         <hsqldb.version>2.7.4</hsqldb.version>
-        <jackson.version>2.22.1</jackson.version>
-        <jackson.databind.version>2.22.1</jackson.databind.version>
+        <jackson3.version>3.2.1</jackson3.version>
+        <jackson3.databind.version>3.2.1</jackson3.databind.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <jakarta.xml.ws-api.version>4.0.3</jakarta.xml.ws-api.version>
         <jasypt.version>1.9.3</jasypt.version>
@@ -142,7 +142,7 @@
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-core</artifactId>
-                <version>3.3.8-SNAPSHOT</version>
+                <version>4.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.gentyref</groupId>
@@ -552,12 +552,7 @@
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml</groupId>
-                        <artifactId>classmate</artifactId>
-                    </exclusion>
-                </exclusions>
+                <!-- 'com.fasterxml:classmate' is required: no longer provided by hibernate-core 7.3+ -->
             </dependency>
 
             <!-- JSR-919 -->
@@ -741,13 +736,13 @@
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-business</artifactId>
-                <version>3.3.8-SNAPSHOT</version>
+                <version>4.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>org.ligoj.bootstrap</groupId>
                 <artifactId>bootstrap-business-test</artifactId>
-                <version>3.3.8-SNAPSHOT</version>
+                <version>4.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
@@ -824,20 +819,14 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+                <groupId>tools.jackson.jakarta.rs</groupId>
                 <artifactId>jackson-jakarta-rs-json-provider</artifactId>
-                <version>${jackson.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.module</groupId>
-                        <artifactId>jackson-module-jaxb-annotations</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>${jackson3.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <groupId>tools.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson3.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -845,37 +834,14 @@
                 <version>${jackson-annotations.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-paranamer</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-parameter-names</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jdk8</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
+                <groupId>tools.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson3.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
+                <groupId>tools.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.databind.version}</version>
+                <version>${jackson3.databind.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.soap</groupId>
@@ -886,11 +852,6 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
                 <version>${spotbugs-annotations}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>3.0.2</version>
             </dependency>
             <dependency>
                 <groupId>org.checkerframework</groupId>
@@ -935,11 +896,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
             <scope>provided</scope>
@@ -963,7 +919,7 @@
                 <dependency>
                     <groupId>org.ligoj.bootstrap</groupId>
                     <artifactId>bootstrap-launcher</artifactId>
-                    <version>3.3.8-SNAPSHOT</version>
+                    <version>4.0.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
         </profile>

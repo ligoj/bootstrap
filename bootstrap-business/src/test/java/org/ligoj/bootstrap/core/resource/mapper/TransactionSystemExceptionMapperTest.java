@@ -20,7 +20,7 @@ class TransactionSystemExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new TransactionSystemException("message-error");
 		check(mock(new TransactionSystemExceptionMapper()).toResponse(exception), 500,
-				"{\"code\":\"technical\",\"message\":\"message-error\",\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"technical\",\"message\":\"message-error\"}");
 	}
 
 	@Test

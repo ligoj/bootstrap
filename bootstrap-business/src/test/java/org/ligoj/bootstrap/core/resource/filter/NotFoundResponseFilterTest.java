@@ -19,7 +19,7 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 /**
  * ContainerResponseFilter resource test, includes {@link NotFoundResponseFilter}
@@ -31,7 +31,7 @@ class NotFoundResponseFilterTest {
 		protected Object toEntity(final Object object) {
 			try {
 				return new ObjectMapperTrim().writeValueAsString(object);
-			} catch (final JsonProcessingException e) {
+			} catch (final JacksonException e) {
 				// Ignore this error at UI level but trace it
 				throw new TechnicalException("Unable to build a JSON string from a server error", e);
 			}
@@ -66,7 +66,7 @@ class NotFoundResponseFilterTest {
 		filter.filter(requestContext, responseContext);
 		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce()).setStatus(404);
 		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce()).setEntity(
-				"{\"code\":\"entity\",\"message\":\"2000\",\"parameters\":null,\"cause\":null}", annotations, MediaType.APPLICATION_JSON_TYPE);
+				"{\"code\":\"entity\",\"message\":\"2000\"}", annotations, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class NotFoundResponseFilterTest {
 		filter.filter(requestContext, responseContext);
 		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce()).setStatus(404);
 		Mockito.verify(responseContext, VerificationModeFactory.atLeastOnce())
-				.setEntity("{\"code\":\"data\",\"message\":null,\"parameters\":null,\"cause\":null}", annotations, MediaType.APPLICATION_JSON_TYPE);
+				.setEntity("{\"code\":\"data\"}", annotations, MediaType.APPLICATION_JSON_TYPE);
 	}
 
 }

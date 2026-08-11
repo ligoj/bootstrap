@@ -11,10 +11,10 @@ import java.util.Date;
 
 import org.ligoj.bootstrap.core.DateUtils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 /**
  * {@link Date} deserializer using the shared {@link DateUtils#getApplicationTimeZone()}.
@@ -35,8 +35,8 @@ public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 	}
 
 	@Override
-	public LocalDateTime deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
-        if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+	public LocalDateTime deserialize(final JsonParser parser, final DeserializationContext context) {
+        if (parser.currentToken() == JsonToken.VALUE_NUMBER_INT) {
             return Instant.ofEpochMilli(parser.getLongValue()).atZone(DateUtils.getApplicationTimeZone().toZoneId()).toLocalDateTime();
         }
 		return null;

@@ -17,7 +17,7 @@ class ForbiddenExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new ForbiddenException("message-error");
 		check(mock(new ForbiddenExceptionMapper()).toResponse(exception), 403,
-				"{\"code\":\"security\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"security\"}");
 	}
 
 }

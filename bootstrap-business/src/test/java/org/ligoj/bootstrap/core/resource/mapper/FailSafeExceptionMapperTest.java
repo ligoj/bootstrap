@@ -18,14 +18,14 @@ class FailSafeExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final Exception exception = new NullPointerException();
 		check(mock(new FailSafeExceptionMapper()).toResponse(exception), 500,
-				"{\"code\":\"internal\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"internal\"}");
 	}
 
 	@Test
 	void toResponseCommunicationException() {
 		final Exception exception = new TechnicalException("some", new CommunicationException());
 		check(mock(new FailSafeExceptionMapper()).toResponse(exception), 503,
-				"{\"code\":\"ldap-down\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"ldap-down\"}");
 
 	}
 	

@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.validation;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -183,7 +183,7 @@ class ValidationIT extends org.ligoj.bootstrap.AbstractRestTest {
 		Assertions.assertEquals(HttpStatus.SC_BAD_REQUEST, response.getCode());
 		final var content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
 		Assertions.assertNotNull(content);
-		final var result = new ObjectMapperTrim().readValue(content, new com.fasterxml.jackson.core.type.TypeReference<
+		final var result = new ObjectMapperTrim().readValue(content, new TypeReference<
 				Map<String, Map<String, List<Map<String, Object>>>>>() {
 		});
 

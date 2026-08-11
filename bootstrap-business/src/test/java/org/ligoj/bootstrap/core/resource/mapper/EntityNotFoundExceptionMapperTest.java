@@ -17,7 +17,7 @@ class EntityNotFoundExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new EntityNotFoundException("message-error");
 		check(mock(new EntityNotFoundExceptionMapper()).toResponse(exception), 404,
-				"{\"code\":\"entity\",\"message\":\"message-error\",\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"entity\",\"message\":\"message-error\"}");
 	}
 
 }

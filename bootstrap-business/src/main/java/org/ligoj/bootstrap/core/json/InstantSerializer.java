@@ -3,9 +3,9 @@
  */
 package org.ligoj.bootstrap.core.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 import org.ligoj.bootstrap.core.DateUtils;
 
 import java.io.IOException;
@@ -26,11 +26,11 @@ public class InstantSerializer extends StdSerializer<Instant> {
 	public static final InstantSerializer INSTANCE = new InstantSerializer();
 
 	protected InstantSerializer() {
-		super(Instant.class, false);
+		super(Instant.class);
 	}
 
 	@Override
-	public void serialize(final Instant date, final JsonGenerator generator, final SerializerProvider provider) throws IOException {
+	public void serialize(final Instant date, final JsonGenerator generator, final SerializationContext provider) {
 		generator.writeNumber(date.atZone(DateUtils.getApplicationTimeZone().toZoneId()).toInstant().toEpochMilli());
 	}
 }

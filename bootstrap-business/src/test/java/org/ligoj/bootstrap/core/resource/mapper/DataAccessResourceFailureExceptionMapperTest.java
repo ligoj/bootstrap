@@ -18,7 +18,7 @@ class DataAccessResourceFailureExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new CannotGetJdbcConnectionException("message", new SQLException());
 		check(mock(new DataAccessResourceFailureExceptionMapper()).toResponse(exception), 503,
-				"{\"code\":\"database-down\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"database-down\"}");
 	}
 
 }

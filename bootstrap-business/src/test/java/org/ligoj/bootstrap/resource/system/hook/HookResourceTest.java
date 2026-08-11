@@ -3,7 +3,7 @@
  */
 package org.ligoj.bootstrap.resource.system.hook;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import jakarta.ws.rs.ForbiddenException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class HookResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	void create() throws JsonProcessingException {
+	void create() throws JacksonException {
 		final var hook = newHook();
 		configurationResource.put("ligoj.hook.path", "^ls$");
 		resource.create(hook);
@@ -75,7 +75,7 @@ class HookResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	void updateById() throws JsonProcessingException {
+	void updateById() throws JacksonException {
 		final var hook = newHook();
 		em.persist(hook);
 		em.flush();
@@ -88,7 +88,7 @@ class HookResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	void updateByName() throws JsonProcessingException {
+	void updateByName() throws JacksonException {
 		var hook = newHook();
 		em.persist(hook);
 		em.flush();

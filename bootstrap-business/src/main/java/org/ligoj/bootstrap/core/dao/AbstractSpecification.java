@@ -94,15 +94,13 @@ public abstract class AbstractSpecification {
 	protected <U, T> SqmPath<T> getPreviousJoinPath(final From<?, U> from, final String attribute) {
 
 		// Search within current joins
+		// Note: fetches are no longer reused as predicate paths. Since Hibernate 7.4, pagination with
+		// collection fetch is emulated with a derived table: the restrictions are evaluated in the inner
+		// query where the fetch aliases (kept in the outer query) are not visible. A dedicated join is
+		// required so it can be replicated in the inner query.
 		for (final var join : from.getJoins()) {
 			if (join.getAttribute().getName().equals(attribute)) {
 				return fixAlias((Selection<T>) join, aliasCounter);
-			}
-		}
-		// Search within current fetch
-		for (final var fetch : from.getFetches()) {
-			if (fetch.getAttribute().getName().equals(attribute)) {
-				return fixAlias((Selection<T>) fetch, aliasCounter);
 			}
 		}
 		return null;

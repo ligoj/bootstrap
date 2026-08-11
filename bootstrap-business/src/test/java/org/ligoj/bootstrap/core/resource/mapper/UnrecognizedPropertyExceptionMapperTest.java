@@ -8,7 +8,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.resource.AbstractMapperTest;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 /**
  * Exception mapper test using {@link UnrecognizedPropertyExceptionMapper}

@@ -3,8 +3,8 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import tools.jackson.core.JacksonException;
+import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public abstract class AbstractMapper {
 	protected Object toEntity(final Object object) {
 		try {
 			return jacksonJsonProvider.locateMapper(object.getClass(), MediaType.APPLICATION_JSON_TYPE).writeValueAsString(object);
-		} catch (final JsonProcessingException e) {
+		} catch (final JacksonException e) {
 			// Ignore this error at UI level but trace it
 			throw new TechnicalException("Unable to build a JSON string from a server error", e);
 		}

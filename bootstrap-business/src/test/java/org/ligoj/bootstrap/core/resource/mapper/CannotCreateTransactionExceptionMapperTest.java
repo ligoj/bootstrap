@@ -16,7 +16,7 @@ class CannotCreateTransactionExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new CannotCreateTransactionException("message-error");
 		check(mock(new CannotCreateTransactionExceptionMapper()).toResponse(exception), 503,
-				"{\"code\":\"database-down\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"database-down\"}");
 	}
 
 }

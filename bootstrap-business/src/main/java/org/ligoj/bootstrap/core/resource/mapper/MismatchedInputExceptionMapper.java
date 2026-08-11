@@ -11,7 +11,7 @@ import jakarta.ws.rs.ext.Provider;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import tools.jackson.databind.exc.MismatchedInputException;
 
 /**
  * Maps a {@link MismatchedInputException} to a JSR-303 validation error. Status code, and contents

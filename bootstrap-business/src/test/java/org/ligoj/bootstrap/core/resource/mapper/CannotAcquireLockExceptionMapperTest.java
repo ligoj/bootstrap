@@ -16,6 +16,6 @@ class CannotAcquireLockExceptionMapperTest extends AbstractMapperTest {
 	void toResponse() {
 		final var exception = new CannotAcquireLockException("lock");
 		check(mock(new CannotAcquireLockExceptionMapper()).toResponse(exception), 409,
-				"{\"code\":\"database-lock\",\"message\":null,\"parameters\":null,\"cause\":null}");
+				"{\"code\":\"database-lock\"}");
 	}
 }

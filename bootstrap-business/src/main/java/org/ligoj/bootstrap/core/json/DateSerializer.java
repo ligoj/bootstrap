@@ -8,9 +8,9 @@ import java.util.Date;
 
 import org.ligoj.bootstrap.core.DateUtils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 import lombok.Setter;
 
@@ -30,11 +30,11 @@ public class DateSerializer extends StdSerializer<Date> {
 	public static final DateSerializer INSTANCE = new DateSerializer();
 
 	protected DateSerializer() {
-		super(Date.class, false);
+		super(Date.class);
 	}
 
 	@Override
-	public void serialize(final Date date, final JsonGenerator generator, final SerializerProvider provider) throws IOException {
+	public void serialize(final Date date, final JsonGenerator generator, final SerializationContext provider) {
 		generator.writeNumber(date.getTime());
 	}
 

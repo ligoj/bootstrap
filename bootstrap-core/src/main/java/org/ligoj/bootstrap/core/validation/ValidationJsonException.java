@@ -6,9 +6,6 @@ package org.ligoj.bootstrap.core.validation;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ElementKind;
@@ -19,7 +16,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.hibernate.validator.path.Path;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.exc.MismatchedInputException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -104,7 +104,7 @@ public class ValidationJsonException extends RuntimeException {
 		this(mappingException, mappingException.getPropertyName(), "Mapping");
 	}
 
-	private ValidationJsonException(final JsonMappingException mappingException, final String message,
+	private ValidationJsonException(final DatabindException mappingException, final String message,
 			final String rule) {
 		this(message);
 		final var propertyPath = buildPropertyPath(mappingException.getPath());
@@ -185,9 +185,9 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build and return a property path of given exception.
 	 */
-	private StringBuilder buildPropertyPath(final List<JsonMappingException.Reference> path) {
+	private StringBuilder buildPropertyPath(final List<DatabindException.Reference> path) {
 		final var propertyPath = new StringBuilder();
-		JsonMappingException.Reference parent = null;
+		DatabindException.Reference parent = null;
 		for (final var reference : path) {
 			buildPropertyPath(propertyPath, reference, parent);
 			parent = reference;
@@ -198,13 +198,13 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Build and return a property path of given exception.
 	 */
-	private void buildPropertyPath(final StringBuilder propertyPath, final JsonMappingException.Reference reference,
-			final JsonMappingException.Reference parent) {
+	private void buildPropertyPath(final StringBuilder propertyPath, final DatabindException.Reference reference,
+			final DatabindException.Reference parent) {
 		if (parent != null) {
 			buildNestedPropertyPath(propertyPath, reference);
 		}
-		if (reference.getFieldName() != null) {
-			propertyPath.append(reference.getFieldName());
+		if (reference.getPropertyName() != null) {
+			propertyPath.append(reference.getPropertyName());
 		}
 	}
 
@@ -212,7 +212,7 @@ public class ValidationJsonException extends RuntimeException {
 	 * Build nested property path.
 	 */
 	private void buildNestedPropertyPath(final StringBuilder propertyPath,
-			final JsonMappingException.Reference reference) {
+			final DatabindException.Reference reference) {
 		if (reference.getIndex() > -1) {
 			propertyPath.append('[');
 			propertyPath.append(reference.getIndex());
@@ -236,9 +236,9 @@ public class ValidationJsonException extends RuntimeException {
 	 * Return the property path from the given validation error.
 	 */
 	private String getPropertyPath(final ConstraintViolation<?> error) {
-		if (((PathImpl) error.getPropertyPath()).getLeafNode().getKind() == ElementKind.PARAMETER) {
+		if (((Path) error.getPropertyPath()).getLeafNode().getKind() == ElementKind.PARAMETER) {
 			// JSR-349 - Parameter, drop parent context
-			return ((PathImpl) error.getPropertyPath()).getLeafNode().getName();
+			return ((Path) error.getPropertyPath()).getLeafNode().getName();
 		}
 		// JSR-303 - Bean violation
 		return error.getPropertyPath().toString();

@@ -177,7 +177,7 @@ public class ExceptionMapperResource {
 	@DELETE
 	@Path("json-mapping")
 	public void throwJSonMapping() throws IOException {
-		SpringUtils.getApplicationContext().getBean("jacksonProvider", com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider.class);
+		SpringUtils.getApplicationContext().getBean("jacksonProvider", tools.jackson.jakarta.rs.json.JacksonJsonProvider.class);
 		new ObjectMapperTrim().readValue("{\"dialDouble\":\"A\"}", SystemDialect.class);
 	}
 

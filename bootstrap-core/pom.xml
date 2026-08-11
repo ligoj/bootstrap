@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.ligoj.bootstrap</groupId>
 		<artifactId>parent</artifactId>
-		<version>3.3.8-SNAPSHOT</version>
+		<version>4.0.0-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
@@ -129,19 +129,15 @@
 
 		<!-- JAX-RS -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+			<groupId>tools.jackson.jakarta.rs</groupId>
 			<artifactId>jackson-jakarta-rs-json-provider</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
+			<groupId>tools.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<!-- Security -->
