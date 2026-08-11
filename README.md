@@ -31,11 +31,11 @@ A Spring based REST architecture
 
 Requirements
 - Java-25
-- Maven 3.9
+- Maven 3.9.16
 
 ## Overview
 
-Ligoj Bootstrap (`org.ligoj.bootstrap`, currently `4.0.0-SNAPSHOT`) is a Spring + Apache CXF JAX-RS architecture template consumed by downstream Ligoj projects as libraries and parent POMs. Requirements: Java 21, Maven 3.9. The Maven parent chain goes `module → parent/pom.xml → org.ligoj.parent:project` (external repo) — build profiles and plugin defaults live there.
+Ligoj Bootstrap (`org.ligoj.bootstrap`, currently `4.0.0-SNAPSHOT`) is a Spring + Apache CXF JAX-RS architecture template consumed by downstream Ligoj projects as libraries and parent POMs. Requirements: Java 25, Maven 3.9.16+. The Maven parent chain goes `module → parent/pom.xml → org.ligoj.parent:project` (external repo) — build profiles and plugin defaults live there.
 
 ## Commands
 
