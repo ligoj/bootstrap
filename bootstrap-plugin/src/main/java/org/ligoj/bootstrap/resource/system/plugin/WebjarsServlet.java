@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,6 +35,12 @@ public class WebjarsServlet extends HttpServlet {
 	 * serial version uid
 	 */
 	private static final long serialVersionUID = 2461047578940577569L;
+
+	/**
+	 * Classpath root under which all served resources must resolve. Any request escaping this root
+	 * (path traversal) is rejected.
+	 */
+	private static final Path RESOURCES_ROOT = Paths.get("META-INF/resources");
 
 	/**
 	 * Additional mime types
@@ -70,15 +77,24 @@ public class WebjarsServlet extends HttpServlet {
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
 			throws IOException {
-		final var webjarsResourceURI = "META-INF/resources"
+		final var requestedResourceURI = "META-INF/resources"
 				+ request.getRequestURI().replaceFirst(request.getContextPath(), "");
-		log.debug("Webjars requested resource: {}", webjarsResourceURI);
+		log.debug("Webjars requested resource: {}", requestedResourceURI);
 
-		if (isDirectoryRequest(webjarsResourceURI)) {
+		if (isDirectoryRequest(requestedResourceURI)) {
 			// Directory listing is forbidden, but act as a 404 for security purpose.
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
+
+		// Canonicalize the requested URI and reject any path traversal escaping the resources root.
+		// From here, only this sanitized value is used to reach the resource lookup (S2083).
+		final var resourcePath = Paths.get(requestedResourceURI).normalize();
+		if (!resourcePath.startsWith(RESOURCES_ROOT)) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		final var webjarsResourceURI = resourcePath.toString().replace('\\', '/');
 
 		// Regular file, use the last resource instead of the first found
 		Enumeration<URL> resources;
@@ -164,7 +180,8 @@ public class WebjarsServlet extends HttpServlet {
 	 * @return The resolved file name.
 	 */
 	private String getFileName(final String webjarsResourceURI) {
-		return Paths.get(webjarsResourceURI).toFile().getName();
+		final var fileName = Paths.get(webjarsResourceURI).getFileName();
+		return fileName == null ? "" : fileName.toString();
 	}
 
 }

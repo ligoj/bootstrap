@@ -61,6 +61,18 @@ class WebjarsServletTest {
 	}
 
 	@Test
+	void mustRejectPathTraversal() throws Exception {
+		final var request = mock(HttpServletRequest.class);
+		when(request.getRequestURI()).thenReturn("/context-path/webjars/../../../etc/passwd");
+		when(request.getContextPath()).thenReturn("/context-path");
+		final var response = mock(HttpServletResponse.class);
+		getServlet("false").doGet(request, response);
+
+		// Traversal escaping META-INF/resources is a 404, and no resource lookup is attempted
+		verify(response).sendError(404);
+	}
+
+	@Test
 	void fileNotFound() throws Exception {
 		final var request = defaultRequest("error.png");
 		final var response = mock(HttpServletResponse.class);
