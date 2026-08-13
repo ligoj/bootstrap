@@ -30,13 +30,13 @@ class TestAbstractJpaTest extends AbstractJpaTest {
 		final var entities = new ArrayList<SystemUser>();
 		entities.add(new SystemUser());
 		when(csvForJpa.toJpa(ArgumentMatchers.eq(SystemUser.class), ArgumentMatchers.any(Reader.class), ArgumentMatchers.eq(true), ArgumentMatchers.eq(true))).thenReturn(entities);
-		Assertions.assertEquals(entities, super.persistEntities(SystemUser.class, "log4j2.json"));
+		Assertions.assertEquals(entities, super.persistEntities(SystemUser.class, "log4j2.properties"));
 	}
 
 	@Test
 	void persistEntities2() throws IOException {
 		csvForJpa = mock(CsvForJpa.class);
-		super.persistEntities("log4j2.json");
+		super.persistEntities("log4j2.properties");
 	}
 
 	@Test

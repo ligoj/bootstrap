@@ -61,7 +61,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		when(response.getEntity()).thenReturn(entity);
 		when(entity.getContent()).thenReturn(content);
 
-		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
+		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.properties"));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		retries = 0;
 		httpclient = mock(CloseableHttpClient.class);
 		when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.<HttpClientResponseHandler<CloseableHttpResponse>>any())).thenThrow(new IOException());
-		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
+		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.properties"));
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class TestAbstractRestTest extends AbstractRestTest {
 		retries = 0;
 		httpclient = mock(CloseableHttpClient.class);
 		when(httpclient.execute(ArgumentMatchers.any(HttpGet.class), ArgumentMatchers.<HttpClientResponseHandler<CloseableHttpResponse>>any())).thenThrow(new HttpHostConnectException(""));
-		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.json"));
+		Assertions.assertThrows(IllegalStateException.class, () -> startRestServer("log4j2.properties"));
 	}
 
 }
