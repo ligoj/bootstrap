@@ -49,6 +49,18 @@
         <sonar.coverage.exclusions>**/*.js,**/org/eclipse/**/*.java</sonar.coverage.exclusions>
         <gitRepositoryName>bootstrap</gitRepositoryName>
 
+        <!-- Test fork heap: the org.ligoj.parent default pins -Xms/-Xmx at 800m, which the
+             Java 25 / Spring 7 / Hibernate 7 / Jackson 3 stack now sits right at the edge of —
+             the blob-heavy JpaBench* tests OOM depending on GC timing (peak measured between
+             600m and 800m). Keep the deterministic -Xms, raise the ceiling for margin. -->
+        <maven.ut.argLine.memory>-Xms800m -Xmx1536m</maven.ut.argLine.memory>
+        <maven.it.argLine.memory>-Xms800m -Xmx1536m</maven.it.argLine.memory>
+        <!-- Same flags as the org.ligoj.parent default, plus -Xshare:off: Mockito's inline
+             mock maker self-attaches the ByteBuddy agent, whose bootstrap-classpath append
+             makes CDS print "Sharing is only supported for boot loader classes..." on every
+             fork. CDS buys next to nothing in test JVMs, so trade it for a silent log. -->
+        <maven.argLine.jdk>--sun-misc-unsafe-memory-access=allow --enable-preview -XX:+EnableDynamicAgentLoading -Xshare:off</maven.argLine.jdk>
+
         <!-- BOM -->
         <annotation-api.version>3.0.0</annotation-api.version>
         <activation.version>2.0.1</activation.version>
@@ -81,6 +93,8 @@
         <httpclient.version>5.6.2</httpclient.version>
         <httpcore.version>5.4.3</httpcore.version>
         <hsqldb.version>2.7.4</hsqldb.version>
+        <jackson.version>2.22.1</jackson.version>
+        <jackson.databind.version>2.22.1</jackson.databind.version>
         <jackson3.version>3.2.1</jackson3.version>
         <jackson3.databind.version>3.2.1</jackson3.databind.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
@@ -114,6 +128,7 @@
         <spring-security.version>7.1.0</spring-security.version>
         <swagger-ui.version>5.32.11</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.52</swagger-jaxrs2-jakarta.version>
+        <swagger-jaxrs3-jakarta.version>3.0.0</swagger-jaxrs3-jakarta.version>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
         <wiremock.version>3.13.2</wiremock.version>
@@ -193,12 +208,21 @@
                         <groupId>com.sun.activation</groupId>
                         <artifactId>javax.activation</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger.core.v3</groupId>
+                        <artifactId>swagger-jaxrs2-jakarta</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>swagger-ui</artifactId>
                 <version>${swagger-ui.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.vpelikh</groupId>
+                <artifactId>swagger-jaxrs2-jakarta</artifactId>
+                <version>${swagger-jaxrs3-jakarta.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
@@ -240,6 +264,10 @@
                     <exclusion>
                         <groupId>org.glassfish.jaxb</groupId>
                         <artifactId>jaxb-xjc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger.core.v3</groupId>
+                        <artifactId>swagger-jaxrs2-jakarta</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -823,6 +851,22 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
+                <artifactId>jackson-jakarta-rs-json-provider</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.databind.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>tools.jackson.jakarta.rs</groupId>
                 <artifactId>jackson-jakarta-rs-json-provider</artifactId>
                 <version>${jackson3.version}</version>
@@ -907,6 +951,38 @@
     </dependencies>
 
     <profiles>
+        <profile>
+            <!-- Skip delombok (bound by org.ligoj.parent's `javadoc` profile) on modules
+                 without Java sources — the pom-packaging parent/BOM/aggregator modules —
+                 silencing the "Skipping Delombok; no source to process." warning. File
+                 activation is evaluated against EACH module's own basedir, so jar modules
+                 (which have src/main/java) keep delombok running. -->
+            <id>no-java-sources</id>
+            <activation>
+                <file>
+                    <missing>src/main/java</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                        <executions>
+                            <!-- Unbind the (id-less → "default") execution the `javadoc`
+                                 profile declares: `phase=none` removes the mojo run
+                                 entirely — the skip flag would still log a WARNING. -->
+                            <execution>
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>delombok</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>github</id>
             <distributionManagement>
