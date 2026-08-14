@@ -75,7 +75,30 @@ public class WebjarsServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) {
+		try {
+			serveResource(request, response);
+		} catch (final IOException ioe) {
+			// S1989: an exception must never reach the container (it would expose the
+			// container's error page/stack). Typical cause: client aborted the
+			// download (broken pipe) or `sendError` failed on a broken connection.
+			log.warn("Unable to serve webjars resource {}: {}", request.getRequestURI(), ioe.getMessage());
+			if (!response.isCommitted()) {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+		}
+	}
+
+	/**
+	 * Resolve and serve the requested webjars resource. Split from {@link #doGet} so the single
+	 * IO-failure handler up there covers every {@link IOException} source (sendError, resource
+	 * lookup, stream copy) without per-call try/catch noise.
+	 *
+	 * @param request  The resource request.
+	 * @param response The response to fill.
+	 * @throws IOException When the resource cannot be read or the response cannot be written.
+	 */
+	private void serveResource(final HttpServletRequest request, final HttpServletResponse response)
 			throws IOException {
 		final var requestedResourceURI = "META-INF/resources"
 				+ request.getRequestURI().replaceFirst(request.getContextPath(), "");

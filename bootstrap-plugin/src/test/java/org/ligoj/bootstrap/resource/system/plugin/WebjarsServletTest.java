@@ -112,6 +112,42 @@ class WebjarsServletTest {
 	}
 
 	@Test
+	void ioExceptionIsNotPropagated() throws Exception {
+		// S1989: an IO failure (here, sendError on a broken connection) must be
+		// swallowed by doGet — and mapped to a 500 while the response is still open.
+		final var request = defaultRequest("error.png");
+		final var response = mock(HttpServletResponse.class);
+		doThrow(new IOException()).when(response).sendError(ArgumentMatchers.anyInt());
+
+		Assertions.assertDoesNotThrow(() -> getServlet("false").doGet(request, response));
+		verify(response).setStatus(500);
+	}
+
+	@Test
+	void ioExceptionIsNotPropagatedCommitted() throws Exception {
+		// Same as above with an already-committed response (e.g. broken pipe
+		// mid-transfer): no status rewrite is possible, still no propagation.
+		final var request = defaultRequest("error.png");
+		final var response = mock(HttpServletResponse.class);
+		doThrow(new IOException()).when(response).sendError(ArgumentMatchers.anyInt());
+		when(response.isCommitted()).thenReturn(true);
+
+		Assertions.assertDoesNotThrow(() -> getServlet("false").doGet(request, response));
+		verify(response, never()).setStatus(ArgumentMatchers.anyInt());
+	}
+
+	@Test
+	void fileNameIsEmpty() throws Exception {
+		// "/" has no file name (Paths#getFileName == null) → empty name, default MIME type
+		final var response = mock(HttpServletResponse.class);
+		final var baos = new ByteArrayOutputStream();
+		when(response.getOutputStream()).thenReturn(new DelegatingServletOutputStream(baos));
+		getServlet("false").serveFile(response, "/",
+				new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8)));
+		verify(response).setContentType("application/octet-stream");
+	}
+
+	@Test
 	void mimeTypeIsNotFound() throws Exception {
 		final var response = mock(HttpServletResponse.class);
 		final var baos = new ByteArrayOutputStream();
