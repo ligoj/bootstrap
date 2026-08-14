@@ -102,6 +102,9 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	}
 
 	private MethodDocs getMethodDocs(Method method) {
+		if (method == null) {
+			return null;
+		}
 		try {
 			return getOperationDocInternal(method);
 		} catch (Exception _) {
@@ -199,10 +202,7 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 		var mDocs = classDoc.getMethodDocs(method);
 		if (mDocs == null) {
 			// Not yet cached
-			var operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION1 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
-			if (operDoc == null) {
-				operDoc = getJavaDocText(classDoc.getClassDoc(), MARKUP_OPERATION2 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
-			}
+			var operDoc = getJavaDocText(classDoc.getClassDoc(), signatureNoClass);
 			mDocs = parseMethodDoc(operDoc);
 			classDoc.addMethodDocs(method, mDocs);
 		}
@@ -227,6 +227,14 @@ public class JavadocDocumentationProvider implements DocumentationProvider {
 	 */
 	protected static String removeUselessChars(String doc) {
 		return StringUtils.trim(Strings.CS.removeEnd(StringUtils.trim(doc), "."));
+	}
+
+	protected String getJavaDocText(String classDoc, String signatureNoClass) {
+		var operDoc = getJavaDocText(classDoc, MARKUP_OPERATION1 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
+		if (operDoc == null) {
+			operDoc = getJavaDocText(classDoc, MARKUP_OPERATION2 + signatureNoClass, "<__>", 0, MARKUP_OPERATION_END);
+		}
+		return operDoc;
 	}
 
 	private String getJavaDocText(String doc, String tag, String notAfterTag, int index, String subNext) {

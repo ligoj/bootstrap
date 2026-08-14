@@ -210,6 +210,50 @@ class JavadocDocumentationProviderTest extends AbstractJavaDocTest {
 	}
 
 	@Test
+	void getMethodDocResourceError() {
+		// A loader failure while reading the javadoc resource is swallowed → null
+		final var throwingProvider = new JavadocDocumentationProvider(new URLClassLoader(new URL[0]) {
+			@Override
+			public java.io.InputStream getResourceAsStream(final String name) {
+				throw new IllegalStateException();
+			}
+		});
+		final var method = MethodUtils.getMatchingMethod(SampleTool1.class, "test1", String.class, SystemUser.class);
+		Assertions.assertNull(throwingProvider.getMethodDoc(method));
+	}
+
+	@Test
+	void getClassDocLigojClassWithoutPath() {
+		// An org.ligoj.* class without @Path anywhere in its hierarchy is looked up
+		// by its own name; no javadoc resource exists for this test class → null
+		Assertions.assertNull(provider.getClassDoc(JavadocDocumentationProviderTest.class));
+	}
+
+	@Test
+	void getMethodDocToInvoke() {
+		// Without an annotated method, the fallback is the method to invoke
+		final var cri1 = new ClassResourceInfo(SampleTool1.class);
+		final var method = MethodUtils.getMatchingMethod(SampleTool1.class, "test1", String.class, SystemUser.class);
+		final var ori1 = new OperationResourceInfo(method, cri1) {
+			@Override
+			public Method getAnnotatedMethod() {
+				return null;
+			}
+		};
+		Assertions.assertEquals("Method doc. Details", provider.getMethodDoc(ori1));
+	}
+
+	@Test
+	void getJavaDocTextAlternateMarkup() {
+		// Older javadoc layout: operations under '<h3 id="...">' instead of
+		// '<section class="detail" id="...">' — the fallback markup must match.
+		// The matched tag ends at the opening quote, so the extraction keeps the
+		// remainder of the h3 attribute markup ('">') as-is.
+		Assertions.assertEquals("\">Alt doc",
+				provider.getJavaDocText("<h3 id=\"test1()\">Alt doc.</section>", "test1()"));
+	}
+
+	@Test
 	void normalize() {
 		Assertions.assertEquals("Test", JavadocDocumentationProvider.normalize("Test", false));
 		Assertions.assertEquals("Test sample", JavadocDocumentationProvider.normalize("   test sample . ", false));
