@@ -56,7 +56,7 @@ public abstract class AbstractMapper {
 	 * @return the response containing JSON entity.
 	 */
 	protected Response toResponse(final Response.StatusType status, final Throwable t) {
-		return toResponse(status, (Object) ((t != null && t.getCause() != null && "newInstance".equals(t.getStackTrace()[0].getMethodName())) ?
+		return toResponse(status, (Object) ((t.getCause() != null && "newInstance".equals(t.getStackTrace()[0].getMethodName())) ?
 				t.getCause() : t));
 	}
 

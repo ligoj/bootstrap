@@ -3,11 +3,13 @@
  */
 package org.ligoj.bootstrap.core.resource;
 
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.bootstrap.core.json.ObjectMapperTrim;
+import tools.jackson.core.exc.JacksonIOException;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import java.io.IOException;
@@ -29,9 +31,13 @@ class MapperTest extends AbstractMapper {
 				return super.toResponse(Status.FORBIDDEN, new NonSerializableObject());
 			}
 		};
-		mapper.jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
+		mapper.jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim()) {
+			public ObjectMapperTrim locateMapper(Class<?> type, MediaType mediaType) {
+				throw JacksonIOException.construct(new IOException("mockito"));
+			}
+		};
 		Assertions.assertEquals("Unable to build a JSON string from a server error",
-				Assertions.assertThrows(TechnicalException.class, () -> mapper.toResponse(null, null)).getMessage());
+				Assertions.assertThrows(TechnicalException.class, () -> mapper.toResponse(null, new NullPointerException())).getMessage());
 	}
 
 	@Test
