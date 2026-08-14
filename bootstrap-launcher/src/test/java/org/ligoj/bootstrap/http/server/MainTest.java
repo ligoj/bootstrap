@@ -12,17 +12,17 @@ import org.junit.jupiter.api.*;
 class MainTest {
 
 	@BeforeEach
-    void init() {
+	void init() {
 		MainTest.cleanup();
 	}
 
 	@AfterEach
-    void cleanupInstance() {
+	void cleanupInstance() {
 		MainTest.cleanup();
 	}
 
 	@AfterAll
-    static void cleanup() {
+	static void cleanup() {
 		System.clearProperty("jetty.properties");
 		System.clearProperty("jetty.xml");
 		System.clearProperty("jetty.port");
@@ -35,7 +35,7 @@ class MainTest {
 	 * Test invalid properties file.
 	 */
 	@Test
-    void testNoPropertiesFile() throws Exception {
+	void testNoPropertiesFile() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/no.properties");
 		final var main = new Main();
 		Assertions.assertFalse(main.getServer().isStarting());
@@ -47,7 +47,7 @@ class MainTest {
 	 * Test valid properties file.
 	 */
 	@Test
-    void testCorrectConfiguration() throws Exception {
+	void testCorrectConfiguration() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-empty-test.properties");
 		final var main = new Main();
 		Assertions.assertFalse(main.getServer().isStarting());
@@ -59,27 +59,23 @@ class MainTest {
 	 * Test invalid XML file.
 	 */
 	@Test
-    void testInvalidXmlFile() throws Exception {
+	void testInvalidXmlFile() {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-fail.properties");
-		try {
-			Main.main();
-			Assertions.fail("Server should failed to start");
-		} catch (NumberFormatException e) {
-			Assertions.assertEquals("For input string: \"\"INVALID\"\"", e.getMessage());
-		}
+		Assertions.assertThrows(NumberFormatException.class, Main::main,
+				"For input string: \"\"INVALID\"\"");
 	}
 
 	/**
 	 * Test valid XML file.
 	 */
 	@Test
-    void testKillServer() throws Exception {
+	void testKillServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
 		System.setProperty("test.test2", "original");
 		final var thread = new Thread(() -> {
 			try {
 				Main.main();
-			} catch (final Exception e) {
+			} catch (final Exception _) {
 				Assertions.fail("Server failed to start"); // NOSONAR - This a special thread
 			}
 		});
@@ -97,7 +93,7 @@ class MainTest {
 	 * Test valid server start .
 	 */
 	@Test
-    void testStartServer() throws Exception {
+	void testStartServer() throws Exception {
 		System.setProperty("jetty.properties", "META-INF/jetty/jetty-test.properties");
 		System.setProperty("test.test2", "original");
 		final var thread = new Thread(() -> {

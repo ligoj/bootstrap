@@ -19,6 +19,7 @@ import java.io.IOException;
  */
 class MapperTest extends AbstractMapper {
 
+	private static final NullPointerException NPE = new NullPointerException();
 	/**
 	 * Simulate a serialization issue of thrown exception.
 	 */
@@ -32,18 +33,19 @@ class MapperTest extends AbstractMapper {
 			}
 		};
 		mapper.jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim()) {
+			@Override
 			public ObjectMapperTrim locateMapper(Class<?> type, MediaType mediaType) {
 				throw JacksonIOException.construct(new IOException("mockito"));
 			}
 		};
 		Assertions.assertEquals("Unable to build a JSON string from a server error",
-				Assertions.assertThrows(TechnicalException.class, () -> mapper.toResponse(null, new NullPointerException())).getMessage());
+				Assertions.assertThrows(TechnicalException.class, () -> mapper.toResponse(null, NPE)).getMessage());
 	}
 
 	@Test
 	void toResponse() {
 		jacksonJsonProvider = new JacksonJsonProvider(new ObjectMapperTrim());
-		super.toResponse(Status.FORBIDDEN, null, new NullPointerException());
+		super.toResponse(Status.FORBIDDEN, null, NPE);
 	}
 
 	@Test
