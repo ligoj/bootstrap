@@ -36,7 +36,7 @@
     </issueManagement>
     <properties>
         <!-- Sonar configuration -->
-        <sonar.issue.ignore.multicriteria>e1,e2,e3,e4</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria>e1,e2,e3,e4,e5</sonar.issue.ignore.multicriteria>
         <sonar.issue.ignore.multicriteria.e1.ruleKey>Web:BoldAndItalicTagsCheck</sonar.issue.ignore.multicriteria.e1.ruleKey>
         <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.html</sonar.issue.ignore.multicriteria.e1.resourceKey>
         <sonar.issue.ignore.multicriteria.e2.ruleKey>java:S6813</sonar.issue.ignore.multicriteria.e2.ruleKey>
@@ -45,6 +45,8 @@
         <sonar.issue.ignore.multicriteria.e3.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e3.resourceKey>
         <sonar.issue.ignore.multicriteria.e4.ruleKey>java:S1117</sonar.issue.ignore.multicriteria.e4.ruleKey>
         <sonar.issue.ignore.multicriteria.e4.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e4.resourceKey>
+        <sonar.issue.ignore.multicriteria.e5.ruleKey>java:S110</sonar.issue.ignore.multicriteria.e5.ruleKey>
+        <sonar.issue.ignore.multicriteria.e5.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e5.resourceKey>
 
         <sonar.coverage.exclusions>**/*.js,**/org/eclipse/**/*.java</sonar.coverage.exclusions>
         <gitRepositoryName>bootstrap</gitRepositoryName>
@@ -59,7 +61,8 @@
              mock maker self-attaches the ByteBuddy agent, whose bootstrap-classpath append
              makes CDS print "Sharing is only supported for boot loader classes..." on every
              fork. CDS buys next to nothing in test JVMs, so trade it for a silent log. -->
-        <maven.argLine.jdk>--sun-misc-unsafe-memory-access=allow --enable-preview -XX:+EnableDynamicAgentLoading -Xshare:off</maven.argLine.jdk>
+        <maven.argLine.jdk>--sun-misc-unsafe-memory-access=allow --enable-preview -XX:+EnableDynamicAgentLoading
+            -Xshare:off</maven.argLine.jdk>
 
         <!-- BOM -->
         <annotation-api.version>3.0.0</annotation-api.version>
