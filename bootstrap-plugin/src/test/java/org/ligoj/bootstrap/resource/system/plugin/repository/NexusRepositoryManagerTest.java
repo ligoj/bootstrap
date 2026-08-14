@@ -78,6 +78,56 @@ class NexusRepositoryManagerTest extends AbstractServerTest {
 	}
 
 	@Test
+	void getArtifactInputStreamSnapshotNoBuildNumber() throws IOException {
+		// Metadata with a timestamp but no buildNumber: fall back to the literal version
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/maven-metadata.xml"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody(
+								"<metadata><versioning><snapshot><timestamp>20231201.123456</timestamp></snapshot></versioning></metadata>")));
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/plugin-sample-1.0.0-SNAPSHOT.jar"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("LITERAL-OK")));
+		httpServer.start();
+
+		try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-sample", "1.0.0-SNAPSHOT", null)) {
+			Assertions.assertEquals("LITERAL-OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
+		}
+	}
+
+	@Test
+	void getArtifactInputStreamSnapshotNoTimestamp() throws IOException {
+		// Metadata without any timestamped snapshot block: fall back to the literal version
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/maven-metadata.xml"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK)
+								.withBody("<metadata><versioning/></metadata>")));
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/plugin-sample-1.0.0-SNAPSHOT.jar"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("LITERAL-OK")));
+		httpServer.start();
+
+		try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-sample", "1.0.0-SNAPSHOT", null)) {
+			Assertions.assertEquals("LITERAL-OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
+		}
+	}
+
+	@Test
+	void getArtifactInputStreamSnapshotMalformedMetadata() throws IOException {
+		// Unparsable metadata: fall back to the literal version
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/maven-metadata.xml"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("not-a-xml")));
+		httpServer.stubFor(get(urlEqualTo(
+				"/service/local/repositories/releases/content/org/ligoj/plugin/plugin-sample/1.0.0-SNAPSHOT/plugin-sample-1.0.0-SNAPSHOT.jar"))
+						.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("LITERAL-OK")));
+		httpServer.start();
+
+		try (InputStream stream = resource.getArtifactInputStream("org.ligoj.plugin", "plugin-sample", "1.0.0-SNAPSHOT", null)) {
+			Assertions.assertEquals("LITERAL-OK", IOUtils.toString(stream, StandardCharsets.UTF_8));
+		}
+	}
+
+	@Test
 	void getArtifactInputStreamSnapshotNoMetadata() throws IOException {
 		// When the metadata is not available, the literal "-SNAPSHOT" version is used as a best effort
 		httpServer.stubFor(get(urlEqualTo(

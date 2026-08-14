@@ -118,6 +118,19 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
+	void deserializationInstantDecimal() {
+		// Decimal epoch timestamp: seconds part + nanoseconds fraction
+		Assertions.assertEquals(Instant.ofEpochSecond(123, 456_000_000),
+				mapper.readValue("123.456", Instant.class));
+	}
+
+	@Test
+	void deserializationInstantEmpty() {
+		// Lenient empty string resolves to null (no time-zone adjustment applied)
+		Assertions.assertNull(mapper.readValue("\"\"", Instant.class));
+	}
+
+	@Test
 	void deserializationInstant() throws ParseException {
 		// Explicit locale and time zone: SHORT pattern is locale-dependent (US 'M/d/yy' vs FR 'dd/MM/y')
 		// and lenient parsing resolves the day at midnight of the format's time zone

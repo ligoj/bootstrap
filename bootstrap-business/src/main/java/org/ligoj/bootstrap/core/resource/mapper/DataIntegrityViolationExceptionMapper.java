@@ -53,8 +53,9 @@ public class DataIntegrityViolationExceptionMapper extends AbstractMapper implem
 	@Override
 	public Response toResponse(final DataIntegrityViolationException exception) {
 		log.error("DataIntegrityViolationException exception", exception);
-		final var root = ExceptionUtils.getRootCause(exception);
-		final var message = StringUtils.trimToEmpty(root == null ? exception.getMessage() : root.getMessage());
+		// Since commons-lang3 3.13, getRootCause returns the throwable itself when it has no
+		// cause — never null for a non-null exception
+		final var message = StringUtils.trimToEmpty(ExceptionUtils.getRootCause(exception).getMessage());
 
 		// Foreign key violation : MySQL/MariaDB syntax, then PostgreSQL syntax
 		var matcher = PATTERN_FOREIGN_KEY.matcher(message);
@@ -95,7 +96,9 @@ public class DataIntegrityViolationExceptionMapper extends AbstractMapper implem
 	private Response toResponse(final String code, final Throwable exception, final String message) {
 		final var serverError = new ServerError();
 		serverError.setCode("integrity-" + code);
-		serverError.setThrowable(exception.getCause());
+		// A DataIntegrityViolationException usually wraps the SQL error, but a cause-less
+		// instance is legal: fall back to the exception itself instead of a NPE
+		serverError.setThrowable(java.util.Objects.requireNonNullElse(exception.getCause(), exception));
 		if (message != null) {
 			serverError.setMessage(message);
 		}

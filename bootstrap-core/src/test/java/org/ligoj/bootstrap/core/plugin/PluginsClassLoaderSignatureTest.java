@@ -129,4 +129,42 @@ class PluginsClassLoaderSignatureTest {
 		final var signatures = newClassLoader().getSignatures();
 		Assertions.assertEquals(PluginSignature.Status.SIGNED, signatures.get("plugin-signed").status());
 	}
+
+	@Test
+	void signaturesCorruptTrustStore() throws Exception {
+		// A file that is not a keystore: degrades to the no-truststore behavior
+		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/corrupt.p12");
+		final var signatures = newClassLoader().getSignatures();
+		Assertions.assertEquals(PluginSignature.Status.SIGNED, signatures.get("plugin-signed").status());
+	}
+
+	@Test
+	void signaturesPartiallySigned() throws Exception {
+		// Signed JAR with content appended after the signature (unsigned entries outside
+		// META-INF): as unsafe as a tampered one. The extra META-INF tooling metadata and
+		// the exotic signature-block extensions (.DSA/.EC) are tolerated as such.
+		final var signatures = newClassLoader().getSignatures();
+		Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-partial").status());
+		Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-partial").signer());
+	}
+
+	@Test
+	void signaturesChainTrustStoreJks() throws Exception {
+		// The signer certificate is NOT pinned, but its issuing CA is in the (JKS) truststore:
+		// the certificate path validates (PKIX) and the plug-in is VERIFIED
+		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/truststore-ca.jks");
+		final var signatures = newClassLoader("target/test-classes/home-test-signature-ca/.ligoj").getSignatures();
+		Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-chain").status());
+		Assertions.assertEquals("CN=Ligoj Chain Vendor,O=Ligoj,C=FR", signatures.get("plugin-chain").signer());
+	}
+
+	@Test
+	void signaturesUnreadablePlugin() throws Exception {
+		// A plug-in file that cannot be read as a JAR: INVALID, and excluded in "required"
+		// mode (which also keeps the unreadable file away from the resource-export step)
+		System.setProperty(PluginsClassLoader.SIGNATURE_REQUIRED_PROPERTY, "true");
+		final var classLoader = newClassLoader("target/test-classes/home-test-signature-broken/.ligoj");
+		Assertions.assertEquals(PluginSignature.Status.INVALID, classLoader.getSignatures().get("plugin-garbage").status());
+		Assertions.assertFalse(inClasspath(classLoader, "plugin-garbage"));
+	}
 }

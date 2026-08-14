@@ -74,6 +74,21 @@ class SessionResourceTest extends AbstractBootTest {
 	}
 
 	/**
+	 * The internal ADMIN marker authority is excluded from the exposed roles.
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	@Test
+	void detailsAdminRoleFiltered() {
+		final Collection<GrantedAuthority> authorities = new ArrayList<>();
+		when((Collection) SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+				.thenReturn(authorities);
+		authorities.add(new SimpleGrantedAuthority(org.ligoj.bootstrap.core.security.SecurityHelper.ADMIN));
+		final var settings = resource.details();
+		Assertions.assertTrue(settings.getRoles().isEmpty());
+		Assertions.assertTrue(settings.isAdmin());
+	}
+
+	/**
 	 * Username is provided, plenty of authorities
 	 */
 	@SuppressWarnings("rawtypes")

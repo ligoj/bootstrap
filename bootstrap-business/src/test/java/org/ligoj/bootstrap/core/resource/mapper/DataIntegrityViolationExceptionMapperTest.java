@@ -36,6 +36,14 @@ class DataIntegrityViolationExceptionMapperTest extends AbstractMapperTest {
 	}
 
 	@Test
+	void toResponseNoCause() {
+		// Without any root cause, the exception's own message is analyzed
+		final var exception = new DataIntegrityViolationException("Any SQL error");
+		check(mock(new DataIntegrityViolationExceptionMapper()).toResponse(exception), 412,
+				"{\"code\":\"integrity-unknown\",\"message\":\"Any SQL error\"}");
+	}
+
+	@Test
 	void toResponseForeignPostgreSql() {
 		final var exception = new DataIntegrityViolationException("", new IllegalStateException(
 				"ERROR: update or delete on table \"project\" violates foreign key constraint \"fk_assignment_project\" on table \"assignment\"\n"
