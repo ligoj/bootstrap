@@ -162,6 +162,28 @@ class UserResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void findAllWithRolesCriteriaProviderNoDecoration() {
+		// A minimal provider without decorate() override: the interface's default no-op
+		// decoration runs through the production path (findAllWithRoles → decorate)
+		final ISystemUserDetailsProvider provider = (_, page) ->
+				new PageImpl<>(List.of(userRepository.findOne(DEFAULT_USER)), page, 1);
+		final var beanFactory = (DefaultSingletonBeanRegistry) ((ConfigurableApplicationContext) applicationContext)
+				.getBeanFactory();
+		beanFactory.registerSingleton("test-user-details-provider-plain", provider);
+		try {
+			final var users = resource.findAllWithRoles(newUriInfo(), DEFAULT_USER);
+			Assertions.assertEquals(1, users.getData().size());
+			final var user = users.getData().getFirst();
+			Assertions.assertEquals(DEFAULT_USER, user.getLogin());
+			// No decoration happened
+			Assertions.assertNull(user.getFirstName());
+			Assertions.assertNull(user.getLastName());
+		} finally {
+			beanFactory.destroySingleton("test-user-details-provider-plain");
+		}
+	}
+
+	@Test
 	void create() throws GeneralSecurityException {
 		final var apiKey = resource.create(newUser());
 		Assertions.assertNull(apiKey);
