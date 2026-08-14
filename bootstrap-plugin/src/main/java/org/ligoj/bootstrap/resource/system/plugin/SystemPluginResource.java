@@ -339,7 +339,7 @@ public class SystemPluginResource implements ISessionSettingsProvider {
 	 * @throws IOException When the file cannot be read or deleted from the file system.
 	 */
 	@DELETE
-	@Path("{artifact:[\\w-]+}/{version}")
+	@Path("{artifact:[\\w-]+}/{version:[\\w\\.-]+}")
 	public void delete(@PathParam("artifact") final String artifact, @PathParam("version") final String version)
 			throws IOException {
 		removeFilter(artifact, "-" + version.replace(".", "\\."));
