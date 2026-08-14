@@ -66,8 +66,10 @@ public class UserResource {
 	 */
 	private static final Map<String, String> ORDERED_COLUMNS = new HashMap<>();
 
+	public static final String LOGIN = "login";
+
 	static {
-		ORDERED_COLUMNS.put("login", "login");
+		ORDERED_COLUMNS.put(LOGIN, LOGIN);
 		ORDERED_COLUMNS.put("role", "roles.role.name");
 	}
 
@@ -75,7 +77,7 @@ public class UserResource {
 	 * Ordered columns of the {@link #findAllWithRoles(UriInfo, String)} lookup: the JPQL string query cannot order by
 	 * the "roles.role.name" collection path, and the extended details live in provider-side entities.
 	 */
-	private static final Map<String, String> ORDERED_COLUMNS_LOOKUP = Map.of("login", "login");
+	private static final Map<String, String> ORDERED_COLUMNS_LOOKUP = Map.of(LOGIN, LOGIN);
 
 	private static final ToBusinessConverterRole TO_BUSINESS_ROLES = new ToBusinessConverterRole();
 
@@ -124,7 +126,7 @@ public class UserResource {
 	 */
 	@GET
 	@Path("{login}")
-	public SystemUser findById(@PathParam("login") final String login) {
+	public SystemUser findById(@PathParam(LOGIN) final String login) {
 		return repository.findOneExpected(login);
 	}
 
@@ -248,7 +250,7 @@ public class UserResource {
 	@DELETE
 	@Path("{login}")
 	@CacheRemove(cacheName = "user-details")
-	public void delete(@PathParam("login") @CacheKey final String login) {
+	public void delete(@PathParam(LOGIN) @CacheKey final String login) {
 		apiTokenResource.removeAll(login);
 		roleAssignmentRepository.deleteAllBy("user.id", login);
 		repository.deleteById(login);

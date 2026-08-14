@@ -51,7 +51,7 @@ public class SystemDialect extends AbstractPersistable<Integer> {
 
 	private AuthorizationType authorization;
 
-	@OneToMany
+	@OneToMany(mappedBy = "s_dialect")
 	private List<SystemDialect> children;
 
 	@OneToMany(mappedBy = "link")

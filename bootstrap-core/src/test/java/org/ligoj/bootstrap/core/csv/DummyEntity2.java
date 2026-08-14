@@ -36,10 +36,10 @@ public class DummyEntity2 {
 	private DummyEntity2 link;
 	@ManyToOne
 	private DummyEntity3 user;
-	@OneToMany
+	@OneToMany(mappedBy = "dummy")
 	private List<DummyEntity2> children;
 	@OneToMany(mappedBy = "link")
 	private Set<DummyEntity2> linkedChildren;
-	@OneToMany
+	@OneToMany(mappedBy = "dummy")
 	private Collection<DummyEntity2> linkedChildrenCollection;
 }

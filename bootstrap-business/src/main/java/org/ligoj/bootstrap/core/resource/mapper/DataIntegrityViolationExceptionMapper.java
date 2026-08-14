@@ -63,8 +63,8 @@ public class DataIntegrityViolationExceptionMapper extends AbstractMapper implem
 		}
 		matcher = PATTERN_PG_FOREIGN_KEY.matcher(message);
 		if (matcher.find()) {
-			// PostgreSQL reports the referencing/referenced table and the column;
-			// map them to the same from/to order as MySQL (table/column).
+			// PostgreSQL reports the referencing/referenced table and the column.
+			// Map them to the same from/to order as MySQL (table/column).
 			return toResponse("foreign", exception, matcher.group(2) + "/" + matcher.group(1));
 		}
 
