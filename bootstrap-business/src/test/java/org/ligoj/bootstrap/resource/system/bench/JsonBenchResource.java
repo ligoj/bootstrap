@@ -15,11 +15,8 @@ import org.ligoj.bootstrap.core.json.TableItem;
 import java.util.*;
 
 /**
- * Very simple JSon data binding services. Note that inheritance and raw (declared as Object) checks are not yet there.
+ * Very simple JSON data binding services. Note that inheritance and raw (declared as Object) checks are not yet there.
  * No transaction or applied JSR-303 aspect interfering.
- * 
- * @author Fabrice Daugan
- * 
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/system/json-test")

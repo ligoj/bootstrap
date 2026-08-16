@@ -21,8 +21,6 @@ import java.util.LinkedHashSet;
 
 /**
  * Special scanner handling the VFS protocol.
- *
- * @author Fabrice Daugan
  */
 @Slf4j
 public class ResourceScanner extends StandardScanner {

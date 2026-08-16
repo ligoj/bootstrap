@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 
 /**
  * General JPA entity Pagination DAO
- * 
- * @author Fabrice Daugan
  */
 @Repository
 @Transactional(TxType.MANDATORY)

@@ -15,9 +15,6 @@ import java.util.*;
 
 /**
  * Validation utility.
- * 
- * @author Fabrice Daugan
- * 
  */
 @Component
 @Getter
