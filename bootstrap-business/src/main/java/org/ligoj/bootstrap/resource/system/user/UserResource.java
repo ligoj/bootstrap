@@ -143,7 +143,7 @@ public class UserResource {
 
 	/**
 	 * Return all users with their roles and their optional extended details (first name, last name, mails) filled by
-	 * the available {@link ISystemUserDetailsProvider} implementations. The criteria is looked up in the login and,
+	 * the available {@link ISystemUserDetailsProvider} implementations. The criteria are looked up in the login and,
 	 * through the providers, in the extended details.
 	 *
 	 * @param uriInfo  Query context.
