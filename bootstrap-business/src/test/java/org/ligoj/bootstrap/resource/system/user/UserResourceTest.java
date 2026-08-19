@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.dao.system.SystemUserRepository;
@@ -48,7 +49,7 @@ class UserResourceTest extends AbstractBootTest {
 	private int defaultRoleId;
 
 	/**
-	 * Push a Junit user
+	 * Push a UT user
 	 */
 	@BeforeEach
 	void prepare() {
@@ -87,7 +88,7 @@ class UserResourceTest extends AbstractBootTest {
 	void findAllWithRoles() {
 
 		// Add duplicated role
-		final var assignment  =new SystemRoleAssignment();
+		final var assignment = new SystemRoleAssignment();
 		assignment.setRole(roleRepository.findByName(DEFAULT_ROLE));
 		assignment.setUser(userRepository.findOne(DEFAULT_USER));
 		em.persist(assignment);
@@ -138,6 +139,7 @@ class UserResourceTest extends AbstractBootTest {
 					u.setFirstName("First");
 					u.setLastName("Last");
 					u.setMails(List.of("some@mail.com"));
+					u.setFederatedRoles(List.of(new NamedBean<>("role1", "Role1")));
 				});
 			}
 		};
@@ -145,7 +147,7 @@ class UserResourceTest extends AbstractBootTest {
 				.getBeanFactory();
 		beanFactory.registerSingleton("test-user-details-provider", provider);
 		try {
-			// The criteria does not match the login, only the provider's details
+			// The criteria do not match the login, only the provider's details
 			final var users = resource.findAllWithRoles(newUriInfo(), "some@mail");
 			Assertions.assertEquals(1, users.getData().size());
 			final var user = users.getData().getFirst();
@@ -153,6 +155,7 @@ class UserResourceTest extends AbstractBootTest {
 			Assertions.assertEquals("First", user.getFirstName());
 			Assertions.assertEquals("Last", user.getLastName());
 			Assertions.assertEquals(List.of("some@mail.com"), user.getMails());
+			Assertions.assertEquals("Role1", user.getFederatedRoles().getFirst().getName());
 
 			// Unmatched criteria, neither login nor provider details
 			Assertions.assertEquals(0, resource.findAllWithRoles(newUriInfo(), "no-match-zzz").getData().size());
