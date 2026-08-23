@@ -15,6 +15,7 @@ import org.springframework.security.web.RedirectStrategy;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This strategy replace the standard 302 code by a simple JSON data since the client is a hidden Ajax thread. More information could be
@@ -53,7 +54,7 @@ public class RestRedirectStrategy implements RedirectStrategy {
 		final var extension = FilenameUtils.getExtension(pathInfo);
 		final var mime = StringUtils.isEmpty(extension) ? null : EXTENSION_TO_MIME.get(extension);
 		// Write the JSON data containing the redirection and the status
-		final var redirect = forceRedirect ? response.encodeRedirectURL(request.getContextPath()) + (url == null ? "" : url) : "local";
+		final var redirect = forceRedirect ? response.encodeRedirectURL(request.getContextPath()) + Objects.requireNonNullElse(url, "") : "local";
 		response.setStatus(mime == null ? status : HttpServletResponse.SC_OK);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 		response.setContentType(mime == null ? "application/json" : mime);

@@ -72,13 +72,6 @@ public class RestRepositoryFactoryBean<R extends JpaRepository<T, K>, T, K exten
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean#
-	 * afterPropertiesSet()
-	 */
 	@Override
 	public void afterPropertiesSet() {
 		if (applicationContext.getStartupDate() != lastListenerInvocation) {

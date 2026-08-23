@@ -70,31 +70,31 @@ class PluginsClassLoaderSignatureTest {
 	@Test
 	void signaturesWithTrustStore() throws Exception {
 		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/truststore.p12");
-		final var signatures = newClassLoader().getSignatures();
+		try (var cl = newClassLoader()) {
+			var signatures = cl.getSignatures();
 
-		// The signer certificate is pinned in the truststore
-		Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-signed").status());
-		Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-signed").signer());
-		Assertions.assertEquals(PluginSignature.Status.UNSIGNED, signatures.get("plugin-unsigned").status());
-		Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-tampered").status());
+			// The signer certificate is pinned in the truststore
+			Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-signed").status());
+			Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-signed").signer());
+			Assertions.assertEquals(PluginSignature.Status.UNSIGNED, signatures.get("plugin-unsigned").status());
+			Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-tampered").status());
+		}
 	}
 
 	@Test
 	void signaturesWithDefaultTrustStoreLocation() throws Exception {
 		// No property: the truststore is read from the default `code-signing.p12` file inside the home directory
-		final var signatures = newClassLoader("target/test-classes/home-test-signature-default/.ligoj")
-				.getSignatures();
-		Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-signed").status());
-		Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-signed").signer());
+		try (var cl = newClassLoader("target/test-classes/home-test-signature-default/.ligoj")) {
+			var signatures = cl.getSignatures();
+			Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-signed").status());
+			Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-signed").signer());
+		}
 	}
 
 	@Test
 	void signaturesWithUnrelatedTrustStore() throws Exception {
-		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/truststore-other.p12");
-		final var signatures = newClassLoader().getSignatures();
-
 		// Valid signature, untrusted signer: stays "signed"
-		Assertions.assertEquals(PluginSignature.Status.SIGNED, signatures.get("plugin-signed").status());
+		assertSigned("/truststore-other.p12");
 	}
 
 	@Test
@@ -125,17 +125,22 @@ class PluginsClassLoaderSignatureTest {
 	@Test
 	void signaturesUnreadableTrustStore() throws Exception {
 		// Unreadable truststore: degrades to the no-truststore behavior
-		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/not-existing.p12");
-		final var signatures = newClassLoader().getSignatures();
-		Assertions.assertEquals(PluginSignature.Status.SIGNED, signatures.get("plugin-signed").status());
+		assertSigned("/not-existing.p12");
 	}
 
 	@Test
 	void signaturesCorruptTrustStore() throws Exception {
 		// A file that is not a keystore: degrades to the no-truststore behavior
-		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/corrupt.p12");
-		final var signatures = newClassLoader().getSignatures();
-		Assertions.assertEquals(PluginSignature.Status.SIGNED, signatures.get("plugin-signed").status());
+		assertSigned("/corrupt.p12");
+	}
+
+	private void assertSigned(String p12) throws Exception {
+		// A file that is not a keystore: degrades to the no-truststore behavior
+		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + p12);
+		try (var cl = newClassLoader()) {
+			var signatures = cl.getSignatures();
+			Assertions.assertEquals(PluginSignature.Status.SIGNED, signatures.get("plugin-signed").status());
+		}
 	}
 
 	@Test
@@ -143,9 +148,11 @@ class PluginsClassLoaderSignatureTest {
 		// Signed JAR with content appended after the signature (unsigned entries outside
 		// META-INF): as unsafe as a tampered one. The extra META-INF tooling metadata and
 		// the exotic signature-block extensions (.DSA/.EC) are tolerated as such.
-		final var signatures = newClassLoader().getSignatures();
-		Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-partial").status());
-		Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-partial").signer());
+		try (var cl = newClassLoader()) {
+			var signatures = cl.getSignatures();
+			Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-partial").status());
+			Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-partial").signer());
+		}
 	}
 
 	@Test
@@ -153,9 +160,11 @@ class PluginsClassLoaderSignatureTest {
 		// The signer certificate is NOT pinned, but its issuing CA is in the (JKS) truststore:
 		// the certificate path validates (PKIX) and the plug-in is VERIFIED
 		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/truststore-ca.jks");
-		final var signatures = newClassLoader("target/test-classes/home-test-signature-ca/.ligoj").getSignatures();
-		Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-chain").status());
-		Assertions.assertEquals("CN=Ligoj Chain Vendor,O=Ligoj,C=FR", signatures.get("plugin-chain").signer());
+		try (var cl = newClassLoader("target/test-classes/home-test-signature-ca/.ligoj")) {
+			var signatures = cl.getSignatures();
+			Assertions.assertEquals(PluginSignature.Status.VERIFIED, signatures.get("plugin-chain").status());
+			Assertions.assertEquals("CN=Ligoj Chain Vendor,O=Ligoj,C=FR", signatures.get("plugin-chain").signer());
+		}
 	}
 
 	@Test

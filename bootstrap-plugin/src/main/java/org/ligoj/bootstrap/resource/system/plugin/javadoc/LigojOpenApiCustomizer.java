@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -40,6 +41,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 	 * Empty plugin for default management.
 	 */
 	private static final SystemPlugin DEFAULT_PLUGIN = new SystemPlugin();
+	public static final Pattern PATH_FILE_REGEXP = Pattern.compile(":.*}");
 
 	private final SystemPluginRepository repository;
 
@@ -69,7 +71,7 @@ public class LigojOpenApiCustomizer extends OpenApiCustomizer {
 		for (var segment : segments) {
 			if (!StringUtils.isEmpty(segment)) {
 				// Remove parameterized notations from the key
-				normalizedPath.append('/').append(segment.replaceAll(":.*}", "}"));
+				normalizedPath.append('/').append(PATH_FILE_REGEXP.matcher(segment).replaceAll("}"));
 			}
 		}
 		return StringUtils.EMPTY.contentEquals(normalizedPath) ? "/" : normalizedPath.toString();

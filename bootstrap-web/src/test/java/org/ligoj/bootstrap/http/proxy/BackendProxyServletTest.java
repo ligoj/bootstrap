@@ -484,26 +484,20 @@ class BackendProxyServletTest {
 		Assertions.assertEquals("set-cookie: SOME=PASS", servlet.filterServerResponseHeader(null, null, new HttpField("set-cookie", "SOME=PASS")).toString());
 	}
 
-	@Test
-	void isApiRequestXRequest() {
+	private void assertApiRequest(String header, String value) {
 		final var request = mock(HttpServletRequest.class);
-		when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
+		when(request.getHeader(header)).thenReturn(value);
 		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
 	}
 
 	@Test
-	void isApiRequestFromBrowser() {
-		final var request = mock(HttpServletRequest.class);
-		when(request.getHeader("X-Requested-With")).thenReturn("XMLHttpRequest");
-		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
+	void isApiRequestXRequest() {
+		assertApiRequest("X-Requested-With", "XMLHttpRequest");
 	}
 
 	@Test
 	void isApiRequest() {
-		final var request = mock(HttpServletRequest.class);
-		// Add application/json header
-		when(request.getHeader("Content-type")).thenReturn("application/json");
-		Assertions.assertTrue(BackendProxyServlet.isApiRequest(request));
+		assertApiRequest("Content-type", "application/json");
 	}
 
 	@Test
