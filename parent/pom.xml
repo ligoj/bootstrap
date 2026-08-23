@@ -90,7 +90,7 @@
         <c3p0.version>0.14.1</c3p0.version>
         <checker-qual.version>4.2.0</checker-qual.version>
         <commons-codec>1.22.1</commons-codec>
-        <commons-collections4.version>4.5.0</commons-collections4.version>
+        <commons-collections4.version>4.6.0</commons-collections4.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-dbcp2.version>2.11.0</commons-dbcp2.version>
         <commons-io.version>2.22.0</commons-io.version>
