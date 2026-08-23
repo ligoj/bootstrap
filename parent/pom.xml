@@ -107,7 +107,7 @@
         <hibernate.version>7.4.6.Final</hibernate.version><!-- 7.3+ version requires com.fasterxml -->
         <hibernate-validator.version>9.1.3.Final</hibernate-validator.version>
         <httpclient.version>5.6.2</httpclient.version>
-        <httpcore.version>5.4.3</httpcore.version>
+        <httpcore.version>5.6.4</httpcore.version>
         <hsqldb.version>2.7.4</hsqldb.version>
         <jackson.version>2.22.1</jackson.version>
         <jackson.databind.version>2.22.1</jackson.databind.version>
