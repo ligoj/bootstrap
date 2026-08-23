@@ -80,9 +80,6 @@ Dependency layering: `bootstrap-core → bootstrap-business → bootstrap-plugin
 - **bootstrap-plugin** — plugin management REST layer (`/system/plugin`): install/update from Maven Central/Nexus, `PluginApplicationRunListener` (swaps in `PluginsClassLoader` at Spring Boot startup), Javadoc→OpenAPI enrichment.
 - **bootstrap-business-test** — test-support **library** (compile-scope deps): the `Abstract*Test` hierarchy, HSQLDB Spring contexts, RBAC CSV fixtures.
 - **bootstrap-business-parent** / **bootstrap-web-parent** — pom-only parents consumed by downstream backend (`org.ligoj.app:app-api`) and UI (`app-ui`) projects; they preconfigure dependencies and resource filtering.
-- **bootstrap-web** — UI-tier library: `BackendProxyServlet` reverse proxy, extended Spring Security request matchers, OAuth2 client support.
-- **bootstrap-web-test** — pom-only test dependency aggregation (`<type>pom</type>`).
-- **bootstrap-launcher** — two-class embedded-Jetty launcher (`org.ligoj.bootstrap.http.server.Main`) used by IDE runs and `*IT` tests; reads `jetty.properties` (default `META-INF/jetty/jetty-dev.properties`). Production downstream apps boot via Spring Boot instead.
 
 ## Architecture
 

@@ -1,6 +1,0 @@
-{
-  "components":[
-    {"id":"pkg:maven/org.ligoj.plugin/plugin-bar","type":"COMPONENT","namespace":"org.ligoj.plugin","name":"plugin-bar","projectName":null,"version":null,"publishedEpochMillis":null,"licenses":null,"description":".","categories":["Other"],"latestVersionInfo":{"version":"3.0.1","timestampUnixWithMS":1756249804000,"licenses":["MIT License"]},"contributors":null,"nsPopularityAppCount":20,"nsPopularityOrgCount":1,"dependentOnCount":120,"dependencyOfCount":0,"childCount":0,"classifiers":["javadoc","sources","test-sources"],"packaging":"jar","mavenPluginPrefix":null,"ossIndexInfo":{"url":"","vulnerabilityCount":null},"qualityScore":null,"bomDrInfo":{"url":""},"cherryBomUrl":null}
-  ],
-  "page":1,"pageSize":5,"pageCount":1,"totalResultCount":1,"totalCount":800105
-}

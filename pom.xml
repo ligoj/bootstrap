@@ -19,13 +19,8 @@
 	<modules>
 		<module>parent</module>
 		<module>bootstrap-core</module>
-		<module>bootstrap-plugin</module>
 		<module>bootstrap-business</module>
 		<module>bootstrap-business-test</module>
 		<module>bootstrap-business-parent</module>
-		<module>bootstrap-web</module>
-		<module>bootstrap-web-test</module>
-		<module>bootstrap-web-parent</module>
-		<module>bootstrap-launcher</module>
 	</modules>
 </project>
