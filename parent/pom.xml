@@ -140,7 +140,7 @@
         <spring.version>7.0.9</spring.version>
         <spring-boot.version>4.1.1</spring-boot.version>
         <spring-cloud-context.version>5.0.3</spring-cloud-context.version>
-        <spring-data.version>4.1.0</spring-data.version>
+        <spring-data.version>4.1.1</spring-data.version>
         <spring-security.version>7.1.1</spring-security.version>
         <swagger-ui.version>5.32.14</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.52</swagger-jaxrs2-jakarta.version>
