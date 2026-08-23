@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.ee11.proxy.AsyncMiddleManServlet;
+import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -338,12 +339,13 @@ public class BackendProxyServlet extends AsyncMiddleManServlet {
 	}
 
 	@Override
-	protected String filterServerResponseHeader(final HttpServletRequest clientRequest, final Response serverResponse,
-			final String headerName, final String headerValue) {
+	protected HttpField filterServerResponseHeader(final HttpServletRequest clientRequest, final Response serverResponse,
+			final HttpField field) {
 		// Filter some headers
-		final var lowerCase = StringUtils.lowerCase(headerName);
+		final var lowerCase = field.getLowerCaseName();
+		final var headerValue = field.getValue();
 		return ArrayUtils.contains(IGNORE_RESPONSE_HEADERS, lowerCase) || IGNORE_RESPONSE_HEADER_VALUE.containsKey(lowerCase)
-				&& headerValue.startsWith(IGNORE_RESPONSE_HEADER_VALUE.get(lowerCase)) ? null : headerValue;
+				&& headerValue.startsWith(IGNORE_RESPONSE_HEADER_VALUE.get(lowerCase)) ? null : field;
 	}
 
 	/**

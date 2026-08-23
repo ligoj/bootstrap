@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.junit.jupiter.api.Assertions;
@@ -90,7 +91,7 @@ class BackendProxyServletTest {
 	@Test
 	void rewriteURIBlacklisted() throws ServletException {
 		setupRedirection("/blacklist", "http://blacklist-host:1/context");
-		servlet.getBlackListHosts().add("blacklist-host:1");
+		servlet.getHostIncludeExclude().exclude("blacklist-host:1");
 
 		final var request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("/blacklist/any");
@@ -111,7 +112,7 @@ class BackendProxyServletTest {
 	 */
 	@Test
 	void rewriteURIInvalidTarget() throws ServletException {
-		servlet.getBlackListHosts().add("proxy:1");
+		servlet.getHostIncludeExclude().exclude(("proxy:1"));
 		setupRedirection("/rest", "http://proxy:1/endpoint");
 		final var request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("context/rest/any");
@@ -121,7 +122,7 @@ class BackendProxyServletTest {
 
 	@Test
 	void rewriteURIInvalidUri() throws ServletException {
-		servlet.getBlackListHosts().add("proxy:1");
+		servlet.getHostIncludeExclude().exclude("proxy:1");
 		setupRedirection("/rest", ":invalid:uri");
 		final var request = mock(HttpServletRequest.class);
 		when(request.getRequestURI()).thenReturn("context/rest/any");
@@ -424,63 +425,63 @@ class BackendProxyServletTest {
 
 	@Test
 	void filterServerResponseHeaderSkipXContent() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "x-content-type-options", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("x-content-type-options", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipXFrame() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "x-frame-options", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("x-frame-options", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipXXss() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "x-xss-protection", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("x-xss-protection", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipPragma() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "pragma", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("pragma", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipCacheControl() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "cache-control", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("cache-control", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipVisited() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "visited", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("visited", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipServer() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "Server", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("Server", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipExpires() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "Expires", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("Expires", null)));
 	}
 
 	@Test
 	void filterServerResponseHeaderSkipDate() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "Date", null));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("Date", null)));
 	}
 
 	@Test
 	void filterServerResponseHeader() {
-		Assertions.assertEquals("application/json;charset=UTF-8",
-				servlet.filterServerResponseHeader(null, null, "Content-Type", "application/json;charset=UTF-8"));
+		Assertions.assertEquals("Content-Type: application/json;charset=UTF-8",
+				servlet.filterServerResponseHeader(null, null, new HttpField("Content-Type", "application/json;charset=UTF-8")).toString());
 	}
 
 	@Test
 	void filterServerResponseHeaderSessionID() {
-		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, "set-cookie", "JSESSIONID=BLOCKED"));
+		Assertions.assertNull(servlet.filterServerResponseHeader(null, null, new HttpField("set-cookie", "JSESSIONID=BLOCKED")));
 	}
 
 	@Test
 	void filterServerResponseHeaderOk() {
-		Assertions.assertEquals("SOME=PASS", servlet.filterServerResponseHeader(null, null, "set-cookie", "SOME=PASS"));
+		Assertions.assertEquals("set-cookie: SOME=PASS", servlet.filterServerResponseHeader(null, null, new HttpField("set-cookie", "SOME=PASS")).toString());
 	}
 
 	@Test
