@@ -1012,16 +1012,6 @@
             </distributionManagement>
         </profile>
         <profile>
-            <id>eclipse</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.ligoj.bootstrap</groupId>
-                    <artifactId>bootstrap-launcher</artifactId>
-                    <version>4.0.1-SNAPSHOT</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>fix_cr_lf</id>
             <build>
                 <plugins>
