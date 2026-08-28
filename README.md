@@ -73,11 +73,10 @@ Test naming splits unit vs integration: `*Test` = unit/Spring test, `*IT` = inte
 
 ## Module map
 
-Dependency layering: `bootstrap-core → bootstrap-business → bootstrap-plugin`, plus `bootstrap-core + bootstrap-launcher → bootstrap-business-test` and `bootstrap-launcher → bootstrap-web-test → bootstrap-web`.
+Dependency layering: `bootstrap-core → bootstrap-business`, plus `bootstrap-core → bootstrap-business-test`.
 
 - **bootstrap-core** — foundation library, no Spring Boot/CXF server. Bean & JPA base classes (`AbstractPersistable`, `AbstractAudited`), system entities (`org.ligoj.bootstrap.model.system.*`, tables prefixed `S_`), CSV engine, plugin SPI + `PluginsClassLoader`, Jasypt crypto, Hibernate naming strategies, custom validators.
 - **bootstrap-business** — the REST/JPA runtime: CXF wiring, exception mappers, Jackson config, Spring Data extensions, RBAC filters, Hazelcast/JCache, `/system/**` REST resources.
-- **bootstrap-plugin** — plugin management REST layer (`/system/plugin`): install/update from Maven Central/Nexus, `PluginApplicationRunListener` (swaps in `PluginsClassLoader` at Spring Boot startup), Javadoc→OpenAPI enrichment.
 - **bootstrap-business-test** — test-support **library** (compile-scope deps): the `Abstract*Test` hierarchy, HSQLDB Spring contexts, RBAC CSV fixtures.
 - **bootstrap-business-parent** / **bootstrap-web-parent** — pom-only parents consumed by downstream backend (`org.ligoj.app:app-api`) and UI (`app-ui`) projects; they preconfigure dependencies and resource filtering.
 
