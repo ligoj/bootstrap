@@ -69,6 +69,14 @@ public class ApplicationSettings {
 	private List<String> plugins;
 
 	/**
+	 * Subset of {@link #plugins}: the keys of the plug-ins shipping a frontend bundle
+	 * ({@code META-INF/resources/webjars/<ui-id>/vue/index.js}). The SPA only requests bundles for these,
+	 * so backend-only features never produce 404 fetches.
+	 */
+	@Setter
+	private List<String> uiPlugins;
+
+	/**
 	 * Extra-data available for all sessions.
 	 */
 	private final Map<String, String> data = new ConcurrentHashMap<>();
