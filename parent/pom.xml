@@ -98,7 +98,7 @@
         <commons-text.version>1.15.0</commons-text.version>
         <cxf.version>4.2.3</cxf.version>
         <dom4j.version>2.2.0</dom4j.version>
-        <el.version>5.0.0-M1</el.version>
+        <expressly.version>6.0.0</expressly.version>
         <el-api.version>6.0.1</el-api.version>
         <enterprise.cdi-api.version>4.1.0</enterprise.cdi-api.version>
         <guava.version>33.7.1-jre</guava.version>
@@ -157,9 +157,9 @@
 
             <!-- JSR-245, JSR-341 -->
             <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>jakarta.el</artifactId>
-                <version>${el.version}</version>
+                <groupId>org.glassfish.expressly</groupId>
+                <artifactId>expressly</artifactId>
+                <version>${expressly.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.el</groupId>
