@@ -62,7 +62,7 @@ mvn clean package -Pjacoco -Djacoco.includes="org.ligoj.bootstrap.*"
 mvn clean package -Psources,javadoc,github,sonatype,jacoco,test
 
 # Check dependency updates
-mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="^(.*[.-](alpha|beta|rc|M|B|Alpha|Beta|BETA|RC|pre)[.-]?[0-9]*|[0-9]{8}.*)$"
+mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="(?i)^(.*[.-](alpha|beta|rc|M|B|RC|pre|CR|jdk5)[.-]?[0-9]*|[0-9]{8}.*)$"
 ```
 
 **Test failures do NOT fail the build**: the parent POM sets `testFailureIgnore=true` for both surefire and failsafe. `BUILD SUCCESS` is meaningless for tests — always check the `Tests run: … Failures: … Errors: …` lines or `target/surefire-reports/`.
