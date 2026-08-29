@@ -72,7 +72,7 @@
         <maven.it.argLine.memory>-Xms800m -Xmx1536m</maven.it.argLine.memory>
         <!-- Same flags as the org.ligoj.parent default, plus -Xshare:off: Mockito's inline
              mock maker self-attaches the ByteBuddy agent, whose bootstrap-classpath append
-             makes CDS print "Sharing is only supported for boot loader classes..." on every
+             makes CDS print "Sharing is only supported for bootloader classes..." on every
              fork. CDS buys next to nothing in test JVMs, so trade it for a silent log. -->
         <maven.argLine.jdk>--sun-misc-unsafe-memory-access=allow --enable-preview -XX:+EnableDynamicAgentLoading
             -Xshare:off</maven.argLine.jdk>
