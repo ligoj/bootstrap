@@ -23,6 +23,8 @@
         <property name="hazelcast.io.output.thread.count">2</property>
         <property name="hazelcast.operation.thread.count">1</property>
         <property name="hazelcast.operation.generic.thread.count">1</property>
-        
+        <property name="hazelcast.wait.seconds.before.join">0</property>
+        <property name="hazelcast.tcp.join.port.try.count">1</property>
+
     </properties>
 </hazelcast>
