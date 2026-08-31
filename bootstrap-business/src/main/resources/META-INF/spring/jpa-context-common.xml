@@ -13,7 +13,7 @@
 	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 	<bean class="org.ligoj.bootstrap.core.security.AuditorStringAwareImpl" id="auditorAware" />
-	<jpa:repositories base-package="org.ligoj" factory-class="org.ligoj.bootstrap.core.dao.RestRepositoryFactoryBean" />
+	<import resource="classpath:/META-INF/spring/jpa-repositories-${spring.data.jpa.repositories.bootstrap-mode:lazy}.xml" />
 	<bean id="abstract-entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" p:persistenceUnitName="pu" abstract="true">
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter">
