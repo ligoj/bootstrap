@@ -40,6 +40,7 @@ public class FakeAuthenticator {
 	private long counter;
 
 	/**
+	 * A synthetic ES256 WebAuthn authenticator for the tests.
 	 * @param counter Initial signature counter.
 	 */
 	public FakeAuthenticator(final long counter) {

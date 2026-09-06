@@ -149,7 +149,8 @@ class WebAuthnHelperTest {
 		cose.put(3L, -8L);
 		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.toCredential(cose));
 		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAuthData(new byte[10]));
-		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAttestationObject(Cbor.encode("x")));
+		var x= Cbor.encode("x");
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAttestationObject(x));
 		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.decodePublicKey("AAAA", WebAuthnHelper.ALG_ES256));
 	}
 

@@ -304,7 +304,7 @@ public class WebAuthnHelper {
 			}
 			return "https".equalsIgnoreCase(uri.getScheme())
 					|| ("http".equalsIgnoreCase(uri.getScheme()) && "localhost".equalsIgnoreCase(host));
-		} catch (final IllegalArgumentException e) {
+		} catch (final IllegalArgumentException _) {
 			return false;
 		}
 	}

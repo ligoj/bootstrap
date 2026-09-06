@@ -137,7 +137,8 @@ class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 	private static final TestClass INSTANCE = new TestClass();
 	private static final Message MESSAGE = mock(Message.class);
 	static {
-		when(MESSAGE.getExchange()).thenReturn(mock(Exchange.class));
+		var m = mock(Exchange.class);
+		when(MESSAGE.getExchange()).thenReturn(m);
 	}
 
 	@Test

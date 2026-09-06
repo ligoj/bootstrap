@@ -337,7 +337,7 @@ public class MfaResource {
 		final Map<String, Object> client;
 		try {
 			client = WebAuthnHelper.parseClientData(WebAuthnHelper.base64UrlDecode(clientDataJSON));
-		} catch (final RuntimeException e) {
+		} catch (final RuntimeException _) {
 			throw new ValidationJsonException(PASSKEY_PROPERTY, INVALID_CODE);
 		}
 		final var origins = Arrays.stream(StringUtils.defaultString(configuration.get(CONF_ORIGINS)).split(","))
