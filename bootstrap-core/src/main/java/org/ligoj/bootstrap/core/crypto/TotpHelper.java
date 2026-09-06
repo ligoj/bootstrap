@@ -103,6 +103,11 @@ public class TotpHelper {
 	 * @param counter The counter, i.e. the time step for TOTP.
 	 * @return The zero-padded {@value #DIGITS} digits code.
 	 */
+	// HMAC-SHA1 is the algorithm mandated by RFC 4226 and the default of RFC 6238: SHA-1 is used as a keyed MAC over
+	// an 8-byte counter, a construction not affected by the SHA-1 collision weakness, and it is the only algorithm
+	// every authenticator application (Google Authenticator, ...) honours in the otpauth URI. SHA-256/512 would break
+	// the enrolled devices without a security gain for 6-digit codes verified server-side with an attempt limit.
+	@SuppressWarnings("java:S4790")
 	public static String code(final String secret, final long counter) {
 		try {
 			final var mac = Mac.getInstance("HmacSHA1");
