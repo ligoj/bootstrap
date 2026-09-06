@@ -200,7 +200,7 @@ public class HookProcessRunnable implements Runnable {
 		}
 		final var hookName = hook.getName().replaceAll("\\W", "-");
 		responseHeaders.putSingle("X-Ligoj-Hook-" + hookName, status);
-		if (StringUtils.isNotEmpty(message)) {
+		if (StringUtils.isNotBlank(message)) {
 			responseHeaders.putSingle("X-Ligoj-Hook-" + hookName + "-Message", message.replaceAll("[\r\n]", " "));
 		}
 	}
