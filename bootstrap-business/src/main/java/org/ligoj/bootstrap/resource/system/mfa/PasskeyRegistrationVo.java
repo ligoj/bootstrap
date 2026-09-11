@@ -1,5 +1,6 @@
 package org.ligoj.bootstrap.resource.system.mfa;
 
+import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,4 +36,10 @@ public class PasskeyRegistrationVo {
 	 */
 	@NotBlank
 	private String attestationObject;
+
+	/**
+	 * Transports reported by the browser for this credential (<code>internal</code>, <code>hybrid</code>,
+	 * <code>usb</code>...), optional. Returned with the verification challenge as a hint.
+	 */
+	private List<String> transports;
 }

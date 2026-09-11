@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -103,7 +104,12 @@ public class MfaResource {
 	/**
 	 * Persisted passkey data (encrypted in the device secret).
 	 */
-	private record Passkey(String credentialId, String publicKey, int alg, long signCount) {
+	/**
+	 * Transports a browser may report for a credential, see WebAuthn <code>AuthenticatorTransport</code>.
+	 */
+	private static final Set<String> TRANSPORTS = Set.of("usb", "nfc", "ble", "internal", "hybrid", "smart-card");
+
+	private record Passkey(String credentialId, String publicKey, int alg, long signCount, List<String> transports) {
 	}
 
 	@Autowired
@@ -213,6 +219,8 @@ public class MfaResource {
 		options.put("authenticatorSelection", Map.of("residentKey", "preferred", "userVerification", "preferred"));
 		options.put("attestation", "none");
 		options.put("timeout", CHALLENGE_TIMEOUT.toMillis());
+		// Tells the front-end it may send the credential transports with the registration (ignored by browsers)
+		options.put("transportsHint", true);
 		return options;
 	}
 
@@ -248,8 +256,10 @@ public class MfaResource {
 		if (!credentialId.equals(vo.getId()) || passkeys(login).stream().anyMatch(p -> p.credentialId().equals(credentialId))) {
 			throw new ValidationJsonException(PASSKEY_PROPERTY, INVALID_CODE);
 		}
+		final var transports = Optional.ofNullable(vo.getTransports()).orElse(List.of()).stream().map(StringUtils::trimToNull)
+				.filter(Objects::nonNull).filter(TRANSPORTS::contains).distinct().toList();
 		final var passkey = new Passkey(credentialId, WebAuthnHelper.encodePublicKey(credential.publicKey()),
-				credential.alg(), authData.signCount());
+				credential.alg(), authData.signCount(), transports.isEmpty() ? null : transports);
 		final var device = register(login, vo.getName(), SystemMfaDevice.TYPE_PASSKEY, MAPPER.writeValueAsString(passkey));
 		return device.getId();
 	}
@@ -267,8 +277,16 @@ public class MfaResource {
 		final var options = new LinkedHashMap<String, Object>();
 		options.put("challenge", newChallenge(login, "get"));
 		options.put("rpId", getRpId());
-		options.put("allowCredentials", passkeys(login).stream()
-				.map(p -> Map.of("type", PUBLIC_KEY_TYPE, "id", p.credentialId())).toList());
+		options.put("allowCredentials", passkeys(login).stream().map(p -> {
+			final var credential = new LinkedHashMap<String, Object>();
+			credential.put("type", PUBLIC_KEY_TYPE);
+			credential.put("id", p.credentialId());
+			if (p.transports() != null && !p.transports().isEmpty()) {
+				// Where the credential lives, so the browser offers the right prompt
+				credential.put("transports", p.transports());
+			}
+			return credential;
+		}).toList());
 		options.put("userVerification", "preferred");
 		options.put("timeout", CHALLENGE_TIMEOUT.toMillis());
 		return options;
@@ -314,7 +332,7 @@ public class MfaResource {
 			throw new ValidationJsonException(PASSKEY_PROPERTY, INVALID_CODE);
 		}
 		device.setSecret(cryptoHelper.encrypt(MAPPER.writeValueAsString(
-				new Passkey(passkey.credentialId(), passkey.publicKey(), passkey.alg(), authData.signCount()))));
+				new Passkey(passkey.credentialId(), passkey.publicKey(), passkey.alg(), authData.signCount(), passkey.transports()))));
 		device.setLastUsed(Instant.now());
 		repository.saveAndFlush(device);
 		log.info("MFA verification succeeded for {} with passkey '{}'", login, device.getName());

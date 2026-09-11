@@ -226,6 +226,8 @@ class MfaResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("localhost", ((Map<?, ?>) options.get("rp")).get("id"));
 		Assertions.assertEquals(DEFAULT_USER, ((Map<?, ?>) options.get("user")).get("name"));
 		Assertions.assertTrue(((List<?>) options.get("excludeCredentials")).isEmpty());
+		// The host sends the transports only to an API advertising it (older APIs reject unknown properties)
+		Assertions.assertEquals(Boolean.TRUE, options.get("transportsHint"));
 		final var id = resource.createPasskey(registration(authenticator, "macbook", options, "http://localhost:5173"));
 		final var device = repository.findOne(id);
 		Assertions.assertEquals(SystemMfaDevice.TYPE_PASSKEY, device.getType());
@@ -256,6 +258,24 @@ class MfaResourceTest extends AbstractBootTest {
 		final var code = new MfaCodeVo();
 		code.setCode("123456");
 		Assertions.assertThrows(ValidationJsonException.class, () -> resource.verify(code));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void passkeyTransportsHint() {
+		// The transports reported by the browser at registration are returned with the challenge, sanitized, so the
+		// browser knows where the credential lives (local authenticator, phone...). A passkey registered without
+		// them (legacy) has no hint.
+		final var authenticator = new FakeAuthenticator(1);
+		final var vo = registration(authenticator, "mac", resource.setupPasskey(), "http://localhost:5173");
+		vo.setTransports(List.of("internal", "hybrid", "bogus", " ", "internal"));
+		resource.createPasskey(vo);
+		final var legacy = new FakeAuthenticator(1);
+		resource.createPasskey(registration(legacy, "legacy", resource.setupPasskey(), "http://localhost:5173"));
+		final var allowed = ((List<Map<String, Object>>) resource.challengePasskey().get("allowCredentials")).stream()
+				.collect(java.util.stream.Collectors.toMap(m -> m.get("id"), m -> m));
+		Assertions.assertEquals(List.of("internal", "hybrid"), allowed.get(authenticator.getCredentialId()).get("transports"));
+		Assertions.assertFalse(allowed.get(legacy.getCredentialId()).containsKey("transports"));
 	}
 
 	@Test
