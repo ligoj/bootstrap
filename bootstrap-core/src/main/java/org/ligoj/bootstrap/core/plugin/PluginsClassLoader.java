@@ -174,6 +174,32 @@ public class PluginsClassLoader extends URLClassLoader {
 		this.digestVersion = completeClasspath();
 	}
 
+	/**
+	 * Child-first class loading: a class found in a plug-in jar of the plug-ins directory wins over the same class
+	 * available from the parent class-path, so a plug-in shipped inside the application (WAR) can be overridden by
+	 * a newer jar dropped in the plug-ins directory. Classes absent from the plug-in jars (JDK, frameworks, the
+	 * application itself) are still resolved by the parent, and each class is defined once per name.
+	 */
+	@Override
+	protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
+		synchronized (getClassLoadingLock(name)) {
+			var clazz = findLoadedClass(name);
+			if (clazz == null) {
+				try {
+					// The plug-in jars first
+					clazz = findClass(name);
+				} catch (final ClassNotFoundException _) {
+					// Then the regular parent-first delegation
+					clazz = super.loadClass(name, false);
+				}
+			}
+			if (resolve) {
+				resolveClass(clazz);
+			}
+			return clazz;
+		}
+	}
+
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
 		Objects.requireNonNull(name);

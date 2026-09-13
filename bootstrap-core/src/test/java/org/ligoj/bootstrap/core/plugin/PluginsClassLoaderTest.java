@@ -17,6 +17,10 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.nio.file.Files;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import javax.tools.ToolProvider;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -83,6 +87,48 @@ class PluginsClassLoaderTest {
 			} else {
 				System.setProperty("ligoj.plugin.enabled", old);
 			}
+		}
+	}
+
+	/**
+	 * A plug-in jar of the plug-ins directory overrides the same class embedded in the parent class-path (a plug-in
+	 * shipped inside the application WAR): classes are resolved child-first, like the resources.
+	 */
+	@Test
+	void childFirstClassLoading() throws Exception {
+		final var home = Files.createTempDirectory("ligoj-home");
+		try {
+			final var plugins = Files.createDirectories(home.resolve(PluginsClassLoader.PLUGINS_DIR));
+			// A plug-in flavor of ShadowedSample, compiled on the fly and packaged in a versioned jar
+			final var src = Files.createDirectories(home.resolve("src/org/ligoj/bootstrap/core/plugin"))
+					.resolve("ShadowedSample.java");
+			Files.writeString(src, "package org.ligoj.bootstrap.core.plugin;\npublic class ShadowedSample {"
+					+ " public static final String ORIGIN = \"plugin\"; }\n");
+			final var classes = Files.createDirectories(home.resolve("classes"));
+			Assertions.assertEquals(0, ToolProvider.getSystemJavaCompiler().run(null, null, null, "-d",
+					classes.toString(), src.toString()));
+			final var jar = plugins.resolve("plugin-shadow-1.0.0.jar");
+			try (var out = new JarOutputStream(Files.newOutputStream(jar))) {
+				out.putNextEntry(new JarEntry("org/ligoj/bootstrap/core/plugin/ShadowedSample.class"));
+				out.write(Files.readAllBytes(classes.resolve("org/ligoj/bootstrap/core/plugin/ShadowedSample.class")));
+				out.closeEntry();
+			}
+
+			System.setProperty("ligoj.home", home.toString());
+			try (var classLoader = new PluginsClassLoader()) {
+				final var shadowed = classLoader.loadClass(ShadowedSample.class.getName());
+				Assertions.assertNotSame(ShadowedSample.class, shadowed);
+				Assertions.assertSame(classLoader, shadowed.getClassLoader());
+				Assertions.assertEquals("plugin", shadowed.getField("ORIGIN").get(null));
+				// Classes absent from the plug-ins still come from the parent
+				Assertions.assertSame(PluginsClassLoader.class, classLoader.loadClass(PluginsClassLoader.class.getName()));
+				Assertions.assertSame(String.class, classLoader.loadClass("java.lang.String"));
+				// A second lookup returns the same defined class
+				Assertions.assertSame(shadowed, classLoader.loadClass(ShadowedSample.class.getName()));
+			}
+		} finally {
+			System.clearProperty("ligoj.home");
+			FileUtils.deleteDirectory(home.toFile());
 		}
 	}
 
