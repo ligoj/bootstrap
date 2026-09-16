@@ -109,7 +109,13 @@ public class MfaResource {
 	 */
 	private static final Set<String> TRANSPORTS = Set.of("usb", "nfc", "ble", "internal", "hybrid", "smart-card");
 
-	private record Passkey(String credentialId, String publicKey, int alg, long signCount, List<String> transports) {
+	/**
+	 * Accepted <code>authenticatorAttachment</code> values.
+	 */
+	private static final Set<String> ATTACHMENTS = Set.of("platform", "cross-platform");
+
+	private record Passkey(String credentialId, String publicKey, int alg, long signCount, List<String> transports,
+			String aaguid, String attachment) {
 	}
 
 	@Autowired
@@ -258,8 +264,13 @@ public class MfaResource {
 		}
 		final var transports = Optional.ofNullable(vo.getTransports()).orElse(List.of()).stream().map(StringUtils::trimToNull)
 				.filter(Objects::nonNull).filter(TRANSPORTS::contains).distinct().toList();
+		// What the authenticator is: its model identifier (disclosed by most keys and passkey providers even with the
+		// "none" attestation, zero otherwise) and the attachment reported by the browser
+		final var attachment = Optional.ofNullable(StringUtils.trimToNull(vo.getAuthenticatorAttachment()))
+				.filter(ATTACHMENTS::contains).orElse(null);
 		final var passkey = new Passkey(credentialId, WebAuthnHelper.encodePublicKey(credential.publicKey()),
-				credential.alg(), authData.signCount(), transports.isEmpty() ? null : transports);
+				credential.alg(), authData.signCount(), transports.isEmpty() ? null : transports, toAaguid(authData.aaguid()),
+				attachment);
 		final var device = register(login, vo.getName(), SystemMfaDevice.TYPE_PASSKEY, MAPPER.writeValueAsString(passkey));
 		return device.getId();
 	}
@@ -332,7 +343,7 @@ public class MfaResource {
 			throw new ValidationJsonException(PASSKEY_PROPERTY, INVALID_CODE);
 		}
 		device.setSecret(cryptoHelper.encrypt(MAPPER.writeValueAsString(
-				new Passkey(passkey.credentialId(), passkey.publicKey(), passkey.alg(), authData.signCount(), passkey.transports()))));
+				new Passkey(passkey.credentialId(), passkey.publicKey(), passkey.alg(), authData.signCount(), passkey.transports(), passkey.aaguid(), passkey.attachment()))));
 		device.setLastUsed(Instant.now());
 		repository.saveAndFlush(device);
 		log.info("MFA verification succeeded for {} with passkey '{}'", login, device.getName());
@@ -387,6 +398,18 @@ public class MfaResource {
 	private List<Passkey> passkeys(final String login) {
 		return repository.findAllByUserOrderByName(login).stream().filter(d -> SystemMfaDevice.TYPE_PASSKEY.equals(d.getType()))
 				.map(this::passkey).toList();
+	}
+
+	/**
+	 * The AAGUID as an UUID string, <code>null</code> when absent or zero (undisclosed).
+	 */
+	static String toAaguid(final byte[] aaguid) {
+		if (aaguid == null || aaguid.length != 16) {
+			return null;
+		}
+		final var buffer = java.nio.ByteBuffer.wrap(aaguid);
+		final var uuid = new java.util.UUID(buffer.getLong(), buffer.getLong());
+		return uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0 ? null : uuid.toString();
 	}
 
 	private Passkey passkey(final SystemMfaDevice device) {
@@ -512,6 +535,14 @@ public class MfaResource {
 		vo.setCreatedDate(device.getCreatedDate());
 		vo.setLastUsed(device.getLastUsed());
 		vo.setDefaultDevice(device.isDefaultDevice());
+		if (SystemMfaDevice.TYPE_PASSKEY.equals(device.getType())) {
+			// Describe the authenticator: transports, attachment, model
+			final var passkey = passkey(device);
+			vo.setTransports(passkey.transports());
+			vo.setAttachment(passkey.attachment());
+			vo.setAaguid(passkey.aaguid());
+			vo.setModel(AaguidRegistry.model(passkey.aaguid()));
+		}
 		return vo;
 	}
 }

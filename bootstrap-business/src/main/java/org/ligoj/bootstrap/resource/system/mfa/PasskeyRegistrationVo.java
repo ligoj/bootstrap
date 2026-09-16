@@ -42,4 +42,10 @@ public class PasskeyRegistrationVo {
 	 * <code>usb</code>...), optional. Returned with the verification challenge as a hint.
 	 */
 	private List<String> transports;
+
+	/**
+	 * Optional <code>authenticatorAttachment</code> of the created credential: <code>platform</code> (the device's
+	 * own authenticator) or <code>cross-platform</code> (a roaming security key).
+	 */
+	private String authenticatorAttachment;
 }

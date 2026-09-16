@@ -40,6 +40,11 @@ public class FakeAuthenticator {
 	private long counter;
 
 	/**
+	 * AAGUID of the attested credential, 16 zero bytes by default (no attestation).
+	 */
+	private byte[] aaguid = new byte[16];
+
+	/**
 	 * A synthetic ES256 WebAuthn authenticator for the tests.
 	 * @param counter Initial signature counter.
 	 */
@@ -122,6 +127,19 @@ public class FakeAuthenticator {
 	}
 
 	/**
+	 * Set the AAGUID of the attested credential.
+	 *
+	 * @param aaguid The authenticator model identifier, as an UUID string.
+	 */
+	public void setAaguid(final String aaguid) {
+		final var uuid = java.util.UUID.fromString(aaguid);
+		final var buffer = java.nio.ByteBuffer.allocate(16);
+		buffer.putLong(uuid.getMostSignificantBits());
+		buffer.putLong(uuid.getLeastSignificantBits());
+		this.aaguid = buffer.array();
+	}
+
+	/**
 	 * An assertion.
 	 *
 	 * @param authenticatorData Base64url authenticator data.
@@ -139,7 +157,7 @@ public class FakeAuthenticator {
 		out.write((int) (counter >> 8));
 		out.write((int) counter);
 		if (attested) {
-			out.writeBytes(new byte[16]);
+			out.writeBytes(aaguid);
 			out.write(rawCredentialId.length >> 8);
 			out.write(rawCredentialId.length);
 			out.writeBytes(rawCredentialId);

@@ -278,6 +278,48 @@ class MfaResourceTest extends AbstractBootTest {
 		Assertions.assertFalse(allowed.get(legacy.getCredentialId()).containsKey("transports"));
 	}
 
+	/**
+	 * The device list tells what kind of authenticator a passkey is: the transports and the attachment reported by
+	 * the browser, and the authenticator model from its AAGUID when known.
+	 */
+	@Test
+	void passkeyDeviceType() {
+		// A YubiKey 5 NFC: cross-platform, USB + NFC, well-known AAGUID
+		final var yubikey = new FakeAuthenticator(1);
+		yubikey.setAaguid("2fc0579f-8113-47ea-b116-bb5a8db9202a");
+		final var vo = registration(yubikey, "yubikey", resource.setupPasskey(), "http://localhost:5173");
+		vo.setTransports(List.of("usb", "nfc"));
+		vo.setAuthenticatorAttachment("cross-platform");
+		final var yubikeyId = resource.createPasskey(vo);
+
+		// A platform authenticator with the zero AAGUID (attestation "none"), bogus attachment ignored
+		final var laptop = new FakeAuthenticator(1);
+		final var laptopVo = registration(laptop, "laptop", resource.setupPasskey(), "http://localhost:5173");
+		laptopVo.setTransports(List.of("internal"));
+		laptopVo.setAuthenticatorAttachment("weird");
+		final var laptopId = resource.createPasskey(laptopVo);
+
+		final var devices = resource.get().getDevices().stream()
+				.collect(java.util.stream.Collectors.toMap(MfaDeviceVo::getId, java.util.function.Function.identity()));
+		final var key = devices.get(yubikeyId);
+		Assertions.assertEquals(List.of("usb", "nfc"), key.getTransports());
+		Assertions.assertEquals("cross-platform", key.getAttachment());
+		Assertions.assertEquals("2fc0579f-8113-47ea-b116-bb5a8db9202a", key.getAaguid());
+		Assertions.assertEquals("YubiKey 5 NFC", key.getModel());
+		final var mac = devices.get(laptopId);
+		Assertions.assertEquals(List.of("internal"), mac.getTransports());
+		Assertions.assertNull(mac.getAttachment());
+		Assertions.assertNull(mac.getAaguid());
+		Assertions.assertNull(mac.getModel());
+
+		// A TOTP device carries none of these
+		final var secret = TotpHelper.generateSecret();
+		final var totpId = resource.createTotp(edition("app", secret, TotpHelper.code(secret, TotpHelper.currentCounter())));
+		final var app = resource.get().getDevices().stream().filter(d -> d.getId().equals(totpId)).findFirst().orElseThrow();
+		Assertions.assertNull(app.getTransports());
+		Assertions.assertNull(app.getModel());
+	}
+
 	@Test
 	void passkeyRejections() {
 		final var authenticator = new FakeAuthenticator(0);
