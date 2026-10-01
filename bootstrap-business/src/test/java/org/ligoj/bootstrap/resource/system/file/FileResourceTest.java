@@ -57,7 +57,7 @@ class FileResourceTest extends AbstractBootTest {
 	 * Create a fresh "allowed" directory and authorize only its content.
 	 */
 	private Path prepareAllowed() throws IOException {
-		final var base = Path.of(".tmp/file-test").toAbsolutePath();
+		final var base = Path.of("target/file-test").toAbsolutePath();
 		FileUtils.deleteDirectory(base.toFile());
 		final var allowed = Files.createDirectories(base.resolve("allowed")).toRealPath();
 		configurationResource.put("ligoj.file.path", Pattern.quote(allowed.toString()) + "/.*");
