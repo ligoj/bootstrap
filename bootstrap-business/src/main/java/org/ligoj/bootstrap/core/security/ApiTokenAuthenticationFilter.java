@@ -13,7 +13,26 @@ import org.springframework.security.web.authentication.preauth.RequestHeaderAuth
 import java.util.Objects;
 
 /**
- * Authentication based on API token. It is saved with a salt, and associated to a user.
+ * Pre-authentication based on request headers: the principal header (configured with
+ * {@link #setPrincipalRequestHeader(String)}, such as <code>SM_UNIVERSALID</code>) names the user, and the optional
+ * <code>x-api-key</code> header holds an API token of this user.
+ * <p>
+ * <strong>Security requirement:</strong> when the <code>x-api-key</code> header is absent, the principal header is
+ * trusted as is, without any other check. This mode is designed for an authenticating reverse proxy (SSO gateway)
+ * placed in front of the application, and is only safe when all the following conditions hold:
+ * <ul>
+ * <li>The application is never reachable without going through this proxy: bind it to a private interface or
+ * network, firewall its port.</li>
+ * <li>The proxy removes or overwrites the principal header of every incoming request, so a client cannot forge
+ * it.</li>
+ * <li>The proxy also removes the <code>x-api-via-user</code> and <code>x-api-local-roles</code> client headers
+ * unless the API delegation feature is used.</li>
+ * </ul>
+ * Otherwise, any client sending <code>SM_UNIVERSALID: admin</code> is authenticated as <code>admin</code>.
+ * <p>
+ * When the <code>x-api-key</code> header is present, the token is checked against the user named by the
+ * <code>x-api-via-user</code> header when set (delegation: the token owner acts as the principal, accepted by
+ * {@link AuthorizingFilter} only when the token owner is granted <code>POST system/user</code>), against the principal otherwise.
  */
 @Setter
 public class ApiTokenAuthenticationFilter extends RequestHeaderAuthenticationFilter {
