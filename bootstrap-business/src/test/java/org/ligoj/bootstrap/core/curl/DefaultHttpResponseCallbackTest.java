@@ -28,6 +28,28 @@ class DefaultHttpResponseCallbackTest {
 	}
 
 	@Test
+	void toLogBody() {
+		Assertions.assertNull(DefaultHttpResponseCallback.toLogBody(null));
+		Assertions.assertEquals("short", DefaultHttpResponseCallback.toLogBody("short"));
+		final var max = "x".repeat(DefaultHttpResponseCallback.MAX_LOG_BODY);
+		Assertions.assertEquals(max, DefaultHttpResponseCallback.toLogBody(max));
+
+		// A large body is truncated, its full size is kept
+		final var large = DefaultHttpResponseCallback.toLogBody(max + "secret-tail");
+		Assertions.assertEquals(max + "... (" + (DefaultHttpResponseCallback.MAX_LOG_BODY + 11) + " characters)", large);
+	}
+
+	@Test
+	void onResponseRejected() throws Exception {
+		final var response = mock(CloseableHttpResponse.class);
+		final var entity = mock(HttpEntity.class);
+		when(response.getEntity()).thenReturn(entity);
+		when(entity.getContent()).thenReturn(InputStream.nullInputStream());
+		when(response.getCode()).thenReturn(HttpServletResponse.SC_FORBIDDEN);
+		Assertions.assertFalse(new DefaultHttpResponseCallback().onResponse(new CurlRequest("GET", "https://host/?token=secret", ""), response));
+	}
+
+	@Test
 	void onResponseIOE() throws Exception {
 		final var response = mock(CloseableHttpResponse.class);
 		final var entity = mock(HttpEntity.class);

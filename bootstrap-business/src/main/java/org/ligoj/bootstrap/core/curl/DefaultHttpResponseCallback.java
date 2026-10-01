@@ -18,18 +18,39 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class DefaultHttpResponseCallback implements HttpResponseCallback {
 
+	/**
+	 * Maximal logged characters of a rejected response body.
+	 */
+	public static final int MAX_LOG_BODY = 2048;
+
+	/**
+	 * Return the given body truncated to {@link #MAX_LOG_BODY} characters, with its full size.
+	 *
+	 * @param body The response body. May be <code>null</code>.
+	 * @return The body to log.
+	 */
+	static String toLogBody(final String body) {
+		if (body == null || body.length() <= MAX_LOG_BODY) {
+			return body;
+		}
+		return body.substring(0, MAX_LOG_BODY) + "... (" + body.length() + " characters)";
+	}
+
 	@Override
 	public boolean onResponse(final CurlRequest request, final ClassicHttpResponse response) throws IOException {
 
 		// Read the response
 		final var entity = response.getEntity();
-		log.info("{} {}", response.getCode(), request.getUrl());
+		final var url = CurlProcessor.toLogUrl(request.getUrl());
+		log.info("{} {}", response.getCode(), url);
 		if (entity != null) {
 
 			try {
 				// Check the status
 				if (!acceptResponse(response)) {
-					log.error(EntityUtils.toString(entity));
+					// The body may echo sensitive data: only in debug, and truncated
+					log.error("{} {} rejected", response.getCode(), url);
+					log.debug("Rejected response body: {}", toLogBody(EntityUtils.toString(entity)));
 					return false;
 				}
 
