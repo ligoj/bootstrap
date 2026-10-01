@@ -73,10 +73,120 @@ class WebAuthnHelperTest {
 	}
 
 	@Test
+	void cborEncodeValues() {
+		Assertions.assertNull(Cbor.decode(Cbor.encode(null)));
+		Assertions.assertEquals(Boolean.TRUE, Cbor.decode(Cbor.encode(true)));
+		Assertions.assertEquals(Boolean.FALSE, Cbor.decode(Cbor.encode(false)));
+		final var object = new Object();
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.encode(object));
+
+		// 8 bytes lengths are encoded, but not decoded beyond the integer range
+		final var big = Cbor.encode(1L << 33);
+		Assertions.assertEquals(9, big.length);
+		Assertions.assertEquals(0x1B, big[0] & 0xFF);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(big));
+		Assertions.assertEquals(5L, Cbor.decode(new byte[] { 0x1B, 0, 0, 0, 0, 0, 0, 0, 5 }));
+		Assertions.assertThrows(IllegalArgumentException.class,
+				() -> Cbor.decode(new byte[] { 0x1B, (byte) 0x80, 0, 0, 0, 0, 0, 0, 0 }));
+	}
+
+	@Test
+	void cborDecodeSpecial() {
+		// A tag is skipped
+		Assertions.assertEquals(1L, Cbor.decode(new byte[] { (byte) 0xC1, 0x01 }));
+		// Reserved length information
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { 0x1C }));
+		// Simple values
+		Assertions.assertEquals(Boolean.FALSE, Cbor.decode(new byte[] { (byte) 0xF4 }));
+		Assertions.assertNull(Cbor.decode(new byte[] { (byte) 0xF6 }));
+	}
+
+	@Test
+	void digestUnknownAlgorithm() {
+		final var data = new byte[0];
+		Assertions.assertEquals("any is not available",
+				Assertions.assertThrows(IllegalStateException.class, () -> WebAuthnHelper.digest(data, "any")).getMessage());
+	}
+
+	@Test
+	void parseAuthDataInvalid() {
+		final var rpIdHash = new byte[32];
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAuthData(null));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAuthData(new byte[10]));
+
+		// Flag not set
+		Assertions.assertFalse(WebAuthnHelper.parseAuthData(authData(rpIdHash, WebAuthnHelper.FLAG_UP, 0, null, null))
+				.has(WebAuthnHelper.FLAG_UV));
+
+		// Attested credential flag, but truncated attested credential data
+		final var truncated = java.util.Arrays.copyOf(
+				authData(rpIdHash, WebAuthnHelper.FLAG_UP | WebAuthnHelper.FLAG_AT, 0, null, null), 47);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAuthData(truncated));
+
+		// Credential identifier length larger than the data
+		final var idTruncated = new byte[55];
+		idTruncated[32] = (byte) (WebAuthnHelper.FLAG_UP | WebAuthnHelper.FLAG_AT);
+		idTruncated[53] = 1;
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAuthData(idTruncated));
+
+		// COSE key not a map
+		final var out = new ByteArrayOutputStream();
+		out.writeBytes(java.util.Arrays.copyOf(authData(rpIdHash, WebAuthnHelper.FLAG_UP | WebAuthnHelper.FLAG_AT, 0, null, null), 53));
+		out.write(0);
+		out.write(1);
+		out.write(7);
+		out.writeBytes(Cbor.encode("not a map"));
+		final var notMap = out.toByteArray();
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAuthData(notMap));
+	}
+
+	@Test
+	void parseAttestationObjectInvalid() {
+		final var noAuthData = Cbor.encode(Map.of("fmt", "none"));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAttestationObject(noAuthData));
+		final var textAuthData = Cbor.encode(Map.of("authData", "text"));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAttestationObject(textAuthData));
+		final var notMap = Cbor.encode(List.of(1L));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.parseAttestationObject(notMap));
+	}
+
+	@Test
+	void toCredentialInvalid() {
+		// Unsupported curve
+		final var curve = Map.<Object, Object>of(1L, 2L, 3L, (long) WebAuthnHelper.ALG_ES256, -1L, 2L);
+		Assertions.assertEquals("Unsupported EC curve",
+				Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.toCredential(curve)).getMessage());
+
+		// Key type and algorithm mismatch
+		final var mismatch = Map.<Object, Object>of(1L, 3L, 3L, (long) WebAuthnHelper.ALG_ES256);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.toCredential(mismatch));
+
+		// Invalid RSA key: too short modulus
+		final var shortRsa = Map.<Object, Object>of(1L, 3L, 3L, (long) WebAuthnHelper.ALG_RS256, -1L, new byte[] { 1 }, -2L,
+				new byte[] { 1 });
+		Assertions.assertEquals("Invalid COSE public key",
+				Assertions.assertThrows(IllegalArgumentException.class, () -> WebAuthnHelper.toCredential(shortRsa)).getMessage());
+	}
+
+	@Test
+	void isOriginAllowedNoAllowList() {
+		Assertions.assertTrue(WebAuthnHelper.isOriginAllowed("https://sub.example.com", "example.com", null));
+		Assertions.assertTrue(WebAuthnHelper.isOriginAllowed("https://EXAMPLE.com", "example.com", List.of()));
+		Assertions.assertFalse(WebAuthnHelper.isOriginAllowed("https://example.org", "example.com", null));
+		Assertions.assertFalse(WebAuthnHelper.isOriginAllowed("http://example.com", "example.com", null));
+		Assertions.assertTrue(WebAuthnHelper.isOriginAllowed("http://localhost:5173", "localhost", null));
+		Assertions.assertFalse(WebAuthnHelper.isOriginAllowed("urn:example.com", "example.com", null));
+		Assertions.assertFalse(WebAuthnHelper.isOriginAllowed("ftp://example.com", "example.com", null));
+	}
+
+	@Test
 	void cborContainerLargerThanData() {
 		// A declared size is never trusted beyond the remaining data: no allocation from it
 		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { (byte) 0x9A, 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
 		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { (byte) 0xBA, 0x3F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
+		// A byte or text string length close to the integer limit must not overflow the bounds check
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { 0x5A, 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFB }));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { 0x7A, 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
 		// A map needs a key and a value per entry
 		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { (byte) 0xA2, 0x01, 0x02, 0x03 }));
 		// Exact sizes are still accepted

@@ -135,10 +135,21 @@ public class WebAuthnHelper {
 	 * @return The digest.
 	 */
 	public static byte[] sha256(final byte[] data) {
+		return digest(data, "SHA-256");
+	}
+
+	/**
+	 * Digest with the given algorithm.
+	 *
+	 * @param data      The data.
+	 * @param algorithm The digest algorithm.
+	 * @return The digest.
+	 */
+	static byte[] digest(final byte[] data, final String algorithm) {
 		try {
-			return MessageDigest.getInstance("SHA-256").digest(data);
+			return MessageDigest.getInstance(algorithm).digest(data);
 		} catch (final GeneralSecurityException e) {
-			throw new IllegalStateException("SHA-256 is not available", e);
+			throw new IllegalStateException(algorithm + " is not available", e);
 		}
 	}
 
