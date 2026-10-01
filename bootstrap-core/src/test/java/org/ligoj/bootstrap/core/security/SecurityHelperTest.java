@@ -47,6 +47,17 @@ class SecurityHelperTest {
 		Assertions.assertEquals("name", new SecurityHelper().getLogin());
 	}
 
+	@Test
+	void setUserNamePreviousUnchanged() {
+		// The previous context, possibly held elsewhere (session, other thread), is not modified
+		new SecurityHelper().setUserName("previous");
+		final var previous = org.springframework.security.core.context.SecurityContextHolder.getContext();
+		final var sc = new SecurityHelper().setUserName("name");
+		Assertions.assertEquals("previous", previous.getAuthentication().getName());
+		Assertions.assertEquals("name", sc.getAuthentication().getName());
+		Assertions.assertNotSame(previous, sc);
+	}
+
 	/**
 	 * Test no login.
 	 */

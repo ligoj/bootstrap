@@ -39,36 +39,36 @@ public class SecurityHelper {
 	 * 
 	 * @param username
 	 *            UserName to set.
-	 * @return the previous {@link SecurityContext} to be able to restore it later.
+	 * @return the new current {@link SecurityContext}, or <code>null</code> when the username is <code>null</code>.
+	 *         The previous context is not modified: to restore it, keep {@link SecurityContextHolder#getContext()}
+	 *         before this call.
 	 */
 	public SecurityContext setUserName(final String username) {
 		if (username == null) {
 			log.error("userName is needed in aim to update SecurityContext");
 			return null;
 		}
-		final var context = SecurityContextHolder.getContext();
 		final UserDetails newPrincipal = new User(username, "N/A", new ArrayList<>(0));
-		replaceContext(context, newPrincipal);
-		return context;
+		return replaceContext(newPrincipal);
 	}
 
 	/**
-	 * Put new information in SecurityContextHolder.
-	 * 
-	 * @param context
-	 *            the security context to update.
+	 * Replace the current context by a new one with the given principal. The previous context, possibly held
+	 * elsewhere (session, other thread), is not modified.
+	 *
 	 * @param newPrincipal
 	 *            the new principal to place.
+	 * @return The new context.
 	 */
-	private void replaceContext(final SecurityContext context, final UserDetails newPrincipal) {
+	private SecurityContext replaceContext(final UserDetails newPrincipal) {
 		final var authentication = new PreAuthenticatedAuthenticationToken(newPrincipal, null);
 		authentication.setDetails(newPrincipal);
-		context.setAuthentication(authentication);
 		final var securityContextImpl = new SecurityContextImpl();
 		securityContextImpl.setAuthentication(authentication);
 
 		// Replace the old context
 		SecurityContextHolder.setContext(securityContextImpl);
+		return securityContextImpl;
 	}
 
 	/**
