@@ -29,6 +29,11 @@ public class FakeAuthenticator {
 	private final KeyPair pair;
 
 	/**
+	 * The assertion signature algorithm.
+	 */
+	private final String signatureAlgorithm;
+
+	/**
 	 * Credential identifier, Base64url.
 	 */
 	@Getter
@@ -52,8 +57,20 @@ public class FakeAuthenticator {
 	 * @param counter Initial signature counter.
 	 */
 	public FakeAuthenticator(final long counter) {
+		this(counter, "EC", "SHA256withECDSA");
+	}
+
+	/**
+	 * Authenticator with the given algorithms.
+	 *
+	 * @param counter            Initial signature counter.
+	 * @param keyAlgorithm       The key pair algorithm.
+	 * @param signatureAlgorithm The assertion signature algorithm.
+	 */
+	FakeAuthenticator(final long counter, final String keyAlgorithm, final String signatureAlgorithm) {
+		this.signatureAlgorithm = signatureAlgorithm;
 		try {
-			final var generator = KeyPairGenerator.getInstance("EC");
+			final var generator = KeyPairGenerator.getInstance(keyAlgorithm);
 			generator.initialize(new ECGenParameterSpec("secp256r1"));
 			pair = generator.generateKeyPair();
 		} catch (final GeneralSecurityException e) {
@@ -110,7 +127,7 @@ public class FakeAuthenticator {
 	public Assertion assertion(final String rpId, final int flags, final String clientDataJSON) {
 		final var authData = authData(rpId, flags, false, null);
 		try {
-			final var signer = Signature.getInstance("SHA256withECDSA");
+			final var signer = Signature.getInstance(signatureAlgorithm);
 			signer.initSign(pair.getPrivate());
 			signer.update(authData);
 			signer.update(WebAuthnHelper.sha256(WebAuthnHelper.base64UrlDecode(clientDataJSON)));
@@ -169,7 +186,7 @@ public class FakeAuthenticator {
 		return out.toByteArray();
 	}
 
-	private static byte[] fixed(final byte[] bytes) {
+	static byte[] fixed(final byte[] bytes) {
 		final var src = bytes.length > 1 && bytes[0] == 0 ? Arrays.copyOfRange(bytes, 1, bytes.length) : bytes;
 		final var out = new byte[32];
 		System.arraycopy(src, 0, out, 32 - src.length, src.length);
