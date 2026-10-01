@@ -38,6 +38,8 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * CURL processor.
@@ -90,6 +92,31 @@ public class CurlProcessor implements AutoCloseable {
 	 * Default callback.
 	 */
 	public static final DefaultHttpResponseCallback DEFAULT_CALLBACK = new DefaultHttpResponseCallback();
+
+	/**
+	 * Credentials of an URL authority: "scheme://user:password@".
+	 */
+	private static final Pattern USER_INFO = Pattern.compile("^([a-zA-Z][a-zA-Z\\d+.-]*://)[^/]*@");
+
+	/**
+	 * Return the given URL without its secrets, safe to be logged: the credentials of the authority are removed, the
+	 * query parameter values are masked and the fragment is dropped. For sample,
+	 * <code>https://user:pass@host/api?token=abc&amp;page=2</code> becomes
+	 * <code>https://host/api?token=***&amp;page=***</code>.
+	 *
+	 * @param url The URL to log. May be <code>null</code>.
+	 * @return The URL safe to be logged.
+	 */
+	public static String toLogUrl(final String url) {
+		if (url == null) {
+			return null;
+		}
+		final var noFragment = StringUtils.substringBefore(url, "#");
+		final var base = USER_INFO.matcher(StringUtils.substringBefore(noFragment, "?")).replaceFirst("$1");
+		final var query = Arrays.stream(StringUtils.substringAfter(noFragment, "?").split("&")).filter(StringUtils::isNotEmpty)
+				.map(p -> p.contains("=") ? StringUtils.substringBefore(p, "=") + "=***" : "***").collect(Collectors.joining("&"));
+		return query.isEmpty() ? base : base + "?" + query;
+	}
 
 	/**
 	 * Support HTTP methods.
@@ -404,7 +431,7 @@ public class CurlProcessor implements AutoCloseable {
 			}
 			return result;
 		} catch (final Exception e) { // NOSONAR - This exception can be dropped
-			log.error("Request execution ' [{}] {} {}' failed : {}", request.getCounter(), request.getMethod(), url,
+			log.error("Request execution ' [{}] {} {}' failed : {}", request.getCounter(), request.getMethod(), toLogUrl(url),
 					e.getMessage());
 		}
 		return false;

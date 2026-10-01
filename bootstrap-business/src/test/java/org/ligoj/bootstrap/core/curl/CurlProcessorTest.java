@@ -26,6 +26,26 @@ import static org.mockito.Mockito.mock;
  */
 class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 
+	@Test
+	void toLogUrl() {
+		Assertions.assertNull(CurlProcessor.toLogUrl(null));
+		Assertions.assertEquals("https://host/path", CurlProcessor.toLogUrl("https://host/path"));
+		Assertions.assertEquals("relative/path", CurlProcessor.toLogUrl("relative/path"));
+
+		// Credentials of the authority are removed, even with an '@' in the password
+		Assertions.assertEquals("https://host:8443/api", CurlProcessor.toLogUrl("https://user:secret@host:8443/api"));
+		Assertions.assertEquals("http://host/x", CurlProcessor.toLogUrl("http://u:p@ss@host/x"));
+		Assertions.assertEquals("http://host", CurlProcessor.toLogUrl("http://u:p@host"));
+
+		// Query values are masked, names are kept, the fragment is dropped
+		Assertions.assertEquals("https://host/api/v4/projects?private_token=***&page=***",
+				CurlProcessor.toLogUrl("https://user:secret@host/api/v4/projects?private_token=abc&page=2#frag"));
+		Assertions.assertEquals("https://host/path?***", CurlProcessor.toLogUrl("https://host/path?rawtoken"));
+		Assertions.assertEquals("https://host/path", CurlProcessor.toLogUrl("https://host/path?"));
+		Assertions.assertEquals("https://host/path", CurlProcessor.toLogUrl("https://host/path#token=abc"));
+		Assertions.assertEquals("relative/path?token=***", CurlProcessor.toLogUrl("relative/path?token=1"));
+	}
+
 	/**
 	 * port used for proxy
 	 */
