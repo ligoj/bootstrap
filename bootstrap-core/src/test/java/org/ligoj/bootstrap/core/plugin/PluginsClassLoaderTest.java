@@ -123,8 +123,9 @@ class PluginsClassLoaderTest {
 				// Classes absent from the plug-ins still come from the parent
 				Assertions.assertSame(PluginsClassLoader.class, classLoader.loadClass(PluginsClassLoader.class.getName()));
 				Assertions.assertSame(String.class, classLoader.loadClass("java.lang.String"));
-				// A second lookup returns the same defined class
+				// A second lookup returns the same defined class, also when the class is resolved
 				Assertions.assertSame(shadowed, classLoader.loadClass(ShadowedSample.class.getName()));
+				Assertions.assertSame(shadowed, classLoader.loadClass(ShadowedSample.class.getName(), true));
 			}
 		} finally {
 			System.clearProperty("ligoj.home");

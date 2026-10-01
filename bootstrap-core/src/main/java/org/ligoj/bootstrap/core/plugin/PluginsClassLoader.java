@@ -25,6 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.PKIXParameters;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -39,7 +40,8 @@ import java.util.regex.Pattern;
 public class PluginsClassLoader extends URLClassLoader {
 
 	/**
-	 * Safe mode property flag.
+	 * Property enabling the plug-ins. Default is <code>true</code>. When <code>false</code> (safe mode), the plug-ins are
+	 * not loaded.
 	 */
 	public static final String ENABLED_PROPERTY = "ligoj.plugin.enabled";
 
@@ -102,6 +104,16 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String SIGNATURE_REQUIRED_PROPERTY = "ligoj.plugin.signature.required";
 
 	/**
+	 * Extended key usage of the code signing certificates.
+	 */
+	private static final String CODE_SIGNING_USAGE = "1.3.6.1.5.5.7.3.3";
+
+	/**
+	 * Extended key usage allowing any usage.
+	 */
+	private static final String ANY_USAGE = "2.5.29.37.0";
+
+	/**
 	 * The application home directory.
 	 */
 	@Getter
@@ -132,8 +144,8 @@ public class PluginsClassLoader extends URLClassLoader {
 	private final Map<String, PluginSignature> signatures = new HashMap<>();
 
 	/**
-	 * The trusted code-signing certificates, <code>null</code> when {@value #SIGNATURE_TRUSTSTORE_PROPERTY} is not
-	 * defined.
+	 * The trusted code-signing certificates, <code>null</code> when the truststore is not loadable: file missing at the
+	 * {@value #SIGNATURE_TRUSTSTORE_PROPERTY} location (or at the default location when undefined), or unreadable.
 	 */
 	private final KeyStore signatureTrustStore;
 
@@ -374,6 +386,10 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	protected PluginSignature verifySignature(final Path pluginFile) {
 		try (var jar = new JarFile(pluginFile.toFile(), true)) {
+			if (jar.stream().noneMatch(this::isSignatureFile)) {
+				// No signature file: unsigned, no need to read the whole content
+				return new PluginSignature(PluginSignature.Status.UNSIGNED, null);
+			}
 			final var buffer = new byte[8192];
 			X509Certificate signerCertificate = null;
 			CertPath certPath = null;
@@ -433,6 +449,11 @@ public class PluginsClassLoader extends URLClassLoader {
 		if (signatureTrustStore == null) {
 			return PluginSignature.Status.SIGNED;
 		}
+		if (!isCodeSigningCertificate(signerCertificate)) {
+			log.warn("Plugin signer certificate {} is not intended for code signing",
+					signerCertificate.getSubjectX500Principal().getName());
+			return PluginSignature.Status.SIGNED;
+		}
 		try {
 			// Exact pin of the signer certificate
 			if (signatureTrustStore.getCertificateAlias(signerCertificate) != null) {
@@ -448,6 +469,35 @@ public class PluginsClassLoader extends URLClassLoader {
 			log.warn("Plugin signer certificate is not trusted: {}", e.getMessage());
 			return PluginSignature.Status.SIGNED;
 		}
+	}
+
+	/**
+	 * Indicate the given certificate can sign code: not a CA certificate, and when its extended key usage is
+	 * restricted, it includes the code signing usage. A trusted TLS server certificate cannot verify a plug-in.
+	 *
+	 * @param certificate The signer certificate.
+	 * @return <code>true</code> when this certificate is intended for code signing.
+	 */
+	static boolean isCodeSigningCertificate(final X509Certificate certificate) {
+		try {
+			final var usages = certificate.getExtendedKeyUsage();
+			return certificate.getBasicConstraints() == -1
+					&& (usages == null || usages.contains(CODE_SIGNING_USAGE) || usages.contains(ANY_USAGE));
+		} catch (final CertificateParsingException e) {
+			log.warn("Invalid extended key usage of plugin signer certificate", e);
+			return false;
+		}
+	}
+
+	/**
+	 * Indicate the given entry is a signature file (<code>*.SF</code>), directly in the META-INF directory.
+	 *
+	 * @param entry The JAR entry.
+	 * @return <code>true</code> for a signature file.
+	 */
+	private boolean isSignatureFile(final JarEntry entry) {
+		final var name = entry.getName().toUpperCase(Locale.ENGLISH);
+		return name.startsWith("META-INF/") && name.indexOf('/', 9) == -1 && name.endsWith(".SF");
 	}
 
 	/**
@@ -471,7 +521,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @param javadocFiler      When true, only Javadoc jar are analyzed, otherwise they are excluded.
 	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
 	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
-	 * version. The return keys are alphabetically ordered with natural dependency respect.
+	 * version. The return keys are in reverse alphabetical order. No dependency ordering is applied.
 	 * @throws IOException When file list failed.
 	 */
 	public Map<String, String> getInstalledPlugins(final Map<String, Path> versionFileToPath, final boolean javadocFiler) throws IOException {
@@ -514,7 +564,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * Return the plug-in class loader from the given class loader's hierarchy.
 	 *
 	 * @param cl The {@link ClassLoader} to inspect.
-	 * @return the closest {@link PluginsClassLoader} instance from the current thread's {@link ClassLoader}. May be
+	 * @return the closest {@link PluginsClassLoader} instance from the given {@link ClassLoader}. May be
 	 * <code>null</code>.
 	 */
 	public static PluginsClassLoader getInstance(final ClassLoader cl) {
@@ -584,7 +634,8 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * Copy a resource needed to be exported from the JAR plug-in to the home.
 	 *
-	 * @param from The source file to the destination file. Directories are not supported.
+	 * @param from The source file to the destination file. When it is a directory, the destination directory is created
+	 *             without content copy.
 	 * @param to   The destination file.
 	 * @throws IOException When plug-in file cannot be copied.
 	 */
@@ -624,7 +675,6 @@ public class PluginsClassLoader extends URLClassLoader {
 	 * @param version The version string to convert. May be <code>null</code>
 	 * @return The given version to be comparable with another version. Handle the 'SNAPSHOT' case considered as older
 	 * than the one without this suffix.
-	 * @see PluginsClassLoader#toExtendedVersion(String)
 	 */
 	public static String toExtendedVersion(final String version) {
 		final var fileWithVersionExp = new StringBuilder();

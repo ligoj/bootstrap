@@ -3,11 +3,14 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.URL;
@@ -16,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 /**
@@ -195,6 +200,101 @@ class PluginsClassLoaderSignatureTest {
 		Assertions.assertEquals(PluginSignature.Status.INVALID, classLoader.getSignatures().get("plugin-meta").status());
 		Assertions.assertEquals(SIGNER_DN, classLoader.getSignatures().get("plugin-meta").signer());
 		Assertions.assertFalse(inClasspath(classLoader, "plugin-meta"));
+	}
+
+	/**
+	 * Run a JDK tool, such as "keytool" or "jarsigner".
+	 */
+	private void jdkTool(final String... command) throws Exception {
+		final var tool = Path.of(System.getProperty("java.home"), "bin", command[0]).toString();
+		command[0] = tool;
+		final var process = new ProcessBuilder(command).redirectErrorStream(true).start();
+		final var output = new String(process.getInputStream().readAllBytes());
+		Assertions.assertEquals(0, process.waitFor(), output);
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "EKU=serverAuth,SIGNED", "BC=ca:true,SIGNED", "EKU=codeSigning,VERIFIED", "EKU=anyExtendedKeyUsage,VERIFIED" })
+	void signaturesCodeSigningCertificate(final String extension, final PluginSignature.Status expected) throws Exception {
+		// A trusted certificate not intended for code signing (TLS server, CA) cannot verify a plug-in
+		final var home = Path.of("target/test-classes/home-test-signature-usage/.ligoj");
+		FileUtils.deleteDirectory(home.toFile());
+		final var plugin = home.resolve("plugins/plugin-usage-1.0.0.jar");
+		Files.createDirectories(plugin.getParent());
+		Files.copy(Path.of(HOME, "plugins/plugin-unsigned-1.0.0.jar"), plugin);
+		final var keystore = home.resolve("signer.p12").toString();
+		final var truststore = home.resolve("truststore.p12").toString();
+		final var certificate = home.resolve("signer.cer").toString();
+		jdkTool("keytool", "-genkeypair", "-keystore", keystore, "-storetype", "PKCS12", "-storepass", "changeit",
+				"-alias", "signer", "-keyalg", "RSA", "-keysize", "2048", "-dname", "CN=Not a code signer", "-ext", extension);
+		jdkTool("keytool", "-exportcert", "-keystore", keystore, "-storepass", "changeit", "-alias", "signer", "-file", certificate);
+		jdkTool("keytool", "-importcert", "-noprompt", "-keystore", truststore, "-storetype", "PKCS12", "-storepass",
+				"changeit", "-alias", "signer", "-file", certificate);
+		jdkTool("jarsigner", "-keystore", keystore, "-storepass", "changeit", plugin.toString(), "signer");
+
+		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, truststore);
+		try (var cl = newClassLoader(home.toString())) {
+			Assertions.assertEquals(expected, cl.getSignatures().get("plugin-usage").status());
+		}
+	}
+
+	@Test
+	void isCodeSigningCertificateInvalidUsage() throws Exception {
+		final var certificate = Mockito.mock(X509Certificate.class);
+		Mockito.when(certificate.getBasicConstraints()).thenReturn(-1);
+		Mockito.when(certificate.getExtendedKeyUsage()).thenThrow(new CertificateParsingException("invalid"));
+		Assertions.assertFalse(PluginsClassLoader.isCodeSigningCertificate(certificate));
+	}
+
+	/**
+	 * Copy a plug-in of the default home to a new home, and update its entries.
+	 */
+	private Path copyPlugin(final String home, final String source, final String target,
+			final java.util.function.Consumer<java.nio.file.FileSystem> update) throws IOException {
+		final var homePath = Path.of(home);
+		FileUtils.deleteDirectory(homePath.toFile());
+		final var plugin = homePath.resolve("plugins/" + target);
+		Files.createDirectories(plugin.getParent());
+		Files.copy(Path.of(HOME, "plugins/" + source), plugin);
+		try (var zip = FileSystems.newFileSystem(plugin)) {
+			update.accept(zip);
+		}
+		return homePath;
+	}
+
+	@Test
+	void signaturesNoSignedContent() throws Exception {
+		// Signature files, but no signed content entry
+		final var home = copyPlugin("target/test-classes/home-test-signature-empty/.ligoj", "plugin-signed-1.0.0.jar",
+				"plugin-empty-1.0.0.jar", zip -> {
+					try {
+						Files.delete(zip.getPath("config.properties"));
+						Files.delete(zip.getPath("org/ligoj/test/dummy.txt"));
+					} catch (final IOException e) {
+						throw new IllegalStateException(e);
+					}
+				});
+		try (var cl = newClassLoader(home.toString())) {
+			Assertions.assertEquals(PluginSignature.Status.UNSIGNED, cl.getSignatures().get("plugin-empty").status());
+		}
+	}
+
+	@Test
+	void signaturesSignatureFileInSubdirectory() throws Exception {
+		// A ".SF" entry outside the META-INF directory itself is not a signature file
+		final var home = copyPlugin("target/test-classes/home-test-signature-sub/.ligoj", "plugin-unsigned-1.0.0.jar",
+				"plugin-sub-1.0.0.jar", zip -> {
+					try {
+						final var file = zip.getPath("META-INF/sub/x.SF");
+						Files.createDirectories(file.getParent());
+						Files.writeString(file, "Signature-Version: 1.0");
+					} catch (final IOException e) {
+						throw new IllegalStateException(e);
+					}
+				});
+		try (var cl = newClassLoader(home.toString())) {
+			Assertions.assertEquals(PluginSignature.Status.UNSIGNED, cl.getSignatures().get("plugin-sub").status());
+		}
 	}
 
 	@Test
