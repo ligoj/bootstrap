@@ -32,7 +32,7 @@ import java.util.Objects;
  * <p>
  * When the <code>x-api-key</code> header is present, the token is checked against the user named by the
  * <code>x-api-via-user</code> header when set (delegation: the token owner acts as the principal, accepted by
- * {@link AuthorizingFilter} only when the token owner is granted <code>POST system/user</code>), against the principal otherwise.
+ * {@link AuthorizingFilter} only when the token owner is an administrator), against the principal otherwise.
  */
 @Setter
 public class ApiTokenAuthenticationFilter extends RequestHeaderAuthenticationFilter {
