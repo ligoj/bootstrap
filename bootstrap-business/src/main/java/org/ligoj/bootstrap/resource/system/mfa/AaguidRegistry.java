@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.mfa;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -25,15 +26,21 @@ public final class AaguidRegistry {
 	 */
 	public static final String RESOURCE = "META-INF/mfa-aaguid.properties";
 
-	private static final Map<String, String> MODELS = load();
+	private static final Map<String, String> MODELS = load(AaguidRegistry.class.getClassLoader().getResourceAsStream(RESOURCE));
 
 	private AaguidRegistry() {
 		// Utility class
 	}
 
-	private static Map<String, String> load() {
+	/**
+	 * Load the models from the given properties stream.
+	 *
+	 * @param input The properties stream, may be <code>null</code> when the resource is missing.
+	 * @return The models by lower case AAGUID, empty when the stream is missing or cannot be read.
+	 */
+	static Map<String, String> load(final InputStream input) {
 		final var properties = new Properties();
-		try (var in = AaguidRegistry.class.getClassLoader().getResourceAsStream(RESOURCE)) {
+		try (var in = input) {
 			if (in != null) {
 				properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
 			}
