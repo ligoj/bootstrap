@@ -6,9 +6,15 @@ package org.ligoj.bootstrap.core.plugin;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
@@ -116,10 +122,22 @@ class PluginsClassLoaderSignatureTest {
 		System.setProperty(PluginsClassLoader.SIGNATURE_REQUIRED_PROPERTY, "true");
 		final var classLoader = newClassLoader();
 
-		// Without truststore, the bar is "signed": the unsigned and tampered plug-ins are excluded
-		Assertions.assertTrue(inClasspath(classLoader, "plugin-signed"));
+		// Without truststore, nothing can be verified: fail closed, even the signed plug-in is excluded
+		Assertions.assertEquals(PluginSignature.Status.SIGNED, classLoader.getSignatures().get("plugin-signed").status());
+		Assertions.assertFalse(inClasspath(classLoader, "plugin-signed"));
 		Assertions.assertFalse(inClasspath(classLoader, "plugin-unsigned"));
 		Assertions.assertFalse(inClasspath(classLoader, "plugin-tampered"));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "/not-existing.p12", "/corrupt.p12" })
+	void signaturesRequiredUnreadableTrustStore(final String p12) throws Exception {
+		// A configured but unusable truststore must not lower the bar to "signed": fail closed
+		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + p12);
+		System.setProperty(PluginsClassLoader.SIGNATURE_REQUIRED_PROPERTY, "true");
+		final var classLoader = newClassLoader();
+		Assertions.assertFalse(inClasspath(classLoader, "plugin-signed"));
+		Assertions.assertFalse(inClasspath(classLoader, "plugin-unsigned"));
 	}
 
 	@Test
@@ -145,14 +163,38 @@ class PluginsClassLoaderSignatureTest {
 
 	@Test
 	void signaturesPartiallySigned() throws Exception {
-		// Signed JAR with content appended after the signature (unsigned entries outside
-		// META-INF): as unsafe as a tampered one. The extra META-INF tooling metadata and
-		// the exotic signature-block extensions (.DSA/.EC) are tolerated as such.
+		// Signed JAR with content appended after the signature (unsigned entries in and
+		// outside META-INF): as unsafe as a tampered one. The exotic signature-block
+		// extensions (.DSA/.EC) are tolerated as such.
 		try (var cl = newClassLoader()) {
 			var signatures = cl.getSignatures();
 			Assertions.assertEquals(PluginSignature.Status.INVALID, signatures.get("plugin-partial").status());
 			Assertions.assertEquals(SIGNER_DN, signatures.get("plugin-partial").signer());
 		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "META-INF/spring/business-context-common.xml", "META-INF/spring/x.RSA" })
+	void signaturesUnsignedMetaInfContent(final String entry) throws Exception {
+		// Signed and trusted JAR with an unsigned META-INF entry appended after the signature. META-INF holds
+		// executable content (Spring contexts imported with "classpath*:", services, multi-release classes,...):
+		// only the manifest and the signature files directly in META-INF may stay unsigned.
+		final var home = Path.of("target/test-classes/home-test-signature-meta/.ligoj");
+		final var plugin = home.resolve("plugins/plugin-meta-1.0.0.jar");
+		Files.createDirectories(plugin.getParent());
+		Files.copy(Path.of(HOME, "plugins/plugin-signed-1.0.0.jar"), plugin, StandardCopyOption.REPLACE_EXISTING);
+		try (var zip = FileSystems.newFileSystem(plugin)) {
+			final var content = zip.getPath(entry);
+			Files.createDirectories(content.getParent());
+			Files.writeString(content, "<beans/>");
+		}
+
+		System.setProperty(PluginsClassLoader.SIGNATURE_TRUSTSTORE_PROPERTY, SECURITY + "/truststore.p12");
+		System.setProperty(PluginsClassLoader.SIGNATURE_REQUIRED_PROPERTY, "true");
+		final var classLoader = newClassLoader(home.toString());
+		Assertions.assertEquals(PluginSignature.Status.INVALID, classLoader.getSignatures().get("plugin-meta").status());
+		Assertions.assertEquals(SIGNER_DN, classLoader.getSignatures().get("plugin-meta").signer());
+		Assertions.assertFalse(inClasspath(classLoader, "plugin-meta"));
 	}
 
 	@Test

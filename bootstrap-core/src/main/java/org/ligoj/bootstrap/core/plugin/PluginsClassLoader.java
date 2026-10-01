@@ -95,9 +95,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String SIGNATURE_TRUSTSTORE_PASSWORD_PROPERTY = "ligoj.plugin.signature.truststore.password";
 
 	/**
-	 * Optional system property (default <code>false</code>). When <code>true</code>, plug-ins whose signature is not
-	 * acceptable are excluded from the classpath: at least {@link PluginSignature.Status#VERIFIED} when a truststore
-	 * is configured, at least {@link PluginSignature.Status#SIGNED} otherwise.
+	 * Optional system property (default <code>false</code>). When <code>true</code>, only the plug-ins with the
+	 * {@link PluginSignature.Status#VERIFIED} status join the classpath. When the truststore is missing or cannot be
+	 * read, no plug-in can be verified and all of them are excluded (fail closed).
 	 */
 	public static final String SIGNATURE_REQUIRED_PROPERTY = "ligoj.plugin.signature.required";
 
@@ -156,6 +156,10 @@ public class PluginsClassLoader extends URLClassLoader {
 		this.homeDirectory = computeHome();
 		this.pluginDirectory = this.homeDirectory.resolve(PLUGINS_DIR);
 		this.signatureTrustStore = loadSignatureTrustStore();
+		if (signatureRequired && signatureTrustStore == null) {
+			log.error("'{}' is enabled but no plugin code-signing truststore is available: all plugins are excluded",
+					SIGNATURE_REQUIRED_PROPERTY);
+		}
 
 		// Create the plug-in directory as needed
 		log.info("Initialize the plug-ins from directory from {}", homeDirectory);
@@ -348,16 +352,15 @@ public class PluginsClassLoader extends URLClassLoader {
 
 	/**
 	 * Indicate the given signature excludes the plug-in from the classpath: only relevant in
-	 * {@value #SIGNATURE_REQUIRED_PROPERTY} mode, where the minimal accepted status is
-	 * {@link PluginSignature.Status#VERIFIED} when a truststore is configured, {@link PluginSignature.Status#SIGNED}
-	 * otherwise.
+	 * {@value #SIGNATURE_REQUIRED_PROPERTY} mode, where the minimal accepted status is always
+	 * {@link PluginSignature.Status#VERIFIED}. Without a usable truststore, no plug-in can be verified, so all of them
+	 * are excluded (fail closed).
 	 *
 	 * @param signature The computed signature of the plug-in.
 	 * @return <code>true</code> when the plug-in must not join the classpath.
 	 */
 	private boolean isSignatureRejected(final PluginSignature signature) {
-		return signatureRequired && signature.status()
-				.compareTo(signatureTrustStore == null ? PluginSignature.Status.SIGNED : PluginSignature.Status.VERIFIED) < 0;
+		return signatureRequired && signature.status().compareTo(PluginSignature.Status.VERIFIED) < 0;
 	}
 
 	/**
@@ -389,8 +392,9 @@ public class PluginsClassLoader extends URLClassLoader {
 				}
 				final var signers = entry.getCodeSigners();
 				if (signers == null) {
-					// Unsigned content entry: only blocking outside META-INF (tooling metadata tolerance)
-					unsignedContent |= !entry.getName().startsWith("META-INF/");
+					// Unsigned content entry, META-INF included: it holds executable content too (Spring contexts
+					// imported with "classpath*:", services, multi-release classes, web resources)
+					unsignedContent = true;
 				} else if (signerCertificate == null) {
 					certPath = signers[0].getSignerCertPath();
 					signerCertificate = (X509Certificate) certPath.getCertificates().getFirst();
@@ -447,14 +451,15 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Indicate the given entry is part of the signature mechanism itself: the manifest and the signature block files.
+	 * Indicate the given entry is part of the signature mechanism itself: the manifest and the signature block files,
+	 * located directly in the META-INF directory as required by the JAR specification.
 	 *
 	 * @param entry The JAR entry.
 	 * @return <code>true</code> for signature related entries, excluded from the signed-content checks.
 	 */
 	private boolean isSignatureRelated(final JarEntry entry) {
 		final var name = entry.getName().toUpperCase(Locale.ENGLISH);
-		return name.equals("META-INF/MANIFEST.MF") || (name.startsWith("META-INF/")
+		return name.equals("META-INF/MANIFEST.MF") || (name.startsWith("META-INF/") && name.indexOf('/', 9) == -1
 				&& (name.endsWith(".SF") || name.endsWith(".DSA") || name.endsWith(".RSA") || name.endsWith(".EC")));
 	}
 
