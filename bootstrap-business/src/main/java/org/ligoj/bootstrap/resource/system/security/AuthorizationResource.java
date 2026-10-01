@@ -137,7 +137,15 @@ public class AuthorizationResource {
 		authorization.setRole(role);
 		authorization.setPattern(entity.getPattern());
 		authorization.setType(entity.getType());
+		authorization.setMethod(entity.getMethod());
 		repository.saveAndFlush(authorization);
+		clearUserDetails();
+	}
+
+	/**
+	 * Clear the cached user details: their administrator flag depends on the authorizations.
+	 */
+	private void clearUserDetails() {
 		Optional.ofNullable(cacheManager.getCache("user-details")).ifPresent(Cache::clear);
 	}
 
@@ -162,6 +170,7 @@ public class AuthorizationResource {
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void remove(@PathParam("id") final int id) {
 		repository.deleteById(id);
+		clearUserDetails();
 	}
 
 	/**

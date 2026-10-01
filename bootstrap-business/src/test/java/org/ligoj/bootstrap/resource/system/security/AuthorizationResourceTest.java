@@ -183,6 +183,32 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(role.getId(), result.getRole().getId());
 		Assertions.assertEquals(AuthorizationType.UI, result.getType());
 		Assertions.assertEquals("pattern", result.getPattern());
+		Assertions.assertNull(result.getMethod());
+	}
+
+	/**
+	 * The HTTP method restricts the authorization, it must be kept on create and update.
+	 */
+	@Test
+	void testCreateUpdateMethod() {
+		final var role = new SystemRole();
+		role.setName(DEFAULT_ROLE);
+		em.persist(role);
+		final var authorization = new AuthorizationEditionVo();
+		authorization.setType(AuthorizationType.API);
+		authorization.setRole(role.getId());
+		authorization.setPattern("^rest/any");
+		authorization.setMethod("GET");
+		final var id = resource.create(authorization);
+		em.flush();
+		em.clear();
+		Assertions.assertEquals("GET", em.find(SystemAuthorization.class, id).getMethod());
+
+		authorization.setMethod("DELETE");
+		resource.update(id, authorization);
+		em.flush();
+		em.clear();
+		Assertions.assertEquals("DELETE", em.find(SystemAuthorization.class, id).getMethod());
 	}
 
 	/**
@@ -276,7 +302,10 @@ class AuthorizationResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	void testRemove() {
+		// The administrator flag of the users may change
+		cacheManager.getCache("user-details").put("someone", "details");
 		resource.remove(authorizationId);
+		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
 
 		// check result
 		em.flush();
