@@ -98,14 +98,24 @@ public class HookResource {
 	}
 
 	/**
-	 * Return true when given command is disallowed according to 'ligoj.hook.path' values.
+	 * Return true when given command is disallowed according to 'ligoj.hook.path' values. The executable, the first
+	 * token of the command, must not contain any ".." segment: otherwise a pattern such as <code>^/opt/hooks/.*</code>
+	 * would accept <code>/opt/hooks/../../bin/sh</code>.
 	 *
 	 * @param configurationResource The configuration resource to retrieve the value of 'ligoj.hook.path'.
 	 * @param command               The command to execute.
 	 * @return true when given command is disallowed according to 'ligoj.hook.path' values.
 	 */
 	static boolean isForbiddenCommand(final ConfigurationResource configurationResource, final String command) {
-		return Arrays.stream(configurationResource.get("ligoj.hook.path", "^$").split(",")).noneMatch(command::matches);
+		return hasParentSegment(command.split(" ")[0])
+				|| Arrays.stream(configurationResource.get("ligoj.hook.path", "^$").split(",")).noneMatch(command::matches);
+	}
+
+	/**
+	 * Return true when the given path contains a ".." segment, with either separator.
+	 */
+	private static boolean hasParentSegment(final String path) {
+		return Arrays.asList(path.split("[/\\\\]")).contains("..");
 	}
 
 	/**

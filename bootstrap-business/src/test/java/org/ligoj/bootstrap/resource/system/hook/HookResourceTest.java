@@ -7,6 +7,8 @@ import jakarta.ws.rs.ForbiddenException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
 import org.ligoj.bootstrap.model.system.SystemHook;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
@@ -64,6 +66,26 @@ class HookResourceTest extends AbstractBootTest {
 		final var hook = newHook();
 		configurationResource.put("ligoj.hook.path", "^echo$");
 		Assertions.assertThrows(ForbiddenException.class, () -> resource.create(hook));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "/opt/hooks/../../bin/sh -c id", "/opt/hooks/sub/../../../bin/sh", "/opt/hooks/..", "/opt/hooks/x/..\\..\\sh" })
+	void createParentSegmentNotAllowed(final String command) {
+		// The pattern matches the raw command, but the executable resolves outside the allowed location
+		final var hook = newHook();
+		hook.setCommand(command);
+		configurationResource.put("ligoj.hook.path", "^/opt/hooks/.*");
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.create(hook));
+	}
+
+	@Test
+	void createParentSegmentInArguments() throws JacksonException {
+		// Only the executable is concerned: the arguments may reference parent directories
+		final var hook = newHook();
+		hook.setCommand("/opt/hooks/run.sh ../data");
+		configurationResource.put("ligoj.hook.path", "^/opt/hooks/.*");
+		resource.create(hook);
+		Assertions.assertEquals("/opt/hooks/run.sh ../data", resource.findAll(newUriInfo()).getData().getFirst().getCommand());
 	}
 
 	@Test

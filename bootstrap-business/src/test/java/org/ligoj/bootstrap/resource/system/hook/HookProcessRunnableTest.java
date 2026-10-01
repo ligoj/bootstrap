@@ -50,6 +50,19 @@ class HookProcessRunnableTest {
 	}
 
 	@Test
+	void processParentSegmentNotAllowed() {
+		// A hook stored before the check, matching the raw pattern but escaping it with ".."
+		final var hook = new SystemHook();
+		hook.setDelay(1);
+		hook.setCommand("/path/to/../../bin/sh -c id");
+		final var configuration = mock(ConfigurationResource.class);
+		Mockito.doReturn("^/path/to/.*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = mock(Exchange.class);
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), null, configuration).process(null, hook, null);
+		Mockito.verify(exchange, Mockito.never()).getInMessage();
+	}
+
+	@Test
 	void processAllowed() {
 		final var hook = new SystemHook();
 		hook.setName("hook1");
