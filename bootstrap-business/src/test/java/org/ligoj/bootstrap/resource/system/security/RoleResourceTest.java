@@ -118,7 +118,9 @@ class RoleResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	void create() {
+		cacheManager.getCache("user-details").put("someone", "details");
 		final var resultId = resource.create(newRoleVo());
+		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
 		// check result
 		em.flush();
 		em.clear();
@@ -165,7 +167,9 @@ class RoleResourceTest extends AbstractBootTest {
 		final var roleVo = newRoleVo();
 		// test update name and add authorization
 		roleVo.setId(roleTestId);
+		cacheManager.getCache("user-details").put("someone", "details");
 		resource.update(roleVo);
+		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
 		// check result
 		em.flush();
 		em.clear();
@@ -205,7 +209,10 @@ class RoleResourceTest extends AbstractBootTest {
 	 */
 	@Test
 	void remove() {
+		// The administrator flag of the users may change
+		cacheManager.getCache("user-details").put("someone", "details");
 		resource.remove(roleTestId);
+		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
 
 		// check result
 		em.flush();

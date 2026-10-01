@@ -13,12 +13,15 @@ import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import javax.cache.annotation.CacheRemoveAll;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -43,6 +46,9 @@ public class RoleResource {
 
 	@Autowired
 	private AuthorizationRepository authorizationRepository;
+
+	@Autowired
+	private CacheManager cacheManager;
 
 	/**
 	 * Retrieve an element from its identifier.
@@ -157,6 +163,7 @@ public class RoleResource {
 		for (final var authVo : roleVo.getAuthorizations()) {
 			newAuthorization(authVo, role);
 		}
+		clearUserDetails();
 		return roleId;
 	}
 
@@ -193,6 +200,7 @@ public class RoleResource {
 			}
 		}
 		repository.save(role);
+		clearUserDetails();
 	}
 
 	/**
@@ -207,5 +215,13 @@ public class RoleResource {
 		authorizationRepository.deleteAllBy(ROLE_ID, id);
 		roleAssignmentRepository.deleteAllBy(ROLE_ID, id);
 		repository.deleteById(id);
+		clearUserDetails();
+	}
+
+	/**
+	 * Clear the cached user details: their roles and administrator flag depend on the roles and their authorizations.
+	 */
+	private void clearUserDetails() {
+		Optional.ofNullable(cacheManager.getCache("user-details")).ifPresent(Cache::clear);
 	}
 }
