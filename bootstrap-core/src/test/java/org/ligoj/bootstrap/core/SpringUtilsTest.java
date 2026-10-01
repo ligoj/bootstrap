@@ -29,7 +29,7 @@ class SpringUtilsTest {
 
 	@Test
     void testApplicationContext2() {
-		Assertions.assertNotNull(SpringUtils.getBean(org.jasypt.encryption.pbe.StandardPBEStringEncryptor.class));
+		Assertions.assertNotNull(SpringUtils.getBean(org.jasypt.encryption.pbe.PooledPBEStringEncryptor.class));
 	}
 
 }
