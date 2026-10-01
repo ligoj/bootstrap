@@ -50,6 +50,19 @@ class UserSettingResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void saveOrUpdateOtherUserNotAdminWithoutMethodSecurity() {
+		// The consumer may not enable the method security: the check is also in the code
+		final var unsecured = new UserSettingResource();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(unsecured);
+		Assertions.assertThrows(AccessDeniedException.class, () -> unsecured.saveOrUpdate("other", "k", "v"));
+		Assertions.assertNull(repository.findByLoginAndName("other", "k"));
+
+		// Own settings remain allowed
+		unsecured.saveOrUpdate("k", "v");
+		Assertions.assertEquals("v", repository.findByLoginAndName(DEFAULT_USER, "k").getValue());
+	}
+
+	@Test
 	void saveOrUpdateOtherUserAdmin() {
 		initSpringSecurityContext(DEFAULT_USER, new SimpleGrantedAuthority(SecurityHelper.ADMIN));
 		resource.saveOrUpdate("other", "k", "v");
@@ -63,6 +76,13 @@ class UserSettingResourceTest extends AbstractBootTest {
 				.getParameters();
 		Assertions.assertEquals(List.of("user", "name", "value"),
 				Arrays.stream(parameters).map(p -> p.getAnnotation(PathParam.class).value()).toList());
+	}
+
+	@Test
+	void findByNameBinding() throws NoSuchMethodException {
+		// The name comes from the path, not from the body of the GET request
+		final var parameter = UserSettingResource.class.getMethod("findByName", String.class).getParameters()[0];
+		Assertions.assertEquals("name", parameter.getAnnotation(PathParam.class).value());
 	}
 
 	@Test

@@ -11,6 +11,7 @@ import org.ligoj.bootstrap.model.system.AbstractNamedValue;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class UserSettingResource {
 
 	@Autowired
 	private SystemUserSettingRepository repository;
+
+	@Autowired
+	private SecurityHelper securityHelper;
 
 	/**
 	 * Delete a {@link SystemUserSetting}
@@ -71,7 +75,7 @@ public class UserSettingResource {
 	 */
 	@GET
 	@Path("{name}")
-	public Object findByName(final String name) {
+	public Object findByName(@PathParam("name") final String name) {
 		return findByName(SecurityContextHolder.getContext().getAuthentication().getName(), name);
 	}
 
@@ -100,6 +104,17 @@ public class UserSettingResource {
 	@Secured(SecurityHelper.ADMIN)
 	public void saveOrUpdate(@PathParam("user") final String user, @PathParam("name") final String name,
 			@PathParam("value") final String value) {
+		// Also checked here: the method security may not be enabled by the consumer
+		if (!securityHelper.isAdmin()) {
+			throw new AccessDeniedException("Administrator only");
+		}
+		save(user, name, value);
+	}
+
+	/**
+	 * Save or update a setting of a given user, without authorization check.
+	 */
+	private void save(final String user, final String name, final String value) {
 		final var setting = repository.findByLoginAndName(user, name);
 		if (setting == null) {
 			final var entity = new SystemUserSetting();
@@ -122,9 +137,7 @@ public class UserSettingResource {
 	@PUT
 	@Path("{name}/{value}")
 	public void saveOrUpdate(@PathParam("name") final String name, @PathParam("value") final String value) {
-		// Internal call: not intercepted by the administrator check
-		final var user = SecurityContextHolder.getContext().getAuthentication().getName();
-		saveOrUpdate(user, name, value);
+		save(SecurityContextHolder.getContext().getAuthentication().getName(), name, value);
 	}
 
 }
