@@ -117,6 +117,29 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void checkCached() {
+		clearAllCache();
+		Assertions.assertTrue(resource.check(DEFAULT_USER, TOKEN));
+
+		// A valid check is cached: no database access while the tokens are unchanged by this resource
+		repository.deleteAllBy("user", DEFAULT_USER);
+		em.flush();
+		Assertions.assertTrue(resource.check(DEFAULT_USER, TOKEN));
+
+		// Any change made by this resource invalidates the cached checks
+		resource.removeAll(DEFAULT_USER);
+		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN));
+	}
+
+	@Test
+	void checkCacheInvalidatedOnRemove() {
+		clearAllCache();
+		Assertions.assertTrue(resource.check(DEFAULT_USER, TOKEN));
+		resource.remove("name");
+		Assertions.assertFalse(resource.check(DEFAULT_USER, TOKEN));
+	}
+
+	@Test
 	void checkPlain() {
 		Assertions.assertTrue(resource.check(DEFAULT_USER, "_plain_TEST"));
 	}
@@ -159,7 +182,9 @@ class ApiTokenResourceTest extends AbstractBootTest {
 	@Test
 	void checkInvalidDigest() {
 		final var mock = new ApiTokenResource();
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(mock);
 		mock.setTokenDigest("any");
+		clearAllCache();
 		Assertions.assertFalse(mock.check(DEFAULT_USER, TOKEN));
 	}
 

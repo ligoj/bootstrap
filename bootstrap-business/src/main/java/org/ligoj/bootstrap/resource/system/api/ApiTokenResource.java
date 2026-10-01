@@ -10,7 +10,9 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.RandomStringGenerator;
 import org.ligoj.bootstrap.core.NamedBean;
@@ -20,6 +22,7 @@ import org.ligoj.bootstrap.dao.system.SystemApiTokenRepository;
 import org.ligoj.bootstrap.model.system.SystemApiToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * API Token resource. A user can have several tokens, each one associated to a unique name (user's scope). The
@@ -41,10 +45,10 @@ import java.util.List;
  * <li>In the database, are stored user (owner), logical name of the key, hashed key (SHA-512+), encrypted key.</li>
  * <li>Cipher key column is used to display the plain token value for the user. One by one.</li>
  * <li>Hashed key column is used to match the key, as we would do it for password.</li>
- * <li>The salt used for hashed value is only username. SHA-512+ strength and the key length (&gt;128) reduce slightly
- * the issues.</li>
- * <li>Secret key used for ciphering is based on SHA-1 of the key plus key's name, plus user's login, plus a secret key,
- * the whole with 30+ iterations. So SHA-1 is not used there to hash a password, but to build a secret key.</li>
+ * <li>The hashed value is not salted: the user is only used to filter the matching rows. SHA-512+ strength and the
+ * key length (&gt;128) reduce slightly the issues.</li>
+ * <li>Secret key used for ciphering is based on SHA-1 of the user's login, plus a secret key, plus key's name, the
+ * whole with 30+ iterations. So SHA-1 is not used there to hash a password, but to build a secret key.</li>
  * </ul>
  */
 @Path("/api/token")
@@ -53,6 +57,14 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
 public class ApiTokenResource {
+
+	/**
+	 * Cache of the valid token checks, cleared on any token change made by this resource.
+	 */
+	static final String CHECK_CACHE = "api-tokens";
+
+	@Autowired
+	private CacheManager cacheManager;
 
 	/**
 	 * Special prefix for plain/unsecured hash API token. Useful for generated API token from external tool.
@@ -103,24 +115,47 @@ public class ApiTokenResource {
 	/**
 	 * Check the given token.
 	 *
-	 * @param user  The username. Will be used to build the hash.
+	 * @param user  The username owning the token. Not part of the hash.
 	 * @param token The user password or token.
 	 * @return <code>true</code> if the token matches.
 	 */
 	public boolean check(final String user, final String token) {
+		// Valid checks are cached, the key does not contain the token itself
+		final var checks = getChecks();
+		final var key = user + ":" + DigestUtils.sha256Hex(StringUtils.defaultString(token));
+		if (checks.get(key) != null) {
+			return true;
+		}
 		try {
+			final boolean valid;
 			if (Strings.CS.startsWith(token, PREFIX_TOKEN)) {
 				// Unsecured token, only null hash can match
-				return repository.checkByUserAndToken(user, token);
+				valid = repository.checkByUserAndToken(user, token);
+			} else {
+				// Check the API token from database
+				valid = repository.checkByUserAndHash(user, hash(token));
 			}
-			// Check the API token from database
-			return repository.checkByUserAndHash(user, hash(token));
+			if (valid) {
+				checks.put(key, Boolean.TRUE);
+			}
+			return valid;
 		} catch (final GeneralSecurityException e) {
 			log.error("Unable to validate a token for user: {}", user, e);
 		}
 
 		// Credential has not been validated, the user is invalid
 		return false;
+	}
+
+	private org.springframework.cache.Cache getChecks() {
+		return Objects.requireNonNull(cacheManager.getCache(CHECK_CACHE));
+	}
+
+	/**
+	 * Invalidate the cached token checks, after any change of the tokens.
+	 */
+	private void clearChecks() {
+		getChecks().clear();
 	}
 
 	/**
@@ -344,6 +379,7 @@ public class ApiTokenResource {
 		entity.setExpiration(expiration);
 		final var token = newToken(entity, tokenValue);
 		repository.saveAndFlush(entity);
+		clearChecks();
 		return new NamedBean<>(token, name);
 	}
 
@@ -369,6 +405,7 @@ public class ApiTokenResource {
 	 * @param name Token to update.
 	 * @return the new generated token.
 	 * @throws GeneralSecurityException When there is a security issue.
+	 * @throws EntityNotFoundException  When the current user has no token with this name.
 	 */
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -379,12 +416,13 @@ public class ApiTokenResource {
 	}
 
 	/**
-	 * Update a named token with a provided one.
+	 * Update a named token with a new generated one.
 	 *
 	 * @param user User owner of the target token.
 	 * @param name Token to update.
 	 * @return the new generated token.
 	 * @throws GeneralSecurityException When there is a security issue.
+	 * @throws EntityNotFoundException  When the user has no token with this name.
 	 */
 	public String update(final String user, final String name) throws GeneralSecurityException {
 		return update(user, name, newToken());
@@ -396,8 +434,9 @@ public class ApiTokenResource {
 	 * @param user       User owner of the target token.
 	 * @param name       Token to update.
 	 * @param tokenValue Token value to set.
-	 * @return the new generated token.
+	 * @return the provided token value.
 	 * @throws GeneralSecurityException When there is a security issue.
+	 * @throws EntityNotFoundException  When the user has no token with this name.
 	 */
 	public String update(final String user, final String name, final String tokenValue) throws GeneralSecurityException {
 		final var entity = repository.findByUserAndName(user, name);
@@ -409,6 +448,7 @@ public class ApiTokenResource {
 		// Token has been found, update it
 		final var token = newToken(entity, tokenValue);
 		repository.saveAndFlush(entity);
+		clearChecks();
 		return token;
 	}
 
@@ -421,6 +461,7 @@ public class ApiTokenResource {
 	@Path("{name:[\\w.-]+}")
 	public void remove(@PathParam("name") final String name) {
 		repository.deleteByUserAndName(securityHelper.getLogin(), name);
+		clearChecks();
 	}
 
 	/**
@@ -430,6 +471,7 @@ public class ApiTokenResource {
 	 */
 	public void removeAll(final String login) {
 		repository.deleteAllBy("user", login);
+		clearChecks();
 	}
 
 	/**
@@ -440,7 +482,9 @@ public class ApiTokenResource {
 	@DELETE
 	@Path("purge/me")
 	public int purgeMe() {
-		return repository.deleteExpired(securityHelper.getLogin());
+		final var deleted = repository.deleteExpired(securityHelper.getLogin());
+		clearChecks();
+		return deleted;
 	}
 
 	/**
@@ -453,7 +497,9 @@ public class ApiTokenResource {
 	@Path("purge/all")
 	public int purgeAll() {
 		if (securityHelper.getLogin() == null || securityHelper.isAdmin()) {
-			return repository.deleteExpired();
+			final var deleted = repository.deleteExpired();
+			clearChecks();
+			return deleted;
 		}
 		throw new ForbiddenException();
 	}
