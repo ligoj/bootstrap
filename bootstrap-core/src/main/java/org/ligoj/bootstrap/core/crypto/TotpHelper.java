@@ -112,9 +112,21 @@ public class TotpHelper {
 	// the enrolled devices without a security gain for 6-digit codes verified server-side with an attempt limit.
 	@SuppressWarnings("java:S4790")
 	public static String code(final String secret, final long counter) {
+		return code(secret, counter, "HmacSHA1");
+	}
+
+	/**
+	 * Compute the code of a counter with the given MAC algorithm.
+	 *
+	 * @param secret    The Base32 secret.
+	 * @param counter   The counter.
+	 * @param algorithm The MAC algorithm.
+	 * @return The zero-padded {@value #DIGITS} digits code.
+	 */
+	static String code(final String secret, final long counter, final String algorithm) {
 		try {
-			final var mac = Mac.getInstance("HmacSHA1");
-			mac.init(new SecretKeySpec(base32Decode(secret), "HmacSHA1"));
+			final var mac = Mac.getInstance(algorithm);
+			mac.init(new SecretKeySpec(base32Decode(secret), algorithm));
 			final var message = new byte[8];
 			var value = counter;
 			for (var i = 7; i >= 0; i--) {
@@ -127,7 +139,7 @@ public class TotpHelper {
 					| ((hash[offset + 2] & 0xFF) << 8) | (hash[offset + 3] & 0xFF);
 			return String.format("%0" + DIGITS + "d", binary % MODULO);
 		} catch (final java.security.GeneralSecurityException e) {
-			throw new IllegalStateException("HmacSHA1 is not available", e);
+			throw new IllegalStateException(algorithm + " is not available", e);
 		}
 	}
 
