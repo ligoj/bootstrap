@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.ligoj.bootstrap.core.resource.mapper.AccessDeniedExceptionMapper;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
+import org.ligoj.bootstrap.resource.system.cache.LocalCacheSnapshot;
 import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,6 +28,8 @@ import org.springframework.web.util.UriUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -49,6 +52,12 @@ public class AuthorizingFilter extends GenericFilterBean {
 	private static final GrantedAuthority ROLE_ANONYMOUS = new SimpleGrantedAuthority("ROLE_ANONYMOUS");
 
 	private static final GrantedAuthority ADMIN = new SimpleGrantedAuthority(SecurityHelper.ADMIN);
+
+	/**
+	 * Local snapshot of the authorizations: no cluster access and no pattern compilation on each request.
+	 */
+	private final LocalCacheSnapshot<Map<AuthorizationType, Map<String, Map<String, List<Pattern>>>>> authorizations = new LocalCacheSnapshot<>(
+			"authorizations");
 
 	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
@@ -120,7 +129,7 @@ public class AuthorizingFilter extends GenericFilterBean {
 	 */
 	private boolean isAuthorized(final Collection<? extends GrantedAuthority> authorities, final String request,
 			final String method) {
-		final var authorizationsCache = authorizationResource.getAuthorizations().get(AuthorizationType.API);
+		final var authorizationsCache = authorizations.get(authorizationResource::getAuthorizations).get(AuthorizationType.API);
 
 		// Check the authorization
 		return authorizationsCache != null

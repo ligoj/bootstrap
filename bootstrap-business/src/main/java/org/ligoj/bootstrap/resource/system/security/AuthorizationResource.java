@@ -15,7 +15,7 @@ import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemAuthorization.AuthorizationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
+import org.ligoj.bootstrap.resource.system.cache.CacheEviction;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +52,8 @@ public class AuthorizationResource {
 	 * Retrieve an authorization from its identifier.
 	 *
 	 * @param id Element's identifier.
-	 * @return Found element. May be <code>null</code>.
+	 * @return Found element. Never <code>null</code>.
+	 * @throws jakarta.persistence.EntityNotFoundException When not found.
 	 */
 	@GET
 	@Path("{id:\\d+}")
@@ -146,7 +147,8 @@ public class AuthorizationResource {
 	 * Clear the cached user details: their administrator flag depends on the authorizations.
 	 */
 	private void clearUserDetails() {
-		Optional.ofNullable(cacheManager.getCache("user-details")).ifPresent(Cache::clear);
+		// The authorizations too: their annotation based eviction may happen before the commit
+		CacheEviction.clear(cacheManager, "user-details", "authorizations");
 	}
 
 	/**
@@ -161,7 +163,7 @@ public class AuthorizationResource {
 	}
 
 	/**
-	 * Delete Role from its ID
+	 * Delete an authorization from its ID.
 	 *
 	 * @param id Identifier of element to delete.
 	 */

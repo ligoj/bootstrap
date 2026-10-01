@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.resource.system.security;
 import com.hazelcast.cache.HazelcastCacheManager;
 import com.hazelcast.config.EvictionConfig;
 import org.ligoj.bootstrap.resource.system.cache.CacheConfigurer;
+import org.ligoj.bootstrap.resource.system.cache.CacheGeneration;
 import org.ligoj.bootstrap.resource.system.cache.CacheManagerAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Role;
@@ -22,7 +23,9 @@ public class AuthorizationCache implements CacheManagerAware {
 
 	@Override
 	public void onCreate(final HazelcastCacheManager cacheManager, final CacheConfigurer configurer) {
-		cacheManager.createCache("authorizations", configurer.newCacheConfig("authorizations"));
+		final var authorizations = configurer.newCacheConfig("authorizations");
+		CacheGeneration.watch(authorizations);
+		cacheManager.createCache("authorizations", authorizations);
 		final var details = configurer.newCacheConfig("user-details", Duration.ONE_HOUR);
 		details.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("user-details", details);

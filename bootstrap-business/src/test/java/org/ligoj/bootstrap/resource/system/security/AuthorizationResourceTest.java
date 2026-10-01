@@ -307,6 +307,12 @@ class AuthorizationResourceTest extends AbstractBootTest {
 		resource.remove(authorizationId);
 		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
 
+		// Cached again before the commit by a concurrent request: cleared after the commit
+		cacheManager.getCache("user-details").put("someone", "stale");
+		org.springframework.transaction.support.TransactionSynchronizationManager.getSynchronizations()
+				.forEach(org.springframework.transaction.support.TransactionSynchronization::afterCommit);
+		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
+
 		// check result
 		em.flush();
 		em.clear();
