@@ -62,7 +62,7 @@ mvn clean package -Pjacoco -Djacoco.includes="org.ligoj.bootstrap.*"
 mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="(?i)^(.*[.-](alpha|beta|rc|M|B|RC|pre|CR|jdk5)[.-]?[0-9]*|[0-9]{8}.*)$"
 ```
 
-**Test failures do NOT fail the build**: the parent POM sets `testFailureIgnore=true` for both surefire and failsafe. `BUILD SUCCESS` is meaningless for tests — always check the `Tests run: … Failures: … Errors: …` lines or `target/surefire-reports/`.
+**Test failures do NOT fail the build**: the external parent POM (`org.ligoj.parent:project`) sets `testFailureIgnore=true` for both surefire and failsafe. `BUILD SUCCESS` is meaningless for tests — always check the `Tests run: … Failures: … Errors: …` lines or `target/surefire-reports/`.
 
 Test naming splits unit vs integration: `*Test` = unit/Spring test, `*IT` = integration test that boots the real application on Jetty (port 6380). `bootstrap-business` runs them as two surefire executions via `UTSuite`/`ITSuite` (class-name regex suites); elsewhere failsafe runs `*IT` only with `-Pit`.
 
@@ -73,7 +73,7 @@ Test naming splits unit vs integration: `*Test` = unit/Spring test, `*IT` = inte
 Dependency layering: `bootstrap-core → bootstrap-business`, plus `bootstrap-core → bootstrap-business-test` (test scope dependency of `bootstrap-business`).
 
 - **bootstrap-core** — foundation library, no Spring Boot/CXF server. Bean & JPA base classes (`AbstractPersistable`, `AbstractAudited`), system entities (`org.ligoj.bootstrap.model.system.*`, tables prefixed `S_`), CSV engine, plug-in SPI + `PluginsClassLoader`, Jasypt crypto, TOTP/WebAuthn helpers, Hibernate naming strategies, custom validators.
-- **bootstrap-business** — the REST/JPA runtime: CXF wiring, exception mappers, Jackson config, Spring Data extensions, RBAC filters, Hazelcast/JCache, `/system/**` REST resources (configuration, cache, security, user, API tokens, MFA, hooks, session).
+- **bootstrap-business** — the REST/JPA runtime: CXF wiring, exception mappers, Jackson config, Spring Data extensions, RBAC filters, Hazelcast/JCache, REST resources: `/system` (server information, time zone) and `/system/**` (configuration, cache, security, user, user settings, API tokens, MFA, hooks, files, bench), `/session`.
 - **bootstrap-business-test** — test-support **library** (compile-scope deps): the `Abstract*Test` hierarchy, HSQLDB Spring contexts, RBAC CSV fixtures, and the embedded Jetty launcher `http.server.Main` used by `*IT`.
 - **bootstrap-business-parent** — pom-only parent consumed by downstream back-end projects (`org.ligoj.app:app-api`); it preconfigures dependencies and resource filtering.
 - **parent** — BOM and shared build configuration of all the modules above.
@@ -90,13 +90,13 @@ Dependency layering: `bootstrap-core → bootstrap-business`, plus `bootstrap-co
 
 **Jackson**: the single `objectMapper` bean is `ObjectMapperTrim` (NON_NULL, lower-cased enums, custom date/time (de)serializers registered in its internal `BootstrapModule`). The codebase is on Jackson 3 (`tools.jackson.*` packages) with `jackson-annotations` still 2.x — watch package names when touching JSON code.
 
-**RBAC**: `SystemAuthorization` rows hold role + HTTP method (`null` for all methods) + URL regex (`type` API or UI). `AuthorizingFilter` (last Spring Security filter) matches request path+method against a JCache-cached structure built by `AuthorizationResource`. API patterns apply to the decoded path without the context path (such as `rest/system/user`), from its start: `^rest/system/` and `rest/system/` are equivalent, and a pattern never matches in the middle of the path. A role holding the `.*` API pattern for all methods makes its users administrators (`SecurityHelper.ADMIN` authority), required by the `@Secured(SecurityHelper.ADMIN)` endpoints and by API delegation; `RbacUserDetailsService` loads roles (cache `user-details`). Authentication is pre-authenticated header based: a principal header (`SM_UNIVERSALID` in the test contexts) + `x-api-key` via `ApiTokenAuthenticationFilter`. The Spring Security context itself is provided by the consuming application, see [Deployment security requirements](#deployment-security-requirements).
+**RBAC**: `SystemAuthorization` rows hold role + HTTP method (`null` for all methods) + URL regex (`type` API or UI). `AuthorizingFilter` (last Spring Security filter) matches request path+method against a JCache-cached structure built by `AuthorizationResource`. API patterns apply to the decoded path without the context path (such as `rest/system/user`), from its start: `^rest/system/` and `rest/system/` are equivalent, and a pattern never matches in the middle of the path. A role holding the `.*` API pattern for all methods makes its users administrators (`SecurityHelper.ADMIN` authority, `$admin`). Role names starting with `$` are reserved, and `$admin` is never granted by a role or a provider having this name. Administrators are required by API delegation and by the administrator endpoints, such as the settings of another user, checked in code and with `@Secured(SecurityHelper.ADMIN)`. `RbacUserDetailsService` loads roles (cache `user-details`). Each node keeps a local snapshot of the authorizations and of the hooks, reloaded only when these cluster caches change, and the security caches are cleared again after the commit of the changing transaction. Authentication is pre-authenticated header based: a principal header (`SM_UNIVERSALID` in the test contexts) + `x-api-key` via `ApiTokenAuthenticationFilter`. The Spring Security context itself is provided by the consuming application, see [Deployment security requirements](#deployment-security-requirements).
 
-**MFA**: `MfaResource` (`/system/mfa`) manages the devices of the current user — TOTP authenticator applications and passkeys — and verifies codes and assertions. Enforcing the second factor after the primary authentication is the front-end's responsibility; server-side code can also check `MfaResource.getVerifiedDate(login)` (also exposed as `verifiedDate` by `GET /system/mfa`): the last successful verification, kept in the cluster-wide `mfa-verified` cache until the next `POST /system/mfa/login` or 12 hours (`cache.mfa-verified.ttl`). This state is per user, not per session. Passkeys require `ligoj.mfa.rp-id` (and optionally the accepted origins) to be set in production. Code verification is locked after `ligoj.mfa.max-attempts` consecutive failures (default 5), shared by the cluster, until 15 minutes after the last failure (`cache.mfa-attempts.ttl` property, in seconds).
+**MFA**: `MfaResource` (`/system/mfa`) manages the devices of the current user — TOTP authenticator applications and passkeys — and verifies codes and assertions. Enforcing the second factor after the primary authentication is the front-end's responsibility; server-side code can also check `MfaResource.getVerifiedDate(login)` (also exposed as `verifiedDate` by `GET /system/mfa`): the last successful verification, kept in the cluster-wide `mfa-verified` cache until the next `POST /system/mfa/login` or 12 hours (`cache.mfa-verified.ttl`). This state is per user, not per session. Passkeys require `ligoj.mfa.rp-id` (and optionally the accepted origins) to be set in production. Code verification (`POST /system/mfa/verify`, TOTP) is locked after `ligoj.mfa.max-attempts` consecutive attempts without success (default 5), counted atomically and shared by the cluster, until 15 minutes after the last attempt (`cache.mfa-attempts.ttl`). Passkey assertions are not counted: they cannot be guessed. Passkey challenges are single-use and shared by the cluster for 5 minutes (`mfa-challenges` cache).
 
-**Plug-in system**: `PluginsClassLoader` scans `${ligoj.home}/plugins/*.jar` (default `~/.ligoj/plugins`), keeps only the newest version per artifact, and loads classes child-first so a plug-in JAR overrides the same plug-in bundled in the application. JAR signatures are optionally verified against a truststore (`ligoj.plugin.signature.*` system properties). Plug-ins implement `FeaturePlugin` (key format `a:b:c`); their installation lifecycle is driven by the consuming application, this project only provides the SPI, the class loader and the `SystemPlugin` entity.
+**Plug-in system**: `PluginsClassLoader` scans `${ligoj.home}/plugins/*.jar` (default `~/.ligoj/plugins`), keeps only the newest version per artifact, and loads classes child-first so a plug-in JAR overrides the same plug-in bundled in the application. `ligoj.plugin.enabled=false` disables the external plug-ins (safe mode). JAR signatures are verified against a truststore of trusted vendor certificates, `ligoj.plugin.signature.truststore` (default `${ligoj.home}/plugin-vendors.p12`, password `ligoj.plugin.signature.truststore.password`, default `changeit`): every content entry must be signed, and the signer certificate must be intended for code signing (not a CA nor a TLS-only certificate) and be pinned in or chain to the truststore to be `VERIFIED`. With `ligoj.plugin.signature.required=true`, only the `VERIFIED` plug-ins are loaded, and none without a usable truststore (fail closed). These are system properties. Plug-ins implement `FeaturePlugin` (key format `a:b:c`); their installation lifecycle is driven by the consuming application, this project only provides the SPI, the class loader and the `SystemPlugin` entity.
 
-**Configuration/crypto**: properties may be Jasypt-encrypted as `ENC(...)`; password resolved from `app.crypto.password`/`APP_CRYPTO_PASSWORD` or a file (`app.crypto.file`/`APP_CRYPTO_FILE`), see `core-context-common.xml`. `ConfigurationResource` resolves keys from Spring `Environment` first, then the `S_CONFIGURATION` table, cached in JCache.
+**Configuration/crypto**: values may be Jasypt-encrypted as `ENC(...)`. The password is the first defined among: the `app.crypto.password` system property, the same key in the loaded properties files, the `APP_CRYPTO_PASSWORD` environment variable; then the content of the file named by `app.crypto.file` (system property, properties files) or `APP_CRYPTO_FILE`, also looked up in the classpath. See `core-context-common.xml` and the [configuration reference](#configuration-reference).
 
 ## Deployment security requirements
 
@@ -116,6 +116,51 @@ The last row is the SSO mode: an authenticating reverse proxy sets the principal
 
 Otherwise, any client sending `SM_UNIVERSALID: admin` is authenticated as `admin`. These requirements apply to every application built on this project.
 
+The consuming application should also enable the method security (`<security:method-security secured-enabled="true"/>`) for the `@Secured` annotations; the administrator endpoints of this project also check the administrator authority in code.
+
+## Configuration reference
+
+Three sources, depending on the key:
+
+- **Runtime** keys are read by `ConfigurationResource`: the Spring `Environment` (system properties, environment variables, and the Spring Boot property sources of the consuming application), then the `S_CONFIGURATION` table, managed with `/system/configuration`.
+- **Placeholder** keys (`${...}` in the Spring XML contexts and `@Value`) also come from `admin.confidential.properties`, `maven-buildinfo.properties` and `application${app-env}.properties` in the classpath, loaded by `GlobalPropertyUtils`.
+- **System** keys are JVM system properties only.
+
+| Key | Default | Source | Usage |
+|---|---|---|---|
+| `app-env` | empty | system | Suffix of the `application${app-env}.properties` file |
+| `app.crypto.password`, `app.crypto.file` | none | system, properties, env (`APP_CRYPTO_PASSWORD`, `APP_CRYPTO_FILE`) | Jasypt password, see above |
+| `ligoj.home` | `~/.ligoj` | system | Home directory, plug-ins in `plugins/` |
+| `ligoj.plugin.enabled` | `true` | system | `false`: safe mode, no external plug-in |
+| `ligoj.plugin.signature.required` | `false` | system | Only the `VERIFIED` plug-ins are loaded |
+| `ligoj.plugin.signature.truststore` | `${ligoj.home}/plugin-vendors.p12` | system | Trusted vendor certificates (PKCS12, or JKS by extension) |
+| `ligoj.plugin.signature.truststore.password` | `changeit` | system | Truststore password |
+| `ligoj.mfa.issuer` | `Ligoj` | runtime | Issuer shown by authenticator applications, passkey relying party name |
+| `ligoj.mfa.rp-id` | `localhost` | runtime | Passkey relying party identifier: **must be set in production**, never changed afterwards |
+| `ligoj.mfa.origins` | empty: HTTPS origins of the rp-id host and sub-domains (HTTP on localhost) | runtime | Comma separated accepted passkey origins |
+| `ligoj.mfa.max-attempts` | `5` | runtime | Code verification attempts before the lock |
+| `ligoj.hook.path` | `^$` (none) | runtime | Comma separated regular expressions of the allowed hook commands |
+| `ligoj.hook.timeout` | `30` (seconds) | runtime, system | Process timeout of the hooks defining a zero timeout (a hook without timeout gets 10 seconds); the process is destroyed at the timeout |
+| `ligoj.file.path` | `^$` (none) | runtime | Comma separated regular expressions of the allowed `/system/file` paths, matched against the canonical path |
+| `cache.<name>.ttl` | per cache, see below | `Environment`, at startup | Cache entry lifetime in seconds, `-1` for eternal |
+| `cache.location` | `classpath:META-INF/hazelcast-local.xml` | placeholder | Hazelcast configuration |
+| `hazelcast.statistics.enable` | `false` | placeholder | Cache statistics |
+| `security.filter.methods` | `GET,POST,DELETE,PUT` | placeholder | HTTP methods granted by an authorization without method |
+| `pagination.max-size` | `1000` | placeholder | Maximal page size a client can request; larger, zero or negative sizes are replaced by it |
+| `api.token.secret` | built-in value: **override it** | placeholder | Secret of the API token encryption |
+| `api.token.length`, `api.token.iterations`, `api.token.digest`, `api.token.crypt` | `128`, `31`, `SHA-512`, `DESede` | placeholder | API token generation, hash and encryption |
+| `api.token.purge` | `0 0 4 * * ?` | placeholder | Cron of the expired API tokens purge |
+| `ligoj.sslVerify` | constructor argument | system | `false` disables the TLS checks of all the `CurlProcessor` instances |
+| `https.proxyHost`, `https.proxyPort` | constructor arguments, port `8080` | system | Proxy of the `CurlProcessor` instances |
+| `jdbc.driverClassName`, `jdbc.url`, `jdbc.username`, `jdbc.password`, `jdbc.maxPoolSize` | required | placeholder | Data source (`jpa-context.xml`) |
+| `jdbc.validationQuery` | `SELECT 1` | placeholder | Connection validation |
+| `jpa.dialect` | `org.ligoj.bootstrap.core.dao.MySQL5InnoDBUtf8Dialect` | placeholder | Hibernate dialect |
+| `jpa.hbm2ddl`, `jpa.showSql`, `jpa.schema`, `jpa.log_queries_slower_than_ms`, `jpa.generate_statistics` | `none`, `false`, empty | placeholder | Hibernate settings |
+| `spring.data.jpa.repositories.bootstrap-mode` | `lazy` | placeholder | Spring Data repositories initialization |
+| `ligoj.name` | `Ligoj` | placeholder | Application name of the session settings |
+
+Caches (Hazelcast JCache, shared by the cluster), with their default lifetime: `authorizations`, `hooks`, `configuration` (eternal, cleared on change), `user-details` (1 hour), `api-tokens` (valid API token checks, 1 minute, cleared on any token change), `mfa-attempts` (15 minutes after the last attempt), `mfa-verified` (12 hours, cleared by a new login), `mfa-challenges` (5 minutes). A change of the database not made through the resources of this project is seen at the end of these lifetimes.
+
 ## Testing
 
 Extend the chain in `bootstrap-business-test` (`org.ligoj.bootstrap` package): `AbstractTest → AbstractDataGeneratorTest → AbstractSecurityTest → AbstractJpaTest → AbstractAppTest → AbstractServerTest` (WireMock on port 8120). `AbstractRestTest` boots the real server for `*IT`. Canonical Spring test setup (see `AbstractBootTest` in bootstrap-business test sources):
@@ -126,8 +171,10 @@ Extend the chain in `bootstrap-business-test` (`org.ligoj.bootstrap` package): `
 @Rollback @Transactional
 ```
 
+`application-context-test.xml` is not shipped by bootstrap-business-test: each module and downstream project provides its own, importing the shipped `jpa-context-test.xml`, `business-context-test.xml` and `rest-context-web.xml`.
+
 - DB is in-memory HSQLDB (`jpa-context-test.xml`), which imports the production `jpa-context-common.xml` — repositories/auditing behave as in production. Persistence unit name is always `pu`.
-- Test data loads from CSV via `CsvForJpa` / `persistEntities("csv/system-test", Class...)`; header row = property names, foreign keys as dotted paths (`role.name`), files named `<entity-kebab-case>.csv`.
+- Test data loads from CSV via `CsvForJpa`: `persistEntities(SystemRole.class, "csv/system-test/role.csv")` for one file, or `persistEntities("csv/root", Class...)` which looks for `<simplename-lowercase>.csv` then `<simple-name-kebab-case>.csv` (e.g. `system-role.csv`). Header row = property names, foreign keys as dotted paths (`role.name`, `user.login!` to look the key up in the database instead of the already loaded rows).
 - `AbstractAppTest.persistSystemEntities()` seeds the RBAC tables; default principal is `junit` (`initSpringSecurityContext(...)` to switch).
 - `src/main/resources` **and** `src/test/resources` are Maven-filtered in bootstrap-business and downstream — literal `${...}` in resources will be substituted at build time.
 - `MatcherUtil` asserts field/rule inside `ValidationJsonException`; `AbstractBusinessEntityTest` covers entity equals/hashCode reflectively.
