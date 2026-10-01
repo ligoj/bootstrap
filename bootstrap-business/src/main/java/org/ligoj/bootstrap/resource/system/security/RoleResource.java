@@ -6,14 +6,17 @@ package org.ligoj.bootstrap.resource.system.security;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.bootstrap.core.json.TableItem;
+import org.ligoj.bootstrap.core.security.SecurityHelper;
+import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.ligoj.bootstrap.dao.system.AuthorizationRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleAssignmentRepository;
 import org.ligoj.bootstrap.dao.system.SystemRoleRepository;
 import org.ligoj.bootstrap.model.system.SystemAuthorization;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
+import org.ligoj.bootstrap.resource.system.cache.CacheEviction;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +24,6 @@ import javax.cache.annotation.CacheRemoveAll;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -51,10 +53,11 @@ public class RoleResource {
 	private CacheManager cacheManager;
 
 	/**
-	 * Retrieve an element from its identifier.
+	 * Retrieve an element from its name.
 	 *
 	 * @param name Element's name.
-	 * @return Found element. May be <code>null</code>.
+	 * @return Found element. Never <code>null</code>.
+	 * @throws jakarta.persistence.EntityNotFoundException When not found.
 	 */
 	@GET
 	@Path("name/{name}")
@@ -67,7 +70,8 @@ public class RoleResource {
 	 * Retrieve an element from its identifier.
 	 *
 	 * @param id Element's identifier.
-	 * @return Found element. May be <code>null</code>.
+	 * @return Found element. Never <code>null</code>.
+	 * @throws jakarta.persistence.EntityNotFoundException When not found.
 	 */
 	@GET
 	@Path("{id:\\d+}")
@@ -109,7 +113,7 @@ public class RoleResource {
 		// apply pagination
 		result.setData(new ArrayList<>(results.values()));
 		result.setRecordsTotal(results.size());
-		result.setRecordsTotal(results.size());
+		result.setRecordsFiltered(results.size());
 		return result;
 	}
 
@@ -154,6 +158,7 @@ public class RoleResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@CacheRemoveAll(cacheName = "authorizations")
 	public int create(final SystemRoleVo roleVo) {
+		checkName(roleVo.getName());
 		final var role = new SystemRole();
 		role.setName(roleVo.getName());
 		// create role
@@ -165,6 +170,16 @@ public class RoleResource {
 		}
 		clearUserDetails();
 		return roleId;
+	}
+
+	/**
+	 * Check the role name: the names starting with '$' are reserved to the virtual authorities, such as
+	 * {@link SecurityHelper#ADMIN}.
+	 */
+	private void checkName(final String name) {
+		if (Strings.CS.startsWith(name, "$")) {
+			throw new ValidationJsonException("name", "reserved-name");
+		}
 	}
 
 	private void newAuthorization(AuthorizationEditionVo authVo, SystemRole role) {
@@ -185,6 +200,7 @@ public class RoleResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@CacheRemoveAll(cacheName = "authorizations")
 	public void update(final SystemRoleVo roleVo) {
+		checkName(roleVo.getName());
 		final var role = repository.findOneExpected(roleVo.getId());
 		role.setName(roleVo.getName());
 		// delete authorizations
@@ -222,6 +238,7 @@ public class RoleResource {
 	 * Clear the cached user details: their roles and administrator flag depend on the roles and their authorizations.
 	 */
 	private void clearUserDetails() {
-		Optional.ofNullable(cacheManager.getCache("user-details")).ifPresent(Cache::clear);
+		// The authorizations too: their annotation based eviction may happen before the commit
+		CacheEviction.clear(cacheManager, "user-details", "authorizations");
 	}
 }

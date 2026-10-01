@@ -77,6 +77,8 @@ class RoleResourceTest extends AbstractBootTest {
 
 		final var result = resource.findAllFetchAuth();
 		Assertions.assertEquals(5, result.getData().size());
+		Assertions.assertEquals(5, result.getRecordsTotal());
+		Assertions.assertEquals(5, result.getRecordsFiltered());
 		Assertions.assertEquals(2, result.getData().getFirst().getAuthorizations().size());
 
 		final var role = result.getData().get(4);
@@ -116,6 +118,16 @@ class RoleResourceTest extends AbstractBootTest {
 	/**
 	 * test create service
 	 */
+	@Test
+	void createReservedName() {
+		// The names starting with '$' are reserved to the virtual authorities, such as the administrator one
+		final var roleVo = newRoleVo();
+		roleVo.setName("$admin");
+		Assertions.assertThrows(org.ligoj.bootstrap.core.validation.ValidationJsonException.class, () -> resource.create(roleVo));
+		roleVo.setId(roleTestId);
+		Assertions.assertThrows(org.ligoj.bootstrap.core.validation.ValidationJsonException.class, () -> resource.update(roleVo));
+	}
+
 	@Test
 	void create() {
 		cacheManager.getCache("user-details").put("someone", "details");
@@ -212,6 +224,12 @@ class RoleResourceTest extends AbstractBootTest {
 		// The administrator flag of the users may change
 		cacheManager.getCache("user-details").put("someone", "details");
 		resource.remove(roleTestId);
+		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
+
+		// Cached again before the commit by a concurrent request: cleared after the commit
+		cacheManager.getCache("user-details").put("someone", "stale");
+		org.springframework.transaction.support.TransactionSynchronizationManager.getSynchronizations()
+				.forEach(org.springframework.transaction.support.TransactionSynchronization::afterCommit);
 		Assertions.assertNull(cacheManager.getCache("user-details").get("someone"));
 
 		// check result
