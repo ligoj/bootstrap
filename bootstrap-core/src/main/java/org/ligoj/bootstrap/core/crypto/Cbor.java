@@ -37,7 +37,7 @@ public class Cbor {
 	}
 
 	/**
-	 * Decode the first CBOR item and return the number of bytes consumed.
+	 * Decode the CBOR item starting at the given offset and return it with its absolute end position in the data.
 	 *
 	 * @param data   The CBOR bytes.
 	 * @param offset The start offset.
@@ -233,7 +233,8 @@ public class Cbor {
 		}
 
 		private byte[] bytes(final int size) {
-			if (position + size > data.length) {
+			// Subtraction form: "position + size" could overflow
+			if (size > data.length - position) {
 				throw new IllegalArgumentException("Truncated CBOR data");
 			}
 			final var out = new byte[size];
