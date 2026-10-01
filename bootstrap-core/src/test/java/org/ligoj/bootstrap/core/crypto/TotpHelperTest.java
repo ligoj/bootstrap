@@ -48,6 +48,13 @@ class TotpHelperTest {
 	}
 
 	@Test
+	void codeUnknownAlgorithm() {
+		final var secret = TotpHelper.generateSecret();
+		Assertions.assertEquals("any is not available",
+				Assertions.assertThrows(IllegalStateException.class, () -> TotpHelper.code(secret, 1, "any")).getMessage());
+	}
+
+	@Test
 	void verifyWindow() {
 		final var counter = 1234567890L / TotpHelper.PERIOD;
 		Assertions.assertTrue(TotpHelper.verify(SECRET, "005924", counter, 0));
