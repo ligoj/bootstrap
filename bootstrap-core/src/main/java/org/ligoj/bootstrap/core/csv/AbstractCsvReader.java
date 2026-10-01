@@ -119,8 +119,8 @@ public abstract class AbstractCsvReader<T> {
 	 *
 	 * @param reader   Input reader.
 	 * @param beanType Class of bean to build.
-	 * @param headers  Headers, an ordered property list. Header with <code>null</code> or empty name will skip the
-	 *                 corresponding column. Column values are also trimmed.
+	 * @param headers  Headers, an ordered property list. Header names are stripped, and a blank name skips the
+	 *                 corresponding column. A <code>null</code> name is not supported: the bean build fails.
 	 */
 	protected AbstractCsvReader(final Reader reader, final Class<T> beanType, final String... headers) {
 		this.csvReader = new CsvReader(reader);
@@ -382,7 +382,7 @@ public abstract class AbstractCsvReader<T> {
 				// Ignore case of Enum name
 				final var enumClass = (Class<E>) generic;
 				result.add(Enum.valueOf(enumClass, EnumUtils.getEnumMap(enumClass).keySet().stream()
-						.filter(rawValue::equalsIgnoreCase).findFirst().orElse(item)));
+						.filter(item::equalsIgnoreCase).findFirst().orElse(item)));
 			} else {
 				result.add(TypeConverterManager.get().convertType(item, generic));
 			}
