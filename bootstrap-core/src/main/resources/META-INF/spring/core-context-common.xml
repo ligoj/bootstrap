@@ -21,8 +21,10 @@
 		<property name="passwordFilePropertyName" value="app.crypto.file" />
 	</bean>
 
-	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+	<!-- Pool of encryptors: a single one serializes all the encryptions and decryptions -->
+	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.PooledPBEStringEncryptor">
 		<property name="config" ref="environmentVariablesConfiguration" />
+		<property name="poolSize" value="4" />
 	</bean>
 
 	<bean class="org.ligoj.bootstrap.core.GlobalPropertyUtils">
