@@ -22,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +48,8 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 	private static final GrantedAuthority ROLE_ANONYMOUS = new SimpleGrantedAuthority("ROLE_ANONYMOUS");
 
+	private static final GrantedAuthority ADMIN = new SimpleGrantedAuthority(SecurityHelper.ADMIN);
+
 	@Override
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
 			throws IOException, ServletException {
@@ -66,10 +69,10 @@ public class AuthorizingFilter extends GenericFilterBean {
 			// Build the URL
 			final var fullRequest = getFullRequest(httpRequest);
 
-			// Verify via-user is authorized to assume this right
+			// Verify via-user is an administrator, the only one allowed to act for another user
 			final var viaUser = httpRequest.getHeader("x-api-via-user");
 			if (viaUser != null) {
-				if (isAuthorized(userDetailsService.loadUserByUsername(viaUser).getAuthorities(), "system/user", "POST")) {
+				if (userDetailsService.loadUserByUsername(viaUser).getAuthorities().contains(ADMIN)) {
 					log.info("Request for user {} via admin user {}", SecurityContextHolder.getContext().getAuthentication().getName(), viaUser);
 				} else {
 					log.info("Invalid via-user {}, not ADMIN", viaUser);
@@ -103,11 +106,13 @@ public class AuthorizingFilter extends GenericFilterBean {
 
 	/**
 	 * Return the full request without query and without context path. Servlet path is kept. The returned path does not
-	 * start with '/'.
+	 * start with '/', and is decoded: the authorization patterns apply to the path routed by the REST layer, so an
+	 * encoded character cannot escape them.
 	 */
 	private String getFullRequest(final HttpServletRequest httpRequest) {
-		return Strings.CS.removeStart(
-				httpRequest.getRequestURI().substring(this.getServletContext().getContextPath().length()), "/");
+		return UriUtils.decode(Strings.CS.removeStart(
+				httpRequest.getRequestURI().substring(this.getServletContext().getContextPath().length()), "/"),
+				StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -124,7 +129,11 @@ public class AuthorizingFilter extends GenericFilterBean {
 				.anyMatch(a -> a != null && match(a.get(method), request));
 	}
 
+	/**
+	 * Match the patterns from the start of the path, like an implicit '^': a pattern never matches in the middle of
+	 * the path.
+	 */
 	private boolean match(final Collection<Pattern> patterns, final String toMatch) {
-		return (patterns != null && patterns.stream().anyMatch(p -> p.matcher(toMatch).find()));
+		return (patterns != null && patterns.stream().anyMatch(p -> p.matcher(toMatch).lookingAt()));
 	}
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -210,8 +211,9 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	@Test
 	void doFilterViaUserNotAdmin() throws Exception {
 		attachRole("SOME");
-		addSystemAuthorization(HttpMethod.GET.name(), "SOME","match" );
-		addSystemAuthorization(HttpMethod.POST.name(), "SUPER_USER", "some");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME","^rest/match" );
+		// Granted to create users, but not an administrator: cannot be impersonated
+		addSystemAuthorization(HttpMethod.POST.name(), "SUPER_USER", "system/user");
 
 		em.flush();
 		em.clear();
@@ -243,8 +245,7 @@ class AuthorizingFilterTest extends AbstractBootTest {
 	@Test
 	void doFilterViaUser() throws Exception {
 		attachRole("SOME");
-		addSystemAuthorization(HttpMethod.GET.name(), "SOME","match" );
-		addSystemAuthorization(HttpMethod.POST.name(), "SUPER_USER", "system/user");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME","^rest/match" );
 
 		em.flush();
 		em.clear();
@@ -263,7 +264,7 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		authorizingFilter.setServletContext(servletContext);
 		final var userDetailsService = mock(RbacUserDetailsService.class);
 		authorizingFilter.setUserDetailsService(userDetailsService);
-		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority("SUPER_USER")));
+		final var adminUser = new User(DEFAULT_USER, DEFAULT_USER, List.of(new SimpleGrantedAuthority(SecurityHelper.ADMIN)));
 		when(userDetailsService.loadUserByUsername(DEFAULT_USER)).thenReturn(adminUser);
 		authorizingFilter.doFilter(request, response, chain);
 		verify(chain, times(1)).doFilter(request, response);
@@ -271,6 +272,50 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		authorizingFilter.doFilter(request, response, chain);
 		verify(chain, times(1)).doFilter(request, response);
 		validateMockitoUsage();
+	}
+
+	/**
+	 * Run the filter for a GET of the given URI with the role "SOME", return <code>true</code> when granted.
+	 */
+	private boolean isGranted(final String uri) throws Exception {
+		final var chain = mock(FilterChain.class);
+		final var request = mock(HttpServletRequest.class);
+		final var servletContext = mock(ServletContext.class);
+		when(servletContext.getContextPath()).thenReturn("/context");
+		when(request.getRequestURI()).thenReturn(uri);
+		when(request.getMethod()).thenReturn("GET");
+		final var response = mock(HttpServletResponse.class);
+		when(response.getOutputStream()).thenReturn(mock(ServletOutputStream.class));
+		authorizingFilter.setServletContext(servletContext);
+		authorizingFilter.doFilter(request, response, chain);
+		return mockingDetails(chain).getInvocations().size() == 1;
+	}
+
+	@Test
+	void doFilterPatternAnchoredAtStart() throws Exception {
+		attachRole("SOME");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME", "(throw|test|filter).*");
+		em.flush();
+		em.clear();
+		cacheResource.invalidate("authorizations");
+
+		// The pattern matches from the start of the path, never in the middle
+		Assertions.assertTrue(isGranted("/context/test/any"));
+		Assertions.assertFalse(isGranted("/context/rest/system/user/contest"));
+	}
+
+	@Test
+	void doFilterPatternDecodedPath() throws Exception {
+		attachRole("SOME");
+		addSystemAuthorization(HttpMethod.GET.name(), "SOME", "^rest/(?!admin)");
+		em.flush();
+		em.clear();
+		cacheResource.invalidate("authorizations");
+
+		// The pattern applies to the decoded path, the one routed by the REST layer
+		Assertions.assertTrue(isGranted("/context/rest/other"));
+		Assertions.assertFalse(isGranted("/context/rest/admin"));
+		Assertions.assertFalse(isGranted("/context/rest/%61dmin"));
 	}
 
 	private void addSystemAuthorization(final String method, final String roleName, final String pattern) {
