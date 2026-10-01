@@ -21,6 +21,7 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.api.ApiTokenResource;
 import org.ligoj.bootstrap.resource.system.security.SystemRoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.ligoj.bootstrap.resource.system.cache.CacheEviction;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -171,10 +172,12 @@ public class UserResource {
 	}
 
 	/**
-	 * Create the user as needed and return the corresponding identifier.
+	 * Create the user as needed and update its role assignments. An API token is created when a token name is
+	 * provided and not yet owned by this user.
 	 *
 	 * @param userVo the user to create.
-	 * @return the generated token if requested.
+	 * @return the generated API token where the identifier is the token value, and the name is the token name.
+	 *         <code>null</code> when no new token has been created.
 	 * @throws GeneralSecurityException When there is a security issue.
 	 */
 	@POST
@@ -239,7 +242,7 @@ public class UserResource {
 			user.getRoles().add(roleAssignmentRepository.save(roleAssignment));
 		});
 
-		cacheManager.getCache("user-details").evict(user.getLogin());
+		CacheEviction.evict(cacheManager, "user-details", user.getLogin());
 	}
 
 	/**
@@ -254,5 +257,6 @@ public class UserResource {
 		apiTokenResource.removeAll(login);
 		roleAssignmentRepository.deleteAllBy("user.id", login);
 		repository.deleteById(login);
+		CacheEviction.evict(cacheManager, "user-details", login);
 	}
 }
