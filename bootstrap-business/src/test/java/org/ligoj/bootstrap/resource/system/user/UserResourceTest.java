@@ -106,6 +106,43 @@ class UserResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void findAllWithRolesPaginatedByDatabase() {
+		// Many users with roles, only one page is requested
+		final var role = roleRepository.findByName(DEFAULT_ROLE);
+		for (var i = 0; i < 20; i++) {
+			final var user = new SystemUser();
+			user.setLogin("user-page-" + i);
+			em.persist(user);
+			final var assignment = new SystemRoleAssignment();
+			assignment.setRole(role);
+			assignment.setUser(user);
+			em.persist(assignment);
+		}
+		em.flush();
+		em.clear();
+
+		final var statistics = em.getEntityManagerFactory().unwrap(org.hibernate.SessionFactory.class).getStatistics();
+		statistics.clear();
+		statistics.setStatisticsEnabled(true);
+		try {
+			final var uriInfo = newUriInfo();
+			uriInfo.getQueryParameters().putSingle("rows", "2");
+			uriInfo.getQueryParameters().putSingle("page", "1");
+			final var users = resource.findAllWithRoles(uriInfo, null);
+			Assertions.assertEquals(21, users.getRecordsTotal());
+			Assertions.assertEquals(2, users.getData().size());
+			Assertions.assertEquals(DEFAULT_ROLE, users.getData().getFirst().getRoles().getFirst().getName());
+			Assertions.assertEquals(DEFAULT_ROLE, users.getData().get(1).getRoles().getFirst().getName());
+
+			// Only the users of the page are loaded, their roles in a single query
+			Assertions.assertEquals(2, statistics.getEntityStatistics(SystemUser.class.getName()).getLoadCount());
+			Assertions.assertTrue(statistics.getPrepareStatementCount() <= 4, () -> String.valueOf(statistics.getPrepareStatementCount()));
+		} finally {
+			statistics.setStatisticsEnabled(false);
+		}
+	}
+
+	@Test
 	void findAllWithRolesCriteriaLogin() {
 		final var users = resource.findAllWithRoles(newUriInfo(), DEFAULT_USER.substring(1, 4));
 		Assertions.assertEquals(1, users.getData().size());
