@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
  * {@link #LOCK_DURATION} after the last failure, which also ends the lock.</li>
  * <li><code>mfa-verified</code>: the last successful verification per user, until the next authentication or
  * {@link #VERIFIED_DURATION}.</li>
+ * <li><code>mfa-challenges</code>: the pending passkey challenges, single-use, for
+ * {@link MfaResource#CHALLENGE_TIMEOUT}.</li>
  * </ul>
  */
 @Component
@@ -40,6 +42,8 @@ public class MfaCache implements CacheManagerAware {
 	public void onCreate(final HazelcastCacheManager cacheManager, final CacheConfigurer configurer) {
 		cacheManager.createCache(MfaResource.ATTEMPTS_CACHE, configurer.newCacheConfig(MfaResource.ATTEMPTS_CACHE, LOCK_DURATION));
 		cacheManager.createCache(MfaResource.VERIFIED_CACHE, configurer.newCacheConfig(MfaResource.VERIFIED_CACHE, VERIFIED_DURATION));
+		cacheManager.createCache(MfaResource.CHALLENGES_CACHE, configurer.newCacheConfig(MfaResource.CHALLENGES_CACHE,
+				new Duration(TimeUnit.SECONDS, MfaResource.CHALLENGE_TIMEOUT.toSeconds())));
 	}
 
 }

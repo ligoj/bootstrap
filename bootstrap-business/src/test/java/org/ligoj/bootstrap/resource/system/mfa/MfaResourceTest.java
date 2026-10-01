@@ -11,10 +11,16 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.ligoj.bootstrap.FakeAuthenticator;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
+import org.ligoj.bootstrap.core.crypto.Cbor;
 import org.ligoj.bootstrap.core.crypto.TotpHelper;
 import org.ligoj.bootstrap.core.crypto.WebAuthnHelper;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
@@ -148,6 +154,13 @@ class MfaResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void passkeyChallengeShared() {
+		// The challenges are shared by the cluster, and expire with the cache
+		final var challenge = resource.setupPasskey().get("challenge");
+		Assertions.assertEquals(challenge, cacheManager.getCache("mfa-challenges").get(DEFAULT_USER + "#create").get());
+	}
+
+	@Test
 	void verifiedState() {
 		final var setup = resource.setupTotp();
 		resource.createTotp(edition("phone", setup.getSecret(), TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
@@ -187,6 +200,32 @@ class MfaResourceTest extends AbstractBootTest {
 		// The lock expires with the cache entry
 		cacheManager.getCache("mfa-attempts").clear();
 		resource.verify(right);
+	}
+
+	@Test
+	void verifyLockedConcurrently() throws Exception {
+		// Parallel guesses: no lost update, only the first attempts are checked
+		final var authentication = SecurityContextHolder.getContext().getAuthentication();
+		final var threads = 20;
+		final var start = new CountDownLatch(1);
+		final var rules = new ConcurrentLinkedQueue<Object>();
+		try (var executor = Executors.newFixedThreadPool(threads)) {
+			for (var i = 0; i < threads; i++) {
+				executor.submit(() -> {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+					start.await();
+					try {
+						resource.verify(code("000000"));
+					} catch (final ValidationJsonException e) {
+						rules.add(e.getErrors().get("code").getFirst().get("rule"));
+					}
+					return null;
+				});
+			}
+			start.countDown();
+		}
+		Assertions.assertEquals(threads, rules.size());
+		Assertions.assertEquals(MfaResource.DEFAULT_MAX_ATTEMPTS, rules.stream().filter("invalid-code"::equals).count());
 	}
 
 	@Test
@@ -310,6 +349,92 @@ class MfaResourceTest extends AbstractBootTest {
 		vo.setAuthenticatorData(signed.authenticatorData());
 		vo.setSignature(signed.signature());
 		return vo;
+	}
+
+	private static final String ORIGIN = "http://localhost:5173";
+
+	@Test
+	void createPasskeyDuplicateName() {
+		resource.createPasskey(registration(new FakeAuthenticator(1), "macbook", resource.setupPasskey(), ORIGIN));
+		final var duplicate = registration(new FakeAuthenticator(1), "macbook", resource.setupPasskey(), ORIGIN);
+		Assertions.assertTrue(Assertions.assertThrows(ValidationJsonException.class, () -> resource.createPasskey(duplicate))
+				.getErrors().containsKey("name"));
+	}
+
+	@Test
+	void createPasskeyNoAttestedCredential() {
+		// Authenticator data without the attested credential flag
+		final var authenticator = new FakeAuthenticator(1);
+		final var vo = registration(authenticator, "macbook", resource.setupPasskey(), ORIGIN);
+		final var authData = WebAuthnHelper.base64UrlDecode(authenticator.assertion("localhost", WebAuthnHelper.FLAG_UP,
+				FakeAuthenticator.clientData("webauthn.get", "x", ORIGIN)).authenticatorData());
+		vo.setAttestationObject(WebAuthnHelper.base64Url(Cbor.encode(Map.of("fmt", "none", "authData", authData))));
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.createPasskey(vo));
+	}
+
+	@Test
+	void createPasskeyRelyingPartyMismatch() {
+		final var authenticator = new FakeAuthenticator(1);
+		final var vo = registration(authenticator, "macbook", resource.setupPasskey(), ORIGIN);
+		vo.setAttestationObject(authenticator.attestationObject("other.example", WebAuthnHelper.FLAG_UP));
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.createPasskey(vo));
+	}
+
+	@Test
+	void createPasskeyAlreadyRegistered() {
+		// The same credential cannot be registered twice, even with another name and a fresh challenge
+		final var authenticator = new FakeAuthenticator(1);
+		resource.createPasskey(registration(authenticator, "macbook", resource.setupPasskey(), ORIGIN));
+		final var again = registration(authenticator, "other", resource.setupPasskey(), ORIGIN);
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.createPasskey(again));
+	}
+
+	@Test
+	void createPasskeyCredentialMismatch() {
+		final var vo = registration(new FakeAuthenticator(1), "macbook", resource.setupPasskey(), ORIGIN);
+		vo.setId("other");
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.createPasskey(vo));
+	}
+
+	@Test
+	void verifyPasskeyInvalidClientData() {
+		final var authenticator = new FakeAuthenticator(1);
+		resource.createPasskey(registration(authenticator, "macbook", resource.setupPasskey(), ORIGIN));
+		final var vo = assertion(authenticator, resource.challengePasskey(), ORIGIN);
+		vo.setClientDataJSON("%%%");
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.verifyPasskey(vo));
+	}
+
+	@Test
+	void verifyPasskeyWrongChallenge() {
+		final var authenticator = new FakeAuthenticator(1);
+		resource.createPasskey(registration(authenticator, "macbook", resource.setupPasskey(), ORIGIN));
+		resource.challengePasskey();
+		final var vo = assertion(authenticator, Map.of("challenge", "other"), ORIGIN);
+		Assertions.assertThrows(ValidationJsonException.class, () -> resource.verifyPasskey(vo));
+	}
+
+	@Test
+	void verifyPasskeyNoCounter() {
+		// An authenticator without signature counter (always 0): no regression check
+		final var authenticator = new FakeAuthenticator(0);
+		resource.createPasskey(registration(authenticator, "macbook", resource.setupPasskey(), ORIGIN));
+		resource.verifyPasskey(assertion(authenticator, resource.challengePasskey(), ORIGIN));
+		resource.verifyPasskey(assertion(authenticator, resource.challengePasskey(), ORIGIN));
+		Assertions.assertNotNull(resource.get().getVerifiedDate());
+	}
+
+	@Test
+	void toAaguid() {
+		Assertions.assertNull(MfaResource.toAaguid(null));
+		Assertions.assertNull(MfaResource.toAaguid(new byte[3]));
+		Assertions.assertNull(MfaResource.toAaguid(new byte[16]));
+		final var aaguid = new byte[16];
+		aaguid[15] = 1;
+		Assertions.assertEquals("00000000-0000-0000-0000-000000000001", MfaResource.toAaguid(aaguid));
+		aaguid[0] = 1;
+		aaguid[15] = 0;
+		Assertions.assertEquals("01000000-0000-0000-0000-000000000000", MfaResource.toAaguid(aaguid));
 	}
 
 	@Test

@@ -11,6 +11,7 @@ import org.ligoj.bootstrap.core.model.AbstractStringKeyEntity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.time.Instant;
 
 /**
  * Test class of bean.
@@ -32,6 +33,28 @@ class BeanTest {
 		testPojo(HookMatch.class).toString();
 		Assertions.assertTrue(new AbstractStringKeyEntity(){}.isNew());
 
+	}
+
+	@Test
+	void mfaDevice() {
+		// Custom boolean accessors of a nullable column: not handled by "testPojo"
+		final var device = new SystemMfaDevice();
+		Assertions.assertEquals(SystemMfaDevice.TYPE_TOTP, device.getType());
+		Assertions.assertFalse(device.isDefaultDevice());
+		device.setDefaultDevice(true);
+		Assertions.assertTrue(device.isDefaultDevice());
+		device.setDefaultDevice(false);
+		Assertions.assertFalse(device.isDefaultDevice());
+		device.setUser("user");
+		device.setName("phone");
+		device.setType(SystemMfaDevice.TYPE_PASSKEY);
+		device.setSecret("secret");
+		device.setLastUsed(Instant.EPOCH);
+		Assertions.assertEquals("user", device.getUser());
+		Assertions.assertEquals(SystemMfaDevice.TYPE_PASSKEY, device.getType());
+		Assertions.assertEquals("secret", device.getSecret());
+		Assertions.assertEquals(Instant.EPOCH, device.getLastUsed());
+		Assertions.assertEquals("SystemMfaDevice(user=user)", device.toString());
 	}
 
 	protected <T> T testPojo(Class<T> pojo) throws ReflectiveOperationException {

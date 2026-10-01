@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.bootstrap.core.crypto.WebAuthnHelper;
@@ -49,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
  * Multi-factor authentication of the current user: registered devices (TOTP authenticator applications, passkeys),
  * enrollment, default device and verification. The front-end enforces the second factor right after any primary
  * authentication (form, OIDC, ...) when at least one device is registered; this resource manages the devices and
- * verifies the codes and assertions. Passkey challenges are single-use, per user, kept in memory for
+ * verifies the codes and assertions. Passkey challenges are single-use, per user, kept in a cluster cache for
  * {@link #CHALLENGE_TIMEOUT}.
  * <p>
  * A successful verification is recorded per user in a cluster-wide cache, until the next authentication
@@ -123,16 +122,11 @@ public class MfaResource {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
-	 * Pending challenges: user + purpose to the challenge and its expiry.
+	 * Cache of the pending passkey challenges, shared by the cluster: user + purpose to the challenge, expiring after
+	 * {@link #CHALLENGE_TIMEOUT}.
 	 */
-	private final Map<String, PendingChallenge> challenges = new ConcurrentHashMap<>();
+	static final String CHALLENGES_CACHE = "mfa-challenges";
 
-	private record PendingChallenge(String challenge, Instant expiry) {
-	}
-
-	/**
-	 * Persisted passkey data (encrypted in the device secret).
-	 */
 	/**
 	 * Transports a browser may report for a credential, see WebAuthn <code>AuthenticatorTransport</code>.
 	 */
@@ -143,6 +137,9 @@ public class MfaResource {
 	 */
 	private static final Set<String> ATTACHMENTS = Set.of("platform", "cross-platform");
 
+	/**
+	 * Persisted passkey data (encrypted in the device secret).
+	 */
 	private record Passkey(String credentialId, String publicKey, int alg, long signCount, List<String> transports,
 			String aaguid, String attachment) {
 	}
@@ -285,7 +282,8 @@ public class MfaResource {
 		try {
 			authData = WebAuthnHelper.parseAttestationObject(WebAuthnHelper.base64UrlDecode(vo.getAttestationObject()));
 			checkAuthData(authData);
-			if (!authData.has(WebAuthnHelper.FLAG_AT) || authData.credentialId() == null) {
+			// The credential is parsed only when the attested credential flag is set
+			if (authData.credentialId() == null) {
 				throw new IllegalArgumentException("No attested credential");
 			}
 			credential = WebAuthnHelper.toCredential(authData.cosePublicKey());
@@ -327,7 +325,8 @@ public class MfaResource {
 			final var credential = new LinkedHashMap<String, Object>();
 			credential.put("type", PUBLIC_KEY_TYPE);
 			credential.put("id", p.credentialId());
-			if (p.transports() != null && !p.transports().isEmpty()) {
+			// Never empty: stored as null when no transport is known
+			if (p.transports() != null) {
 				// Where the credential lives, so the browser offers the right prompt
 				credential.put("transports", p.transports());
 			}
@@ -390,7 +389,7 @@ public class MfaResource {
 	 */
 	private String newChallenge(final String login, final String purpose) {
 		final var challenge = WebAuthnHelper.base64Url(WebAuthnHelper.randomChallenge());
-		challenges.put(login + "#" + purpose, new PendingChallenge(challenge, Instant.now().plus(CHALLENGE_TIMEOUT)));
+		getCache(CHALLENGES_CACHE).put(login + "#" + purpose, challenge);
 		return challenge;
 	}
 
@@ -398,7 +397,10 @@ public class MfaResource {
 	 * Consume the pending challenge of the user and check the client data against it: type, challenge, origin.
 	 */
 	private void checkClientData(final String login, final String purpose, final String type, final String clientDataJSON) {
-		final var pending = challenges.remove(login + "#" + purpose);
+		// Single-use: atomically consumed, an expired challenge is no longer in the cache
+		@SuppressWarnings("unchecked")
+		final var pending = (String) ((javax.cache.Cache<Object, Object>) getCache(CHALLENGES_CACHE).getNativeCache())
+				.getAndRemove(login + "#" + purpose);
 		final Map<String, Object> client;
 		try {
 			client = WebAuthnHelper.parseClientData(WebAuthnHelper.base64UrlDecode(clientDataJSON));
@@ -407,8 +409,7 @@ public class MfaResource {
 		}
 		final var origins = Arrays.stream(StringUtils.defaultString(configuration.get(CONF_ORIGINS)).split(","))
 				.map(String::trim).filter(StringUtils::isNotEmpty).toList();
-		if (pending == null || pending.expiry().isBefore(Instant.now()) || !type.equals(client.get("type"))
-				|| !pending.challenge().equals(client.get("challenge"))
+		if (pending == null || !type.equals(client.get("type")) || !pending.equals(client.get("challenge"))
 				|| !WebAuthnHelper.isOriginAllowed(Objects.toString(client.get("origin"), null), getRpId(), origins)) {
 			log.info("Passkey client data rejected for {} (purpose {}, origin {})", login, purpose, client.get("origin"));
 			throw new ValidationJsonException(PASSKEY_PROPERTY, INVALID_CODE);
@@ -456,6 +457,7 @@ public class MfaResource {
 	 * Make a device the default one, proposed first at verification.
 	 *
 	 * @param id The device identifier.
+	 * @throws EntityNotFoundException When the device is not owned by the current user.
 	 */
 	@PUT
 	@Path("{id:\\d+}/default")
@@ -488,6 +490,7 @@ public class MfaResource {
 	 * Remove a device of the current user.
 	 *
 	 * @param id The device identifier.
+	 * @throws EntityNotFoundException When the device is not owned by the current user.
 	 */
 	@DELETE
 	@Path("{id:\\d+}")
@@ -522,11 +525,14 @@ public class MfaResource {
 	public void verify(final MfaCodeVo vo) {
 		final var login = securityHelper.getLogin();
 		final var attempts = getCache(ATTEMPTS_CACHE);
-		final var failures = Optional.ofNullable(attempts.get(login, Integer.class)).orElse(0);
 		final var maxAttempts = configuration.get(CONF_MAX_ATTEMPTS, DEFAULT_MAX_ATTEMPTS);
-		if (failures >= maxAttempts) {
+
+		// Count this attempt before checking the code, atomically: parallel attempts cannot exceed the limit.
+		// Not transactional: the attempt is counted even if the transaction rolls back
+		final var attempt = incrementAttempts(attempts, login);
+		if (attempt > maxAttempts) {
 			// Locked until the cache entry expires: the code is not even checked
-			log.warn("MFA verification refused for {}: locked after {} consecutive failures", login, failures);
+			log.warn("MFA verification refused for {}: locked after {} consecutive failures", login, maxAttempts);
 			throw new ValidationJsonException(CODE_PROPERTY, "too-many-attempts");
 		}
 		final List<SystemMfaDevice> candidates;
@@ -546,14 +552,28 @@ public class MfaResource {
 			}
 		}
 
-		// Not transactional: the failure is counted even if the transaction rolls back
-		attempts.put(login, failures + 1);
-		if (failures + 1 >= maxAttempts) {
-			log.warn("MFA verification failed for {}: locked after {} consecutive failures", login, failures + 1);
+		if (attempt == maxAttempts) {
+			log.warn("MFA verification failed for {}: locked after {} consecutive failures", login, attempt);
 		} else {
 			log.info("MFA verification failed for {}", login);
 		}
 		throw new ValidationJsonException(CODE_PROPERTY, INVALID_CODE);
+	}
+
+	/**
+	 * Atomically increment the consecutive attempts of the user, with a compare-and-set loop on the cluster cache.
+	 *
+	 * @return The attempt number, starting from 1.
+	 */
+	@SuppressWarnings("unchecked")
+	private int incrementAttempts(final org.springframework.cache.Cache attempts, final String login) {
+		final var cache = (javax.cache.Cache<Object, Object>) attempts.getNativeCache();
+		while (true) {
+			final var current = (Integer) cache.get(login);
+			if (current == null ? cache.putIfAbsent(login, 1) : cache.replace(login, current, current + 1)) {
+				return current == null ? 1 : current + 1;
+			}
+		}
 	}
 
 	/**
