@@ -1,3 +1,6 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.bootstrap.resource.system.mfa;
 
 import java.time.Instant;
@@ -23,6 +26,11 @@ public class MfaStatusVo {
 	 * Last authentication of the user, <code>null</code> when unknown.
 	 */
 	private Instant lastConnection;
+
+	/**
+	 * Last successful verification since the last authentication, <code>null</code> when not verified.
+	 */
+	private Instant verifiedDate;
 
 	/**
 	 * Registered devices, without secrets.

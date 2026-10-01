@@ -1,12 +1,20 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.bootstrap.resource.system.mfa;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
 import org.ligoj.bootstrap.FakeAuthenticator;
+import org.ligoj.bootstrap.MatcherUtil;
+import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.core.crypto.TotpHelper;
 import org.ligoj.bootstrap.core.crypto.WebAuthnHelper;
 import org.ligoj.bootstrap.core.dao.AbstractBootTest;
@@ -35,6 +43,15 @@ class MfaResourceTest extends AbstractBootTest {
 
 	@Autowired
 	private SystemUserRepository userRepository;
+
+	@Autowired
+	private ConfigurationResource configuration;
+
+	@BeforeEach
+	void resetAttempts() {
+		// The failure counters are shared by the tests of the same user
+		clearAllCache();
+	}
 
 	private MfaDeviceEditionVo edition(final String name, final String secret, final String code) {
 		final var vo = new MfaDeviceEditionVo();
@@ -115,6 +132,82 @@ class MfaResourceTest extends AbstractBootTest {
 		resource.verify(right);
 		Assertions.assertNotNull(repository.findOne(id).getLastUsed());
 		Assertions.assertNotNull(resource.get().getDevices().getFirst().getLastUsed());
+	}
+
+	private MfaCodeVo code(final String code) {
+		final var vo = new MfaCodeVo();
+		vo.setCode(code);
+		return vo;
+	}
+
+	private void failVerify(final int times) {
+		for (var i = 0; i < times; i++) {
+			MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.verify(code("000000"))),
+					"code", "invalid-code");
+		}
+	}
+
+	@Test
+	void verifiedState() {
+		final var setup = resource.setupTotp();
+		resource.createTotp(edition("phone", setup.getSecret(), TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+		Assertions.assertNull(resource.get().getVerifiedDate());
+
+		// A failed verification does not verify
+		failVerify(1);
+		Assertions.assertNull(resource.get().getVerifiedDate());
+		Assertions.assertNull(resource.getVerifiedDate(DEFAULT_USER));
+
+		// A successful one does, for this user only
+		final var before = Instant.now();
+		resource.verify(code(TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+		final var verified = resource.getVerifiedDate(DEFAULT_USER);
+		Assertions.assertNotNull(verified);
+		Assertions.assertFalse(verified.isBefore(before.truncatedTo(ChronoUnit.MILLIS)));
+		Assertions.assertEquals(verified, resource.get().getVerifiedDate());
+		Assertions.assertNull(resource.getVerifiedDate(OTHER_USER));
+
+		// A new primary authentication requires a new verification
+		Assertions.assertNull(resource.login().getVerifiedDate());
+		Assertions.assertNull(resource.getVerifiedDate(DEFAULT_USER));
+	}
+
+	@Test
+	void verifyLockedAfterTooManyFailures() {
+		final var setup = resource.setupTotp();
+		resource.createTotp(edition("phone", setup.getSecret(), TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+		failVerify(MfaResource.DEFAULT_MAX_ATTEMPTS);
+
+		// Locked: even the right code is refused, without being checked
+		final var right = code(TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter()));
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.verify(right)),
+				"code", "too-many-attempts");
+		Assertions.assertNull(resource.get().getDevices().getFirst().getLastUsed());
+
+		// The lock expires with the cache entry
+		cacheManager.getCache("mfa-attempts").clear();
+		resource.verify(right);
+	}
+
+	@Test
+	void verifySuccessResetsFailures() {
+		final var setup = resource.setupTotp();
+		resource.createTotp(edition("phone", setup.getSecret(), TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+		failVerify(MfaResource.DEFAULT_MAX_ATTEMPTS - 1);
+		resource.verify(code(TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+		failVerify(MfaResource.DEFAULT_MAX_ATTEMPTS - 1);
+		resource.verify(code(TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+	}
+
+	@Test
+	void verifyMaxAttemptsConfiguration() {
+		configuration.put(MfaResource.CONF_MAX_ATTEMPTS, "2");
+		final var setup = resource.setupTotp();
+		resource.createTotp(edition("phone", setup.getSecret(), TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter())));
+		failVerify(2);
+		final var right = code(TotpHelper.code(setup.getSecret(), TotpHelper.currentCounter()));
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.verify(right)),
+				"code", "too-many-attempts");
 	}
 
 	@Test
@@ -245,8 +338,10 @@ class MfaResourceTest extends AbstractBootTest {
 		Assertions.assertEquals("localhost", request.get("rpId"));
 		Assertions.assertEquals(authenticator.getCredentialId(), ((Map<?, ?>) ((List<?>) request.get("allowCredentials")).getFirst()).get("id"));
 		authenticator.setCounter(6);
+		Assertions.assertNull(resource.get().getVerifiedDate());
 		resource.verifyPasskey(assertion(authenticator, request, "http://localhost:5173"));
 		Assertions.assertNotNull(repository.findOne(id).getLastUsed());
+		Assertions.assertNotNull(resource.get().getVerifiedDate());
 
 		// Counter regression (cloned authenticator): rejected
 		final var request2 = resource.challengePasskey();

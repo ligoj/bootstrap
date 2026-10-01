@@ -1,3 +1,6 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
 package org.ligoj.bootstrap.resource.system.mfa;
 
 import java.nio.charset.StandardCharsets;
@@ -27,6 +30,7 @@ import org.ligoj.bootstrap.model.system.SystemMfaDevice;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -44,9 +48,14 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Multi-factor authentication of the current user: registered devices (TOTP authenticator applications, passkeys),
  * enrollment, default device and verification. The front-end enforces the second factor right after any primary
- * authentication (form, OIDC, ...) when at least one device is registered; this resource only manages the devices
- * and verifies the codes and assertions. Passkey challenges are single-use, per user, kept in memory for
+ * authentication (form, OIDC, ...) when at least one device is registered; this resource manages the devices and
+ * verifies the codes and assertions. Passkey challenges are single-use, per user, kept in memory for
  * {@link #CHALLENGE_TIMEOUT}.
+ * <p>
+ * A successful verification is recorded per user in a cluster-wide cache, until the next authentication
+ * ({@link #login()}) or {@link MfaCache#VERIFIED_DURATION}: see {@link #getVerifiedDate(String)}, so server-side code
+ * can enforce the second factor too. This state is per user, not per session: a verification made in one session of
+ * the user also counts for the other sessions of this user started before it.
  */
 @Path("/system/mfa")
 @Service
@@ -81,6 +90,26 @@ public class MfaResource {
 	 * is the relying party identifier or one of its sub-domains is accepted (HTTP for localhost).
 	 */
 	public static final String CONF_ORIGINS = "ligoj.mfa.origins";
+
+	/**
+	 * Configuration: consecutive failed code verifications before the verification of the user is locked.
+	 */
+	public static final String CONF_MAX_ATTEMPTS = "ligoj.mfa.max-attempts";
+
+	/**
+	 * Default consecutive failed code verifications before the lock.
+	 */
+	public static final int DEFAULT_MAX_ATTEMPTS = 5;
+
+	/**
+	 * Cache of the consecutive failed code verifications per user, shared by the cluster.
+	 */
+	static final String ATTEMPTS_CACHE = "mfa-attempts";
+
+	/**
+	 * Cache of the last successful verification per user since the last authentication, shared by the cluster.
+	 */
+	static final String VERIFIED_CACHE = "mfa-verified";
 
 	/**
 	 * Lifetime of a passkey challenge.
@@ -133,6 +162,9 @@ public class MfaResource {
 	@Autowired
 	private ConfigurationResource configuration;
 
+	@Autowired
+	private CacheManager cacheManager;
+
 	/**
 	 * Return the MFA state of the current user.
 	 *
@@ -160,6 +192,9 @@ public class MfaResource {
 		}
 		user.setLastConnection(Instant.now());
 		userRepository.saveAndFlush(user);
+
+		// A new authentication requires a new verification
+		getCache(VERIFIED_CACHE).evict(login);
 		final var status = status(login);
 		log.info("Authentication of {} recorded, MFA {}", login, status.isRequired() ? "required" : "not registered");
 		return status;
@@ -346,6 +381,7 @@ public class MfaResource {
 				new Passkey(passkey.credentialId(), passkey.publicKey(), passkey.alg(), authData.signCount(), passkey.transports(), passkey.aaguid(), passkey.attachment()))));
 		device.setLastUsed(Instant.now());
 		repository.saveAndFlush(device);
+		setVerified(login);
 		log.info("MFA verification succeeded for {} with passkey '{}'", login, device.getName());
 	}
 
@@ -475,7 +511,9 @@ public class MfaResource {
 
 	/**
 	 * Verify a code against the selected device of the current user, or every device when none is selected. On
-	 * success, the matching device records the usage.
+	 * success, the matching device records the usage. After {@value #CONF_MAX_ATTEMPTS} consecutive failures (default
+	 * {@value #DEFAULT_MAX_ATTEMPTS}), the verification is refused with <code>too-many-attempts</code> until
+	 * {@link MfaCache#LOCK_DURATION} after the last failure, the counter being shared by the cluster.
 	 *
 	 * @param vo The code and the optional device.
 	 */
@@ -483,6 +521,14 @@ public class MfaResource {
 	@Path("verify")
 	public void verify(final MfaCodeVo vo) {
 		final var login = securityHelper.getLogin();
+		final var attempts = getCache(ATTEMPTS_CACHE);
+		final var failures = Optional.ofNullable(attempts.get(login, Integer.class)).orElse(0);
+		final var maxAttempts = configuration.get(CONF_MAX_ATTEMPTS, DEFAULT_MAX_ATTEMPTS);
+		if (failures >= maxAttempts) {
+			// Locked until the cache entry expires: the code is not even checked
+			log.warn("MFA verification refused for {}: locked after {} consecutive failures", login, failures);
+			throw new ValidationJsonException(CODE_PROPERTY, "too-many-attempts");
+		}
 		final List<SystemMfaDevice> candidates;
 		if (vo.getDevice() == null) {
 			candidates = repository.findAllByUserOrderByName(login);
@@ -493,11 +539,20 @@ public class MfaResource {
 			if (matches(device, vo.getCode())) {
 				device.setLastUsed(Instant.now());
 				repository.saveAndFlush(device);
+				attempts.evict(login);
+				setVerified(login);
 				log.info("MFA verification succeeded for {} with device '{}'", login, device.getName());
 				return;
 			}
 		}
-		log.info("MFA verification failed for {}", login);
+
+		// Not transactional: the failure is counted even if the transaction rolls back
+		attempts.put(login, failures + 1);
+		if (failures + 1 >= maxAttempts) {
+			log.warn("MFA verification failed for {}: locked after {} consecutive failures", login, failures + 1);
+		} else {
+			log.info("MFA verification failed for {}", login);
+		}
 		throw new ValidationJsonException(CODE_PROPERTY, INVALID_CODE);
 	}
 
@@ -508,6 +563,27 @@ public class MfaResource {
 	private boolean matches(final SystemMfaDevice device, final String code) {
 		return SystemMfaDevice.TYPE_TOTP.equals(device.getType())
 				&& TotpHelper.verify(cryptoHelper.decrypt(device.getSecret()), code, WINDOW);
+	}
+
+	/**
+	 * Return the last successful verification of the given user since the last authentication.
+	 *
+	 * @param login The user login.
+	 * @return The verification date, <code>null</code> when not verified.
+	 */
+	public Instant getVerifiedDate(final String login) {
+		return getCache(VERIFIED_CACHE).get(login, Instant.class);
+	}
+
+	/**
+	 * Record a successful verification of the user, until the next authentication.
+	 */
+	private void setVerified(final String login) {
+		getCache(VERIFIED_CACHE).put(login, Instant.now());
+	}
+
+	private org.springframework.cache.Cache getCache(final String name) {
+		return Objects.requireNonNull(cacheManager.getCache(name));
 	}
 
 	private MfaStatusVo status(final String login) {
@@ -522,6 +598,7 @@ public class MfaResource {
 		}
 		status.setDevices(devices.stream().map(this::toVo).toList());
 		status.setRequired(!status.getDevices().isEmpty());
+		status.setVerifiedDate(getVerifiedDate(login));
 		status.setLastConnection(Optional.ofNullable(userRepository.findOne(login)).map(SystemUser::getLastConnection)
 				.orElse(null));
 		return status;
