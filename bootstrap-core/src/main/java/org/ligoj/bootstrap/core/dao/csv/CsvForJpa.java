@@ -38,7 +38,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	private EntityManager em;
 
 	/**
-	 * Transaction manager used to manage separated CSV files.
+	 * Entity manager factory used to resolve the JPA metamodel.
 	 */
 	@Autowired
 	protected EntityManagerFactory emf;
@@ -49,7 +49,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean re ad from the given CSV input.
+	 * Return a list of JPA bean read from the given CSV input.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -68,7 +68,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean read from the given CSV file. Headers are expected.
+	 * Return a list of JPA bean read from the given CSV file.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -88,7 +88,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean read from the given CSV file. Headers are expected.
+	 * Return a list of JPA bean read from the given CSV file.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -110,7 +110,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean read from the given CSV file. Headers are expected.
+	 * Return a list of JPA bean read from the given CSV file.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -134,7 +134,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean read from the given CSV file. Headers are expected.
+	 * Return a list of JPA bean read from the given CSV file.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -162,7 +162,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean re ad from the given CSV input.
+	 * Return a list of JPA bean read from the given CSV input.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -184,7 +184,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean re ad from the given CSV input.
+	 * Return a list of JPA bean read from the given CSV input.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -212,7 +212,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	}
 
 	/**
-	 * Return a list of JPA bean re ad from the given CSV input.
+	 * Return a list of JPA bean read from the given CSV input.
 	 *
 	 * @param <T>
 	 *            Bean type.
@@ -261,6 +261,7 @@ public class CsvForJpa extends AbstractCsvManager {
 			result.add(order);
 			if ((filter == null || filter.test(order)) && persist) {
 				em.persist(order);
+				reader.register(order);
 			}
 			order = reader.read();
 		}
@@ -420,7 +421,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *            The bean class.
 	 * @param encoding
 	 *            the encoding used to read the CSV resources.
-	 * @return the total inserted table entries.
+	 * @return the inserted JPA entities.
 	 * @param <T>
 	 *            The bean type.
 	 * @throws IOException
@@ -439,7 +440,7 @@ public class CsvForJpa extends AbstractCsvManager {
 	 *            The bean class.
 	 * @param encoding
 	 *            the encoding used to read the CSV resources.
-	 * @return the total inserted table entries.
+	 * @return the inserted JPA entities.
 	 * @param <T>
 	 *            The bean type.
 	 * @param consumer

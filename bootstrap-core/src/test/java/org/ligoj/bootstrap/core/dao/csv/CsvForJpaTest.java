@@ -433,6 +433,49 @@ class CsvForJpaTest {
 	}
 
 	@Test
+	void toJpaForeignKeyRecursiveChain() throws IOException {
+		// Each row references the previous one, by two different key properties of the same type
+		final var csv = new StringBuilder("dialChar;dialLong;link.dialChar;linkedChildren.dialLong\nR;0;;\n");
+		for (var i = 1; i < 200; i++) {
+			csv.append("C").append(i).append(';').append(i).append(';').append(i == 1 ? "R" : "C" + (i - 1)).append(";\n");
+		}
+		csv.append("P;1000;;199\n");
+		final var jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader(csv.toString()), true, true);
+		Assertions.assertEquals(201, jpa.size());
+		Assertions.assertEquals("R", jpa.get(1).getLink().getDialChar());
+		Assertions.assertEquals("C198", jpa.get(199).getLink().getDialChar());
+		Assertions.assertEquals("C199", jpa.get(200).getLinkedChildren().iterator().next().getDialChar());
+	}
+
+	@Test
+	void readForeignKeyPersistedNotRegistered() throws IOException {
+		// The reader used without CsvForJpa: rows persisted by the caller after the key cache is built, and not
+		// registered, are found with a reload of the cache
+		final var existing = new DummyEntity2();
+		existing.setDialChar("X");
+		em.persist(existing);
+		em.flush();
+		final var reader = new CsvJpaReader<>(new StringReader("A;X\nB;A\n"), em, DummyEntity2.class, "dialChar",
+				"link.dialChar");
+		final var a = reader.read();
+		Assertions.assertEquals("X", a.getLink().getDialChar());
+		em.persist(a);
+		Assertions.assertEquals("A", reader.read().getLink().getDialChar());
+	}
+
+	@Test
+	void toJpaRegisterOtherType() throws IOException {
+		// The persisted rows are registered only in the key caches of their own type
+		final var user = new DummyEntity3();
+		user.setLogin("test");
+		em.persist(user);
+		em.flush();
+		final var jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("dialChar;user.login\nA;test\nB;test"), true, true);
+		Assertions.assertEquals(2, jpa.size());
+		Assertions.assertEquals("test", jpa.get(1).getUser().getLogin());
+	}
+
+	@Test
 	void toJpaForeignKeyNotExist1() {
 		final var str = new StringReader("link.id!\n8000");
 		final var iau = Assertions.assertThrows(TechnicalException.class,

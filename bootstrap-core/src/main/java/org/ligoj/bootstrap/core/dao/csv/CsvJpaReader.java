@@ -27,9 +27,15 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	private final EntityManager em;
 
 	/**
-	 * Cache of fetched foreign keys, property value based.
+	 * Cache of fetched foreign keys, property value based. Key: the entity type and its key property.
 	 */
-	private final Map<Class<?>, Map<String, Object>> foreignCache = new HashMap<>();
+	private final Map<ForeignKey, Map<String, Object>> foreignCache = new HashMap<>();
+
+	/**
+	 * A foreign key: the referenced type and its key property.
+	 */
+	private record ForeignKey(Class<?> type, String property) {
+	}
 
 	/**
 	 * Cache of fetched foreign keys, index value based.
@@ -139,8 +145,31 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 	 * Read from already read row index
 	 */
 	private Object readFromJoinCache(final String rawValue, final Class<?> type, final String propertyName) {
-		ensureCache(type, propertyName);
-		return foreignCache.get(type).get(rawValue);
+		final var key = new ForeignKey(type, propertyName);
+		var result = foreignCache.computeIfAbsent(key, _ -> buildMap(readAll(type), propertyName)).get(rawValue);
+		if (result == null && type == clazz) {
+			// A row of the same type, persisted after the cache was built and not registered: reload once
+			foreignCache.put(key, buildMap(readAll(type), propertyName));
+			result = foreignCache.get(key).get(rawValue);
+		}
+		return result;
+	}
+
+	/**
+	 * Register a persisted entity read by this reader, so the next rows can reference it without reloading all the
+	 * entities of this type.
+	 *
+	 * @param entity The persisted entity.
+	 */
+	public void register(final T entity) {
+		foreignCache.forEach((key, values) -> {
+			if (key.type() == clazz) {
+				final var value = beanUtilsBean.getProperty(entity, key.property());
+				if (value != null) {
+					values.put(String.valueOf(value), entity);
+				}
+			}
+		});
 	}
 
 	/**
@@ -156,15 +185,6 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 			return foreignCacheRows.get(type).get(index - 1);
 		}
 		return null;
-	}
-
-	/**
-	 * Initialize or update cache.
-	 */
-	private void ensureCache(final Class<?> type, final String propertyName) {
-		if (!foreignCache.containsKey(type) || type == clazz) {
-			foreignCache.put(type, buildMap(readAll(type), propertyName));
-		}
 	}
 
 	/**

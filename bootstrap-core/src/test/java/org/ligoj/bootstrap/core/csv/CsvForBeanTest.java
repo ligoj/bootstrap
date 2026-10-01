@@ -19,6 +19,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -270,6 +271,13 @@ class CsvForBeanTest {
 		Assertions.assertEquals(2, items.getFirst().getSetEnum().size());
 		Assertions.assertTrue(items.getFirst().getSetEnum().contains(CascadeType.PERSIST));
 		Assertions.assertTrue(items.getFirst().getSetEnum().contains(CascadeType.MERGE));
+	}
+
+	@Test
+	void toBeanListEnumIgnoreCase() throws Exception {
+		// Each item of an enumeration collection is matched ignoring the case, as a single enumeration value
+		final var items = csvForBean.toBean(DummyEntity3.class, new StringReader("login;setEnum\nfdaugan;persist,Merge"));
+		Assertions.assertEquals(Set.of(CascadeType.PERSIST, CascadeType.MERGE), items.getFirst().getSetEnum());
 	}
 
 	@Test
