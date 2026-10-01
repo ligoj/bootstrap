@@ -73,6 +73,37 @@ class WebAuthnHelperTest {
 	}
 
 	@Test
+	void cborContainerLargerThanData() {
+		// A declared size is never trusted beyond the remaining data: no allocation from it
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { (byte) 0x9A, 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { (byte) 0xBA, 0x3F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
+		// A map needs a key and a value per entry
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(new byte[] { (byte) 0xA2, 0x01, 0x02, 0x03 }));
+		// Exact sizes are still accepted
+		Assertions.assertEquals(List.of(1L, 2L), Cbor.decode(new byte[] { (byte) 0x82, 0x01, 0x02 }));
+		Assertions.assertEquals(Map.of(1L, 2L), Cbor.decode(new byte[] { (byte) 0xA1, 0x01, 0x02 }));
+	}
+
+	@Test
+	void cborNestingDepth() {
+		// Deeply nested arrays and tags are rejected before exhausting the stack
+		final var arrays = new byte[100_001];
+		java.util.Arrays.fill(arrays, (byte) 0x81);
+		arrays[arrays.length - 1] = 0x00;
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(arrays));
+		final var tags = new byte[100_001];
+		java.util.Arrays.fill(tags, (byte) 0xC0);
+		tags[tags.length - 1] = 0x00;
+		Assertions.assertThrows(IllegalArgumentException.class, () -> Cbor.decode(tags));
+
+		// The supported depth is still accepted
+		final var supported = new byte[Cbor.MAX_DEPTH];
+		java.util.Arrays.fill(supported, (byte) 0x81);
+		supported[supported.length - 1] = 0x00;
+		Assertions.assertNotNull(Cbor.decode(supported));
+	}
+
+	@Test
 	void es256RegistrationAndAssertion() throws Exception {
 		final var generator = KeyPairGenerator.getInstance("EC");
 		generator.initialize(new ECGenParameterSpec("secp256r1"));

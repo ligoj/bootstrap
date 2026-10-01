@@ -21,6 +21,11 @@ import lombok.experimental.UtilityClass;
 public class Cbor {
 
 	/**
+	 * Maximal nesting depth of the decoded items. The WebAuthn structures need less than 5 levels.
+	 */
+	public static final int MAX_DEPTH = 16;
+
+	/**
 	 * Decode a single CBOR item.
 	 *
 	 * @param data The CBOR bytes.
@@ -127,12 +132,24 @@ public class Cbor {
 	private static final class Reader {
 		private final byte[] data;
 		private int position;
+		private int depth;
 
 		private Reader(final byte[] data) {
 			this.data = data;
 		}
 
 		private Object read() {
+			if (++depth > MAX_DEPTH) {
+				throw new IllegalArgumentException("Too deep CBOR data");
+			}
+			try {
+				return readItem();
+			} finally {
+				depth--;
+			}
+		}
+
+		private Object readItem() {
 			final var initial = next();
 			final var major = initial >> 5;
 			final var info = initial & 0x1F;
@@ -142,7 +159,7 @@ public class Cbor {
 			case 2 -> bytes((int) length(info));
 			case 3 -> new String(bytes((int) length(info)), StandardCharsets.UTF_8);
 			case 4 -> {
-				final var size = (int) length(info);
+				final var size = containerSize(info, 1);
 				final var list = new ArrayList<>(size);
 				for (var i = 0; i < size; i++) {
 					list.add(read());
@@ -150,7 +167,7 @@ public class Cbor {
 				yield list;
 			}
 			case 5 -> {
-				final var size = (int) length(info);
+				final var size = containerSize(info, 2);
 				final var map = new LinkedHashMap<>(size * 2);
 				for (var i = 0; i < size; i++) {
 					map.put(read(), read());
@@ -190,6 +207,22 @@ public class Cbor {
 				throw new IllegalArgumentException("Unsupported CBOR length " + value);
 			}
 			return value;
+		}
+
+		/**
+		 * Read the size of an array or a map, bounded by the remaining data: each item takes at least one byte. So the
+		 * allocation never exceeds the input size, whatever the declared size.
+		 *
+		 * @param info          The additional information of the initial byte.
+		 * @param itemsPerEntry The items per entry: 1 for an array, 2 for a map.
+		 * @return The checked size.
+		 */
+		private int containerSize(final int info, final int itemsPerEntry) {
+			final var size = length(info);
+			if (size * itemsPerEntry > data.length - position) {
+				throw new IllegalArgumentException("Truncated CBOR data");
+			}
+			return (int) size;
 		}
 
 		private int next() {
