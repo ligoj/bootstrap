@@ -14,9 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 /**
  * Test class of {@link FileResource}
@@ -48,6 +52,63 @@ class FileResourceTest extends AbstractBootTest {
 		Assertions.assertFalse(upload.exists());
 	}
 
+
+	/**
+	 * Create a fresh "allowed" directory and authorize only its content.
+	 */
+	private Path prepareAllowed() throws IOException {
+		final var base = Path.of(".tmp/file-test").toAbsolutePath();
+		FileUtils.deleteDirectory(base.toFile());
+		final var allowed = Files.createDirectories(base.resolve("allowed")).toRealPath();
+		configurationResource.put("ligoj.file.path", Pattern.quote(allowed.toString()) + "/.*");
+		return allowed;
+	}
+
+	@Test
+	void pathTraversal() throws IOException {
+		final var allowed = prepareAllowed();
+		final var outside = allowed.resolveSibling("secret.txt");
+		Files.writeString(outside, "secret");
+
+		// Matches the raw pattern, but resolves outside the allowed directory
+		final var traversal = allowed + "/../secret.txt";
+		final var input = new ByteArrayInputStream("evil".getBytes());
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.upload(input, traversal, "true"));
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.download(traversal));
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.delete(traversal));
+		Assertions.assertEquals("secret", Files.readString(outside));
+	}
+
+	@Test
+	void pathSymbolicLink() throws IOException {
+		final var allowed = prepareAllowed();
+		final var outside = Files.createDirectories(allowed.resolveSibling("outside"));
+		Files.createSymbolicLink(allowed.resolve("link"), outside);
+
+		// Inside the allowed directory by name, outside by the link target
+		final var escaped = allowed + "/link/x.txt";
+		final var input = new ByteArrayInputStream("evil".getBytes());
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.upload(input, escaped, "false"));
+		Assertions.assertFalse(Files.exists(outside.resolve("x.txt")));
+	}
+
+	@Test
+	void pathNormalizedInside() throws IOException {
+		final var allowed = prepareAllowed();
+
+		// A ".." staying inside the allowed directory is accepted, the normalized location is used
+		resource.upload(new ByteArrayInputStream("ok".getBytes()), allowed + "/sub/../ok.txt", "false");
+		Assertions.assertEquals("ok", Files.readString(allowed.resolve("ok.txt")));
+		Assertions.assertFalse(Files.exists(allowed.resolve("sub")));
+	}
+
+	@Test
+	void pathEmpty() {
+		configurationResource.put("ligoj.file.path", ".*");
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.download(""));
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.download(null));
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.download("\0"));
+	}
 
 	@Test
 	void uploadNotAllowed() throws IOException {
