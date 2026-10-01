@@ -9,7 +9,9 @@ import jakarta.ws.rs.core.MediaType;
 import org.ligoj.bootstrap.dao.system.SystemUserSettingRepository;
 import org.ligoj.bootstrap.model.system.AbstractNamedValue;
 import org.ligoj.bootstrap.model.system.SystemUserSetting;
+import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -86,8 +88,8 @@ public class UserSettingResource {
 	}
 
 	/**
-	 * Save or update a setting of a given user.
-	 * 
+	 * Save or update a setting of a given user. Reserved to administrators.
+	 *
 	 * @param user  the related username.
 	 * @param name  the setting name.
 	 * @param value the new value.
@@ -95,7 +97,8 @@ public class UserSettingResource {
 	@POST
 	@PUT
 	@Path("/system/admin-setting/{user}/{name}/{value}")
-	public void saveOrUpdate(@PathParam("name") final String user, @PathParam("name") final String name,
+	@Secured(SecurityHelper.ADMIN)
+	public void saveOrUpdate(@PathParam("user") final String user, @PathParam("name") final String name,
 			@PathParam("value") final String value) {
 		final var setting = repository.findByLoginAndName(user, name);
 		if (setting == null) {
@@ -119,6 +122,7 @@ public class UserSettingResource {
 	@PUT
 	@Path("{name}/{value}")
 	public void saveOrUpdate(@PathParam("name") final String name, @PathParam("value") final String value) {
+		// Internal call: not intercepted by the administrator check
 		final var user = SecurityContextHolder.getContext().getAuthentication().getName();
 		saveOrUpdate(user, name, value);
 	}
