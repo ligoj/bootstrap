@@ -12,8 +12,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * The default callback implementation. Stop the execution when a status above 302 is received. Store the last received
- * entity string.
+ * The default callback implementation. Stop the execution when a response with an entity has a status above 204 (see
+ * {@link #acceptStatus(int)}). A response without entity is always accepted whatever its status. Store the last
+ * received entity string when requested.
  */
 @Slf4j
 public class DefaultHttpResponseCallback implements HttpResponseCallback {

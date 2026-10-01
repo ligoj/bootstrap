@@ -18,11 +18,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.UnaryOperator;
 
 /**
- * Fail-safe password configuration using in this order :
+ * Fail-safe password configuration using the first defined value in this order:
  * <ul>
  * <li>System property</li>
+ * <li>Loaded properties, see {@link GlobalPropertyUtils}</li>
  * <li>Environment variable</li>
- * <li>Password file content (system then environment file name)</li>
+ * <li>Password file content, the file name being read from the system property, then the loaded properties, then the
+ * environment variable. The file is looked up in the file system, then in the classpath.</li>
  * </ul>
  */
 @Slf4j
@@ -35,7 +37,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	private String passwordFilePropertyName;
 
 	/**
-	 * Set the configuration object to use the specified file name to load the value for the password. The password is
+	 * Load the password from the specified file, then from the classpath resource having this name. The password is
 	 * trimmed to <code>null</code>.
 	 *
 	 * @param passwordFilename the name of the file name to load.

@@ -22,10 +22,12 @@ public final class CryptoHelper {
 	private StringEncryptor encryptor;
 
 	/**
-	 * Decrypt a potentially encrypted value.
+	 * Decrypt an encrypted value. Unlike {@link #decryptAsNeeded(String)}, a value that cannot be decrypted is rejected.
 	 *
 	 * @param value The encrypted value to decrypt if not <code>null</code>.
 	 * @return the decrypted value.
+	 * @throws org.jasypt.exceptions.EncryptionOperationNotPossibleException when the value cannot be decrypted, such as
+	 *                                                                     a plain value.
 	 */
 	public String decrypt(final String value) {
 		return encryptor.decrypt(value);

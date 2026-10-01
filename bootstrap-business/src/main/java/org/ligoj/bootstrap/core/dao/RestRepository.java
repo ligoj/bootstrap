@@ -149,7 +149,8 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	 *
 	 * @param property property's name.
 	 * @param value    property's value.
-	 * @return the entity. <code>null</code> when not found.
+	 * @return the non <code>null</code> entity.
+	 * @throws jakarta.persistence.EntityNotFoundException when not found.
 	 */
 	T findByExpected(String property, Object value);
 
@@ -175,7 +176,7 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 	 * Retrieves an entity by its id.
 	 *
 	 * @param id must not be {@literal null}.
-	 * @return the entity with the given id or {@literal Optional#empty()} if none found
+	 * @return the entity with the given id or <code>null</code> if none found
 	 * @throws IllegalArgumentException if {@code id} is {@literal null}.
 	 */
 	default T findOne(final K id) {
@@ -192,13 +193,15 @@ public interface RestRepository<T, K extends Serializable> extends JpaRepository
 
 	/**
 	 * Search an expected entity with the given identifier with fetched associations. If not found a runtime exception
-	 * is raised. When several objects are found, only the first one is returned.
+	 * is raised. When fetched associations are provided, the query is executed with single result semantics.
 	 *
 	 * @param id                  entity's identifier.
 	 * @param fetchedAssociations A map of association to fetch. The map keys for composites associations should not have two times the
 	 *                            same identifier &lt;"contract.contract", JoinType.INNER&gt; is not possible although
 	 *                            &lt;"contracts.contract", JoinType.INNER&gt; is accepted.
 	 * @return the non <code>null</code> entity.
+	 * @throws jakarta.persistence.EntityNotFoundException when not found and there is no fetched association.
+	 * @throws jakarta.persistence.NoResultException       when not found with fetched associations.
 	 */
 	T findOneExpected(K id, Map<String, JoinType> fetchedAssociations);
 }

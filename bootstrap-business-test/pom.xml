@@ -10,7 +10,7 @@
 	<artifactId>bootstrap-business-test</artifactId>
 	<packaging>jar</packaging>
     <name>Ligoj - Bootstrap - API Test</name>
-    <description>Common utilities and application test bootstrap</description>
+    <description>Test-support library: Abstract*Test hierarchy, HSQLDB contexts, Jetty launcher</description>
 
 	<dependencies>
 		<!-- JSR-907 -->

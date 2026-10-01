@@ -25,8 +25,9 @@ public class AuthCurlProcessor extends CurlProcessor {
 	 * Full constructor holding credential and callback.
 	 *
 	 * @param username the user login. Empty or null login are accepted, but no authentication will be used.
-	 * @param password the user password or API token. <code>null</code> Password is converted to empty string, and still
-	 *                 used when user is not empty.
+	 * @param password the user password or API token. <code>null</code> password is converted to the
+	 *                 <code>"null"</code> string (see {@link Objects#toString(Object)}), and still used when user is not
+	 *                 empty.
 	 * @param callback Not <code>null</code> {@link HttpResponseCallback} used for each response.
 	 */
 	public AuthCurlProcessor(final String username, final String password, final HttpResponseCallback callback) {
@@ -39,8 +40,9 @@ public class AuthCurlProcessor extends CurlProcessor {
 	 * Constructor using parameters set.
 	 *
 	 * @param username the user login. Empty or null login are accepted, but no authentication will be used.
-	 * @param password the user password or API token. <code>null</code> Password is converted to empty string, and still
-	 *                 used when user is not empty.
+	 * @param password the user password or API token. <code>null</code> password is converted to the
+	 *                 <code>"null"</code> string (see {@link Objects#toString(Object)}), and still used when user is not
+	 *                 empty.
 	 */
 	public AuthCurlProcessor(final String username, final String password) {
 		this(username, password, DEFAULT_CALLBACK);

@@ -43,9 +43,9 @@ public interface PluginListener {
 	 * Entity to VO function.
 	 *
 	 * @param plugin
-	 *            Plug-in source
-	 * @param feature
 	 *            Related plug-in entity.
+	 * @param feature
+	 *            Plug-in source.
 	 * @param vo
 	 *            The target VO to fill.
 	 */

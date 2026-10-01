@@ -64,11 +64,11 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Return the configuration integer value.
+	 * Return the configuration value.
 	 *
 	 * @param key          The configuration key name.
-	 * @param defaultValue The default integer value when <code>null</code>
-	 * @return the configuration integer value or the default value.
+	 * @param defaultValue The default value when <code>null</code>
+	 * @return the configuration value or the default value.
 	 */
 	public String get(final String key, final String defaultValue) {
 		return ObjectUtils.getIfNull(self.get(key), defaultValue);
@@ -87,11 +87,11 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Return a specific configuration. System properties overrides the value from the database. Configuration values
-	 * are never returned.
+	 * Return a specific configuration. System properties overrides the value from the database. Encrypted
+	 * values are never returned: <code>null</code> is returned instead.
 	 *
 	 * @param name The requested configuration name.
-	 * @return A specific configuration. May be <code>null</code> when undefined.
+	 * @return A specific configuration. May be <code>null</code> when undefined or encrypted.
 	 */
 	@GET
 	@Path("{name}")
@@ -194,8 +194,7 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Save or update a setting and return the corresponding identifier. The stored value will not be secured in
-	 * database.
+	 * Save or update a setting. The stored value will not be secured in database.
 	 *
 	 * @param name   The configuration name.
 	 * @param value  The new value.
@@ -261,8 +260,7 @@ public class ConfigurationResource {
 	}
 
 	/**
-	 * Delete a {@link SystemConfiguration} and also delete the related system property. The system variable is not
-	 * updated.
+	 * Delete a {@link SystemConfiguration}. The related system property is not cleared.
 	 *
 	 * @param name The configuration name to delete.
 	 */

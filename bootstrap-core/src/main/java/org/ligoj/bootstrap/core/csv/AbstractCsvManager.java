@@ -56,7 +56,7 @@ public abstract class AbstractCsvManager {
 	 *            the JPA bean class.
 	 * @param input
 	 *            the CSV input.
-	 * @return A new bean instance of type T.
+	 * @return The read beans of type T.
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */
@@ -75,7 +75,7 @@ public abstract class AbstractCsvManager {
 	 *            the CSV input.
 	 * @param setter
 	 *            Optional setter for raw properties.
-	 * @return A new bean instance of type T.
+	 * @return The read beans of type T.
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */

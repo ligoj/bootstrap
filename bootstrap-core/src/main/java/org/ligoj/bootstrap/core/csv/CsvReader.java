@@ -53,9 +53,10 @@ public class CsvReader {
 	}
 
 	/**
-	 * Return a bean read from the reader.
+	 * Return the raw values of the next row read from the reader.
 	 * 
-	 * @return the read bean.
+	 * @return the read raw values. This list instance is reused and cleared by the next call. Empty at the end of the
+	 *         input.
 	 * @throws IOException
 	 *             Read issue occurred.
 	 */

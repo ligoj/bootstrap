@@ -14,15 +14,15 @@ import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
 /**
- * Maps a {@link jakarta.validation.ConstraintViolationException} to a JSR-303 validation error. Status code, and contents
- * are updated.
+ * Maps a Jackson {@link InvalidFormatException} to a validation error with a 400 (bad request) status. Status code,
+ * and contents are updated.
  */
 @Provider
 public class InvalidFormatExceptionMapper extends AbstractMapper implements ExceptionMapper<InvalidFormatException> {
 
 	@Override
 	public Response toResponse(final InvalidFormatException ex) {
-		// Set the JSR-303 error into JSON format.
+		// Set the validation error into JSON format.
 		return toResponse(Status.BAD_REQUEST, new ValidationJsonException(ex));
 	}
 }

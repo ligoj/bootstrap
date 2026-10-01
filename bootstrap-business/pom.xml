@@ -11,8 +11,8 @@
 
     <artifactId>bootstrap-business</artifactId>
     <packaging>jar</packaging>
-    <name>Ligoj - Bootstrap - API</name>
-    <description>API parent utilities module</description>
+    <name>Ligoj - Bootstrap - Business</name>
+    <description>REST/JPA runtime: CXF wiring, RBAC, caches and /system resources</description>
 
     <dependencies>
         <dependency>

@@ -18,9 +18,12 @@ import java.util.List;
 /**
  * Implements the original legacy naming behavior :
  * <ul>
- * <li>no "_id" for join column</li>
- * <li>FK has "FK_" as prefix</li>
- * <li>Join column use table name instead of entity name</li>
+ * <li>Attribute based names use the unqualified property name converted from camel case to lower snake case, such as
+ * <code>firstName</code> to <code>first_name</code></li>
+ * <li>no "_id" for join column: the join column is the converted attribute name, or the referenced table name for
+ * element collections</li>
+ * <li>Join table is the owning table name, "_", and the converted attribute name</li>
+ * <li>FK has "FK_" as prefix, followed by a hash of the table and column names</li>
  * </ul>
  */
 public class ImplicitNamingStrategyNiceJpaImpl
@@ -53,8 +56,8 @@ public class ImplicitNamingStrategyNiceJpaImpl
 	}
 
 	/**
-	 * For JPA standards we typically need the unqualified name. However, a more usable impl tends to use the whole
-	 * path. This method provides an easy hook for subclasses to accomplish that
+	 * Return the unqualified property name of the given path, converted from camel case to lower case words joined by
+	 * <code>_</code>. Sample: <code>firstName</code> becomes <code>first_name</code>.
 	 *
 	 * @param attributePath The attribute path
 	 * @return The extracted name

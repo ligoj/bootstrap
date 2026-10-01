@@ -116,6 +116,7 @@ public abstract class AbstractSpecification {
 	/**
 	 * Return the raw data into the right type. Generic type is also handled.
 	 *
+	 * @param em         the entity manager used to resolve the metamodel.
 	 * @param data       the data as String.
 	 * @param expression the target expression.
 	 * @param <Y>        The type of the {@link Expression}

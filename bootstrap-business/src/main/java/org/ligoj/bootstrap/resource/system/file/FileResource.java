@@ -98,7 +98,7 @@ public class FileResource {
 	}
 
 	/**
-	 * Create a hook with file content.
+	 * Upload a file, replacing any existing one.
 	 *
 	 * @param content    Target file content.
 	 * @param path       Target file path.

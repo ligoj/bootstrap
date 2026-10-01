@@ -16,7 +16,7 @@ public interface CacheConfigurer {
 	 * Create a new {@link CacheConfig} with configured settings before {@link CacheManagerAware} implementor.
 	 *
 	 * @param name            The cache name to configure.
-	 * @param defaultDuration The default TTL in seconds.
+	 * @param defaultDuration The default time to live, as a {@link Duration}.
 	 * @return The created  {@link CacheConfig} with the policy.
 	 */
 	CacheConfig<String, Object> newCacheConfig(final String name, final Duration defaultDuration);

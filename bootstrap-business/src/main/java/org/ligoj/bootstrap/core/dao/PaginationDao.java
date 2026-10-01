@@ -57,7 +57,8 @@ public class PaginationDao {
 	 *            The JSON to JPA mapping using ':' as separator between the JSON property and the JPA path. When the
 	 *            JPA is omitted, it is equals to the JSON property. Property access is allowed using '.' separator.
 	 *            Sample <code>"id", "name:login", "country:country.id"</code>. Using <code>*</code> as mapping implies
-	 *            all JSON properties are authorized and mapped to the identical JPA path.
+	 *            all JSON properties are authorized as filters and mapped to the identical JPA path. Sorting ignores
+	 *            <code>*</code>: only explicitly mapped properties can be sorted.
 	 * @return A list of JPA entities matching the given filter. The result is paginated and filtered.
 	 */
 	public <T> Page<T> findAll(final Class<T> type, final UriInfo uriInfo, final String... mapping) {

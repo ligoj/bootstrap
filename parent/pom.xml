@@ -16,7 +16,7 @@
     <version>5.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Ligoj - Bootstrap - Parent</name>
-    <description>Ligoj Bootstrap Parent</description>
+    <description>Ligoj Bootstrap BOM and shared build configuration</description>
     <url>https://github.com/ligoj/bootstrap</url>
     <licenses>
         <license>

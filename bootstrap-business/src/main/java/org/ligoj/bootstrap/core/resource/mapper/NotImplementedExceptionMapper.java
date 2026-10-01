@@ -12,8 +12,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.ligoj.bootstrap.core.resource.AbstractMapper;
 
 /**
- * Maps a {@link NotImplementedException} to a JSR-303 validation error. Status code, and contents
- * are updated.
+ * Maps a {@link NotImplementedException} to a <code>not-implemented</code> error with a 501 (not implemented) status.
+ * Status code, and contents are updated.
  */
 @Provider
 public class NotImplementedExceptionMapper extends AbstractMapper implements ExceptionMapper<NotImplementedException> {

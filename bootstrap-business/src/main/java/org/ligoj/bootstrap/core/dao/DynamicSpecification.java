@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A specification managing multiple rules, grouping, ordering and fetching.
+ * A specification managing multiple filtering rules and grouping. Ordering and fetching are not handled here.
  *
  * @param <U> Attached entity type.
  */
@@ -33,7 +33,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Property delimiter. See Property#DELIMITERS property.
+	 * Property delimiters: <code>_</code> and <code>.</code>, as a regular expression character class content.
 	 */
 	public static final String PROPERTY_DELIMITERS = "_\\.";
 
@@ -85,6 +85,7 @@ class DynamicSpecification<U> extends AbstractSpecification implements Specifica
 	/**
 	 * Set the filter configurations.
 	 *
+	 * @param em             the entity manager used to resolve actual data types.
 	 * @param filter         the filters.
 	 * @param mapping        the mapping used to match JSON properties/path with the ORM path.
 	 * @param specifications the custom specifications.

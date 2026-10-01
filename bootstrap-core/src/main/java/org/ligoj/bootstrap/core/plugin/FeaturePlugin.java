@@ -37,9 +37,9 @@ public interface FeaturePlugin extends Comparable<FeaturePlugin> {
 	/**
 	 * Return the plug-in name. By default, the name is computed from the <code>MANIFEST.MF#Implementation-Title</code>
 	 * attribute. When not available, the last capitalized part (after the last <code>:</code> separator) of plug-in's
-	 * key is used.
+	 * key is used, or an empty string when the key contains no <code>:</code> separator.
 	 *
-	 * @return the plug-in name. Never <code>null</code>.
+	 * @return the plug-in name. Never <code>null</code>, may be empty.
 	 */
 	default String getName() {
 		return StringUtils.defaultIfBlank(getClass().getPackage().getImplementationTitle(),
@@ -73,8 +73,7 @@ public interface FeaturePlugin extends Comparable<FeaturePlugin> {
 	/**
 	 * Return entities class to be persisted during the installation from CSV files located in the "csv" folder of this
 	 * plug-in. CsvForJpa component will be used. Order is important. First {@link Class} will be associated to the
-	 * right CSV file and persisted in the database, then the next one. When empty, or not containing the "Node.class"
-	 * value, a default Node will be inserted by default.
+	 * right CSV file and persisted in the database, then the next one. Default is an empty list.
 	 *
 	 * @return Entities class to be persisted during the installation from CSV files
 	 */

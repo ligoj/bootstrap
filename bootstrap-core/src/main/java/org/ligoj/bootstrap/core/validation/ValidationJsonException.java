@@ -132,7 +132,7 @@ public class ValidationJsonException extends RuntimeException {
 	}
 
 	/**
-	 * Helper method to add an error on property with a single message error
+	 * Set a single error on a property, replacing any existing error of this property.
 	 *
 	 * @param propertyName       Name of the JSon property
 	 * @param errorText          I18N key of the message.

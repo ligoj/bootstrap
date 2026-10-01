@@ -20,8 +20,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
- * This mapper makes sure all enum values are converted in lower case. The conversion is done only once per value and cached internally by
- * the Enum[Serializer/Deserializer].
+ * JSON mapper based on Jackson 2.x defaults with: enum values written in lower case using their <code>name()</code>,
+ * case-insensitive enum reading, custom date (JSR 310 and {@link Date}) serializers and deserializers, and
+ * <code>null</code> values excluded from the serialization.
  */
 public class ObjectMapperTrim extends JsonMapper {
 
@@ -44,7 +45,7 @@ public class ObjectMapperTrim extends JsonMapper {
 	}
 
 	/**
-	 * Default constructor overriding the default annotation introspect.
+	 * Default constructor applying the builder settings described in the class documentation.
 	 */
 	public ObjectMapperTrim() {
 		super(createBuilder());

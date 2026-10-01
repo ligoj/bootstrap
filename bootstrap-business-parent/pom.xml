@@ -11,8 +11,8 @@
 
 	<artifactId>bootstrap-business-parent</artifactId>
 	<packaging>pom</packaging>
-    <name>Ligoj - Bootstrap - Business BOM</name>
-    <description>API module BOM</description>
+    <name>Ligoj - Bootstrap - Business Parent</name>
+    <description>Parent POM of the downstream back-end modules: dependencies and resource filtering</description>
 
     <dependencyManagement>
 		<dependencies>
