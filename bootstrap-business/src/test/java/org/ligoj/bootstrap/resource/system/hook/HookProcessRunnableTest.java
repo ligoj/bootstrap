@@ -145,6 +145,45 @@ class HookProcessRunnableTest {
 	}
 
 	@Test
+	void processOutputClosed() throws Exception {
+		// The output of the process fails while draining it, such as when the process is destroyed
+		final var hook = new SystemHook();
+		hook.setName("hookClosed");
+		hook.setDelay(1);
+		hook.setCommand("/path/to/foo");
+		hook.setTimeout(1);
+		final var configuration = mock(ConfigurationResource.class);
+		Mockito.doReturn(".*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
+		when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+		final var process = mock(Process.class);
+		final var inputStream = mock(InputStream.class);
+		when(process.getInputStream()).thenReturn(inputStream);
+		when(inputStream.transferTo(Mockito.any())).thenThrow(new IOException("Stream closed"));
+		when(process.waitFor(1, TimeUnit.SECONDS)).thenReturn(true);
+		when(process.exitValue()).thenReturn(0);
+
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration) {
+			@Override
+			ProcessBuilder newBuilder(final SystemHook hook) {
+				final var pb = mock(ProcessBuilder.class);
+				when(pb.environment()).thenReturn(new HashMap<>());
+				try {
+					when(pb.start()).thenReturn(process);
+				} catch (IOException _) {
+					// Ignore
+				}
+				return pb;
+			}
+		}.process(null, hook, new ByteArrayOutputStream());
+		Mockito.verify(inputStream).transferTo(Mockito.any());
+		Mockito.verify(process).exitValue();
+	}
+
+	@Test
 	void processTimeout() throws Exception {
 		final var hook = new SystemHook();
 		hook.setName("hookTimeout");
@@ -185,6 +224,30 @@ class HookProcessRunnableTest {
 
 		Assertions.assertNotNull(capturedPb.get(), "newBuilder was not called");
 		Mockito.verify(process).waitFor(1, TimeUnit.SECONDS);
+	}
+
+	@Test
+	void processTimeoutRealProcess() {
+		// A process never closing its output is stopped at the timeout, not at its end
+		final var hook = new SystemHook();
+		hook.setName("hookSleep");
+		hook.setDelay(1);
+		hook.setCommand("sleep 10");
+		hook.setWorkingDirectory(".");
+		hook.setTimeout(1);
+
+		final var configuration = mock(ConfigurationResource.class);
+		Mockito.doReturn(".*").when(configuration).get("ligoj.hook.path", "^$");
+		final var exchange = mock(Exchange.class);
+		when(exchange.get("org.apache.cxf.resource.operation.name")).thenReturn("op");
+		final var message = mock(Message.class);
+		when(exchange.getInMessage()).thenReturn(message);
+		when(message.getContent(List.class)).thenReturn(Collections.emptyList());
+
+		final var start = System.currentTimeMillis();
+		new HookProcessRunnable(exchange, "GET", "path", null, null, "NOW", new ObjectMapper(), hook, configuration)
+				.process(null, hook, new ByteArrayOutputStream());
+		Assertions.assertTrue(System.currentTimeMillis() - start < 5000);
 	}
 
 	@Test

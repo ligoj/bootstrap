@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,6 +25,17 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @org.apache.cxf.annotations.Provider(value = Provider.Type.InInterceptor, scope = Provider.Scope.Server)
 public class AsynchronousHookInterceptor extends AbstractPhaseInterceptor<Message> {
+
+	private static final AtomicInteger THREAD_COUNTER = new AtomicInteger();
+
+	/**
+	 * Dedicated and bounded executor of the delayed hooks: a long hook process cannot starve the shared common pool.
+	 */
+	private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(4, r -> {
+		final var thread = new Thread(r, "hook-" + THREAD_COUNTER.incrementAndGet());
+		thread.setDaemon(true);
+		return thread;
+	});
 
 	@Autowired
 	protected HookConfiguration hookConfiguration;
@@ -46,7 +59,7 @@ public class AsynchronousHookInterceptor extends AbstractPhaseInterceptor<Messag
 			final var response = responseList.isEmpty() ? null : responseList.getFirst();
 			hookConfiguration.process(exchange, request.getMethod(), path, principal, response,
 					hook -> hook.getDelay() > 0,
-					(hook, runnable) -> CompletableFuture.delayedExecutor(hook.getDelay(), TimeUnit.SECONDS).execute(runnable));
+					(hook, runnable) -> EXECUTOR.schedule(runnable, hook.getDelay(), TimeUnit.SECONDS));
 		}
 	}
 

@@ -4,6 +4,7 @@
 package org.ligoj.bootstrap.resource.system.hook;
 
 import jakarta.ws.rs.ForbiddenException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,6 +61,13 @@ class HookResourceTest extends AbstractBootTest {
 		return hook;
 	}
 
+
+	@Test
+	void findByIdPath() throws NoSuchMethodException {
+		// Identifiers with several digits are routed to "findById", not to "findByName"
+		final var path = HookResource.class.getMethod("findById", int.class).getAnnotation(jakarta.ws.rs.Path.class).value();
+		Assertions.assertTrue("12".matches(StringUtils.substringBetween(path, "{id:", "}")));
+	}
 
 	@Test
 	void createNotAllowed() {

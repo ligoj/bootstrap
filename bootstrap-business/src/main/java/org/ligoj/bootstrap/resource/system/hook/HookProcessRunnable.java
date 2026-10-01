@@ -162,10 +162,26 @@ public class HookProcessRunnable implements Runnable {
 
 			final var process = pb.start();
 			final var dualOut = new LimitCaptureOutputStream(out, captured, 2048);
-			process.getInputStream().transferTo(dualOut);
 
-			// Wait and get the code up to 30s
-			final var code = process.waitFor(timeout, TimeUnit.SECONDS) ? process.exitValue() : -1;
+			// Drain the output in another thread: a process never closing its output must not hold this one
+			final var drain = Thread.ofVirtual().start(() -> {
+				try {
+					process.getInputStream().transferTo(dualOut);
+				} catch (final IOException _) {
+					// Output closed by the destruction of the process
+				}
+			});
+
+			// Wait and get the code up to the timeout, then kill the process
+			final int code;
+			if (process.waitFor(timeout, TimeUnit.SECONDS)) {
+				code = process.exitValue();
+			} else {
+				log.warn("[Hook @{}:{}] Timeout after {}s, the process is destroyed", path, h.getName(), timeout);
+				process.destroyForcibly();
+				code = -1;
+			}
+			drain.join(TimeUnit.SECONDS.toMillis(1));
 			out.flush();
 			status = code == 0 ? "Succeed" : "Failed";
 			log.info("[Hook @{}:{}] {}, code: {}, duration: {}", path, h.getName(), status,  code,

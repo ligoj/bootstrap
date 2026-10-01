@@ -13,6 +13,7 @@ import org.ligoj.bootstrap.core.resource.filter.SystemHookParse;
 import org.ligoj.bootstrap.dao.system.SystemHookRepository;
 import org.ligoj.bootstrap.model.system.HookMatch;
 import org.ligoj.bootstrap.model.system.SystemHook;
+import org.ligoj.bootstrap.resource.system.cache.LocalCacheSnapshot;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.ligoj.bootstrap.resource.system.hook.HookProcessRunnable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,11 @@ public class HookConfiguration {
 
 	@Autowired
 	private HookConfiguration self;
+
+	/**
+	 * Local snapshot of the hooks: no cluster access and no pattern compilation on each response.
+	 */
+	private final LocalCacheSnapshot<Map<Pattern, List<SystemHookParse>>> hooks = new LocalCacheSnapshot<>("hooks");
 
 	/**
 	 * Return cached hooks grouped by matching patterns.
@@ -120,7 +126,7 @@ public class HookConfiguration {
 	void filterUnSafe(final Exchange exchange, String method, final String path, final Principal principal, final Object response,
 			final Predicate<SystemHook> filter,
 			final BiConsumer<SystemHook, HookProcessRunnable> processor) {
-		self.findAll().entrySet().stream()
+		hooks.get(self::findAll).entrySet().stream()
 				.filter(e -> e.getKey().matcher(path).matches())
 				.flatMap(e -> e.getValue().stream()
 						.filter(filter)

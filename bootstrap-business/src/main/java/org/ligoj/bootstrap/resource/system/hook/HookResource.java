@@ -65,7 +65,7 @@ public class HookResource {
 	 * @return a hook from its identifier.
 	 */
 	@GET
-	@Path("{id:\\d}")
+	@Path("{id:\\d+}")
 	public SystemHook findById(@PathParam("id") int id) {
 		return repository.findOneExpected(id);
 	}
@@ -123,7 +123,8 @@ public class HookResource {
 	 *
 	 * @param vo the object to create.
 	 * @return the entity's identifier.
-	 * @throws JacksonException When <code>math</code> parameter is not a valid JSON.
+	 * @throws JacksonException When <code>match</code> parameter is not a valid JSON.
+	 * @throws ForbiddenException When the command is not allowed by <code>ligoj.hook.path</code>.
 	 */
 	@POST
 	@CacheRemoveAll(cacheName = "hooks")
@@ -146,7 +147,9 @@ public class HookResource {
 	 *
 	 * @param vo the object to update.
 	 * @return the entity's identifier.
-	 * @throws JacksonException When <code>math</code> parameter is not a valid JSON.
+	 * @throws JacksonException When <code>match</code> parameter is not a valid JSON.
+	 * @throws ForbiddenException When the command is not allowed by <code>ligoj.hook.path</code>.
+	 * @throws jakarta.persistence.EntityNotFoundException When the hook to update is not found.
 	 */
 	@PUT
 	@CacheRemoveAll(cacheName = "hooks")
