@@ -487,6 +487,30 @@ class CsvForJpaTest {
 	}
 
 	@Test
+	void toJpaForeignKeyNaturalNoOptimisationInjection() {
+		final var systemUser = new DummyEntity3();
+		systemUser.setLogin("test");
+		em.persist(systemUser);
+		em.flush();
+
+		// The value is data, never part of the query: no row matches it
+		final var str = new StringReader("user.login!\nx' OR '1'='1");
+		Assertions.assertEquals("Missing foreign key DummyEntity2#user.login = x' OR '1'='1",
+				Assertions.assertThrows(TechnicalException.class, () -> csvForJpa.toJpa(DummyEntity2.class, str, true))
+						.getCause().getMessage());
+	}
+
+	@Test
+	void toJpaForeignKeyNaturalNoOptimisationQuote() throws IOException {
+		final var systemUser = new DummyEntity3();
+		systemUser.setLogin("o'brien");
+		em.persist(systemUser);
+		em.flush();
+		final var jpa = csvForJpa.toJpa(DummyEntity2.class, new StringReader("user.login!\no'brien"), true);
+		Assertions.assertEquals("o'brien", jpa.getFirst().getUser().getLogin());
+	}
+
+	@Test
 	void toJpaForeignKeyNotExist2() {
 		final var str = new StringReader("link.id\n8000");
 		Assertions.assertEquals("Missing foreign key DummyEntity2#link.id = 8000",

@@ -104,10 +104,10 @@ public class CsvJpaReader<T> extends AbstractCsvReader<T> {
 			resultList = em.createQuery(from(type)).setFirstResult(Integer.parseInt(rawValue) - 1).setMaxResults(1)
 					.getResultList();
 		} else {
-			// search referenced entity with a filter on propertyName
-			resultList = em
-					.createQuery(String.format("%s WHERE %s LIKE '%s'", from(type), propertyName, rawValue), type)
-					.setMaxResults(1).getResultList();
+			// search referenced entity with a filter on propertyName, a field name checked by "isRowNumber". The value is
+			// bound as a parameter, never concatenated to the query.
+			resultList = em.createQuery(String.format("%s WHERE %s LIKE :value", from(type), propertyName), type)
+					.setParameter("value", rawValue).setMaxResults(1).getResultList();
 
 		}
 
