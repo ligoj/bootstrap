@@ -191,6 +191,28 @@ class CurlProcessorTest extends org.ligoj.bootstrap.AbstractServerTest {
 	}
 
 	@Test
+	void processResponseTimeoutVerifiedSsl() {
+		// The constructor timeouts apply with the default SSL verification too
+		httpServer.stubFor(get(urlPathEqualTo("/slow"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT").withFixedDelay(3000)));
+		httpServer.start();
+		final var start = System.currentTimeMillis();
+		try (final var processor = new CurlProcessor(CurlProcessor.DEFAULT_CALLBACK, 1000, 500)) {
+			Assertions.assertNull(processor.get("http://localhost:" + MOCK_PORT + "/slow"));
+		}
+		Assertions.assertTrue(System.currentTimeMillis() - start < 2000);
+	}
+
+	@Test
+	void toLogError() {
+		// The exception message may contain the URL, its secrets are removed too
+		final var url = "http://user:pass@host/api?token=abc";
+		final var message = CurlProcessor.toLogError(new IllegalArgumentException("Illegal character in: " + url), url);
+		Assertions.assertEquals("IllegalArgumentException: Illegal character in: http://host/api?token=***", message);
+		Assertions.assertEquals("IllegalStateException", CurlProcessor.toLogError(new IllegalStateException(), url));
+	}
+
+	@Test
 	void testHeaders() {
 		httpServer.stubFor(
 				get(urlPathEqualTo("/")).willReturn(aResponse().withStatus(HttpStatus.SC_OK).withBody("CONTENT")));

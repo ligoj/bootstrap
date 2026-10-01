@@ -15,7 +15,9 @@ import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
@@ -36,6 +38,8 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -92,6 +96,28 @@ public class CurlProcessor implements AutoCloseable {
 	 * Default callback.
 	 */
 	public static final DefaultHttpResponseCallback DEFAULT_CALLBACK = new DefaultHttpResponseCallback();
+
+	/**
+	 * Scheduler of the hard timeouts of the requests, shared by all processors.
+	 */
+	private static final ScheduledExecutorService TIMEOUT_SCHEDULER = Executors.newSingleThreadScheduledExecutor(r -> {
+		final var thread = new Thread(r, "curl-timeout");
+		thread.setDaemon(true);
+		return thread;
+	});
+
+	/**
+	 * Return the given exception as a message safe to be logged: the exception type and its message where the given
+	 * URL is replaced by its {@link #toLogUrl(String)} form.
+	 *
+	 * @param e   The exception to log.
+	 * @param url The requested URL, which may be part of the exception message.
+	 * @return The message to log.
+	 */
+	static String toLogError(final Exception e, final String url) {
+		final var type = e.getClass().getSimpleName();
+		return e.getMessage() == null ? type : type + ": " + StringUtils.replace(e.getMessage(), url, toLogUrl(url));
+	}
 
 	/**
 	 * Credentials of an URL authority: "scheme://user:password@".
@@ -243,14 +269,19 @@ public class CurlProcessor implements AutoCloseable {
 	}
 
 	/**
-	 * Prepare a processor with callback.
+	 * Prepare a processor with callback. Timeouts are applied whatever the SSL verification. The system properties
+	 * <code>ligoj.sslVerify</code> and <code>https.proxyHost</code>, when defined, override the <code>noVerifySsl</code>
+	 * and <code>proxyHost</code> arguments. The <code>https.proxyPort</code> system property is used only when the
+	 * <code>proxyPort</code> argument is <code>null</code>.
 	 *
 	 * @param callback          Not <code>null</code> {@link HttpResponseCallback} used for each response.
-	 * @param connectionTimeout Max connection timeout, milliseconds.
-	 * @param responseTimeout   Max response timeout, milliseconds.
+	 * @param connectionTimeout Max connection timeout, milliseconds. Used as connect timeout and as connection request
+	 *                          (pool lease) timeout.
+	 * @param responseTimeout   Max response timeout, milliseconds. Used as response timeout and as socket timeout.
 	 * @param noVerifySsl       When <code>true</code> SSL checks are ignored.
 	 * @param proxyHost         Custom proxy host for this process.
-	 * @param proxyPort         Custom proxy port for this process. Default (when <code>null</code>) is <code>8080</code> when proxy host is defined.
+	 * @param proxyPort         Custom proxy port for this process. Default (when <code>null</code>) is <code>https.proxyPort</code>
+	 *                          system property, then <code>8080</code>, when proxy host is defined.
 	 */
 	public CurlProcessor(final HttpResponseCallback callback, long connectionTimeout, long responseTimeout, final boolean noVerifySsl, final String proxyHost, final Integer proxyPort) {
 		this.callback = callback;
@@ -265,18 +296,27 @@ public class CurlProcessor implements AutoCloseable {
 			clientBuilder.setRoutePlanner(httpRoutePlanner);
 		}
 
+		// Timeouts apply whatever the SSL verification: connection establishment, socket read and response
+		final var connectionConfig = ConnectionConfig.custom()
+				.setConnectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+				.setSocketTimeout((int) responseTimeout, TimeUnit.MILLISECONDS)
+				.build();
+		final var requestConfig = RequestConfig.custom()
+				.setRedirectsEnabled(false)
+				.setResponseTimeout(responseTimeout, TimeUnit.MILLISECONDS)
+				.setConnectionRequestTimeout(connectionTimeout, TimeUnit.MILLISECONDS);
 		final var verifySslResolved = Boolean.parseBoolean(StringUtils.defaultIfBlank(System.getProperty(SSL_VERIFY), String.valueOf(!noVerifySsl)));
-		if (!verifySslResolved) {
+		if (verifySslResolved) {
+			clientBuilder.setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+					.setDefaultConnectionConfig(connectionConfig).build());
+		} else {
 			// Initialize connection manager to bypass some SSL checks
 			final var connectionManager = BasicHttpClientConnectionManager.create(newSslContext());
+			connectionManager.setConnectionConfig(connectionConfig);
 			clientBuilder.setConnectionManager(connectionManager);
-			clientBuilder.setDefaultRequestConfig(RequestConfig.custom()
-					.setCookieSpec(StandardCookieSpec.RELAXED)
-					.setRedirectsEnabled(false)
-					.setResponseTimeout(responseTimeout, TimeUnit.MILLISECONDS)
-					.setConnectionRequestTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
-					.build());
+			requestConfig.setCookieSpec(StandardCookieSpec.RELAXED);
 		}
+		clientBuilder.setDefaultRequestConfig(requestConfig.build());
 
 
 		// Initialize cookie strategy
@@ -340,28 +380,23 @@ public class CurlProcessor implements AutoCloseable {
 				.newInstance(url);
 		addHeaders(request, request.getContent(), httpRequest);
 
-		// Timeout management
-		if (request.getTimeout() != null) {
-			// Hard timeout has been set
-			final var task = new TimerTask() {
-				@Override
-				public void run() {
-					// Abort the query if not yet completed...
-					httpRequest.abort();
-				}
-			};
-			new Timer(true).schedule(task, request.getTimeout());
+		// Hard timeout management: abort the query if not yet completed, with a shared scheduler
+		final var abort = request.getTimeout() == null ? null
+				: TIMEOUT_SCHEDULER.schedule(httpRequest::abort, request.getTimeout(), TimeUnit.MILLISECONDS);
+		try {
+			// Execute the request
+			return httpClient.execute(httpRequest, response -> {
+				// Save the status
+				request.setStatus(response.getCode());
+
+				// Ask for the callback a flow control
+				return ObjectUtils.getIfNull(request.getCallback(), callback).onResponse(request, response);
+			});
+		} finally {
+			if (abort != null) {
+				abort.cancel(false);
+			}
 		}
-
-		// Execute the request
-		//noinspection
-		return httpClient.execute(httpRequest, response -> {
-			// Save the status
-			request.setStatus(response.getCode());
-
-			// Ask for the callback a flow control
-			return ObjectUtils.getIfNull(request.getCallback(), callback).onResponse(request, response);
-		});
 	}
 
 	/**
@@ -432,7 +467,7 @@ public class CurlProcessor implements AutoCloseable {
 			return result;
 		} catch (final Exception e) { // NOSONAR - This exception can be dropped
 			log.error("Request execution ' [{}] {} {}' failed : {}", request.getCounter(), request.getMethod(), toLogUrl(url),
-					e.getMessage());
+					toLogError(e, url));
 		}
 		return false;
 	}
