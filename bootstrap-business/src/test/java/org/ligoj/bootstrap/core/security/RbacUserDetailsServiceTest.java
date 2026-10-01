@@ -6,6 +6,7 @@ package org.ligoj.bootstrap.core.security;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Assertions;
+import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,9 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@Autowired
 	private RbacUserDetailsService userDetailsService;
+
+	@Autowired
+	private AuthorizationResource authorizationResource;
 
 	@BeforeEach
 	void setup() {
@@ -111,8 +115,10 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(service);
 		final var settings = new SessionSettings();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(settings);
+		final var authorizationResource = this.applicationContext.getBean(AuthorizationResource.class);
 		var applicationContext = mock(ApplicationContext.class);
 		service.applicationContext = applicationContext;
+		when(applicationContext.getBean(AuthorizationResource.class)).thenReturn(authorizationResource);
 		when(applicationContext.getBean(SessionSettings.class)).thenReturn(settings);
 		var provider = mock(ISessionSettingsProvider.class);
 		when(service.applicationContext.getBeansOfType(ISessionSettingsProvider.class)).thenReturn(Collections.singletonMap("provider", provider));
@@ -214,6 +220,55 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 		assertAdmin("fdaugan", true);
 		assertAdmin("jdupont", false);
 		assertAdmin("none", false);
+	}
+
+	@Test
+	void loadUserByUsernameAdminAuthorityFromProvider() {
+		// A provider group named like the administrator authority does not grant it
+		final var userDetails = initService(SecurityHelper.ADMIN);
+		Assertions.assertTrue(userDetails.getAuthorities().stream().noneMatch(a -> SecurityHelper.ADMIN.equals(a.getAuthority())));
+		Assertions.assertFalse(((RbacUserDetails) userDetails).isAdmin());
+	}
+
+	@Test
+	void loadUserByUsernameAdminAuthorityFromRole() {
+		// A role named like the administrator authority does not grant it
+		final var user = new SystemUser();
+		user.setLogin("role-admin-name");
+		em.persist(user);
+		final var role = new SystemRole();
+		role.setName(SecurityHelper.ADMIN);
+		em.persist(role);
+		final var assignment = new SystemRoleAssignment();
+		assignment.setRole(role);
+		assignment.setUser(user);
+		em.persist(assignment);
+		em.flush();
+		clearAllCache();
+		assertAdmin("role-admin-name", false);
+	}
+
+	/**
+	 * A removed administrative authorization is never kept by a local snapshot of the administrator roles.
+	 */
+	@Test
+	void loadUserByUsernameAdminRevoked() throws IOException {
+		persistEntities(SystemRole.class, "csv/system-test/role.csv");
+		persistEntities(SystemAuthorization.class, "csv/system-test/authorization.csv");
+		persistEntities(SystemUser.class, "csv/system-test/user.csv");
+		persistEntities(SystemRoleAssignment.class, "csv/system-test/role-assignment.csv");
+		em.flush();
+		em.clear();
+		clearAllCache();
+		assertAdmin("admin-test", true);
+
+		// Revoke the administrative authorization through the resource only
+		final var adminAuthorizations = em.createQuery(
+				"SELECT id FROM SystemAuthorization WHERE pattern = '.*' AND method IS NULL AND type = :type", Integer.class)
+				.setParameter("type", SystemAuthorization.AuthorizationType.API).getResultList();
+		adminAuthorizations.forEach(authorizationResource::remove);
+		em.flush();
+		assertAdmin("admin-test", false);
 	}
 
 	/**

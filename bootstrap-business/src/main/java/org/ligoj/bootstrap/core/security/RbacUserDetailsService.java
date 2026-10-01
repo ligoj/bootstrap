@@ -9,6 +9,8 @@ import org.ligoj.bootstrap.dao.system.SystemUserRepository;
 import org.ligoj.bootstrap.model.system.SystemRole;
 import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.session.ISessionSettingsProvider;
+import org.ligoj.bootstrap.resource.system.cache.LocalCacheSnapshot;
+import org.ligoj.bootstrap.resource.system.security.AuthorizationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,6 +46,11 @@ public class RbacUserDetailsService implements UserDetailsService {
 	@Autowired
 	private AuthorizationRepository authorizationRepository;
 
+	/**
+	 * Local snapshot of the administrator roles, derived from the authorizations and invalidated with them.
+	 */
+	private final LocalCacheSnapshot<Set<String>> adminRolesSnapshot = new LocalCacheSnapshot<>("authorizations");
+
 	@Autowired
 	protected ApplicationContext applicationContext;
 
@@ -64,7 +71,7 @@ public class RbacUserDetailsService implements UserDetailsService {
 			authorities = toSimpleRoles(userAndRoles, 1);
 		}
 
-		// Update last connection information only as needed for performance, delta is one minute
+		// Update last connection information only as needed for performance, delta is one day
 		final var now = Instant.now();
 		if (user.getLastConnection() == null || ChronoUnit.DAYS.between(user.getLastConnection(), now) >= 1) {
 			user.setLastConnection(now);
@@ -91,7 +98,14 @@ public class RbacUserDetailsService implements UserDetailsService {
 		// Resolve the administration access level: the principal is an administrator when one of the resolved
 		// authorities (database roles or provider contributions) holds an administrative API authorization. Both the
 		// virtual authority (for SpEL/authority based checks) and the precomputed flag (read by SecurityHelper) are set.
-		final var adminRoles = authorizationRepository.findAdminApiRoles();
+		// The administrator authority is only computed here, never granted by a role or a provider having its name
+		authorities.removeIf(a -> SecurityHelper.ADMIN.equals(a.getAuthority()));
+		final var adminRoles = adminRolesSnapshot.get(() -> {
+			// Ensure the authorizations are cached: their eviction then invalidates this snapshot. Resolved lazily: an
+			// injection would create the resource too early, before its cache and transaction proxies
+			applicationContext.getBean(AuthorizationResource.class).getAuthorizations();
+			return authorizationRepository.findAdminApiRoles();
+		});
 		final var admin = authorities.stream().anyMatch(a -> adminRoles.contains(a.getAuthority()));
 		if (admin) {
 			authorities.add(new SimpleGrantedAuthority(SecurityHelper.ADMIN));
