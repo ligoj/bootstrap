@@ -425,6 +425,11 @@ class RestRepositoryImplTest extends AbstractBootTest {
 	}
 
 	@Test
+	void deleteNoFetchNull() {
+		Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> repository.deleteNoFetch(null));
+	}
+
+	@Test
 	void existExpected() {
 		var systemDialect = repository.findAll().get(1);
 		repository.existExpected(systemDialect.getId());

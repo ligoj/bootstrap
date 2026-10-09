@@ -284,11 +284,8 @@ class RbacUserDetailsServiceTest extends AbstractBootTest {
 
 	@Test
 	void defaultAuthorities() {
-		var provider = new ISessionSettingsProvider() {
-			@Override
-			public void decorate(SessionSettings settings) {
-				// Nothing
-			}
+		final ISessionSettingsProvider provider = _ -> {
+			// Nothing
 		};
 		Assertions.assertTrue(provider.getGrantedAuthorities("foo").isEmpty());
 	}
