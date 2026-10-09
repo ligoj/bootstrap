@@ -73,7 +73,7 @@ public class FileResource {
 	 */
 	private java.nio.file.Path toCanonicalPath(final java.nio.file.Path absolute) throws IOException {
 		var existing = absolute;
-		while (!Files.exists(existing, LinkOption.NOFOLLOW_LINKS)) {
+		while (!Files.exists(existing, LinkOption.NOFOLLOW_LINKS)) { // NOSONAR - Only reached by a path matching the 'ligoj.file.path' allowed locations
 			// The root always exists
 			existing = existing.getParent();
 		}
