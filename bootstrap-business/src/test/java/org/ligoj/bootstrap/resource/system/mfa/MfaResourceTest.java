@@ -9,8 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.SequencedCollection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -204,12 +206,12 @@ class MfaResourceTest extends AbstractBootTest {
 	}
 
 	@Test
-	void verifyLockedConcurrently() throws Exception {
+	void verifyLockedConcurrently() {
 		// Parallel guesses: no lost update, only the first attempts are checked
 		final var authentication = SecurityContextHolder.getContext().getAuthentication();
 		final var threads = 20;
 		final var start = new CountDownLatch(1);
-		final var rules = new ConcurrentLinkedQueue<Object>();
+		final var rules = new ConcurrentLinkedQueue<>();
 		try (var executor = Executors.newFixedThreadPool(threads)) {
 			for (var i = 0; i < threads; i++) {
 				executor.submit(() -> {
@@ -444,7 +446,7 @@ class MfaResourceTest extends AbstractBootTest {
 		final var options = resource.setupPasskey();
 		Assertions.assertEquals("localhost", ((Map<?, ?>) options.get("rp")).get("id"));
 		Assertions.assertEquals(DEFAULT_USER, ((Map<?, ?>) options.get("user")).get("name"));
-		Assertions.assertTrue(((List<?>) options.get("excludeCredentials")).isEmpty());
+		Assertions.assertTrue(((Collection<?>) options.get("excludeCredentials")).isEmpty());
 		// The host sends the transports only to an API advertising it (older APIs reject unknown properties)
 		Assertions.assertEquals(Boolean.TRUE, options.get("transportsHint"));
 		final var id = resource.createPasskey(registration(authenticator, "macbook", options, "http://localhost:5173"));
@@ -457,12 +459,12 @@ class MfaResourceTest extends AbstractBootTest {
 		final var replay = registration(authenticator, "again", options, "http://localhost:5173");
 		Assertions.assertThrows(ValidationJsonException.class, () -> resource.createPasskey(replay));
 		// A registered credential is excluded from a new registration
-		Assertions.assertEquals(authenticator.getCredentialId(), ((Map<?, ?>) ((List<?>) resource.setupPasskey().get("excludeCredentials")).getFirst()).get("id"));
+		Assertions.assertEquals(authenticator.getCredentialId(), ((Map<?, ?>) ((SequencedCollection<?>) resource.setupPasskey().get("excludeCredentials")).getFirst()).get("id"));
 
 		// Assertion with a fresh challenge
 		final var request = resource.challengePasskey();
 		Assertions.assertEquals("localhost", request.get("rpId"));
-		Assertions.assertEquals(authenticator.getCredentialId(), ((Map<?, ?>) ((List<?>) request.get("allowCredentials")).getFirst()).get("id"));
+		Assertions.assertEquals(authenticator.getCredentialId(), ((Map<?, ?>) ((SequencedCollection<?>) request.get("allowCredentials")).getFirst()).get("id"));
 		authenticator.setCounter(6);
 		Assertions.assertNull(resource.get().getVerifiedDate());
 		resource.verifyPasskey(assertion(authenticator, request, "http://localhost:5173"));
@@ -493,7 +495,7 @@ class MfaResourceTest extends AbstractBootTest {
 		resource.createPasskey(vo);
 		final var legacy = new FakeAuthenticator(1);
 		resource.createPasskey(registration(legacy, "legacy", resource.setupPasskey(), "http://localhost:5173"));
-		final var allowed = ((List<Map<String, Object>>) resource.challengePasskey().get("allowCredentials")).stream()
+		final var allowed = ((Collection<Map<String, Object>>) resource.challengePasskey().get("allowCredentials")).stream()
 				.collect(java.util.stream.Collectors.toMap(m -> m.get("id"), m -> m));
 		Assertions.assertEquals(List.of("internal", "hybrid"), allowed.get(authenticator.getCredentialId()).get("transports"));
 		Assertions.assertFalse(allowed.get(legacy.getCredentialId()).containsKey("transports"));
