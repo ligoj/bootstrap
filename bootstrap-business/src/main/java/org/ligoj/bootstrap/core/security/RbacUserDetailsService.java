@@ -126,8 +126,9 @@ public class RbacUserDetailsService implements UserDetailsService {
 		final var resultAsName = new HashSet<String>();
 		for (final var object : results) {
 			final var role = (SystemRole) object[index];
-			if (role != null && resultAsName.add(role.getName())) {
-				result.add(new SimpleGrantedAuthority(role.getAuthority()));
+			final var name = role == null ? null : role.getAuthority();
+			if (name != null && resultAsName.add(name)) {
+				result.add(new SimpleGrantedAuthority(name));
 			}
 		}
 		return result;
