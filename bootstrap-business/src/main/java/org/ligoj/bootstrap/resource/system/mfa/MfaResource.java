@@ -119,6 +119,8 @@ public class MfaResource {
 	private static final String INVALID_CODE = "invalid-code";
 	private static final String PASSKEY_PROPERTY = "passkey";
 	private static final String PUBLIC_KEY_TYPE = "public-key";
+	private static final String CHALLENGE = "challenge";
+	private static final String PREFERRED = "preferred";
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
@@ -246,7 +248,7 @@ public class MfaResource {
 		final var login = securityHelper.getLogin();
 		final var challenge = newChallenge(login, "create");
 		final var options = new LinkedHashMap<String, Object>();
-		options.put("challenge", challenge);
+		options.put(CHALLENGE, challenge);
 		options.put("rp", Map.of("id", getRpId(), "name", configuration.get(CONF_ISSUER, DEFAULT_ISSUER)));
 		options.put("user", Map.of("id", WebAuthnHelper.base64Url(login.getBytes(StandardCharsets.UTF_8)), "name", login,
 				"displayName", login));
@@ -254,7 +256,7 @@ public class MfaResource {
 				Map.of("type", PUBLIC_KEY_TYPE, "alg", WebAuthnHelper.ALG_RS256)));
 		options.put("excludeCredentials", passkeys(login).stream()
 				.map(p -> Map.of("type", PUBLIC_KEY_TYPE, "id", p.credentialId())).toList());
-		options.put("authenticatorSelection", Map.of("residentKey", "preferred", "userVerification", "preferred"));
+		options.put("authenticatorSelection", Map.of("residentKey", PREFERRED, "userVerification", PREFERRED));
 		options.put("attestation", "none");
 		options.put("timeout", CHALLENGE_TIMEOUT.toMillis());
 		// Tells the front-end it may send the credential transports with the registration (ignored by browsers)
@@ -319,7 +321,7 @@ public class MfaResource {
 	public Map<String, Object> challengePasskey() {
 		final var login = securityHelper.getLogin();
 		final var options = new LinkedHashMap<String, Object>();
-		options.put("challenge", newChallenge(login, "get"));
+		options.put(CHALLENGE, newChallenge(login, "get"));
 		options.put("rpId", getRpId());
 		options.put("allowCredentials", passkeys(login).stream().map(p -> {
 			final var credential = new LinkedHashMap<String, Object>();
@@ -332,7 +334,7 @@ public class MfaResource {
 			}
 			return credential;
 		}).toList());
-		options.put("userVerification", "preferred");
+		options.put("userVerification", PREFERRED);
 		options.put("timeout", CHALLENGE_TIMEOUT.toMillis());
 		return options;
 	}
@@ -409,7 +411,7 @@ public class MfaResource {
 		}
 		final var origins = Arrays.stream(StringUtils.defaultString(configuration.get(CONF_ORIGINS)).split(","))
 				.map(String::trim).filter(StringUtils::isNotEmpty).toList();
-		if (pending == null || !type.equals(client.get("type")) || !pending.equals(client.get("challenge"))
+		if (pending == null || !type.equals(client.get("type")) || !pending.equals(client.get(CHALLENGE))
 				|| !WebAuthnHelper.isOriginAllowed(Objects.toString(client.get("origin"), null), getRpId(), origins)) {
 			log.info("Passkey client data rejected for {} (purpose {}, origin {})", login, purpose, client.get("origin"));
 			throw new ValidationJsonException(PASSKEY_PROPERTY, INVALID_CODE);

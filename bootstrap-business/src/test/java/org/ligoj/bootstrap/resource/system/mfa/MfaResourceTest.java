@@ -147,8 +147,9 @@ class MfaResourceTest extends AbstractBootTest {
 	}
 
 	private void failVerify(final int times) {
+		final var invalid = code("000000");
 		for (var i = 0; i < times; i++) {
-			MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.verify(code("000000"))),
+			MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> resource.verify(invalid)),
 					"code", "invalid-code");
 		}
 	}
