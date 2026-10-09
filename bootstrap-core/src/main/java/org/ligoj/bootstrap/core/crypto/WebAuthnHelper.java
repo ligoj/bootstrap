@@ -80,6 +80,8 @@ public class WebAuthnHelper {
 			Map<?, ?> cosePublicKey) {
 
 		/**
+		 * Indicate the given flag is set in the authenticator data flags.
+		 *
 		 * @param flag A flag, see {@link #FLAG_UP}.
 		 * @return <code>true</code> when the flag is set.
 		 */
@@ -289,7 +291,7 @@ public class WebAuthnHelper {
 			verifier.update(authData);
 			verifier.update(sha256(clientDataJSON));
 			return verifier.verify(signature);
-		} catch (final GeneralSecurityException | IllegalArgumentException e) {
+		} catch (final GeneralSecurityException | IllegalArgumentException _) {
 			return false;
 		}
 	}

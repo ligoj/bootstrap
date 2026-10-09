@@ -72,7 +72,7 @@ public class Cbor {
 	private static void write(final ByteArrayOutputStream out, final Object value) {
 		switch (value) {
 		case null -> out.write(0xF6);
-		case Boolean b -> out.write(b ? 0xF5 : 0xF4);
+		case Boolean b -> out.write(Boolean.TRUE.equals(b) ? 0xF5 : 0xF4);
 		case byte[] bytes -> {
 			writeHead(out, 2, bytes.length);
 			out.writeBytes(bytes);
@@ -168,7 +168,7 @@ public class Cbor {
 			}
 			case 5 -> {
 				final var size = containerSize(info, 2);
-				final var map = new LinkedHashMap<>(size * 2);
+				final var map = LinkedHashMap.newLinkedHashMap(size);
 				for (var i = 0; i < size; i++) {
 					map.put(read(), read());
 				}

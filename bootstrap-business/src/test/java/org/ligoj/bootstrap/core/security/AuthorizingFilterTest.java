@@ -285,7 +285,8 @@ class AuthorizingFilterTest extends AbstractBootTest {
 		when(request.getRequestURI()).thenReturn(uri);
 		when(request.getMethod()).thenReturn("GET");
 		final var response = mock(HttpServletResponse.class);
-		when(response.getOutputStream()).thenReturn(mock(ServletOutputStream.class));
+		final var output = mock(ServletOutputStream.class);
+		when(response.getOutputStream()).thenReturn(output);
 		authorizingFilter.setServletContext(servletContext);
 		authorizingFilter.doFilter(request, response, chain);
 		return mockingDetails(chain).getInvocations().size() == 1;

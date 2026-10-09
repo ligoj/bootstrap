@@ -73,7 +73,7 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 	@Test
 	void deserializationDateDecimal() {
 		Assertions.assertEquals(getDate(2016, 8, 2),
-				mapper.readValue(String.valueOf(Double.valueOf(getDate(2016, 8, 2).getTime())), Date.class));
+				mapper.readValue(String.valueOf(Double.valueOf((double) getDate(2016, 8, 2).getTime())), Date.class));
 		// Non-assertable value, depends on the system timezone
 		mapper.readValue("\"2016-08-02\"", Date.class);
 	}
@@ -141,4 +141,15 @@ class ObjectMapperTest extends AbstractDataGeneratorTest {
 		Assertions.assertEquals(instant, mapper.readValue("6554217600000", Instant.class));
 	}
 
+
+	@Test
+	void serializePluginSignature() {
+		// The signature is not Java serialized, but still part of the JSON payload
+		final var vo = new org.ligoj.bootstrap.core.plugin.PluginVo();
+		vo.setSignature(new org.ligoj.bootstrap.core.plugin.PluginSignature(
+				org.ligoj.bootstrap.core.plugin.PluginSignature.Status.VERIFIED, "CN=Vendor"));
+		final var json = mapper.writeValueAsString(vo);
+		Assertions.assertTrue(json.contains("\"signature\":{"), json);
+		Assertions.assertTrue(json.contains("CN=Vendor"), json);
+	}
 }

@@ -29,6 +29,13 @@ import org.springframework.context.annotation.Role;
 public class CacheBeansConfiguration {
 
 	/**
+	 * Only static bean methods: instantiated by Spring only.
+	 */
+	private CacheBeansConfiguration() {
+		// Nothing to do
+	}
+
+	/**
 	 * The merged Hazelcast JCache manager, fed by all {@link CacheManagerAware} beans.
 	 *
 	 * @param location Hazelcast XML configuration location ({@code cache.location} property).
