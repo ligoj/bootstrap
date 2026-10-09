@@ -48,7 +48,7 @@ public final class AaguidRegistry {
 			log.warn("Unable to read the authenticator models from {}", RESOURCE, ioe);
 		}
 		return properties.stringPropertyNames().stream()
-				.collect(Collectors.toMap(k -> k.toLowerCase(), k -> properties.getProperty(k).trim()));
+				.collect(Collectors.toMap(String::toLowerCase, k -> properties.getProperty(k).trim()));
 	}
 
 	/**
