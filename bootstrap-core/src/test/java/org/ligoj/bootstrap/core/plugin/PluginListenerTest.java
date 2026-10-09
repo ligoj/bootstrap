@@ -57,7 +57,7 @@ class PluginListenerTest {
 		Assertions.assertEquals("{\"id\":\"I\",\"name\":\"N\",\"plugin\":{\"id\":null,"
 				+ "\"createdBy\":null,\"createdDate\":null,\"lastModifiedBy\":null,\"lastModifiedDate\":null,"
 				+ "\"creationContext\":null,\"metadata\":null,\"version\":\"V\",\"key\":\"K\",\"artifact\":\"A\",\"basePackage\":\"P\",\"type\":\"T\"},"
-				+ "\"vendor\":\"V\",\"signature\":null,\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false}",
+				+ "\"vendor\":\"V\",\"location\":\"L\",\"newVersion\":\"2\",\"latestLocalVersion\":\"1\",\"deleted\":false,\"signature\":null}",
 				// Jackson 2 defaults: keep the declaration order of properties, as ObjectMapperTrim does
 				JsonMapper.builderWithJackson2Defaults().build().writeValueAsString(pluginVo));
 	}

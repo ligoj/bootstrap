@@ -3,7 +3,6 @@
  */
 package org.ligoj.bootstrap.core.plugin;
 
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.ligoj.bootstrap.core.NamedBean;
@@ -37,8 +36,7 @@ public class PluginVo extends NamedBean<String> {
 	 * installed plug-ins. The {@link PluginSignature#signer()} holds the certificate identity, trustable only with
 	 * the {@link PluginSignature.Status#VERIFIED} status.
 	 */
-	@Transient
-	private PluginSignature signature;
+	private transient PluginSignature signature;
 
 	/**
 	 * Location of this plug-in.
