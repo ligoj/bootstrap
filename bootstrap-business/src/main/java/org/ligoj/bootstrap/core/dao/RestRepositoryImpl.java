@@ -98,7 +98,7 @@ public class RestRepositoryImpl<T, K extends Serializable> extends SimpleJpaRepo
 	public void deleteNoFetch(final K id) {
 		if (update(DELETE_BY, "id", id, ArrayUtils.EMPTY_STRING_ARRAY) != 1) {
 			// No deleted row
-			throw new EntityNotFoundException(id.toString());
+			throw new EntityNotFoundException(String.valueOf(id));
 		}
 		// Exactly one row has been deleted has expected
 	}
