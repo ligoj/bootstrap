@@ -93,6 +93,19 @@ class FileResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void pathSymbolicLinkInto() throws IOException {
+		final var allowed = prepareAllowed();
+		final var link = Files.createSymbolicLink(allowed.resolveSibling("link-into"), allowed);
+
+		// Inside the allowed directory by the link target, outside by name: the given path is checked before any
+		// access to the file system
+		final var input = new ByteArrayInputStream("ok".getBytes());
+		final var path = link + "/x.txt";
+		Assertions.assertThrows(ForbiddenException.class, () -> resource.upload(input, path, "false"));
+		Assertions.assertFalse(Files.exists(allowed.resolve("x.txt")));
+	}
+
+	@Test
 	void pathNormalizedInside() throws IOException {
 		final var allowed = prepareAllowed();
 

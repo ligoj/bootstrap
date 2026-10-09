@@ -33,6 +33,11 @@ import java.util.Arrays;
 @Slf4j
 public class FileResource {
 
+	/**
+	 * Message of a rejected path.
+	 */
+	private static final String NOT_ALLOWED = "Path location is not within one of allowed ${ligoj.file.path} value";
+
 	@Autowired
 	private ConfigurationResource configurationResource;
 
@@ -45,7 +50,7 @@ public class FileResource {
 	 */
 	@GET
 	public InputStream download(@QueryParam("path") String path) throws IOException {
-		return Files.newInputStream(checkPath(path));
+		return Files.newInputStream(checkPath(path)); // NOSONAR - Checked against the 'ligoj.file.path' allowed locations
 	}
 
 	/**
@@ -62,12 +67,11 @@ public class FileResource {
 	 * Return the canonical form of the given path: absolute, without "." or ".." segment, and with the symbolic links
 	 * of its deepest existing ancestor resolved. The remaining part does not exist yet, so contains no link.
 	 *
-	 * @param path The raw file path.
+	 * @param absolute The absolute and normalized file path, already matching the allowed locations.
 	 * @return The canonical path.
 	 * @throws IOException When a symbolic link cannot be resolved, such as a dangling one.
 	 */
-	private java.nio.file.Path toCanonicalPath(final String path) throws IOException {
-		final var absolute = java.nio.file.Path.of(path).toAbsolutePath().normalize();
+	private java.nio.file.Path toCanonicalPath(final java.nio.file.Path absolute) throws IOException {
 		var existing = absolute;
 		while (!Files.exists(existing, LinkOption.NOFOLLOW_LINKS)) {
 			// The root always exists
@@ -78,7 +82,9 @@ public class FileResource {
 
 	/**
 	 * Check the path for download or upload against 'ligoj.file.path' values, and return its canonical form. The
-	 * patterns are matched against the canonical path, so ".." segments and symbolic links cannot escape them.
+	 * patterns are matched twice: first against the normalized path, before any access to the file system, so the
+	 * existence of a file out of the allowed locations cannot be probed; then against the canonical path, so ".."
+	 * segments and symbolic links cannot escape them.
 	 *
 	 * @param path The file path to download or upload.
 	 * @return The canonical path to use for the file operation.
@@ -86,15 +92,19 @@ public class FileResource {
 	private java.nio.file.Path checkPath(final String path) {
 		if (StringUtils.isNotBlank(path)) {
 			try {
-				final var canonical = toCanonicalPath(path);
-				if (isAllowedPath(canonical.toString())) {
-					return canonical;
+				final var normalized = java.nio.file.Path.of(path).toAbsolutePath().normalize();
+				if (isAllowedPath(normalized.toString())) {
+					// Only now the file system is accessed
+					final var canonical = toCanonicalPath(normalized);
+					if (isAllowedPath(canonical.toString())) {
+						return canonical;
+					}
 				}
 			} catch (final IOException | InvalidPathException e) {
 				log.info("Invalid file path {}: {}", path, e.getMessage());
 			}
 		}
-		throw new ForbiddenException("Path location is not within one of allowed ${ligoj.file.path} value");
+		throw new ForbiddenException(NOT_ALLOWED);
 	}
 
 	/**
@@ -127,6 +137,6 @@ public class FileResource {
 	 */
 	@DELETE
 	public void delete(@QueryParam("path") final String path) throws IOException {
-		FileUtils.delete(checkPath(path).toFile());
+		FileUtils.delete(checkPath(path).toFile()); // NOSONAR - Checked against the 'ligoj.file.path' allowed locations
 	}
 }
