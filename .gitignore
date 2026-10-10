@@ -8,3 +8,5 @@
 /*.exec
 **/node_modules
 /bootstrap-business/.tmp/
+CLAUDE.md
+GEMINI.md
