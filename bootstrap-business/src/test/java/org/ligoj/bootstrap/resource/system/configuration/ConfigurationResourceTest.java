@@ -167,6 +167,49 @@ class ConfigurationResourceTest extends AbstractBootTest {
 	}
 
 	@Test
+	void findAllAuditData() {
+		final var result = new HashMap<String, ConfigurationVo>();
+		resource.findAll().forEach(vo -> result.put(vo.getName(), vo));
+
+		// Stored in the database only
+		final var key4 = result.get("test-key4");
+		Assertions.assertEquals(DEFAULT_USER, key4.getCreatedBy());
+		Assertions.assertNotNull(key4.getCreatedDate());
+		Assertions.assertEquals(DEFAULT_USER, key4.getLastModifiedBy());
+		Assertions.assertNotNull(key4.getLastModifiedDate());
+
+		// Stored in the database and also defined as a system property: the database audit data is kept
+		final var key2 = result.get("test-key2");
+		Assertions.assertEquals("systemProperties", key2.getSource());
+		Assertions.assertEquals(DEFAULT_USER, key2.getCreatedBy());
+		Assertions.assertNotNull(key2.getCreatedDate());
+		Assertions.assertEquals(DEFAULT_USER, key2.getLastModifiedBy());
+		Assertions.assertNotNull(key2.getLastModifiedDate());
+
+		// Only defined as a system property: no audit data
+		final var key3 = result.get("test-key3");
+		Assertions.assertFalse(key3.isPersisted());
+		Assertions.assertNull(key3.getCreatedBy());
+		Assertions.assertNull(key3.getLastModifiedDate());
+	}
+
+	@Test
+	void putSystemKeepsAuditData() {
+		try {
+			// "Also set as system property": the entry is then listed from the system properties
+			resource.put("test-key-audit", "value", true);
+			final var vo = resource.findAll().stream().filter(c -> "test-key-audit".equals(c.getName())).findFirst()
+					.orElseThrow();
+			Assertions.assertEquals("systemProperties", vo.getSource());
+			Assertions.assertTrue(vo.isPersisted());
+			Assertions.assertEquals(DEFAULT_USER, vo.getLastModifiedBy());
+			Assertions.assertNotNull(vo.getLastModifiedDate());
+		} finally {
+			System.clearProperty("test-key-audit");
+		}
+	}
+
+	@Test
 	void getInt() {
 		Assertions.assertEquals(99, resource.get("test-key-any", 99));
 		Assertions.assertEquals(54, resource.get("test-key-int", 77));

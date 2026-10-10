@@ -146,6 +146,8 @@ public class ConfigurationResource {
 		repository.findAll().forEach(c -> {
 			if (result.containsKey(c.getName())) {
 				final var vo = result.get(c.getName());
+				// The audit data of the stored value, even when a property source shadows it
+				AuditedBean.copyAuditData(c, vo);
 				vo.setPersisted(true);
 				vo.setOverridden(!Strings.CS.equals(vo.getValue(), c.getValue()));
 			} else {
