@@ -28,7 +28,7 @@ import lombok.ToString;
 @Table(name = "S_MFA_DEVICE", uniqueConstraints = @UniqueConstraint(columnNames = { "user", "name" }))
 @Getter
 @Setter
-@ToString(of = { "user", "name" })
+@ToString(of = "user")
 public class SystemMfaDevice extends AbstractNamedAuditedEntity<Integer> {
 
 	/**
