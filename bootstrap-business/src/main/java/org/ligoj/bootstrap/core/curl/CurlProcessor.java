@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
@@ -116,7 +117,7 @@ public class CurlProcessor implements AutoCloseable {
 	 */
 	static String toLogError(final Exception e, final String url) {
 		final var type = e.getClass().getSimpleName();
-		return e.getMessage() == null ? type : type + ": " + StringUtils.replace(e.getMessage(), url, toLogUrl(url));
+		return e.getMessage() == null ? type : type + ": " + Strings.CS.replace(e.getMessage(), url, toLogUrl(url));
 	}
 
 	/**
