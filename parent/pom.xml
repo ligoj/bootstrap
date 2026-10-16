@@ -146,7 +146,7 @@
         <spring-cloud-context.version>5.0.3</spring-cloud-context.version>
         <spring-data.version>4.1.1</spring-data.version>
         <spring-security.version>7.1.1</spring-security.version>
-        <swagger-ui.version>5.33.1</swagger-ui.version>
+        <swagger-ui.version>5.33.2</swagger-ui.version>
         <swagger-jaxrs2-jakarta.version>2.2.55</swagger-jaxrs2-jakarta.version>
         <swagger-jaxrs3-jakarta.version>3.0.0</swagger-jaxrs3-jakarta.version> <!-- See https://github.com/swagger-api/swagger-core/issues/4991 -->
         <transaction-api.version>2.0.1</transaction-api.version>
