@@ -107,7 +107,7 @@
         <gentyref.version>1.2.0</gentyref.version>
         <hazelcast.version>5.7.0</hazelcast.version>
         <hibernate.version>7.4.13.Final</hibernate.version>
-        <hibernate-validator.version>9.1.4.Final</hibernate-validator.version>
+        <hibernate-validator.version>9.1.5.Final</hibernate-validator.version>
         <httpclient.version>5.6.5</httpclient.version>
         <httpcore.version>5.4.4</httpcore.version>
         <hsqldb.version>2.7.4</hsqldb.version>
