@@ -10,6 +10,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
 import javax.cache.event.CacheEntryEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +22,8 @@ class CacheGenerationTest {
 	void onChange() {
 		final var listener = new CacheGeneration("unit-generation");
 		final var generation = CacheGeneration.get("unit-generation");
-		final List<CacheEntryEvent<?, ?>> events = List.of(Mockito.mock(CacheEntryEvent.class));
+		final List<CacheEntryEvent<?, ?>> events = new ArrayList<>();
+		events.add(Mockito.mock(CacheEntryEvent.class));
 
 		// No event, no change
 		listener.onRemoved(List.of());
