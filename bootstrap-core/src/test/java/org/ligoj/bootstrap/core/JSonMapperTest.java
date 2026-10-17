@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JSon write/read bench and tests.
+ * JSON write/read bench and tests.
  */
 @Slf4j
 class JSonMapperTest {

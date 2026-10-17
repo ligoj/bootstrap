@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * Basic authenticated CURL processor. Credentials are sent in each request.
  *
- * @see SessionAuthCurlProcessor for session based cookie after a Basi authentication.
+ * @see SessionAuthCurlProcessor for session based cookie after a Basic authentication.
  */
 public class AuthCurlProcessor extends CurlProcessor {
 

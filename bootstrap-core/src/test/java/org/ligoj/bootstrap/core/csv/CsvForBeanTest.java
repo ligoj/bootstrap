@@ -149,7 +149,7 @@ class CsvForBeanTest {
 			buffer.append("name;name;name;name;name;name\n");
 		}
 		final var items = csvForBean.toBean(DummyEntity.class, new StringReader(buffer.toString()),
-				(item, p, v) -> item.setName(v));
+				(item, _, v) -> item.setName(v));
 		Assertions.assertEquals(count, items.size());
 		Assertions.assertNotNull(items.getFirst().getName());
 	}

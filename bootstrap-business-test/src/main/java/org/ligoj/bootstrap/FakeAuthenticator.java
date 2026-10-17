@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import lombok.Setter;
 import org.ligoj.bootstrap.core.crypto.Cbor;
 import org.ligoj.bootstrap.core.crypto.WebAuthnHelper;
 
@@ -45,6 +46,7 @@ public class FakeAuthenticator {
 	 * Signature counter of the next assertion.
 	 */
 	@Getter
+	@Setter
 	private long counter;
 
 	/**
@@ -103,13 +105,13 @@ public class FakeAuthenticator {
 	 */
 	public String attestationObject(final String rpId, final int flags) {
 		final var ec = (ECPublicKey) pair.getPublic();
-		final var cose = new LinkedHashMap<Object, Object>();
+		final var cose = new LinkedHashMap<>();
 		cose.put(1L, 2L);
 		cose.put(3L, (long) WebAuthnHelper.ALG_ES256);
 		cose.put(-1L, 1L);
 		cose.put(-2L, fixed(ec.getW().getAffineX().toByteArray()));
 		cose.put(-3L, fixed(ec.getW().getAffineY().toByteArray()));
-		final var attestation = new LinkedHashMap<Object, Object>();
+		final var attestation = new LinkedHashMap<>();
 		attestation.put("fmt", "none");
 		attestation.put("attStmt", Map.of());
 		attestation.put("authData", authData(rpId, flags | WebAuthnHelper.FLAG_AT, true, cose));
@@ -135,15 +137,6 @@ public class FakeAuthenticator {
 		} catch (final GeneralSecurityException e) {
 			throw new IllegalStateException(e);
 		}
-	}
-
-	/**
-	 * Move the counter forward.
-	 *
-	 * @param counter The next counter value.
-	 */
-	public void setCounter(final long counter) {
-		this.counter = counter;
 	}
 
 	/**

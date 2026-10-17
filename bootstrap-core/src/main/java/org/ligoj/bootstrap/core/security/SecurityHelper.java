@@ -34,7 +34,7 @@ public class SecurityHelper {
 
 	/**
 	 * Replace the username of current authentication by the given one. This is performed by creating a partial copy of
-	 * current {@link SecurityContext}. Is equivalent to a "su" linux command, but without "exit" solution but calling
+	 * current {@link SecurityContext}. Is equivalent to a "su" Linux command, but without "exit" solution but calling
 	 * again this function.
 	 * 
 	 * @param username

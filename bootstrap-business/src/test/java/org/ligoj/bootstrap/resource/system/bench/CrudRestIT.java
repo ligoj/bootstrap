@@ -249,7 +249,7 @@ class CrudRestIT extends AbstractRestTest {
 	}
 
 	/**
-	 * Initialize the data base
+	 * Initialize the database
 	 */
 	private List<Integer> testCreateAll() throws IOException {
 		final var identifiers = new ArrayList<Integer>();

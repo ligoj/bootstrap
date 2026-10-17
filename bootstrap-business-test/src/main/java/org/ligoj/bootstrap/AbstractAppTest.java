@@ -26,7 +26,7 @@ public abstract class AbstractAppTest extends AbstractJpaTest {
 	 * the {@value org.ligoj.bootstrap.core.security.SecurityHelper#ADMIN} virtual authority &mdash; exactly as
 	 * {@code RbacUserDetailsService} does at authentication time. This keeps the "{@code DEFAULT_USER} is an
 	 * administrator" contract working with the {@link org.ligoj.bootstrap.model.system.SystemUser#IS_ADMIN} principal
-	 * based check. Tests requiring a non-administrator principal override it afterwards with
+	 * based check. Tests requiring a non-administrator principal override it afterward with
 	 * {@code initSpringSecurityContext(otherUser)}.
 	 */
 	protected void persistSystemEntities() {

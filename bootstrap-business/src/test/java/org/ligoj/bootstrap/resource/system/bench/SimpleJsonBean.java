@@ -4,7 +4,7 @@
 package org.ligoj.bootstrap.resource.system.bench;
 
 /**
- * Simple bean for JSon tests.
+ * Simple bean for JSON tests.
  */
 class SimpleJsonBean {
 

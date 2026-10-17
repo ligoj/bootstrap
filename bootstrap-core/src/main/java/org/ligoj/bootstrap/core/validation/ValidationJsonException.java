@@ -60,7 +60,7 @@ public class ValidationJsonException extends RuntimeException {
 	private final Map<String, List<Map<String, Serializable>>> errors = new LinkedHashMap<>();
 
 	/**
-	 * JSon constructor.
+	 * JSON constructor.
 	 */
 	public ValidationJsonException() {
 		// Default constructor
@@ -120,7 +120,7 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Constructor for a single error.
 	 *
-	 * @param propertyName       Name of the JSon property
+	 * @param propertyName       Name of the JSON property
 	 * @param errorText          I18N key of the message.
 	 * @param parametersKeyValue Optional key and value pairs.
 	 */
@@ -134,7 +134,7 @@ public class ValidationJsonException extends RuntimeException {
 	/**
 	 * Set a single error on a property, replacing any existing error of this property.
 	 *
-	 * @param propertyName       Name of the JSon property
+	 * @param propertyName       Name of the JSON property
 	 * @param errorText          I18N key of the message.
 	 * @param parametersKeyValue optional parameter, key and value pairs.
 	 */

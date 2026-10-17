@@ -44,7 +44,7 @@ class BeanProcessorTest {
 	}
 
 	/**
-	 * Simple test of non compatible object.
+	 * Simple test of non-compatible object.
 	 */
 	@Test
 	void getValueInvalidBean() {

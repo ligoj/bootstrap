@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JSon pagination test of {@link InMemoryPagination}.
+ * JSON pagination test of {@link InMemoryPagination}.
  */
 @ExtendWith(SpringExtension.class)
 class InMemoryPaginationTest extends AbstractBootTest {

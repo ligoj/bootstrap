@@ -190,7 +190,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * Create a new processor, check the URL, and if failed, throw a {@link ValidationJsonException}
 	 *
 	 * @param url          The URL to check.
-	 * @param propertyName Name of the validation JSon property
+	 * @param propertyName Name of the validation JSON property
 	 * @param errorText    I18N key of the validation message.
 	 */
 	public static void validateAndClose(final String url, final String propertyName, final String errorText) {
@@ -201,7 +201,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * Create a new processor, check the URL, and if failed, throw a {@link ValidationJsonException}
 	 *
 	 * @param url          The URL to check.
-	 * @param propertyName Name of the validation JSon property
+	 * @param propertyName Name of the validation JSON property
 	 * @param errorText    I18N key of the validation message.
 	 * @param noVerifySsl  When <code>true</code> SSL checks are ignored.
 	 * @param proxyHost    Custom proxy host for this process.
@@ -487,7 +487,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * Check the request, and if failed, throw a {@link ValidationJsonException}
 	 *
 	 * @param request      The request to check.
-	 * @param propertyName Name of the validation JSon property
+	 * @param propertyName Name of the validation JSON property
 	 * @param errorText    I18N key of the validation message.
 	 */
 	public void validate(final CurlRequest request, final String propertyName, final String errorText) {
@@ -500,7 +500,7 @@ public class CurlProcessor implements AutoCloseable {
 	 * Check the URL, and if failed, throw a {@link ValidationJsonException}
 	 *
 	 * @param url          The URL to check.
-	 * @param propertyName Name of the validation JSon property name for {@link ValidationJsonException} when the check
+	 * @param propertyName Name of the validation JSON property name for {@link ValidationJsonException} when the check
 	 *                     fails.
 	 * @param errorText    I18N key of the validation message when the check fails.
 	 */

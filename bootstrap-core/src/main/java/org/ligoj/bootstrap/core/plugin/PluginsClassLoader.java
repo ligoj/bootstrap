@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 public class PluginsClassLoader extends URLClassLoader {
 
 	/**
-	 * Property enabling the plug-ins. Default is <code>true</code>. When <code>false</code> (safe mode), the plug-ins are
+	 * Property enabling the plugins. Default is <code>true</code>. When <code>false</code> (safe mode), the plugins are
 	 * not loaded.
 	 */
 	public static final String ENABLED_PROPERTY = "ligoj.plugin.enabled";
@@ -55,11 +55,11 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	public static final String HOME_DIR_FOLDER = ".ligoj";
 	/**
-	 * Plug-ins directory inside the home property
+	 * plugins directory inside the home property
 	 */
 	public static final String PLUGINS_DIR = "plugins";
 	/**
-	 * Plug-ins export directory inside the home property
+	 * plugins export directory inside the home property
 	 */
 	public static final String EXPORT_DIR = "export";
 
@@ -69,15 +69,15 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String BOOTSTRAP_PRIVATE_FILE = "META-INF/resources/webjars/bootstrap.private.js";
 
 	/**
-	 * Pattern used to extract the version from a JAR plug-in file name.
+	 * Pattern used to extract the version from a JAR plugin file name.
 	 */
 	public static final Pattern VERSION_PATTERN = Pattern
 			.compile("(-(\\d[\\da-zA-Z]*(\\.[\\da-zA-Z]+){1,3}(-SNAPSHOT)?))\\.jar$");
 
 	/**
 	 * Optional system property pointing to the truststore (PKCS12 or JKS) containing the trusted code-signing
-	 * certificates of the plug-in vendors. When undefined, defaults to the {@value #SIGNATURE_TRUSTSTORE_FILE} file
-	 * inside the home directory. When the truststore is available, the signature of each plug-in JAR is validated
+	 * certificates of the plugin vendors. When undefined, defaults to the {@value #SIGNATURE_TRUSTSTORE_FILE} file
+	 * inside the home directory. When the truststore is available, the signature of each plugin JAR is validated
 	 * against it: a valid signature chaining to this truststore is reported as
 	 * {@link PluginSignature.Status#VERIFIED}.
 	 */
@@ -97,9 +97,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String SIGNATURE_TRUSTSTORE_PASSWORD_PROPERTY = "ligoj.plugin.signature.truststore.password";
 
 	/**
-	 * Optional system property (default <code>false</code>). When <code>true</code>, only the plug-ins with the
+	 * Optional system property (default <code>false</code>). When <code>true</code>, only the plugins with the
 	 * {@link PluginSignature.Status#VERIFIED} status join the classpath. When the truststore is missing or cannot be
-	 * read, no plug-in can be verified and all of them are excluded (fail closed).
+	 * read, no plugin can be verified and all of them are excluded (fail closed).
 	 */
 	public static final String SIGNATURE_REQUIRED_PROPERTY = "ligoj.plugin.signature.required";
 
@@ -120,7 +120,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	private final Path homeDirectory;
 
 	/**
-	 * The plug-in directory, inside the home directory.
+	 * The plugin directory, inside the home directory.
 	 */
 	@Getter
 	private final Path pluginDirectory;
@@ -129,7 +129,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	private final String digestVersion;
 
 	/**
-	 * Read only plug-in safe mode. When <code>false</code>, external plug-ins are not participating in the classpath.
+	 * Read only plugin safe mode. When <code>false</code>, external plugins are not participating in the classpath.
 	 */
 	@Getter
 	protected final boolean enabled;
@@ -137,8 +137,8 @@ public class PluginsClassLoader extends URLClassLoader {
 	private final ClassLoader parent;
 
 	/**
-	 * Code signature state of each installed plug-in, keyed by the plug-in artifact identifier (e.g.
-	 * <code>plugin-prov</code>). Computed once, at startup, while the plug-ins join the classpath.
+	 * Code signature state of each installed plugin, keyed by the plugin artifact identifier (e.g.
+	 * <code>plugin-prov</code>). Computed once, at startup, while the plugins join the classpath.
 	 */
 	@Getter
 	private final Map<String, PluginSignature> signatures = new HashMap<>();
@@ -150,14 +150,14 @@ public class PluginsClassLoader extends URLClassLoader {
 	private final KeyStore signatureTrustStore;
 
 	/**
-	 * When <code>true</code>, plug-ins without an acceptable signature are excluded from the classpath.
+	 * When <code>true</code>, plugins without an acceptable signature are excluded from the classpath.
 	 */
 	private final boolean signatureRequired;
 
 	/**
-	 * Initialize the plug-in {@link URLClassLoader} and the related directories.
+	 * Initialize the plugin {@link URLClassLoader} and the related directories.
 	 *
-	 * @throws IOException              exception when reading plug-ins directory
+	 * @throws IOException              exception when reading plugins directory
 	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
 	 */
 	public PluginsClassLoader() throws IOException, NoSuchAlgorithmException {
@@ -173,8 +173,8 @@ public class PluginsClassLoader extends URLClassLoader {
 					SIGNATURE_REQUIRED_PROPERTY);
 		}
 
-		// Create the plug-in directory as needed
-		log.info("Initialize the plug-ins from directory from {}", homeDirectory);
+		// Create the plugin directory as needed
+		log.info("Initialize the plugins from directory from {}", homeDirectory);
 		Files.createDirectories(this.pluginDirectory);
 
 		// Add the home itself in the class-path
@@ -191,9 +191,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Child-first class loading: a class found in a plug-in jar of the plug-ins directory wins over the same class
-	 * available from the parent class-path, so a plug-in shipped inside the application (WAR) can be overridden by
-	 * a newer jar dropped in the plug-ins directory. Classes absent from the plug-in jars (JDK, frameworks, the
+	 * Child-first class loading: a class found in a plugin jar of the plugins directory wins over the same class
+	 * available from the parent class-path, so a plugin shipped inside the application (WAR) can be overridden by
+	 * a newer jar dropped in the plugins directory. Classes absent from the plugin jars (JDK, frameworks, the
 	 * application itself) are still resolved by the parent, and each class is defined once per name.
 	 */
 	@Override
@@ -202,7 +202,7 @@ public class PluginsClassLoader extends URLClassLoader {
 			var clazz = findLoadedClass(name);
 			if (clazz == null) {
 				try {
-					// The plug-in jars first
+					// The plugin jars first
 					clazz = findClass(name);
 				} catch (final ClassNotFoundException _) {
 					// Then the regular parent-first delegation
@@ -271,7 +271,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Complete the class-path with plug-ins jars
+	 * Complete the class-path with plugins jars
 	 *
 	 * @return The version digest.
 	 * @throws NoSuchAlgorithmException MD5 digest is unavailable for version ciphering.
@@ -282,16 +282,16 @@ public class PluginsClassLoader extends URLClassLoader {
 		// Value : The resolved Path
 		final var versionFileToPath = new HashMap<String, Path>();
 
-		// Ordered last version (to be enabled) plug-ins.
+		// Ordered last version (to be enabled) plugins.
 		final var enabledPlugins = getInstalledPlugins(versionFileToPath, false);
 		final var buffer = new StringBuilder();
 
-		// Add the filtered plug-in files to the class-path and deploy them
+		// Add the filtered plugin files to the class-path and deploy them
 		for (final var plugin : enabledPlugins.entrySet()) {
 			final var pluginPath = versionFileToPath.get(plugin.getValue());
 			final var uri = pluginPath.toUri();
 
-			// Verify the code signature of this plug-in before it joins the classpath
+			// Verify the code signature of this plugin before it joins the classpath
 			final var signature = verifySignature(pluginPath);
 			this.signatures.put(plugin.getKey(), signature);
 			if (isSignatureRejected(signature)) {
@@ -314,14 +314,14 @@ public class PluginsClassLoader extends URLClassLoader {
 		final var digest = Base64.getEncoder().encodeToString(mDigest.digest());
 		System.setProperty("project.version.digest", digest);
 
-		// Expose the bootstrap code compiled from all plug-ins
+		// Expose the bootstrap code compiled from all plugins
 		final var boots = new StringBuilder();
 		for (final var bootUrl : Collections.list(getResources(BOOTSTRAP_PRIVATE_FILE))) {
 			boots.append(getBootstrapCode(bootUrl)).append('\n');
 		}
 		System.setProperty("project.bootstrap.private", boots.toString());
 
-		log.info("Plugins ClassLoader has added {} plug-ins and ignored {} old plug-ins, digest {}",
+		log.info("Plugins ClassLoader has added {} plugins and ignored {} old plugins, digest {}",
 				enabledPlugins.size(), versionFileToPath.size() - enabledPlugins.size(), digest);
 		return digest;
 	}
@@ -363,25 +363,25 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Indicate the given signature excludes the plug-in from the classpath: only relevant in
+	 * Indicate the given signature excludes the plugin from the classpath: only relevant in
 	 * {@value #SIGNATURE_REQUIRED_PROPERTY} mode, where the minimal accepted status is always
-	 * {@link PluginSignature.Status#VERIFIED}. Without a usable truststore, no plug-in can be verified, so all of them
+	 * {@link PluginSignature.Status#VERIFIED}. Without a usable truststore, no plugin can be verified, so all of them
 	 * are excluded (fail closed).
 	 *
-	 * @param signature The computed signature of the plug-in.
-	 * @return <code>true</code> when the plug-in must not join the classpath.
+	 * @param signature The computed signature of the plugin.
+	 * @return <code>true</code> when the plugin must not join the classpath.
 	 */
 	private boolean isSignatureRejected(final PluginSignature signature) {
 		return signatureRequired && signature.status().compareTo(PluginSignature.Status.VERIFIED) < 0;
 	}
 
 	/**
-	 * Verify the code signature of the given plug-in JAR: every content entry must be signed by a common signer and
+	 * Verify the code signature of the given plugin JAR: every content entry must be signed by a common signer and
 	 * pass the digest check. When a truststore is configured ({@value #SIGNATURE_TRUSTSTORE_PROPERTY}), the signer
 	 * certificate path is additionally validated (PKIX) against it to grant the
 	 * {@link PluginSignature.Status#VERIFIED} status.
 	 *
-	 * @param pluginFile The plug-in JAR file.
+	 * @param pluginFile The plugin JAR file.
 	 * @return The computed signature, never <code>null</code>.
 	 */
 	protected PluginSignature verifySignature(final Path pluginFile) {
@@ -473,7 +473,7 @@ public class PluginsClassLoader extends URLClassLoader {
 
 	/**
 	 * Indicate the given certificate can sign code: not a CA certificate, and when its extended key usage is
-	 * restricted, it includes the code signing usage. A trusted TLS server certificate cannot verify a plug-in.
+	 * restricted, it includes the code signing usage. A trusted TLS server certificate cannot verify a plugin.
 	 *
 	 * @param certificate The signer certificate.
 	 * @return <code>true</code> when this certificate is intended for code signing.
@@ -514,13 +514,13 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Return the mapping of the elected last plug-in name to the corresponding version file.
+	 * Return the mapping of the elected last plugin name to the corresponding version file.
 	 *
 	 * @param versionFileToPath The mapping filled by this method. Key : The filename without extension and with
 	 *                          extended comparable version. Value : The resolved Path.
 	 * @param javadocFiler      When true, only Javadoc jar are analyzed, otherwise they are excluded.
-	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
-	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
+	 * @return The mapping of the elected last plugin name to the corresponding version file. Key: the plugin
+	 * artifactId resolved from the filename. Value: the plugin artifactId with its extended comparable
 	 * version. The return keys are in reverse alphabetical order. No dependency ordering is applied.
 	 * @throws IOException When file list failed.
 	 */
@@ -532,17 +532,17 @@ public class PluginsClassLoader extends URLClassLoader {
 		}
 		final var enabledPlugins = new TreeMap<String, String>(Comparator.reverseOrder());
 
-		// Remove old plug-in from the list
+		// Remove old plugin from the list
 		versionFiles.keySet().stream().sorted(Comparator.reverseOrder())
 				.forEach(p -> enabledPlugins.putIfAbsent(versionFiles.get(p), p));
 		return enabledPlugins;
 	}
 
 	/**
-	 * Return the mapping of the installed plug-ins. Only the last version is returned.
+	 * Return the mapping of the installed plugins. Only the last version is returned.
 	 *
-	 * @return The mapping of the elected last plug-in name to the corresponding version file. Key: the plug-in
-	 * artifactId resolved from the filename. Value: the plug-in artifactId with its extended comparable
+	 * @return The mapping of the elected last plugin name to the corresponding version file. Key: the plugin
+	 * artifactId resolved from the filename. Value: the plugin artifactId with its extended comparable
 	 * version.
 	 * @throws IOException When file list failed.
 	 */
@@ -551,7 +551,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Return the plug-in class loader from the current class loader.
+	 * Return the plugin class loader from the current class loader.
 	 *
 	 * @return the closest {@link PluginsClassLoader} instance from the current thread's {@link ClassLoader}. May be
 	 * <code>null</code>.
@@ -561,7 +561,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Return the plug-in class loader from the given class loader's hierarchy.
+	 * Return the plugin class loader from the given class loader's hierarchy.
 	 *
 	 * @param cl The {@link ClassLoader} to inspect.
 	 * @return the closest {@link PluginsClassLoader} instance from the given {@link ClassLoader}. May be
@@ -586,9 +586,9 @@ public class PluginsClassLoader extends URLClassLoader {
 	/**
 	 * The content of the bootstrap file.
 	 *
-	 * @param file The bootstrap code URL of a plug-in.
+	 * @param file The bootstrap code URL of a plugin.
 	 * @return The content of the file.
-	 * @throws IOException When plug-in file cannot be read.
+	 * @throws IOException When plugin file cannot be read.
 	 * @see #BOOTSTRAP_PRIVATE_FILE
 	 */
 	protected String getBootstrapCode(final URL file) throws IOException {
@@ -598,11 +598,11 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Copy resources needed to be exported from the JAR plug-in to the home.
+	 * Copy resources needed to be exported from the JAR plugin to the home.
 	 *
-	 * @param plugin     The plug-in identifier.
-	 * @param pluginFile The target plug-in file.
-	 * @throws IOException When plug-in file cannot be read.
+	 * @param plugin     The plugin identifier.
+	 * @param pluginFile The target plugin file.
+	 * @throws IOException When plugin file cannot be read.
 	 */
 	protected void copyExportedResources(final String plugin, final Path pluginFile) throws IOException {
 		try (var fileSystem = FileSystems.newFileSystem(pluginFile, this)) {
@@ -617,7 +617,7 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Copy a resource as needed to be exported from the JAR plug-in to the home.
+	 * Copy a resource as needed to be exported from the JAR plugin to the home.
 	 */
 	private void copyExportedResource(final String plugin, final Path targetExport, final Path root, final Path from) {
 		final var to = targetExport.resolve(root.relativize(from).toString());
@@ -632,12 +632,12 @@ public class PluginsClassLoader extends URLClassLoader {
 	}
 
 	/**
-	 * Copy a resource needed to be exported from the JAR plug-in to the home.
+	 * Copy a resource needed to be exported from the JAR plugin to the home.
 	 *
 	 * @param from The source file to the destination file. When it is a directory, the destination directory is created
 	 *             without content copy.
 	 * @param to   The destination file.
-	 * @throws IOException When plug-in file cannot be copied.
+	 * @throws IOException When plugin file cannot be copied.
 	 */
 	protected void copy(final Path from, final Path to) throws IOException {
 		if (Files.isDirectory(from)) {
@@ -654,7 +654,7 @@ public class PluginsClassLoader extends URLClassLoader {
 		final String noVersionFile;
 		final String fileWithExtVersion;
 		if (matcher.find()) {
-			// This plug-in has a version, extend the version for the next natural string ordering
+			// This plugin has a version, extend the version for the next natural string ordering
 			noVersionFile = file.substring(0, matcher.start());
 			fileWithExtVersion = noVersionFile + "-" + toExtendedVersion(matcher.group(1));
 		} else {

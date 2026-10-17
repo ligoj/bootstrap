@@ -298,7 +298,7 @@ public class WebAuthnHelper {
 
 	/**
 	 * Whether the client origin is accepted: one of the configured origins when any, otherwise an origin whose host
-	 * is the relying party identifier or one of its sub-domains, over HTTPS (HTTP accepted for localhost).
+	 * is the relying party identifier or one of its subdomains, over HTTPS (HTTP accepted for localhost).
 	 *
 	 * @param origin  The origin of the client data.
 	 * @param rpId    The relying party identifier.

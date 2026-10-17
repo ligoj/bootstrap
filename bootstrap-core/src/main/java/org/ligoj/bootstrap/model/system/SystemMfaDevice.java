@@ -20,7 +20,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * A multi-factor authentication device registered by a user: a TOTP authenticator application, or a passkey
+ * A multifactor authentication device registered by a user: a TOTP authenticator application, or a passkey
  * (WebAuthn). The secret (TOTP seed, or the passkey credential data) is stored encrypted and never serialized. A
  * user may register several devices, each named uniquely; one of them is the default one proposed at verification.
  */

@@ -21,9 +21,9 @@ public class ApplicationSettings {
 
 	/**
 	 * Display name of the application, surfaced in the SPA's sidebar brand,
-	 * the About view title, and the licence dialog. Resolved from the
+	 * the About view title, and the license dialog. Resolved from the
 	 * {@code ligoj.name} property at startup and defaults to {@code "Ligoj"}
-	 * when the host hasn't configured a rebrand. Static (read at boot from
+	 * when the host hasn't configured a rebranding. Static (read at boot from
 	 * the Spring environment) — switching brands requires a restart, which
 	 * is consistent with the other build-time settings on this bean.
 	 */

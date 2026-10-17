@@ -63,7 +63,7 @@ public abstract class AbstractAudited<K extends Serializable> extends AbstractPe
 	private String creationContext;
 
 	/**
-	 * An optional free form meta-data
+	 * An optional free form metadata
 	 */
 	@Column(length = 2048)
 	@JdbcTypeCode(SqlTypes.JSON)

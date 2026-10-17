@@ -58,7 +58,7 @@ public class AuditedBean<U extends Serializable, K extends Serializable> {
 	private String creationContext;
 
 	/**
-	 * An optional free form meta-data
+	 * An optional free form metadata
 	 */
 	private Map<String, Object> metadata;
 

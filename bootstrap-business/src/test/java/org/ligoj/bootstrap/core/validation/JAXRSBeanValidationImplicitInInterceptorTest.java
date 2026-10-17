@@ -108,7 +108,7 @@ class JAXRSBeanValidationImplicitInInterceptorTest extends AbstractBootTest {
 		}
 
 		/**
-		 * @param param Simple not null path parameter parameter.
+		 * @param param Simple not null path parameter.
 		 */
 		public void jsr349Object(final @NotNull @PathParam("p") Object param) {
 			//

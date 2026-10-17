@@ -45,7 +45,7 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Multi-factor authentication of the current user: registered devices (TOTP authenticator applications, passkeys),
+ * Multifactor authentication of the current user: registered devices (TOTP authenticator applications, passkeys),
  * enrollment, default device and verification. The front-end enforces the second factor right after any primary
  * authentication (form, OIDC, ...) when at least one device is registered; this resource manages the devices and
  * verifies the codes and assertions. Passkey challenges are single-use, per user, kept in a cluster cache for
@@ -440,7 +440,7 @@ public class MfaResource {
 	}
 
 	/**
-	 * The AAGUID as an UUID string, <code>null</code> when absent or zero (undisclosed).
+	 * The AAGUID as a UUID string, <code>null</code> when absent or zero (undisclosed).
 	 */
 	static String toAaguid(final byte[] aaguid) {
 		if (aaguid == null || aaguid.length != 16) {

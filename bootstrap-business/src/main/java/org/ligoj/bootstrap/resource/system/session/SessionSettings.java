@@ -54,7 +54,7 @@ public class SessionSettings {
 	private List<String> roles;
 
 	/**
-	 * Adminstrator flag.
+	 * Administrator flag.
 	 */
 	@Setter
 	private boolean isAdmin;
