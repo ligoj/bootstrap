@@ -32,6 +32,11 @@ class ConfigurationTestCache implements CacheManagerAware {
 		tokens2.setExpiryPolicyFactory(TouchedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, 1)));
 		tokens2.setEvictionConfig(new EvictionConfig());
 		cacheManager.createCache("test-cache-2", tokens2);
+
+		final var tokens3 = configurer.newCacheConfig("test-cache-3");
+		tokens3.setExpiryPolicyFactory(CronExpiryPolicy.factoryOf("* * * * * *"));
+		tokens3.setEvictionConfig(new EvictionConfig());
+		cacheManager.createCache("test-cache-3", tokens3);
 	}
 
 }

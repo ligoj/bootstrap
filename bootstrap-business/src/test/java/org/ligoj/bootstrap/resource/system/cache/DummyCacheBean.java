@@ -76,4 +76,15 @@ class DummyCacheBean {
 		hit = value;
 	}
 
+	/**
+	 * Cache efficiency test for "test-cache-3"
+	 *
+	 * @param entry Key.
+	 * @return the last #hit counter known by the cache.
+	 */
+	@CacheResult(cacheName = "test-cache-3")
+	int getHit3(@CacheKey final String entry) {
+		return ++hit;
+	}
+
 }

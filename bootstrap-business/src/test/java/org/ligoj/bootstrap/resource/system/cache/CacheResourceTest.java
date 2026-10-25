@@ -142,6 +142,27 @@ class CacheResourceTest extends AbstractBootTest {
 		Assertions.assertEquals(9, DummyCacheBean.hit);
 	}
 
+	/**
+	 * Tested cache expires at each second.
+	 */
+	@Test
+	void expiryCronPolicy() throws InterruptedException {
+		DummyCacheBean.hit = 0;
+		cacheResource.invalidate("test-cache-3");
+		// Start just after a second, far from the next one
+		while (System.currentTimeMillis() % 1000 > 100) {
+			Thread.sleep(10);
+		}
+		Assertions.assertEquals(1, dummyCacheBean.getHit3("entry-key"));
+		Assertions.assertEquals(1, dummyCacheBean.getHit3("entry-key"));
+		Assertions.assertEquals(1, DummyCacheBean.hit);
+		Thread.sleep(1100);
+
+		// The next second passed
+		Assertions.assertEquals(2, dummyCacheBean.getHit3("entry-key"));
+		Assertions.assertEquals(2, DummyCacheBean.hit);
+	}
+
 	@Test
 	void getCaches() {
 		DummyCacheBean.hit = 0;
@@ -150,7 +171,7 @@ class CacheResourceTest extends AbstractBootTest {
 		doManyHits();
 
 		final var caches = cacheResource.getCaches();
-		Assertions.assertEquals(11, caches.size());
+		Assertions.assertEquals(12, caches.size());
 		caches.stream().filter(c -> "test-cache".equals(c.getId())).forEach(this::assertCache);
 	}
 

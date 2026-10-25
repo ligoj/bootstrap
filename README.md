@@ -143,6 +143,7 @@ Three sources, depending on the key:
 | `ligoj.hook.timeout` | `30` (seconds) | runtime, system | Process timeout of the hooks defining a zero timeout (a hook without timeout gets 10 seconds); the process is destroyed at the timeout |
 | `ligoj.file.path` | `^$` (none) | runtime | Comma separated regular expressions of the allowed `/system/file` paths, matched against the canonical path |
 | `cache.<name>.ttl` | per cache, see below | `Environment`, at startup | Cache entry lifetime in seconds, `-1` for eternal |
+| `cache.<name>.cron` | none | `Environment`, at startup | Fixed expiry times of the cache entries, as a Spring CRON expression in the JVM time zone, such as `0 0 3 * * *` for every day at 03:00: an entry expires at the first time after its creation or update (`CronExpiryPolicy`). Takes precedence over `cache.<name>.ttl`; an invalid expression is logged and the TTL applies |
 | `cache.location` | `classpath:META-INF/hazelcast-local.xml` | placeholder | Hazelcast configuration |
 | `hazelcast.statistics.enable` | `false` | placeholder | Cache statistics |
 | `security.filter.methods` | `GET,POST,DELETE,PUT` | placeholder | HTTP methods granted by an authorization without method |

@@ -81,6 +81,28 @@ class MergedHazelCastManagerFactoryBeanTest {
 		Assertions.assertTrue(config.getExpiryPolicyFactory().create().getExpiryForUpdate().isEternal());
 	}
 
+	/**
+	 * A CRON expression takes precedence over the TTL.
+	 */
+	@Test
+	void newCacheConfigCron() {
+		when(bean.env.getProperty("cache.test.cron")).thenReturn(" 0 0 3 * * * ");
+		when(bean.env.getProperty("cache.test.ttl")).thenReturn("3600");
+		final var policy = bean.newCacheConfig("test").getExpiryPolicyFactory().create();
+		Assertions.assertEquals("0 0 3 * * *", ((CronExpiryPolicy) policy).getExpression());
+	}
+
+	/**
+	 * An invalid CRON expression is ignored: the TTL applies.
+	 */
+	@Test
+	void newCacheConfigInvalidCron() {
+		when(bean.env.getProperty("cache.test.cron")).thenReturn("every night");
+		when(bean.env.getProperty("cache.test.ttl")).thenReturn("3600");
+		final var config = bean.newCacheConfig("test");
+		Assertions.assertEquals(3600, config.getExpiryPolicyFactory().create().getExpiryForUpdate().getDurationAmount());
+	}
+
 	@Test
 	void newCacheConfigTTL() {
 		when(bean.env.getProperty("cache.test.ttl")).thenReturn("3600");

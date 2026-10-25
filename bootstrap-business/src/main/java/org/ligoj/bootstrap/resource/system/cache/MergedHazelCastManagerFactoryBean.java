@@ -10,6 +10,7 @@ import com.hazelcast.config.EvictionConfig;
 import com.hazelcast.config.EvictionPolicy;
 import jakarta.validation.constraints.NotNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.scheduling.support.CronExpression;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  * Factory of cache with modular {@link CacheConfig} creation delegate to
  * {@link CacheManagerAware} implementors.
  */
+@Slf4j
 public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean, ApplicationContextAware, CacheConfigurer {
 
 	/**
@@ -86,7 +89,15 @@ public class MergedHazelCastManagerFactoryBean implements FactoryBean<CacheManag
 		// Post configuration
 		postConfigure(config);
 
-		// Last chance to override the default TTL from system configuration
+		// Last chance to override the default TTL from system configuration: fixed times first
+		final var cron = StringUtils.trimToNull(env.getProperty("cache." + name + ".cron"));
+		if (cron != null) {
+			if (CronExpression.isValidExpression(cron)) {
+				config.setExpiryPolicyFactory(CronExpiryPolicy.factoryOf(cron));
+				return config;
+			}
+			log.error("Invalid CRON expression '{}' of cache.{}.cron, the TTL applies", cron, name);
+		}
 		final var ttl = StringUtils.trimToNull(env.getProperty("cache." + name + ".ttl"));
 		if (ttl == null) {
 			config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(defaultDuration));
