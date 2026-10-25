@@ -85,7 +85,7 @@
         <activation.version>2.0.1</activation.version>
         <activation-api.version>2.1.4</activation-api.version>
         <apacheds.version>1.5.5</apacheds.version>
-        <aspectj.version>1.9.25.1</aspectj.version>
+        <aspectj.version>1.9.26</aspectj.version>
         <awaitility.version>4.3.0</awaitility.version>
         <awaitility-proxy.version>3.1.6</awaitility-proxy.version>
         <byte-buddy.version>1.18.15</byte-buddy.version>
