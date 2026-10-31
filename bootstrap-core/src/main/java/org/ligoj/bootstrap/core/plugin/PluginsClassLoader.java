@@ -9,7 +9,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -104,6 +109,13 @@ public class PluginsClassLoader extends URLClassLoader {
 	public static final String SIGNATURE_REQUIRED_PROPERTY = "ligoj.plugin.signature.required";
 
 	/**
+	 * Optional system property (default <code>true</code>). When <code>true</code>, a plugin with a missing parent
+	 * plugin stays out of the classpath. Set it to <code>false</code> when a parent has no Maven descriptor, such as a
+	 * module opened in an IDE.
+	 */
+	public static final String DEPENDENCY_CHECK_PROPERTY = "ligoj.plugin.dependency.check";
+
+	/**
 	 * Extended key usage of the code signing certificates.
 	 */
 	private static final String CODE_SIGNING_USAGE = "1.3.6.1.5.5.7.3.3";
@@ -142,6 +154,12 @@ public class PluginsClassLoader extends URLClassLoader {
 	 */
 	@Getter
 	private final Map<String, PluginSignature> signatures = new HashMap<>();
+
+	/**
+	 * Missing parent plugins of each plugin kept out of the classpath, keyed by the plugin artifact identifier.
+	 */
+	@Getter
+	private final Map<String, List<String>> missingDependencies = new TreeMap<>();
 
 	/**
 	 * The trusted code-signing certificates, <code>null</code> when the truststore is not loadable: file missing at the
@@ -285,11 +303,11 @@ public class PluginsClassLoader extends URLClassLoader {
 		// Ordered last version (to be enabled) plugins.
 		final var enabledPlugins = getInstalledPlugins(versionFileToPath, false);
 		final var buffer = new StringBuilder();
+		final var acceptedPlugins = new LinkedHashMap<String, Path>();
 
-		// Add the filtered plugin files to the class-path and deploy them
+		// Filter the plugin files
 		for (final var plugin : enabledPlugins.entrySet()) {
 			final var pluginPath = versionFileToPath.get(plugin.getValue());
-			final var uri = pluginPath.toUri();
 
 			// Verify the code signature of this plugin before it joins the classpath
 			final var signature = verifySignature(pluginPath);
@@ -301,11 +319,17 @@ public class PluginsClassLoader extends URLClassLoader {
 			}
 			log.info("Plugin {} signature: {}{}", plugin.getKey(), signature.status(),
 					signature.signer() == null ? "" : " by " + signature.signer());
+			acceptedPlugins.put(plugin.getKey(), pluginPath);
+		}
+		excludeMissingDependencies(acceptedPlugins);
 
+		// Add the filtered plugin files to the class-path and deploy them
+		for (final var plugin : acceptedPlugins.entrySet()) {
+			final var uri = plugin.getValue().toUri();
 			log.debug("Add plugin {}", uri);
-			copyExportedResources(plugin.getKey(), pluginPath);
+			copyExportedResources(plugin.getKey(), plugin.getValue());
 			addURL(uri.toURL());
-			buffer.append(plugin.getValue());
+			buffer.append(enabledPlugins.get(plugin.getKey()));
 		}
 
 		// Build a digestion version
@@ -322,8 +346,111 @@ public class PluginsClassLoader extends URLClassLoader {
 		System.setProperty("project.bootstrap.private", boots.toString());
 
 		log.info("Plugins ClassLoader has added {} plugins and ignored {} old plugins, digest {}",
-				enabledPlugins.size(), versionFileToPath.size() - enabledPlugins.size(), digest);
+				acceptedPlugins.size(), versionFileToPath.size() - enabledPlugins.size(), digest);
 		return digest;
+	}
+
+	/**
+	 * Remove from the given plugins the ones with a missing parent plugin: scanning such a plugin would stop the
+	 * application, its parent classes being unavailable. An excluded plugin may also be the parent of another one.
+	 *
+	 * @param plugins The plugins accepted so far. Key: the plugin artifact identifier. Value: the plugin file.
+	 */
+	private void excludeMissingDependencies(final Map<String, Path> plugins) {
+		if (!Boolean.parseBoolean(System.getProperty(DEPENDENCY_CHECK_PROPERTY, "true"))) {
+			return;
+		}
+		final var dependencies = new HashMap<String, Map<String, String>>();
+		plugins.forEach((plugin, path) -> dependencies.put(plugin, readDependencies(plugin, path)));
+		while (plugins.keySet().removeIf(plugin -> hasMissingDependency(plugin, dependencies.get(plugin), plugins))) {
+			// Next pass, without the excluded plugins
+		}
+	}
+
+	/**
+	 * Indicate a parent of the given plugin is neither a plugin of the given ones, nor embedded in the application.
+	 */
+	private boolean hasMissingDependency(final String plugin, final Map<String, String> dependencies, final Map<String, Path> plugins) {
+		final var missing = dependencies.entrySet().stream()
+				.filter(d -> !plugins.containsKey(d.getKey())
+						&& parent.getResource("META-INF/maven/" + d.getValue() + "/" + d.getKey() + "/pom.xml") == null)
+				.map(Map.Entry::getKey).toList();
+		if (missing.isEmpty()) {
+			return false;
+		}
+		missingDependencies.put(plugin, missing);
+		log.error("Plugin {} is excluded from the classpath: it requires the missing plugins {}. Install them and restart",
+				plugin, missing);
+		return true;
+	}
+
+	/**
+	 * Return the parent plugins declared by the Maven descriptor of the given plugin jar: the dependencies provided
+	 * at runtime and named by the plugin convention. A plugin without a readable descriptor has no known parent.
+	 *
+	 * @param plugin     The plugin artifact identifier.
+	 * @param pluginFile The plugin file.
+	 * @return The parent plugins. Key: the artifact identifier. Value: the group identifier.
+	 */
+	protected Map<String, String> readDependencies(final String plugin, final Path pluginFile) {
+		final var descriptor = "/" + plugin + "/pom.xml";
+		try (var jar = new JarFile(pluginFile.toFile(), false)) {
+			final var entry = jar.stream()
+					.filter(e -> e.getName().startsWith("META-INF/maven/") && e.getName().endsWith(descriptor)).findFirst();
+			if (entry.isEmpty()) {
+				return Map.of();
+			}
+			try (var input = jar.getInputStream(entry.get())) {
+				return readDependencies(input, entry.get().getName().split("/")[2]);
+			}
+		} catch (final IOException | ParserConfigurationException | SAXException e) {
+			log.warn("Unable to read the parent plugins of {}: {}", plugin, e.getMessage());
+			return Map.of();
+		}
+	}
+
+	/**
+	 * Read the parent plugins from a Maven descriptor, external entities being refused.
+	 */
+	private Map<String, String> readDependencies(final InputStream descriptor, final String group)
+			throws IOException, ParserConfigurationException, SAXException {
+		final var factory = DocumentBuilderFactory.newInstance();
+		factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		final var builder = factory.newDocumentBuilder();
+		builder.setErrorHandler(null);
+		final var result = new LinkedHashMap<String, String>();
+		for (final var dependencies : children(builder.parse(descriptor).getDocumentElement(), "dependencies")) {
+			for (final var dependency : children(dependencies, "dependency")) {
+				final var artifact = text(dependency, "artifactId");
+				if (artifact.startsWith("plugin-") && "provided".equals(text(dependency, "scope"))) {
+					final var dependencyGroup = text(dependency, "groupId");
+					result.put(artifact, dependencyGroup.startsWith("${") ? group : dependencyGroup);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Return the direct children of an element with the given name.
+	 */
+	private List<Element> children(final Element parentElement, final String name) {
+		final var result = new ArrayList<Element>();
+		final var nodes = parentElement.getChildNodes();
+		for (var index = 0; index < nodes.getLength(); index++) {
+			if (nodes.item(index) instanceof Element element && name.equals(element.getTagName())) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Return the trimmed text of the first direct child with the given name, empty when there is none.
+	 */
+	private String text(final Element parentElement, final String name) {
+		return children(parentElement, name).stream().findFirst().map(e -> e.getTextContent().trim()).orElse("");
 	}
 
 	/**

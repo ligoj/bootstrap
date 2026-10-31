@@ -133,6 +133,152 @@ class PluginsClassLoaderTest {
 		}
 	}
 
+	/**
+	 * Write a plugin jar with an embedded Maven descriptor.
+	 */
+	private void writePlugin(final Path plugins, final String artifact, final String pom) throws IOException {
+		try (var out = new JarOutputStream(Files.newOutputStream(plugins.resolve(artifact + "-1.0.0.jar")))) {
+			// The descriptor of an embedded library, then a resource: not the descriptor of this plugin
+			out.putNextEntry(new JarEntry("META-INF/maven/org.sample/library/pom.xml"));
+			out.closeEntry();
+			out.putNextEntry(new JarEntry("sample/" + artifact + "/pom.xml"));
+			out.closeEntry();
+			out.putNextEntry(new JarEntry("META-INF/maven/org.ligoj.plugin/" + artifact + "/pom.xml"));
+			out.write(pom.getBytes(StandardCharsets.UTF_8));
+			out.closeEntry();
+		}
+	}
+
+	private String pom(final String... dependencies) {
+		return "<project>\n<groupId>org.ligoj.plugin</groupId>\n<dependencies>\n" + String.join("\n", dependencies)
+				+ "\n</dependencies>\n<build><plugins/></build>\n</project>";
+	}
+
+	private String parent(final String artifact) {
+		return "<dependency><groupId>org.ligoj.plugin</groupId><artifactId>" + artifact
+				+ "</artifactId><scope>provided</scope></dependency>";
+	}
+
+	private PluginsClassLoader newLoader(final Path home) throws IOException, NoSuchAlgorithmException {
+		System.setProperty(PluginsClassLoader.HOME_DIR_PROPERTY, home.toString());
+		return new PluginsClassLoader();
+	}
+
+	private boolean isLoaded(final PluginsClassLoader loader, final String artifact) {
+		return java.util.Arrays.stream(loader.getURLs()).anyMatch(u -> u.toString().contains("/" + artifact + "-1.0.0.jar"));
+	}
+
+	/**
+	 * A plugin with a missing parent stays out of the class-path, like the plugins depending on it, instead of
+	 * stopping the application at the class scanning. The other plugins are still loaded.
+	 */
+	@Test
+	void missingParentExcludesThePlugin() throws Exception {
+		final var home = Files.createTempDirectory("ligoj-home");
+		try {
+			final var plugins = Files.createDirectories(home.resolve(PluginsClassLoader.PLUGINS_DIR));
+			writePlugin(plugins, "plugin-qa-sonarqube", pom(parent("plugin-qa")));
+			writePlugin(plugins, "plugin-qa-sonarqube-extra", pom(parent("plugin-qa-sonarqube")));
+			writePlugin(plugins, "plugin-build", pom());
+			writePlugin(plugins, "plugin-build-jenkins", pom(parent("plugin-build")));
+			try (var loader = newLoader(home)) {
+				Assertions.assertFalse(isLoaded(loader, "plugin-qa-sonarqube"));
+				Assertions.assertFalse(isLoaded(loader, "plugin-qa-sonarqube-extra"));
+				Assertions.assertTrue(isLoaded(loader, "plugin-build"));
+				Assertions.assertTrue(isLoaded(loader, "plugin-build-jenkins"));
+
+				// Still reported as installed, and the reason is known
+				Assertions.assertTrue(loader.getInstalledPlugins().containsKey("plugin-qa-sonarqube"));
+				Assertions.assertEquals(java.util.List.of("plugin-qa"), loader.getMissingDependencies().get("plugin-qa-sonarqube"));
+				Assertions.assertEquals(java.util.List.of("plugin-qa-sonarqube"), loader.getMissingDependencies().get("plugin-qa-sonarqube-extra"));
+				Assertions.assertFalse(loader.getMissingDependencies().containsKey("plugin-build-jenkins"));
+			}
+		} finally {
+			System.clearProperty(PluginsClassLoader.HOME_DIR_PROPERTY);
+			FileUtils.deleteDirectory(home.toFile());
+		}
+	}
+
+	/**
+	 * Only the provided plugins are required. A parent embedded in the application class-path is available.
+	 */
+	@Test
+	void requiredDependenciesOnly() throws Exception {
+		final var home = Files.createTempDirectory("ligoj-home");
+		final var embedded = Files.createTempDirectory("ligoj-embedded");
+		final var previous = Thread.currentThread().getContextClassLoader();
+		try {
+			final var maven = Files.createDirectories(embedded.resolve("META-INF/maven/org.ligoj.plugin/plugin-embedded"));
+			Files.writeString(maven.resolve("pom.xml"), pom());
+			final var plugins = Files.createDirectories(home.resolve(PluginsClassLoader.PLUGINS_DIR));
+			writePlugin(plugins, "plugin-a", pom(parent("plugin-embedded"),
+					"<dependency><groupId>org.ligoj.plugin</groupId><artifactId>plugin-test-only</artifactId><scope>test</scope></dependency>",
+					"<dependency><groupId>org.ligoj.plugin</groupId><artifactId>plugin-compile</artifactId></dependency>",
+					"<dependency><groupId>org.sample</groupId><artifactId>provided-library</artifactId><scope>provided</scope></dependency>"));
+			writePlugin(plugins, "plugin-b", "<project><dependencyManagement><dependencies>" + parent("plugin-managed-only")
+					+ "</dependencies></dependencyManagement></project>");
+			writePlugin(plugins, "plugin-c", "<project><dependencies><dependency><groupId>${project.groupId}</groupId>"
+					+ "<artifactId>plugin-b</artifactId><scope>provided</scope></dependency></dependencies></project>");
+			writePlugin(plugins, "plugin-d", "<project><dependencies><dependency><groupId>${project.groupId}</groupId>"
+					+ "<artifactId>plugin-unknown</artifactId><scope>provided</scope></dependency></dependencies></project>");
+			writePlugin(plugins, "plugin-e", "not xml");
+			Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[]{embedded.toUri().toURL()}, previous));
+			try (var loader = newLoader(home)) {
+				Assertions.assertTrue(isLoaded(loader, "plugin-a"));
+				Assertions.assertTrue(isLoaded(loader, "plugin-b"));
+				Assertions.assertTrue(isLoaded(loader, "plugin-c"));
+				Assertions.assertFalse(isLoaded(loader, "plugin-d"));
+
+				// An unreadable descriptor does not exclude a plugin: only a missing parent does
+				Assertions.assertTrue(isLoaded(loader, "plugin-e"));
+				Assertions.assertEquals(java.util.Set.of("plugin-d"), loader.getMissingDependencies().keySet());
+			}
+		} finally {
+			Thread.currentThread().setContextClassLoader(previous);
+			System.clearProperty(PluginsClassLoader.HOME_DIR_PROPERTY);
+			FileUtils.deleteDirectory(home.toFile());
+			FileUtils.deleteDirectory(embedded.toFile());
+		}
+	}
+
+	/**
+	 * Without check, for a parent without Maven descriptor such as a module opened in an IDE, the plugin is loaded.
+	 */
+	@Test
+	void dependencyCheckDisabled() throws Exception {
+		final var home = Files.createTempDirectory("ligoj-home");
+		try {
+			final var plugins = Files.createDirectories(home.resolve(PluginsClassLoader.PLUGINS_DIR));
+			writePlugin(plugins, "plugin-qa-sonarqube", pom(parent("plugin-qa")));
+			System.setProperty(PluginsClassLoader.DEPENDENCY_CHECK_PROPERTY, "false");
+			try (var loader = newLoader(home)) {
+				Assertions.assertTrue(isLoaded(loader, "plugin-qa-sonarqube"));
+				Assertions.assertTrue(loader.getMissingDependencies().isEmpty());
+			}
+		} finally {
+			System.clearProperty(PluginsClassLoader.DEPENDENCY_CHECK_PROPERTY);
+			System.clearProperty(PluginsClassLoader.HOME_DIR_PROPERTY);
+			FileUtils.deleteDirectory(home.toFile());
+		}
+	}
+
+	/**
+	 * A plugin file that cannot be read as a jar has no known dependency: this check does not exclude it.
+	 */
+	@Test
+	void readDependenciesUnreadableJar() throws Exception {
+		final var home = Files.createTempDirectory("ligoj-home");
+		try {
+			Files.createDirectories(home.resolve(PluginsClassLoader.PLUGINS_DIR));
+			try (var loader = newLoader(home)) {
+				Assertions.assertTrue(loader.readDependencies("plugin-any", home.resolve("missing.jar")).isEmpty());
+			}
+		} finally {
+			System.clearProperty(PluginsClassLoader.HOME_DIR_PROPERTY);
+			FileUtils.deleteDirectory(home.toFile());
+		}
+	}
+
 	@Test
 	void forcedHome() throws IOException, NoSuchAlgorithmException {
 		try {
