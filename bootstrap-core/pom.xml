@@ -206,8 +206,8 @@
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.github.vpelikh</groupId>
-			<artifactId>swagger-jaxrs2-jakarta</artifactId>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-rest</artifactId>
 		</dependency>
 
 		<!-- JSR-250 -->

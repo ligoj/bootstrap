@@ -147,8 +147,7 @@
         <spring-data.version>4.1.2</spring-data.version>
         <spring-security.version>7.1.2</spring-security.version>
         <swagger-ui.version>5.35.0</swagger-ui.version>
-        <swagger-jaxrs2-jakarta.version>2.2.55</swagger-jaxrs2-jakarta.version>
-        <swagger-jaxrs3-jakarta.version>3.0.0</swagger-jaxrs3-jakarta.version> <!-- See https://github.com/swagger-api/swagger-core/issues/4991 -->
+        <swagger-rest.version>3.0.0</swagger-rest.version>
         <transaction-api.version>2.0.1</transaction-api.version>
         <wink.version>1.4</wink.version>
         <wiremock.version>3.13.2</wiremock.version>
@@ -240,14 +239,9 @@
                 <version>${swagger-ui.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.github.vpelikh</groupId>
-                <artifactId>swagger-jaxrs2-jakarta</artifactId>
-                <version>${swagger-jaxrs3-jakarta.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-jaxrs2-jakarta</artifactId>
-                <version>${swagger-jaxrs2-jakarta.version}</version>
+                <artifactId>swagger-rest</artifactId>
+                <version>${swagger-rest.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
