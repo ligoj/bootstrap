@@ -59,7 +59,10 @@ mvn test -pl bootstrap-core -Dtest=PluginsClassLoaderTest
 mvn clean package -Pjacoco -Djacoco.includes="org.ligoj.bootstrap.*"
 
 # Check dependency updates
-mvn versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="(?i)^(.*[.-](alpha|beta|rc|M|B|RC|pre|CR|jdk5)[.-]?[0-9]*|[0-9]{8}.*)$"
+```shell
+mvn clean package -DskipTests \
+    versions:display-dependency-updates -Pjacoco -Dmaven.version.ignore="(?i)^(.*[.-](alpha|beta|rc|M|B|RC|pre|CR|jdk5)[.-]?[0-9]*|[0-9]{8}.*)$" -DossIndexServerId=ossindex \
+    org.owasp:dependency-check-maven:aggregate -Dformats=JSON -DassemblyAnalyzerEnabled=false -DnodeAnalyzerEnabled=false -DnvdApiKey=<API_KEY>
 ```
 
 **Test failures do NOT fail the build**: the external parent POM (`org.ligoj.parent:project`) sets `testFailureIgnore=true` for both surefire and failsafe. `BUILD SUCCESS` is meaningless for tests — always check the `Tests run: … Failures: … Errors: …` lines or `target/surefire-reports/`.
