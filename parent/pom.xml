@@ -81,6 +81,11 @@
             -Xshare:off</maven.argLine.jdk>
 
         <!-- BOM -->
+
+        <!-- Temporal overrides-->
+        <asm.version>9.11.1</asm.version>
+
+
         <annotation-api.version>3.0.0</annotation-api.version>
         <activation.version>2.0.1</activation.version>
         <activation-api.version>2.1.4</activation-api.version>
