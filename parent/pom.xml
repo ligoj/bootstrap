@@ -84,6 +84,7 @@
 
         <!-- Temporal overrides-->
         <asm.version>9.11.1</asm.version>
+        <plugin.jacoco>0.8.16</plugin.jacoco>
 
 
         <annotation-api.version>3.0.0</annotation-api.version>
