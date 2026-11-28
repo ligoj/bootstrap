@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.crypto;
 
+import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -15,10 +16,14 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 
 /**
- * Fail-safe password configuration using the first defined value in this order:
+ * Fail-safe password configuration. When the external secret manager is configured, see {@link VaultPasswordReader},
+ * it is the only source: the password is read once from it, and a failure is not recovered by another source.
+ * Otherwise, the first defined value in this order is used:
  * <ul>
  * <li>System property</li>
  * <li>Loaded properties, see {@link GlobalPropertyUtils}</li>
@@ -35,6 +40,17 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	private String passwordSysPropertyName;
 	private String passwordFileEnvName;
 	private String passwordFilePropertyName;
+
+	/**
+	 * Optional reader of the password from an external secret manager.
+	 */
+	private VaultPasswordReader vaultPasswordReader = new VaultPasswordReader();
+
+	/**
+	 * When <code>true</code>, the password has been read from the external secret manager: it is called only once.
+	 */
+	@Setter(AccessLevel.NONE)
+	private boolean vaultRead;
 
 	/**
 	 * Load the password from the specified file, then from the classpath resource having this name. The password is
@@ -85,8 +101,44 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 		return new String(getPasswordCharArray());
 	}
 
+	/**
+	 * Read once the password from the external secret manager, the other sources being ignored. The password is
+	 * only kept by the parent class, until it is cleaned by the encryptor.
+	 */
+	private void readVaultPassword() {
+		if (!vaultRead) {
+			final var ignored = new TreeSet<String>();
+			addDefined(ignored, passwordSysPropertyName, System::getProperty);
+			addDefined(ignored, passwordSysPropertyName, GlobalPropertyUtils::getProperty);
+			addDefined(ignored, passwordEnvName, System::getenv);
+			addDefined(ignored, passwordFilePropertyName, System::getProperty);
+			addDefined(ignored, passwordFilePropertyName, GlobalPropertyUtils::getProperty);
+			addDefined(ignored, passwordFileEnvName, System::getenv);
+			if (!ignored.isEmpty()) {
+				log.warn("OpenBao is the only source of the master password, ignored settings: {}", ignored);
+			}
+			setPassword(vaultPasswordReader.read());
+			vaultRead = true;
+		}
+	}
+
+	/**
+	 * Add the setting name to the given ones when it is defined for the given reader.
+	 */
+	private void addDefined(final Set<String> names, final String name, final UnaryOperator<String> reader) {
+		if (pipe(name, reader) != null) {
+			names.add(name);
+		}
+	}
+
 	@Override
 	public char[] getPasswordCharArray() {
+		if (vaultPasswordReader.isEnabled()) {
+			// Exclusive source
+			readVaultPassword();
+			return super.getPasswordCharArray();
+		}
+
 		// Raw value providers
 		var password = pipe(passwordSysPropertyName, System::getProperty);
 		if (password == null) {
