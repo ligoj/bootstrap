@@ -105,7 +105,7 @@ Dependency layering: `bootstrap-core → bootstrap-business`, plus `bootstrap-co
 
 ```properties
 app.crypto.vault.url=https://bao.example.com:8200
-app.crypto.vault.path=secret/data/ligoj
+app.crypto.vault.path=secret/data/ligoj/master
 app.crypto.vault.role-id=...
 app.crypto.vault.secret-id=...
 ```
@@ -151,7 +151,7 @@ Three sources, depending on the key:
 | `app-env` | empty | system | Suffix of the `application${app-env}.properties` file |
 | `app.crypto.password`, `app.crypto.file` | none | system, properties, env (`APP_CRYPTO_PASSWORD`, `APP_CRYPTO_FILE`) | Jasypt password, see above |
 | `app.crypto.vault.url` | none | system, properties, env (`APP_CRYPTO_VAULT_URL`) | OpenBao or Vault address, such as `https://bao.example.com:8200`. When defined, the Jasypt password is only read from this server |
-| `app.crypto.vault.path` | required with the address | system, properties, env (`APP_CRYPTO_VAULT_PATH`) | API path of the secret, without `/v1/`: `secret/data/ligoj` (KV v2) or `secret/ligoj` (KV v1) |
+| `app.crypto.vault.path` | required with the address | system, properties, env (`APP_CRYPTO_VAULT_PATH`) | API path of the secret, without `/v1/`: `secret/data/ligoj/master` (KV v2) or `secret/ligoj/master` (KV v1) |
 | `app.crypto.vault.field` | `password` | system, properties, env (`APP_CRYPTO_VAULT_FIELD`) | Field of the secret holding the Jasypt password |
 | `app.crypto.vault.token` | none | system, properties, env (`APP_CRYPTO_VAULT_TOKEN`) | Token authentication |
 | `app.crypto.vault.token-file` | none | system, properties, env (`APP_CRYPTO_VAULT_TOKEN_FILE`) | File containing the token, used without `app.crypto.vault.token` |

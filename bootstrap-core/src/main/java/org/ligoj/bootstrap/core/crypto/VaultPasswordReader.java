@@ -49,8 +49,8 @@ public class VaultPasswordReader {
 	public static final String URL = "app.crypto.vault.url";
 
 	/**
-	 * Required API path setting of the secret, without <code>/v1/</code>: <code>secret/data/ligoj</code> for KV v2,
-	 * <code>secret/ligoj</code> for KV v1.
+	 * Required API path setting of the secret, without <code>/v1/</code>: <code>secret/data/ligoj/master</code> for KV v2,
+	 * <code>secret/ligoj/master</code> for KV v1.
 	 */
 	public static final String PATH = "app.crypto.vault.path";
 
