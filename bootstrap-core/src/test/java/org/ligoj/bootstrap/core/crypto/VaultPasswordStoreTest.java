@@ -26,9 +26,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Test class of {@link VaultPasswordReader}
+ * Test class of {@link VaultPasswordStore}
  */
-class VaultPasswordReaderTest {
+class VaultPasswordStoreTest {
 
 	private static final String KV2_PATH = "secret/data/ligoj";
 	private static final String KV2_BODY = "{\"data\":{\"data\":{\"password\":\"s3cret\"}}}";
@@ -50,7 +50,7 @@ class VaultPasswordReaderTest {
 	private final List<String> namespaces = new CopyOnWriteArrayList<>();
 	private final List<String> bodies = new CopyOnWriteArrayList<>();
 	private final Map<String, String> env = new HashMap<>();
-	private VaultPasswordReader reader;
+	private VaultPasswordStore reader;
 
 	@BeforeEach
 	void startServer() throws IOException {
@@ -60,7 +60,7 @@ class VaultPasswordReaderTest {
 		server.createContext("/", this::handle);
 		server.start();
 		url = "http://localhost:" + server.getAddress().getPort();
-		reader = new VaultPasswordReader(env::get);
+		reader = new VaultPasswordStore(env::get);
 	}
 
 	@AfterEach
@@ -77,7 +77,8 @@ class VaultPasswordReaderTest {
 		tokens.add(String.valueOf(exchange.getRequestHeaders().getFirst("X-Vault-Token")));
 		namespaces.add(String.valueOf(exchange.getRequestHeaders().getFirst("X-Vault-Namespace")));
 		bodies.add(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
-		final var stub = stubs.getOrDefault(path, new Stub(404, "{\"errors\":[]}", null, 0));
+		final var stub = stubs.getOrDefault(exchange.getRequestMethod() + " " + path,
+				stubs.getOrDefault(path, new Stub(404, "{\"errors\":[]}", null, 0)));
 		try {
 			Thread.sleep(stub.delay());
 		} catch (final InterruptedException _) {
@@ -143,21 +144,21 @@ class VaultPasswordReaderTest {
 	@Test
 	void settingPrecedence() {
 		env.put("APP_CRYPTO_VAULT_TOKEN", " b ");
-		Assertions.assertEquals("b", reader.getSetting(VaultPasswordReader.TOKEN));
-		System.setProperty(VaultPasswordReader.TOKEN, " a ");
-		Assertions.assertEquals("a", reader.getSetting(VaultPasswordReader.TOKEN));
+		Assertions.assertEquals("b", reader.getSetting(VaultPasswordStore.TOKEN));
+		System.setProperty(VaultPasswordStore.TOKEN, " a ");
+		Assertions.assertEquals("a", reader.getSetting(VaultPasswordStore.TOKEN));
 	}
 
 	@Test
 	void settingEnvironmentName() {
 		env.put("APP_CRYPTO_VAULT_TOKEN_FILE", "f");
-		Assertions.assertEquals("f", reader.getSetting(VaultPasswordReader.TOKEN_FILE));
-		Assertions.assertNull(reader.getSetting(VaultPasswordReader.TOKEN));
+		Assertions.assertEquals("f", reader.getSetting(VaultPasswordStore.TOKEN_FILE));
+		Assertions.assertNull(reader.getSetting(VaultPasswordStore.TOKEN));
 	}
 
 	@Test
 	void defaultConstructor() {
-		Assertions.assertFalse(new VaultPasswordReader().isEnabled());
+		Assertions.assertFalse(new VaultPasswordStore().isEnabled());
 	}
 
 	// Nominal
@@ -248,6 +249,56 @@ class VaultPasswordReaderTest {
 	void readNumericField() {
 		tokenSetup(200, "{\"data\":{\"data\":{\"password\":1234}}}");
 		Assertions.assertEquals("1234", reader.read());
+	}
+
+	// Write
+
+	@Test
+	void writeKv2() {
+		tokenSetup(200, "{\"data\":{\"data\":{\"password\":\" old \",\"other\":\"x\"},\"metadata\":{\"version\":3}}}");
+		stub("POST /v1/" + KV2_PATH, 200, "{\"data\":{\"version\":4}}");
+		Assertions.assertEquals("old", reader.write("n3w"));
+		Assertions.assertEquals(List.of("GET /v1/secret/data/ligoj", "POST /v1/secret/data/ligoj"), requests);
+		Assertions.assertEquals(List.of("t0ken", "t0ken"), tokens);
+		Assertions.assertEquals("{\"data\":{\"password\":\"n3w\",\"other\":\"x\"},\"options\":{\"cas\":3}}", bodies.get(1));
+	}
+
+	@Test
+	void writeKv2WithoutVersion() {
+		tokenSetup(200, "{\"data\":{\"data\":{\"password\":\"old\"}}}");
+		Assertions.assertEquals("old", reader.write("n3w"));
+		Assertions.assertEquals("{\"data\":{\"password\":\"n3w\"}}", bodies.get(1));
+	}
+
+	@Test
+	void writeKv1WithAppRole() {
+		appRoleSetup();
+		env.put("APP_CRYPTO_VAULT_NAMESPACE", "team");
+		stub("GET /v1/" + KV2_PATH, 200, "{\"data\":{\"other\":\"x\",\"password\":\"old\"}}");
+		stubs.put("POST /v1/" + KV2_PATH, new Stub(204, "", null, 0));
+		Assertions.assertEquals("old", reader.write("n3w"));
+		Assertions.assertEquals(List.of("POST /v1/auth/approle/login", "GET /v1/secret/data/ligoj", "POST /v1/secret/data/ligoj"),
+				requests);
+		Assertions.assertEquals(List.of("team", "team", "team"), namespaces);
+		Assertions.assertEquals("{\"other\":\"x\",\"password\":\"n3w\"}", bodies.get(2));
+	}
+
+	@Test
+	void failWrite() {
+		tokenSetup(200, KV2_BODY);
+		stub("POST /v1/" + KV2_PATH, 403, "{\"errors\":[\"permission denied\"]}");
+		final var message = Assertions.assertThrows(EncryptionInitializationException.class, () -> reader.write("n3w")).getMessage();
+		Assertions.assertEquals("Unable to write the master password to http://localhost:" + server.getAddress().getPort()
+				+ "/v1/secret/data/ligoj: HTTP 403", message);
+	}
+
+	@Test
+	void failWriteUnreadable() {
+		tokenSetup(404, "{\"errors\":[]}");
+		final var message = Assertions.assertThrows(EncryptionInitializationException.class, () -> reader.write("n3w")).getMessage();
+		Assertions.assertTrue(message.startsWith("Unable to write the master password to http://localhost:"), message);
+		Assertions.assertTrue(message.endsWith(": HTTP 404"), message);
+		Assertions.assertEquals(List.of("GET /v1/secret/data/ligoj"), requests);
 	}
 
 	// Failures

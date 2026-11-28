@@ -4,7 +4,7 @@
 
 **Goal:** Optionally read the Jasypt master password from one field of an OpenBao / HashiCorp Vault KV secret at startup.
 
-**Architecture:** A new `VaultPasswordReader` in bootstrap-core resolves its settings, authenticates (token, token file or AppRole) and reads the secret over the HTTP API. `SystemEnvironmentAndFilePBEConfig` asks it first and keeps its current chain when the reader is not enabled. Nothing else changes: `CryptoHelper` and the Spring XML contexts are untouched.
+**Architecture:** A new `VaultPasswordStore` in bootstrap-core resolves its settings, authenticates (token, token file or AppRole) and reads the secret over the HTTP API. `SystemEnvironmentAndFilePBEConfig` asks it first and keeps its current chain when the reader is not enabled. Nothing else changes: `CryptoHelper` and the Spring XML contexts are untouched.
 
 **Tech Stack:** Java 25, `java.net.http.HttpClient`, Jackson 3 (`tools.jackson.databind`), Jasypt, JUnit 5, JDK `com.sun.net.httpserver.HttpServer` for tests.
 
@@ -34,18 +34,18 @@ Each of these has a test in Task 1.
 
 ---
 
-### Task 1: `VaultPasswordReader`
+### Task 1: `VaultPasswordStore`
 
 **Files:**
-- Create: `bootstrap-core/src/main/java/org/ligoj/bootstrap/core/crypto/VaultPasswordReader.java`
-- Test: `bootstrap-core/src/test/java/org/ligoj/bootstrap/core/crypto/VaultPasswordReaderTest.java`
+- Create: `bootstrap-core/src/main/java/org/ligoj/bootstrap/core/crypto/VaultPasswordStore.java`
+- Test: `bootstrap-core/src/test/java/org/ligoj/bootstrap/core/crypto/VaultPasswordStoreTest.java`
 
 **Interfaces:**
 - Consumes: `GlobalPropertyUtils.getProperty(String)` (static, bootstrap-core), `org.jasypt.exceptions.EncryptionInitializationException`.
 - Produces:
 
 ```java
-public class VaultPasswordReader {
+public class VaultPasswordStore {
 	public static final String URL = "app.crypto.vault.url";
 	public static final String PATH = "app.crypto.vault.path";
 	public static final String FIELD = "app.crypto.vault.field";           // default "password"
@@ -57,8 +57,8 @@ public class VaultPasswordReader {
 	public static final String NAMESPACE = "app.crypto.vault.namespace";
 	public static final String TIMEOUT = "app.crypto.vault.timeout";       // seconds, default "10"
 
-	public VaultPasswordReader();                                  // environment = System::getenv
-	VaultPasswordReader(UnaryOperator<String> environment);        // package-private, for tests
+	public VaultPasswordStore();                                  // environment = System::getenv
+	VaultPasswordStore(UnaryOperator<String> environment);        // package-private, for tests
 	public boolean isEnabled();                                    // URL setting is not blank
 	public String read();                                          // throws EncryptionInitializationException
 	String getSetting(String property);                            // package-private, null when not defined or blank
@@ -84,7 +84,7 @@ public class VaultPasswordReader {
 
 - [ ] **Step 1: Write the failing tests**
 
-Test class setup: an `HttpServer` on `new InetSocketAddress("localhost", 0)` started in `@BeforeEach`, stopped in `@AfterEach`; a list recording `method path`, and the `X-Vault-Token` / `X-Vault-Namespace` headers of each request; a helper `stub(path, status, body)`; a `Map<String, String> env` passed as `new VaultPasswordReader(env::get)`; `@AfterEach` clears every `app.crypto.vault.*` system property. `url` is `http://localhost:<port>`.
+Test class setup: an `HttpServer` on `new InetSocketAddress("localhost", 0)` started in `@BeforeEach`, stopped in `@AfterEach`; a list recording `method path`, and the `X-Vault-Token` / `X-Vault-Namespace` headers of each request; a helper `stub(path, status, body)`; a `Map<String, String> env` passed as `new VaultPasswordStore(env::get)`; `@AfterEach` clears every `app.crypto.vault.*` system property. `url` is `http://localhost:<port>`.
 
 Tests, each asserting the listed result:
 
@@ -94,7 +94,7 @@ disabledByDefault()            // no setting: isEnabled() false
 blankUrlIsDisabled()           // env APP_CRYPTO_VAULT_URL = "  ": isEnabled() false
 settingPrecedence()            // system property "a" and env "b" for TOKEN: getSetting(TOKEN) == "a"; only env: "b", trimmed
 settingEnvironmentName()       // env APP_CRYPTO_VAULT_TOKEN_FILE = "f": getSetting(TOKEN_FILE) == "f"
-defaultConstructor()           // new VaultPasswordReader().isEnabled() false
+defaultConstructor()           // new VaultPasswordStore().isEnabled() false
 
 // Nominal
 readKv2WithToken()             // PATH secret/data/ligoj, body {"data":{"data":{"password":" s3cret "}}}: "s3cret";
@@ -138,22 +138,22 @@ failNeverLeaksSecrets()        // AppRole, read answers 500: message contains ne
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `mvn test -pl bootstrap-core -Dtest=VaultPasswordReaderTest`
-Expected: compilation error, `VaultPasswordReader` not found.
+Run: `mvn test -pl bootstrap-core -Dtest=VaultPasswordStoreTest`
+Expected: compilation error, `VaultPasswordStore` not found.
 
-- [ ] **Step 3: Implement `VaultPasswordReader`**
+- [ ] **Step 3: Implement `VaultPasswordStore`**
 
 Per the Interfaces and Decisions blocks. Parse JSON with a `tools.jackson.databind.json.JsonMapper` and `JsonNode.path(...)`; build the login body with the mapper, not by string concatenation.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `mvn test -pl bootstrap-core -Dtest=VaultPasswordReaderTest`
+Run: `mvn test -pl bootstrap-core -Dtest=VaultPasswordStoreTest`
 Expected: `Tests run: 34, Failures: 0, Errors: 0, Skipped: 0`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add bootstrap-core/src/main/java/org/ligoj/bootstrap/core/crypto/VaultPasswordReader.java bootstrap-core/src/test/java/org/ligoj/bootstrap/core/crypto/VaultPasswordReaderTest.java
+git add bootstrap-core/src/main/java/org/ligoj/bootstrap/core/crypto/VaultPasswordStore.java bootstrap-core/src/test/java/org/ligoj/bootstrap/core/crypto/VaultPasswordStoreTest.java
 git commit -m "feat(crypto): add OpenBao reader of the Jasypt master password"
 ```
 
@@ -166,11 +166,11 @@ git commit -m "feat(crypto): add OpenBao reader of the Jasypt master password"
 - Test: `bootstrap-core/src/test/java/org/ligoj/bootstrap/core/crypto/SystemEnvironmentAndFilePBEConfigVaultTest.java` (new, plain JUnit, no Spring context)
 
 **Interfaces:**
-- Consumes: `VaultPasswordReader.isEnabled()`, `VaultPasswordReader.read()`, and the `URL`, `PATH`, `TOKEN` constants of Task 1.
-- Produces: a Lombok-settable field `private VaultPasswordReader vaultPasswordReader = new VaultPasswordReader();` (setter `setVaultPasswordReader`, generated by the class-level `@Setter`). No change of `core-context-common.xml`.
+- Consumes: `VaultPasswordStore.isEnabled()`, `VaultPasswordStore.read()`, and the `URL`, `PATH`, `TOKEN` constants of Task 1.
+- Produces: a Lombok-settable field `private VaultPasswordStore vaultPasswordStore = new VaultPasswordStore();` (setter `setVaultPasswordStore`, generated by the class-level `@Setter`). No change of `core-context-common.xml`.
 
 **Decisions:**
-- In `getPasswordCharArray()`: when `vaultPasswordReader.isEnabled()`, the password is `read()` on the first call only, then kept in a field and reused; the existing chain is skipped entirely. Otherwise the existing code runs unchanged.
+- In `getPasswordCharArray()`: when `vaultPasswordStore.isEnabled()`, the password is `read()` on the first call only, then kept in a field and reused; the existing chain is skipped entirely. Otherwise the existing code runs unchanged.
 - On that first call, when any of the six existing sources is defined (system property or `GlobalPropertyUtils` or environment variable, for the password and for the file name), log one warning: `OpenBao is the only source of the master password, ignored settings: <names>` with the setting names only.
 
 - [ ] **Step 1: Write the failing tests**
@@ -184,13 +184,13 @@ vaultIsExclusive()     // same, plus app.crypto.password = "local": getPassword(
 vaultReadOnce()        // getPassword() twice, getPasswordCharArray() once: 1 request, same value
 vaultFailsClosed()     // server answers 500, app.crypto.password = "local":
                        // assertThrows(EncryptionInitializationException.class, config::getPassword)
-vaultCustomReader()    // setVaultPasswordReader(mock: isEnabled() true, read() "mocked"): getPassword() == "mocked"
+vaultCustomReader()    // setVaultPasswordStore(mock: isEnabled() true, read() "mocked"): getPassword() == "mocked"
 ```
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
 Run: `mvn test -pl bootstrap-core -Dtest=SystemEnvironmentAndFilePBEConfigVaultTest`
-Expected: compilation error on `setVaultPasswordReader`, or `vaultEnabled` failing.
+Expected: compilation error on `setVaultPasswordStore`, or `vaultEnabled` failing.
 
 - [ ] **Step 3: Implement the change**
 
@@ -204,7 +204,7 @@ Expected: `Failures: 0, Errors: 0` on the final `Tests run:` line; `SystemEnviro
 - [ ] **Step 5: Check the coverage of the two classes**
 
 Run: `mvn clean package -pl bootstrap-core -Pjacoco -Djacoco.includes="org.ligoj.bootstrap.*"`, then open `bootstrap-core/target/site/jacoco/org.ligoj.bootstrap.core.crypto/index.html`.
-Expected: `VaultPasswordReader` and `SystemEnvironmentAndFilePBEConfig` at 100% instructions and branches. Add the missing test otherwise.
+Expected: `VaultPasswordStore` and `SystemEnvironmentAndFilePBEConfig` at 100% instructions and branches. Add the missing test otherwise.
 
 - [ ] **Step 6: Commit**
 
@@ -230,7 +230,7 @@ git commit -m "feat(crypto): source the Jasypt master password from OpenBao when
 
 - [ ] **Step 2: Update `CLAUDE.md`**
 
-In "Configuration/crypto", one sentence: the master password comes from `SystemEnvironmentAndFilePBEConfig`, with `VaultPasswordReader` (OpenBao, `app.crypto.vault.*`) exclusive and fail-closed when its URL is defined.
+In "Configuration/crypto", one sentence: the master password comes from `SystemEnvironmentAndFilePBEConfig`, with `VaultPasswordStore` (OpenBao, `app.crypto.vault.*`) exclusive and fail-closed when its URL is defined.
 
 - [ ] **Step 3: Verify**
 

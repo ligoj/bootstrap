@@ -12,6 +12,7 @@ import org.ligoj.bootstrap.core.GlobalPropertyUtils;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.net.URI;
@@ -25,11 +26,12 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
- * Optional reader of the master password from a KV secret of an external secret manager exposing the HashiCorp Vault
+ * Optional store of the master password in a KV secret of an external secret manager exposing the HashiCorp Vault
  * HTTP API, such as OpenBao. Enabled when the {@value #URL} setting is defined.
  * <p>
  * Each setting is the first non-blank value among: the system property, the loaded properties, see
@@ -41,7 +43,7 @@ import java.util.stream.Stream;
  * {@value #ROLE_ID} with {@value #SECRET_ID}. Neither a secret nor a server response is put in a message.
  * </p>
  */
-public class VaultPasswordReader {
+public class VaultPasswordStore {
 
 	/**
 	 * Server address setting, such as <code>https://bao.example.com:8200</code>. Enables this reader when defined.
@@ -114,7 +116,7 @@ public class VaultPasswordReader {
 	/**
 	 * Reader using the environment variables of the system.
 	 */
-	public VaultPasswordReader() {
+	public VaultPasswordStore() {
 		this(System::getenv);
 	}
 
@@ -123,7 +125,7 @@ public class VaultPasswordReader {
 	 *
 	 * @param environment The environment variable resolver.
 	 */
-	VaultPasswordReader(final UnaryOperator<String> environment) {
+	VaultPasswordStore(final UnaryOperator<String> environment) {
 		this.environment = environment;
 	}
 
@@ -151,17 +153,76 @@ public class VaultPasswordReader {
 	}
 
 	/**
+	 * An operation on the secret.
+	 */
+	@FunctionalInterface
+	private interface Operation {
+
+		/**
+		 * Execute the operation.
+		 *
+		 * @param client  The HTTP client.
+		 * @param request The supplier of an authenticated request builder targeting the secret.
+		 * @return The result.
+		 */
+		String execute(HttpClient client, Supplier<HttpRequest.Builder> request) throws Failure, IOException, InterruptedException;
+	}
+
+	/**
 	 * Read the master password from the configured secret.
 	 *
 	 * @return The trimmed and not blank master password.
 	 * @throws EncryptionInitializationException When the password cannot be read for any reason.
 	 */
 	public String read() {
+		return execute("read the master password from", (client, request) -> getPassword(fetch(client, request)));
+	}
+
+	/**
+	 * Replace the master password in the configured secret, the other fields of this secret being kept. For KV v2,
+	 * the write is refused by the server when the secret has been updated since it has been read.
+	 *
+	 * @param password The new master password.
+	 * @return The previous master password.
+	 * @throws EncryptionInitializationException When the password cannot be read or written for any reason.
+	 */
+	public String write(final String password) {
+		return execute("write the master password to", (client, request) -> {
+			final var data = fetch(client, request);
+			final var previous = getPassword(data);
+
+			// Same fields, with the new password
+			final var field = getField();
+			final var v2 = toText(data.path("data").path(field)) != null;
+			final var fields = ((ObjectNode) (v2 ? data.path("data") : data)).deepCopy().put(field, password);
+			var body = fields;
+			if (v2) {
+				body = MAPPER.createObjectNode();
+				body.set("data", fields);
+				final var version = data.path("metadata").path("version");
+				if (version.isInt()) {
+					// Check-and-set
+					body.putObject("options").put("cas", version.asInt());
+				}
+			}
+			final var response = client.send(request.get().header("Content-Type", "application/json")
+					.POST(HttpRequest.BodyPublishers.ofString(MAPPER.writeValueAsString(body))).build(), HttpResponse.BodyHandlers.ofString());
+			if (response.statusCode() / 100 != 2) {
+				throw new Failure("HTTP " + response.statusCode());
+			}
+			return previous;
+		});
+	}
+
+	/**
+	 * Authenticate, then execute an operation on the secret. Any failure is reported without secret.
+	 */
+	private String execute(final String action, final Operation operation) {
 		final var address = StringUtils.stripEnd(Objects.toString(getSetting(URL), ""), "/");
 		final var path = Strings.CS.removeStart(StringUtils.stripStart(Objects.toString(getSetting(PATH), ""), "/"), "v1/");
-		final var prefix = "Unable to read the master password from " + address + "/v1/" + path + ": ";
+		final var prefix = "Unable to " + action + " " + address + "/v1/" + path + ": ";
 		try {
-			return read(address, path);
+			return execute(address, path, operation);
 		} catch (final Failure failure) {
 			throw new EncryptionInitializationException(prefix + failure.getMessage());
 		} catch (final IllegalArgumentException _) {
@@ -178,9 +239,10 @@ public class VaultPasswordReader {
 	}
 
 	/**
-	 * Authenticate, then read the password from the secret.
+	 * Authenticate, then execute an operation on the secret.
 	 */
-	private String read(final String address, final String path) throws Failure, IOException, InterruptedException {
+	private String execute(final String address, final String path, final Operation operation)
+			throws Failure, IOException, InterruptedException {
 		if (path.isEmpty()) {
 			throw new Failure("'" + PATH + "' is required");
 		}
@@ -192,21 +254,40 @@ public class VaultPasswordReader {
 		final var secret = toUri(address + "/v1/" + path);
 		try (var client = HttpClient.newBuilder().connectTimeout(timeout).followRedirects(HttpClient.Redirect.NORMAL).build()) {
 			final var token = getToken(client, address, timeout);
-			final var response = client.send(newRequest(secret, timeout).header("X-Vault-Token", token).GET().build(),
-					HttpResponse.BodyHandlers.ofString());
-			if (response.statusCode() / 100 != 2) {
-				throw new Failure("HTTP " + response.statusCode());
-			}
-
-			// KV v2 wraps the fields in an additional "data" object
-			final var field = Objects.toString(getSetting(FIELD), "password");
-			final var data = MAPPER.readTree(response.body()).path("data");
-			final var password = ObjectUtils.getIfNull(toText(data.path("data").path(field)), () -> toText(data.path(field)));
-			if (password == null) {
-				throw new Failure("field '" + field + "' not found");
-			}
-			return password;
+			return operation.execute(client, () -> newRequest(secret, timeout).header("X-Vault-Token", token));
 		}
+	}
+
+	/**
+	 * Return the "data" content of the secret.
+	 */
+	private JsonNode fetch(final HttpClient client, final Supplier<HttpRequest.Builder> request)
+			throws Failure, IOException, InterruptedException {
+		final var response = client.send(request.get().GET().build(), HttpResponse.BodyHandlers.ofString());
+		if (response.statusCode() / 100 != 2) {
+			throw new Failure("HTTP " + response.statusCode());
+		}
+		return MAPPER.readTree(response.body()).path("data");
+	}
+
+	/**
+	 * Return the name of the field holding the password.
+	 */
+	private String getField() {
+		return Objects.toString(getSetting(FIELD), "password");
+	}
+
+	/**
+	 * Return the password from the "data" content of the secret. KV v2 wraps the fields in an additional "data"
+	 * object.
+	 */
+	private String getPassword(final JsonNode data) throws Failure {
+		final var field = getField();
+		final var password = ObjectUtils.getIfNull(toText(data.path("data").path(field)), () -> toText(data.path(field)));
+		if (password == null) {
+			throw new Failure("field '" + field + "' not found");
+		}
+		return password;
 	}
 
 	/**

@@ -86,5 +86,6 @@ class GlobalPropertyUtilsTest {
 		new GlobalPropertyUtils().setLocations(resources);
 		new GlobalPropertyUtils().loadProperties(new Properties());
 		Assertions.assertEquals("value", GlobalPropertyUtils.getProperty("key"));
+		Assertions.assertFalse(GlobalPropertyUtils.getEncryptedProperties().contains("key"));
 	}
 }

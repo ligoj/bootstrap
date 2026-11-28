@@ -9,18 +9,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Test class of {@link SystemEnvironmentAndFilePBEConfig} using {@link VaultPasswordReader}.
+ * Test class of {@link SystemEnvironmentAndFilePBEConfig} using {@link VaultPasswordStore}.
  */
 class SystemEnvironmentAndFilePBEConfigVaultTest {
 
@@ -54,7 +57,7 @@ class SystemEnvironmentAndFilePBEConfigVaultTest {
 		config.setPasswordFilePropertyName(FILE_PROPERTY);
 		config.setPasswordEnvName("APP_CRYPTO_PASSWORD_TEST_UNDEFINED");
 		config.setPasswordFileEnvName("APP_CRYPTO_FILE_TEST_UNDEFINED");
-		config.setVaultPasswordReader(new VaultPasswordReader(env::get));
+		config.setVaultPasswordStore(new VaultPasswordStore(env::get));
 	}
 
 	@AfterEach
@@ -155,11 +158,77 @@ class SystemEnvironmentAndFilePBEConfigVaultTest {
 	}
 
 	@Test
+	void storeVault() {
+		final var store = Mockito.mock(VaultPasswordStore.class);
+		Mockito.when(store.isEnabled()).thenReturn(true);
+		Mockito.when(store.write("new")).thenReturn("previous");
+		config.setVaultPasswordStore(store);
+		Assertions.assertEquals("previous", config.store("new"));
+	}
+
+	@Test
+	void storeFile(@TempDir final Path directory) throws IOException {
+		final var file = directory.resolve("security.key");
+		Files.writeString(file, " old \n");
+		System.setProperty(FILE_PROPERTY, file.toString());
+		Assertions.assertEquals("old", config.getPassword());
+		Assertions.assertEquals("old", config.store("new"));
+		Assertions.assertEquals("new", Files.readString(file));
+		Assertions.assertEquals("new", config.store("old"));
+		Assertions.assertEquals("old", Files.readString(file));
+	}
+
+	@Test
+	void storeNotWritableFile(@TempDir final Path directory) throws IOException {
+		final var file = directory.resolve("security.key");
+		Files.writeString(file, "old");
+		Assertions.assertTrue(file.toFile().setReadOnly());
+		System.setProperty(FILE_PROPERTY, file.toString());
+		Assertions.assertNull(config.store("new"));
+		Assertions.assertEquals("old", Files.readString(file));
+	}
+
+	@Test
+	void storeClasspathResource() {
+		System.setProperty(FILE_PROPERTY, "security.key");
+		Assertions.assertNotNull(config.getPassword());
+		Assertions.assertNull(config.store("new"));
+		Assertions.assertFalse(Files.exists(Path.of("security.key")));
+	}
+
+	@Test
+	void storeMissingFile() {
+		System.setProperty(FILE_PROPERTY, "target/not-found/security.key");
+		Assertions.assertNull(config.store("new"));
+	}
+
+	@Test
+	void storeBlankFileName() {
+		System.setProperty(FILE_PROPERTY, " ");
+		Assertions.assertNull(config.store("new"));
+	}
+
+	@Test
+	void storeRawPassword(@TempDir final Path directory) throws IOException {
+		final var file = directory.resolve("security.key");
+		Files.writeString(file, "old");
+		System.setProperty(FILE_PROPERTY, file.toString());
+		System.setProperty(PASSWORD_PROPERTY, "local");
+		Assertions.assertNull(config.store("new"));
+		Assertions.assertEquals("old", Files.readString(file));
+	}
+
+	@Test
+	void storeNoSource() {
+		Assertions.assertNull(config.store("new"));
+	}
+
+	@Test
 	void vaultCustomReader() {
-		final var reader = Mockito.mock(VaultPasswordReader.class);
+		final var reader = Mockito.mock(VaultPasswordStore.class);
 		Mockito.when(reader.isEnabled()).thenReturn(true);
 		Mockito.when(reader.read()).thenReturn("mocked");
-		config.setVaultPasswordReader(reader);
+		config.setVaultPasswordStore(reader);
 		Assertions.assertEquals("mocked", config.getPassword());
 	}
 }

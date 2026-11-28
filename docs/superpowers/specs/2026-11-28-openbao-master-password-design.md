@@ -65,7 +65,7 @@ Authentication is the first defined among: token, token file, AppRole. TLS relie
 
 ### Code
 
-- New `org.ligoj.bootstrap.core.crypto.VaultPasswordReader` (bootstrap-core): settings resolution, authentication and read, with `java.net.http.HttpClient` and the Jackson 3 mapper already available in the module.
+- New `org.ligoj.bootstrap.core.crypto.VaultPasswordStore` (bootstrap-core): settings resolution, authentication and read, with `java.net.http.HttpClient` and the Jackson 3 mapper already available in the module.
 - `SystemEnvironmentAndFilePBEConfig.getPasswordCharArray()` asks the reader first, and keeps the current chain when the source is not enabled. The settings names are fixed constants of the reader: no change of `core-context-common.xml`, so downstream contexts are not impacted.
 
 ### Documentation

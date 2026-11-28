@@ -17,12 +17,17 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 /**
- * Fail-safe password configuration. When the external secret manager is configured, see {@link VaultPasswordReader},
+ * Fail-safe password configuration. When the external secret manager is configured, see {@link VaultPasswordStore},
  * it is the only source: the password is read once from it, at the latest when the application context is started
  * whereas the encryptor is initialized by its first use, and a failure is not recovered by another source.
  * Otherwise, the first defined value in this order is used:
@@ -46,7 +51,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig implement
 	/**
 	 * Optional reader of the password from an external secret manager.
 	 */
-	private VaultPasswordReader vaultPasswordReader = new VaultPasswordReader();
+	private VaultPasswordStore vaultPasswordStore = new VaultPasswordStore();
 
 	/**
 	 * When <code>true</code>, the password has been read from the external secret manager: it is called only once.
@@ -119,7 +124,7 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig implement
 			if (!ignored.isEmpty()) {
 				log.warn("OpenBao is the only source of the master password, ignored settings: {}", ignored);
 			}
-			setPassword(vaultPasswordReader.read());
+			setPassword(vaultPasswordStore.read());
 			vaultRead = true;
 		}
 	}
@@ -139,14 +144,59 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig implement
 	 */
 	@Override
 	public void afterSingletonsInstantiated() {
-		if (vaultPasswordReader.isEnabled()) {
+		if (vaultPasswordStore.isEnabled()) {
 			readVaultPassword();
 		}
 	}
 
+	/**
+	 * Replace the password in its source, when this source can be updated: the external secret manager when it is
+	 * configured, otherwise the existing file the password is read from. The password given by a property, an
+	 * environment variable or a classpath resource cannot be replaced.
+	 *
+	 * @param password The new password.
+	 * @return The previous password of the updated source. <code>null</code> when the source has not been updated:
+	 * the new password has to be provided to the next start by another way.
+	 * @throws org.jasypt.exceptions.EncryptionInitializationException When the external secret manager is configured
+	 *                                                                 and failed.
+	 */
+	public String store(final String password) {
+		if (vaultPasswordStore.isEnabled()) {
+			return vaultPasswordStore.write(password);
+		}
+		final var file = getPasswordFile();
+		if (file != null) {
+			try {
+				final var previous = StringUtils.trimToEmpty(Files.readString(file));
+				Files.writeString(file, password, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+				return previous;
+			} catch (final IOException ioe) {
+				// Not a file of the file system, or not writable
+				log.info("The master password file {} cannot be updated: {}", file, ioe.getClass().getSimpleName());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return the file the password is read from. <code>null</code> when the password comes from a raw value
+	 * provider, or when there is no file provider.
+	 */
+	private Path getPasswordFile() {
+		final var raw = Stream.<Supplier<String>>of(() -> pipe(passwordSysPropertyName, System::getProperty),
+				() -> pipe(passwordSysPropertyName, GlobalPropertyUtils::getProperty), () -> pipe(passwordEnvName, System::getenv));
+		if (raw.anyMatch(provider -> provider.get() != null)) {
+			return null;
+		}
+		return Stream.<Supplier<String>>of(() -> pipe(passwordFilePropertyName, System::getProperty),
+						() -> pipe(passwordFilePropertyName, GlobalPropertyUtils::getProperty), () -> pipe(passwordFileEnvName, System::getenv))
+				.map(Supplier::get).filter(StringUtils::isNotBlank).filter(name -> getPasswordFromFile(name) != null).findFirst()
+				.map(Path::of).orElse(null);
+	}
+
 	@Override
 	public char[] getPasswordCharArray() {
-		if (vaultPasswordReader.isEnabled()) {
+		if (vaultPasswordStore.isEnabled()) {
 			// Exclusive source
 			readVaultPassword();
 			return super.getPasswordCharArray();

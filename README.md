@@ -101,7 +101,7 @@ Dependency layering: `bootstrap-core → bootstrap-business`, plus `bootstrap-co
 
 **Configuration/crypto**: values may be Jasypt-encrypted as `ENC(...)`. The password is the first defined among: the `app.crypto.password` system property, the same key in the loaded properties files, the `APP_CRYPTO_PASSWORD` environment variable; then the content of the file named by `app.crypto.file` (system property, properties files) or `APP_CRYPTO_FILE`, also looked up in the classpath. See `core-context-common.xml` and the [configuration reference](#configuration-reference).
 
-**External secret manager**: when `app.crypto.vault.url` is defined, the Jasypt password is instead read from one field of a KV secret of [OpenBao](https://openbao.org) or HashiCorp Vault (same HTTP API), by `VaultPasswordReader`:
+**External secret manager**: when `app.crypto.vault.url` is defined, the Jasypt password is instead read from one field of a KV secret of [OpenBao](https://openbao.org) or HashiCorp Vault (same HTTP API), by `VaultPasswordStore`:
 
 ```properties
 app.crypto.vault.url=https://bao.example.com:8200

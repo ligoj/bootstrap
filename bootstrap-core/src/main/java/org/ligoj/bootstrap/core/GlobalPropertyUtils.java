@@ -15,6 +15,7 @@ import org.springframework.util.StringValueResolver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -85,6 +86,16 @@ public class GlobalPropertyUtils extends PropertySourcesPlaceholderConfigurer {
 	 */
 	public static String getProperty(final String name) {
 		return props.getProperty(name);
+	}
+
+	/**
+	 * Return the names of the loaded properties having an encrypted value: <code>ENC(...)</code>.
+	 *
+	 * @return The sorted names of the loaded properties having an encrypted value.
+	 */
+	public static List<String> getEncryptedProperties() {
+		return props.stringPropertyNames().stream()
+				.filter(name -> PropertyValueEncryptionUtils.isEncryptedValue(props.getProperty(name))).sorted().toList();
 	}
 
 	@Override
