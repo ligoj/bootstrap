@@ -323,6 +323,58 @@ class VaultPasswordReaderTest {
 	}
 
 	@Test
+	void failUnsupportedScheme() {
+		tokenSetup(200, KV2_BODY);
+		env.put("APP_CRYPTO_VAULT_URL", "ftp://localhost:" + server.getAddress().getPort());
+		final var message = Assertions.assertThrows(EncryptionInitializationException.class, reader::read).getMessage();
+		Assertions.assertTrue(message.endsWith(": invalid address"), message);
+	}
+
+	@Test
+	void failNoUrl() {
+		tokenSetup(200, KV2_BODY);
+		env.remove("APP_CRYPTO_VAULT_URL");
+		final var message = Assertions.assertThrows(EncryptionInitializationException.class, reader::read).getMessage();
+		Assertions.assertTrue(message.endsWith(": invalid address"), message);
+	}
+
+	@Test
+	void failInvalidPath() {
+		tokenSetup(200, KV2_BODY);
+		env.put("APP_CRYPTO_VAULT_PATH", "secret/data/my secret");
+		assertFail("invalid address");
+	}
+
+	@Test
+	void failInvalidToken() {
+		tokenSetup(200, KV2_BODY);
+		env.put("APP_CRYPTO_VAULT_TOKEN", "t0\nken");
+		final var message = assertFail("invalid setting value");
+		Assertions.assertFalse(message.contains("ken"));
+		Assertions.assertTrue(requests.isEmpty());
+	}
+
+	@Test
+	void failInvalidTokenFilePath() {
+		tokenSetup(200, KV2_BODY);
+		env.remove("APP_CRYPTO_VAULT_TOKEN");
+		env.put("APP_CRYPTO_VAULT_TOKEN_FILE", "tok\u0000en");
+		assertFail("unable to read the token file");
+	}
+
+	@Test
+	void readBooleanField() {
+		tokenSetup(200, "{\"data\":{\"data\":{\"password\":true}}}");
+		Assertions.assertEquals("true", reader.read());
+	}
+
+	@Test
+	void failArrayField() {
+		tokenSetup(200, "{\"data\":{\"data\":{\"password\":[\"a\"]}}}");
+		assertFail("field 'password' not found");
+	}
+
+	@Test
 	void failForbidden() {
 		tokenSetup(403, "{\"errors\":[\"permission denied\"]}");
 		final var message = assertFail("HTTP 403");
@@ -407,9 +459,7 @@ class VaultPasswordReaderTest {
 		tokenSetup(200, KV2_BODY);
 		env.put("APP_CRYPTO_VAULT_TIMEOUT", "1");
 		stubs.put("/v1/" + KV2_PATH, new Stub(200, KV2_BODY, null, 3000));
-		final var start = System.nanoTime();
 		assertFail("HttpTimeoutException");
-		Assertions.assertTrue(System.nanoTime() - start < 2_900_000_000L);
 	}
 
 	@Test

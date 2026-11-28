@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.support.GenericApplicationContext;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -60,7 +61,9 @@ class SystemEnvironmentAndFilePBEConfigVaultTest {
 	void tearDown() {
 		server.stop(0);
 		System.clearProperty(PASSWORD_PROPERTY);
-		if (previousFile != null) {
+		if (previousFile == null) {
+			System.clearProperty(FILE_PROPERTY);
+		} else {
 			System.setProperty(FILE_PROPERTY, previousFile);
 		}
 	}
@@ -116,6 +119,39 @@ class SystemEnvironmentAndFilePBEConfigVaultTest {
 		System.setProperty(PASSWORD_PROPERTY, "local");
 		Assertions.assertThrows(EncryptionInitializationException.class, config::getPassword);
 		Assertions.assertThrows(EncryptionInitializationException.class, config::getPassword);
+	}
+
+	@Test
+	void vaultReadAtStartup() {
+		enableVault();
+		config.afterSingletonsInstantiated();
+		Assertions.assertEquals(1, requests.get());
+		Assertions.assertEquals("fromVault", config.getPassword());
+		Assertions.assertEquals(1, requests.get());
+	}
+
+	@Test
+	void vaultFailsAtStartup() {
+		enableVault();
+		status = 500;
+		Assertions.assertThrows(EncryptionInitializationException.class, config::afterSingletonsInstantiated);
+	}
+
+	@Test
+	void vaultDisabledAtStartup() {
+		config.afterSingletonsInstantiated();
+		Assertions.assertEquals(0, requests.get());
+	}
+
+	@Test
+	void vaultFailureStopsTheContext() {
+		enableVault();
+		status = 500;
+		try (var context = new GenericApplicationContext()) {
+			context.registerBean("environmentVariablesConfiguration", SystemEnvironmentAndFilePBEConfig.class, () -> config);
+			final var failure = Assertions.assertThrows(EncryptionInitializationException.class, context::refresh);
+			Assertions.assertTrue(failure.getMessage().endsWith(": HTTP 500"), failure.getMessage());
+		}
 	}
 
 	@Test

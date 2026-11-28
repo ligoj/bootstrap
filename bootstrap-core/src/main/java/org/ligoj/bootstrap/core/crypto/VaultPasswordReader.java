@@ -3,6 +3,7 @@
  */
 package org.ligoj.bootstrap.core.crypto;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -18,6 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Locale;
@@ -155,15 +157,16 @@ public class VaultPasswordReader {
 	 * @throws EncryptionInitializationException When the password cannot be read for any reason.
 	 */
 	public String read() {
-		final var address = StringUtils.stripEnd(getSetting(URL), "/");
-		final var path = Strings.CS.removeStart(StringUtils.stripStart(StringUtils.defaultString(getSetting(PATH)), "/"), "v1/");
+		final var address = StringUtils.stripEnd(Objects.toString(getSetting(URL), ""), "/");
+		final var path = Strings.CS.removeStart(StringUtils.stripStart(Objects.toString(getSetting(PATH), ""), "/"), "v1/");
 		final var prefix = "Unable to read the master password from " + address + "/v1/" + path + ": ";
 		try {
 			return read(address, path);
 		} catch (final Failure failure) {
 			throw new EncryptionInitializationException(prefix + failure.getMessage());
 		} catch (final IllegalArgumentException _) {
-			throw new EncryptionInitializationException(prefix + "invalid address");
+			// Such as a token or a namespace refused as header value, the value is not reported
+			throw new EncryptionInitializationException(prefix + "invalid setting value");
 		} catch (final JacksonException _) {
 			throw new EncryptionInitializationException(prefix + "invalid response");
 		} catch (final IOException ioe) {
@@ -181,23 +184,24 @@ public class VaultPasswordReader {
 		if (path.isEmpty()) {
 			throw new Failure("'" + PATH + "' is required");
 		}
-		final var seconds = NumberUtils.toInt(StringUtils.defaultString(getSetting(TIMEOUT), "10"), 0);
+		final var seconds = NumberUtils.toInt(Objects.toString(getSetting(TIMEOUT), "10"), 0);
 		if (seconds <= 0) {
 			throw new Failure("invalid '" + TIMEOUT + "'");
 		}
 		final var timeout = Duration.ofSeconds(seconds);
+		final var secret = toUri(address + "/v1/" + path);
 		try (var client = HttpClient.newBuilder().connectTimeout(timeout).followRedirects(HttpClient.Redirect.NORMAL).build()) {
 			final var token = getToken(client, address, timeout);
-			final var response = client.send(newRequest(address + "/v1/" + path, timeout).header("X-Vault-Token", token).GET().build(),
+			final var response = client.send(newRequest(secret, timeout).header("X-Vault-Token", token).GET().build(),
 					HttpResponse.BodyHandlers.ofString());
 			if (response.statusCode() / 100 != 2) {
 				throw new Failure("HTTP " + response.statusCode());
 			}
 
 			// KV v2 wraps the fields in an additional "data" object
-			final var field = StringUtils.defaultString(getSetting(FIELD), "password");
+			final var field = Objects.toString(getSetting(FIELD), "password");
 			final var data = MAPPER.readTree(response.body()).path("data");
-			final var password = StringUtils.defaultString(toText(data.path("data").path(field)), toText(data.path(field)));
+			final var password = ObjectUtils.getIfNull(toText(data.path("data").path(field)), () -> toText(data.path(field)));
 			if (password == null) {
 				throw new Failure("field '" + field + "' not found");
 			}
@@ -225,7 +229,7 @@ public class VaultPasswordReader {
 		}
 
 		// AppRole login
-		final var login = address + "/v1/auth/" + StringUtils.defaultString(getSetting(AUTH_PATH), "approle") + "/login";
+		final var login = toUri(address + "/v1/auth/" + Objects.toString(getSetting(AUTH_PATH), "approle") + "/login");
 		final var body = MAPPER.writeValueAsString(Map.of("role_id", roleId, "secret_id", secretId));
 		final var response = client.send(newRequest(login, timeout).header("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(body)).build(), HttpResponse.BodyHandlers.ofString());
@@ -246,7 +250,7 @@ public class VaultPasswordReader {
 		String token = null;
 		try {
 			token = StringUtils.trimToNull(Files.readString(Path.of(file)));
-		} catch (final IOException _) {
+		} catch (final IOException | InvalidPathException _) {
 			// Reported as an empty file, without detail
 		}
 		if (token == null) {
@@ -256,10 +260,25 @@ public class VaultPasswordReader {
 	}
 
 	/**
+	 * Return the HTTP or HTTPS URI of the given location.
+	 */
+	private static URI toUri(final String location) throws Failure {
+		try {
+			final var uri = URI.create(location);
+			if (uri.getHost() != null && Strings.CI.startsWith(uri.getScheme(), "http")) {
+				return uri;
+			}
+		} catch (final IllegalArgumentException _) {
+			// Reported as an invalid address
+		}
+		throw new Failure("invalid address");
+	}
+
+	/**
 	 * New request builder with the timeout and the optional namespace.
 	 */
-	private HttpRequest.Builder newRequest(final String uri, final Duration timeout) {
-		final var builder = HttpRequest.newBuilder(URI.create(uri)).timeout(timeout);
+	private HttpRequest.Builder newRequest(final URI uri, final Duration timeout) {
+		final var builder = HttpRequest.newBuilder(uri).timeout(timeout);
 		final var namespace = getSetting(NAMESPACE);
 		if (namespace != null) {
 			builder.header("X-Vault-Namespace", namespace);

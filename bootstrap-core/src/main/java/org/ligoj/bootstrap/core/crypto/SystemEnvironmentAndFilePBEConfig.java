@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jasypt.encryption.pbe.config.SimplePBEConfig;
 import org.ligoj.bootstrap.core.GlobalPropertyUtils;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
@@ -22,7 +23,8 @@ import java.util.function.UnaryOperator;
 
 /**
  * Fail-safe password configuration. When the external secret manager is configured, see {@link VaultPasswordReader},
- * it is the only source: the password is read once from it, and a failure is not recovered by another source.
+ * it is the only source: the password is read once from it, at the latest when the application context is started
+ * whereas the encryptor is initialized by its first use, and a failure is not recovered by another source.
  * Otherwise, the first defined value in this order is used:
  * <ul>
  * <li>System property</li>
@@ -34,7 +36,7 @@ import java.util.function.UnaryOperator;
  */
 @Slf4j
 @Setter
-public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
+public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig implements SmartInitializingSingleton {
 
 	private String passwordEnvName;
 	private String passwordSysPropertyName;
@@ -128,6 +130,17 @@ public class SystemEnvironmentAndFilePBEConfig extends SimplePBEConfig {
 	private void addDefined(final Set<String> names, final String name, final UnaryOperator<String> reader) {
 		if (pipe(name, reader) != null) {
 			names.add(name);
+		}
+	}
+
+	/**
+	 * Read the password from the external secret manager when it is configured and not yet read: a failure stops the
+	 * application context instead of the first decryption. The properties files are loaded at this point.
+	 */
+	@Override
+	public void afterSingletonsInstantiated() {
+		if (vaultPasswordReader.isEnabled()) {
+			readVaultPassword();
 		}
 	}
 
