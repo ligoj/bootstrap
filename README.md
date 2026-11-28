@@ -17,7 +17,7 @@ Key features:
 - Tuned Jackson configuration for minified payload and validation
 - Test powered with CSV data load to/from JPA entities
 - TDD ready with pre-built asserts with Mockito and WireMock, target is `100%` code coverage
-- Optional encrypted properties support and database configuration with Jasypt, the master password being optionally read from OpenBao or HashiCorp Vault
+- Optional encrypted properties support and database configuration with Jasypt, the master password being optionally read from OpenBao or HashiCorp Vault, with online rotation
 - Plug-in class loader with optional JAR signature verification
 - Spring-Data extensions for performance, minimal code and exception handling
 
@@ -117,6 +117,29 @@ app.crypto.vault.secret-id=...
 - Each `app.crypto.vault.*` setting is a system property, a key of the loaded properties files, or an environment variable (`APP_CRYPTO_VAULT_URL`, `APP_CRYPTO_VAULT_TOKEN_FILE`, ...). These values cannot be `ENC(...)`.
 
 Without these settings, an OpenBao Agent can also render the secret to a file with a template, `APP_CRYPTO_FILE` naming this file.
+
+**Master secret rotation**: `POST /system/configuration/crypto/rotate`, reserved to administrators, replaces the Jasypt password without restart. In one transaction:
+
+1. A new random secret is generated (256 bits).
+2. The encrypted values of `S_CONFIGURATION` and the MFA device secrets are decrypted with the current secret and encrypted with the new one.
+3. A `MasterSecretRotationEvent` is published, just before the new secret is used: the application encrypts again its own values in the same transaction. A failing listener cancels the rotation.
+4. The new secret is saved where the current one comes from: the OpenBao or Vault secret when configured (the other fields of this secret are kept, and the token needs the `update` capability on its path), otherwise the file named by `app.crypto.file` or `APP_CRYPTO_FILE` when it is a writable file of the file system.
+5. After the commit, the new secret is used by this application. When the transaction is not committed, the previous secret is restored in its source.
+
+```java
+@EventListener
+public void onRotation(final MasterSecretRotationEvent event) {
+	repository.findAll().forEach(e -> e.setToken(event.rotate(e.getToken())));
+}
+```
+
+The response is `{"count": 12, "properties": ["some.key"]}`:
+
+- `count`: the values encrypted again, the ones of the listeners using `rotate` or `rotateAsNeeded` included.
+- `secret`: the new secret, **only when it has not been saved**: the password comes from a property, an environment variable, a classpath resource or a read-only file. It is returned once and stored nowhere else: without it at the next start, the encrypted values are lost.
+- `properties`: the keys of the properties files having an `ENC(...)` value. They are not updated: encrypt them again (`/system/security/crypto`) and replace them before the next start.
+
+Limits: the other encryptions and decryptions wait for the end of the rotation, so run it in a quiet period, a value encrypted by a transaction still opened during the rotation being lost. The other running nodes sharing the database keep the previous secret until their restart. Encrypted values given by system properties or environment variables are not updated.
 
 ## Deployment security requirements
 

@@ -20,6 +20,7 @@ import org.ligoj.bootstrap.core.crypto.WebAuthnHelper;
 import tools.jackson.databind.ObjectMapper;
 
 import org.ligoj.bootstrap.core.crypto.CryptoHelper;
+import org.ligoj.bootstrap.core.crypto.MasterSecretRotationEvent;
 import org.ligoj.bootstrap.core.crypto.TotpHelper;
 import org.ligoj.bootstrap.core.security.SecurityHelper;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
@@ -30,6 +31,7 @@ import org.ligoj.bootstrap.model.system.SystemUser;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -643,5 +645,15 @@ public class MfaResource {
 			vo.setModel(AaguidRegistry.model(passkey.aaguid()));
 		}
 		return vo;
+	}
+
+	/**
+	 * Encrypt again the secrets of all the devices with the new master secret.
+	 *
+	 * @param event The rotation event.
+	 */
+	@EventListener
+	public void onMasterSecretRotation(final MasterSecretRotationEvent event) {
+		repository.findAll().forEach(device -> device.setSecret(event.rotateAsNeeded(device.getSecret())));
 	}
 }
