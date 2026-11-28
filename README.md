@@ -17,7 +17,7 @@ Key features:
 - Tuned Jackson configuration for minified payload and validation
 - Test powered with CSV data load to/from JPA entities
 - TDD ready with pre-built asserts with Mockito and WireMock, target is `100%` code coverage
-- Optional encrypted properties support and database configuration with Jasypt
+- Optional encrypted properties support and database configuration with Jasypt, the master password being optionally read from OpenBao or HashiCorp Vault
 - Plug-in class loader with optional JAR signature verification
 - Spring-Data extensions for performance, minimal code and exception handling
 
@@ -101,6 +101,23 @@ Dependency layering: `bootstrap-core → bootstrap-business`, plus `bootstrap-co
 
 **Configuration/crypto**: values may be Jasypt-encrypted as `ENC(...)`. The password is the first defined among: the `app.crypto.password` system property, the same key in the loaded properties files, the `APP_CRYPTO_PASSWORD` environment variable; then the content of the file named by `app.crypto.file` (system property, properties files) or `APP_CRYPTO_FILE`, also looked up in the classpath. See `core-context-common.xml` and the [configuration reference](#configuration-reference).
 
+**External secret manager**: when `app.crypto.vault.url` is defined, the Jasypt password is instead read from one field of a KV secret of [OpenBao](https://openbao.org) or HashiCorp Vault (same HTTP API), by `VaultPasswordReader`:
+
+```properties
+app.crypto.vault.url=https://bao.example.com:8200
+app.crypto.vault.path=secret/data/ligoj
+app.crypto.vault.role-id=...
+app.crypto.vault.secret-id=...
+```
+
+- It is then the only source: the settings of the previous paragraph are ignored, with a warning naming the defined ones.
+- The password is read once, at startup, and never written to the disk.
+- Any failure stops the startup (fail closed): unreachable server, refused authentication, missing secret or field. The error message contains neither a secret nor the server response.
+- Authentication is the first defined among: a token, a token file, an AppRole. TLS relies on the JVM trust store.
+- Each `app.crypto.vault.*` setting is a system property, a key of the loaded properties files, or an environment variable (`APP_CRYPTO_VAULT_URL`, `APP_CRYPTO_VAULT_TOKEN_FILE`, ...). These values cannot be `ENC(...)`.
+
+Without these settings, an OpenBao Agent can also render the secret to a file with a template, `APP_CRYPTO_FILE` naming this file.
+
 ## Deployment security requirements
 
 `ApiTokenAuthenticationFilter` authenticates requests from headers:
@@ -133,11 +150,21 @@ Three sources, depending on the key:
 |---|---|---|---|
 | `app-env` | empty | system | Suffix of the `application${app-env}.properties` file |
 | `app.crypto.password`, `app.crypto.file` | none | system, properties, env (`APP_CRYPTO_PASSWORD`, `APP_CRYPTO_FILE`) | Jasypt password, see above |
+| `app.crypto.vault.url` | none | system, properties, env (`APP_CRYPTO_VAULT_URL`) | OpenBao or Vault address, such as `https://bao.example.com:8200`. When defined, the Jasypt password is only read from this server |
+| `app.crypto.vault.path` | required with the address | system, properties, env (`APP_CRYPTO_VAULT_PATH`) | API path of the secret, without `/v1/`: `secret/data/ligoj` (KV v2) or `secret/ligoj` (KV v1) |
+| `app.crypto.vault.field` | `password` | system, properties, env (`APP_CRYPTO_VAULT_FIELD`) | Field of the secret holding the Jasypt password |
+| `app.crypto.vault.token` | none | system, properties, env (`APP_CRYPTO_VAULT_TOKEN`) | Token authentication |
+| `app.crypto.vault.token-file` | none | system, properties, env (`APP_CRYPTO_VAULT_TOKEN_FILE`) | File containing the token, used without `app.crypto.vault.token` |
+| `app.crypto.vault.role-id`, `app.crypto.vault.secret-id` | none | system, properties, env (`APP_CRYPTO_VAULT_ROLE_ID`, `APP_CRYPTO_VAULT_SECRET_ID`) | AppRole authentication, used without token |
+| `app.crypto.vault.auth-path` | `approle` | system, properties, env (`APP_CRYPTO_VAULT_AUTH_PATH`) | Mount path of the AppRole authentication method |
+| `app.crypto.vault.namespace` | none | system, properties, env (`APP_CRYPTO_VAULT_NAMESPACE`) | Namespace, sent as `X-Vault-Namespace` |
+| `app.crypto.vault.timeout` | `10` (seconds) | system, properties, env (`APP_CRYPTO_VAULT_TIMEOUT`) | Connection and request timeout |
 | `ligoj.home` | `~/.ligoj` | system | Home directory, plug-ins in `plugins/` |
 | `ligoj.plugin.enabled` | `true` | system | `false`: safe mode, no external plug-in |
 | `ligoj.plugin.signature.required` | `false` | system | Only the `VERIFIED` plug-ins are loaded |
 | `ligoj.plugin.signature.truststore` | `${ligoj.home}/plugin-vendors.p12` | system | Trusted vendor certificates (PKCS12, or JKS by extension) |
 | `ligoj.plugin.signature.truststore.password` | `changeit` | system | Truststore password |
+| `ligoj.plugin.dependency.check` | `true` | system | `false`: a plug-in with a missing parent plug-in is still loaded |
 | `ligoj.mfa.issuer` | `Ligoj` | runtime | Issuer shown by authenticator applications, passkey relying party name |
 | `ligoj.mfa.rp-id` | `localhost` | runtime | Passkey relying party identifier: **must be set in production**, never changed afterwards |
 | `ligoj.mfa.origins` | empty: HTTPS origins of the rp-id host and sub-domains (HTTP on localhost) | runtime | Comma separated accepted passkey origins |
